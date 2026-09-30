@@ -20,13 +20,14 @@
     user-select: none; -webkit-user-select: none;
   }
   @media (max-width: 640px) {
-    body { padding: 12px 22px; }
-    .app { width: 100%; max-width: 480px; }
+    /* 0.5 см гарантированный зазор между краем экрана и доской */
+    body { padding: 12px 0.5cm; }
   }
   .solver-status, .title { user-select: text; -webkit-user-select: text; }
-  .app { position: relative; width: min(96vw, 480px); display: flex; flex-direction: column; gap: 14px; transition: width .2s; }
-  .app.editing { width: min(96vw, 780px); }
-  .app.gallery { width: min(96vw, 900px); }
+  /* .app занимает всю доступную ширину, ограничен max-width — зазор обеспечивает padding body */
+  .app { position: relative; width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; transition: width .2s; }
+  .app.editing { max-width: 780px; }
+  .app.gallery { max-width: 900px; }
   .app-header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
   .app-header .title { grid-column: 2; }
 
@@ -302,7 +303,6 @@
   .manual-paste__hint { margin: 0; font-size: 11px; line-height: 1.35; color: var(--gold); text-align: center; letter-spacing: .01em; user-select: text; -webkit-user-select: text; }
   .manual-paste__textarea { flex: 1 1 auto; min-height: 60px; padding: 6px 8px; box-sizing: border-box; border-radius: 6px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.55); color: #e6eef8; font-family: ui-monospace, "Cascadia Code", "Consolas", monospace; font-size: 11px; line-height: 1.45; outline: none; resize: none; white-space: pre; overflow: auto; user-select: text; -webkit-user-select: text; }
   .palette { display: flex; flex-direction: row; align-items: flex-start; justify-content: center; gap: 12px; padding: 14px 10px; min-height: 72px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); flex-wrap: wrap; }
-  .palette-btn-col { flex: 0 0 auto; width: 72px; display: flex; flex-direction: column; gap: 6px; align-self: stretch; }
   .palette-tiles-area { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
   .palette-tiles-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; }
   .palette-tiles-row:first-child { min-height: 52px; }
@@ -311,7 +311,6 @@
   .palette-item:active { transform: scale(.96); cursor: grabbing; }
   .palette-item svg { display: block; width: 100%; height: 100%; overflow: visible; }
   .palette-separator { align-self: stretch; width: 1px; min-height: 48px; margin: 0 2px; background: rgba(255,255,255,.25); border-radius: 1px; }
-  .palette-separator--slim { min-height: 20px; margin: 0 4px; }
 
   .palette-dmove-btn {
     flex: 0 0 auto;
@@ -2149,6 +2148,10 @@
 
   // ============================================================
   // СОЛВЕР
+  //   Идентификация фигур в ходах — по паре (тип, откуда), что однозначно
+  //   определяется позицией. Сдвигаемые фигуры описываются так же.
+  //   Порядок операций в обновлении состояния: СНАЧАЛА снять с доски
+  //   ВСЕ фигуры группы (основную + сдвигаемые), ПОТОМ поставить их на новые места.
   // ============================================================
   const SOLVER_DIRS = [[0,-1],[0,1],[-1,0],[1,0]];
   const KEY_CHARS = new Array(256);
@@ -2247,12 +2250,14 @@
       const cells = info.cells;
       for (let ci = 0; ci < cells.length; ci++) {
         const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]);
-        const fi = freeCellLookup[lc];
-        if (fi >= 0) board[fi] = t;
+        const fci = freeCellLookup[lc];
+        if (fci >= 0) board[fi_set(fci, t, board)] = t;
       }
     }
     return board;
   }
+  function fi_set(fci, t, board) { return fci; } // helper stub (не используется)
+
   function makeKeyFn(NUM_TYPES) {
     if (NUM_TYPES <= 15) {
       return function keyOf(board) {
@@ -2265,6 +2270,8 @@
     return function keyOf(board) { const n = board.length; let s = ''; for (let i = 0; i < n; i++) s += KEY_CHARS[board[i]]; return s; };
   }
 
+  // Генерирует ходы. Для группового сдвига `shifted` — массив {type, fromX, fromY}
+  // (позиция однозначно идентифицирует фигуру даже при дубликатах типа).
   function generateMovesForPiece(board, px, py, t, info, freeCellLookup, pieces, pi, typeIndex, groupShift) {
     const NC = info.cells.length, cells = info.cells, out = [];
     let dirs = SOLVER_DIRS;
@@ -2332,10 +2339,52 @@
         if (singleOk) continue;
         const group = computeGroupForPushSolver(pieces, typeIndex, pi, dx, dy);
         if (!group || group.length <= 1) continue;
-        out.push({ nx: nx1, ny: ny1, path: [[dx, dy]], shifted: group.filter(gi => gi !== pi) });
+        const shifted = [];
+        for (let gi = 0; gi < group.length; gi++) {
+          const qj = group[gi];
+          if (qj === pi) continue;
+          shifted.push({ type: pieces[qj*3], fromX: pieces[qj*3+1], fromY: pieces[qj*3+2] });
+        }
+        if (shifted.length === 0) continue;
+        out.push({ nx: nx1, ny: ny1, path: [[dx, dy]], shifted });
       }
     }
     return out;
+  }
+
+  // Вспомогательная: снять фигуру (индекс qj) с доски по её текущим координатам.
+  function erasePieceFromBoard(board, pieces, qj, typeIndex, freeCellLookup) {
+    const qinfo = typeIndex[pieces[qj*3]];
+    if (!qinfo) return;
+    const qx = pieces[qj*3+1], qy = pieces[qj*3+2];
+    const cells = qinfo.cells;
+    for (let ci = 0; ci < cells.length; ci++) {
+      const lc = (qy + cells[ci][1]) * COLS + (qx + cells[ci][0]);
+      const fci = freeCellLookup[lc];
+      if (fci >= 0) board[fci] = 0;
+    }
+  }
+  function placePieceOnBoard(board, pieces, qj, typeIndex, freeCellLookup) {
+    const qinfo = typeIndex[pieces[qj*3]];
+    if (!qinfo) return;
+    const t = pieces[qj*3];
+    const qx = pieces[qj*3+1], qy = pieces[qj*3+2];
+    const cells = qinfo.cells;
+    for (let ci = 0; ci < cells.length; ci++) {
+      const lc = (qy + cells[ci][1]) * COLS + (qx + cells[ci][0]);
+      const fci = freeCellLookup[lc];
+      if (fci >= 0) board[fci] = t;
+    }
+  }
+
+  // Найти индекс фигуры в pieces по типу и позиции.
+  function findPieceIndexByTypeAndPos(pieces, type, fromX, fromY) {
+    const NPieces = pieces.length / 3;
+    for (let qj = 0; qj < NPieces; qj++) {
+      if (pieces[qj*3] !== type) continue;
+      if (pieces[qj*3+1] === fromX && pieces[qj*3+2] === fromY) return qj;
+    }
+    return -1;
   }
 
   async function solveUnidirectional(state, stopCheck, onProgress, maxNodes, groupShift) {
@@ -2394,39 +2443,43 @@
           if (!info || info.fixed) continue;
           const px = pieces[pi*3+1], py = pieces[pi*3+2];
           const cells = info.cells, NC = cells.length;
+          // Временно убрать основную фигуру, чтобы она не блокировала сама себя
           for (let ci = 0; ci < NC; ci++) { const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) board[fci] = 0; }
           const moves = generateMovesForPiece(board, px, py, t, info, freeCellLookup, pieces, pi, typeIndex, groupShift);
           for (let ci = 0; ci < NC; ci++) { const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) board[fci] = t; }
           for (let mi = 0; mi < moves.length; mi++) {
             const mv = moves[mi], nx = mv.nx, ny = mv.ny;
             const newBoard = board.slice();
-            for (let ci = 0; ci < NC; ci++) { const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) newBoard[fci] = 0; }
-            for (let ci = 0; ci < NC; ci++) { const lc = (ny + cells[ci][1]) * COLS + (nx + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) newBoard[fci] = t; }
             const newPieces = pieces.slice();
-            newPieces[pi*3+1] = nx; newPieces[pi*3+2] = ny;
+            // === СНЯТЬ с доски СНАЧАЛА все фигуры группы ===
+            // 1) основную
+            for (let ci = 0; ci < NC; ci++) { const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) newBoard[fci] = 0; }
+            // 2) сдвигаемые — по (type, position) ищем в pieces (не в newPieces!)
+            const shiftInfo = [];
             if (mv.shifted) {
               const stepDx = mv.path[0][0], stepDy = mv.path[0][1];
               for (let si = 0; si < mv.shifted.length; si++) {
-                const qj = mv.shifted[si];
-                const qinfo = typeIndex[newPieces[qj*3]];
-                const qx = newPieces[qj*3+1], qy = newPieces[qj*3+2];
-                for (let qci = 0; qci < qinfo.cells.length; qci++) {
-                  const lc = (qy + qinfo.cells[qci][1]) * COLS + (qx + qinfo.cells[qci][0]);
-                  const fci = freeCellLookup[lc];
-                  if (fci >= 0) newBoard[fci] = 0;
-                }
-                newPieces[qj*3+1] = qx + stepDx;
-                newPieces[qj*3+2] = qy + stepDy;
-                for (let qci = 0; qci < qinfo.cells.length; qci++) {
-                  const lc = (newPieces[qj*3+2] + qinfo.cells[qci][1]) * COLS + (newPieces[qj*3+1] + qinfo.cells[qci][0]);
-                  const fci = freeCellLookup[lc];
-                  if (fci >= 0) newBoard[fci] = newPieces[qj*3];
-                }
+                const sh = mv.shifted[si];
+                const qj = findPieceIndexByTypeAndPos(pieces, sh.type, sh.fromX, sh.fromY);
+                if (qj < 0 || qj === pi) continue;
+                erasePieceFromBoard(newBoard, pieces, qj, typeIndex, freeCellLookup);
+                shiftInfo.push({ qj, nx: sh.fromX + stepDx, ny: sh.fromY + stepDy });
               }
+            }
+            // === ПОСТАВИТЬ на новые места ===
+            // 1) основную
+            newPieces[pi*3+1] = nx; newPieces[pi*3+2] = ny;
+            placePieceOnBoard(newBoard, newPieces, pi, typeIndex, freeCellLookup);
+            // 2) сдвигаемые — обновить их координаты в newPieces и поставить
+            for (let si = 0; si < shiftInfo.length; si++) {
+              const inf = shiftInfo[si];
+              newPieces[inf.qj*3+1] = inf.nx;
+              newPieces[inf.qj*3+2] = inf.ny;
+              placePieceOnBoard(newBoard, newPieces, inf.qj, typeIndex, freeCellLookup);
             }
             const newKey = keyOf(newBoard);
             if (!parents.has(newKey)) {
-              parents.set(newKey, { parentKey: nodeKey, move: { type: t, fromX: px, fromY: py, path: mv.path, shifted: mv.shifted, pieceIndex: pi } });
+              parents.set(newKey, { parentKey: nodeKey, move: { type: t, fromX: px, fromY: py, path: mv.path, shifted: mv.shifted } });
               nextFrontier.push({ board: newBoard, pieces: newPieces, key: newKey });
             }
           }
@@ -2453,7 +2506,9 @@
       for (let i = 0; i < n; i++) { fx += p[i][0]; fy += p[i][1]; }
       const revPath = new Array(n);
       for (let i = 0; i < n; i++) { const s = p[n - 1 - i]; revPath[i] = [-s[0], -s[1]]; }
-      backwardMoves.push({ type: m.type, fromX: fx, fromY: fy, path: revPath, shifted: m.shifted, pieceIndex: m.pieceIndex });
+      const totalDx = fx - m.fromX, totalDy = fy - m.fromY;
+      const revShifted = m.shifted ? m.shifted.map(sh => ({ type: sh.type, fromX: sh.fromX + totalDx, fromY: sh.fromY + totalDy })) : undefined;
+      backwardMoves.push({ type: m.type, fromX: fx, fromY: fy, path: revPath, shifted: revShifted });
       key = entry.parentKey;
     }
     return forwardMoves.concat(backwardMoves);
@@ -2506,33 +2561,34 @@
           for (let mi = 0; mi < moves.length; mi++) {
             const mv = moves[mi], nx = mv.nx, ny = mv.ny;
             const newBoard = board.slice();
-            for (let ci = 0; ci < NC; ci++) { const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) newBoard[fci] = 0; }
-            for (let ci = 0; ci < NC; ci++) { const lc = (ny + cells[ci][1]) * COLS + (nx + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) newBoard[fci] = t; }
             const newPieces = pieces.slice();
-            newPieces[pi*3+1] = nx; newPieces[pi*3+2] = ny;
+            // Снять основную
+            for (let ci = 0; ci < NC; ci++) { const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) newBoard[fci] = 0; }
+            // Снять сдвигаемые
+            const shiftInfo = [];
             if (mv.shifted) {
               const stepDx = mv.path[0][0], stepDy = mv.path[0][1];
               for (let si = 0; si < mv.shifted.length; si++) {
-                const qj = mv.shifted[si];
-                const qinfo = typeIndex[newPieces[qj*3]];
-                const qx = newPieces[qj*3+1], qy = newPieces[qj*3+2];
-                for (let qci = 0; qci < qinfo.cells.length; qci++) {
-                  const lc = (qy + qinfo.cells[qci][1]) * COLS + (qx + qinfo.cells[qci][0]);
-                  const fci = freeCellLookup[lc];
-                  if (fci >= 0) newBoard[fci] = 0;
-                }
-                newPieces[qj*3+1] = qx + stepDx;
-                newPieces[qj*3+2] = qy + stepDy;
-                for (let qci = 0; qci < qinfo.cells.length; qci++) {
-                  const lc = (newPieces[qj*3+2] + qinfo.cells[qci][1]) * COLS + (newPieces[qj*3+1] + qinfo.cells[qci][0]);
-                  const fci = freeCellLookup[lc];
-                  if (fci >= 0) newBoard[fci] = newPieces[qj*3];
-                }
+                const sh = mv.shifted[si];
+                const qj = findPieceIndexByTypeAndPos(pieces, sh.type, sh.fromX, sh.fromY);
+                if (qj < 0 || qj === pi) continue;
+                erasePieceFromBoard(newBoard, pieces, qj, typeIndex, freeCellLookup);
+                shiftInfo.push({ qj, nx: sh.fromX + stepDx, ny: sh.fromY + stepDy });
               }
+            }
+            // Поставить основную
+            newPieces[pi*3+1] = nx; newPieces[pi*3+2] = ny;
+            placePieceOnBoard(newBoard, newPieces, pi, typeIndex, freeCellLookup);
+            // Поставить сдвигаемые
+            for (let si = 0; si < shiftInfo.length; si++) {
+              const inf = shiftInfo[si];
+              newPieces[inf.qj*3+1] = inf.nx;
+              newPieces[inf.qj*3+2] = inf.ny;
+              placePieceOnBoard(newBoard, newPieces, inf.qj, typeIndex, freeCellLookup);
             }
             const newKey = keyOf(newBoard);
             if (!myParents.has(newKey)) {
-              myParents.set(newKey, { parentKey: nodeKey, move: { type: t, fromX: px, fromY: py, path: mv.path, shifted: mv.shifted, pieceIndex: pi } });
+              myParents.set(newKey, { parentKey: nodeKey, move: { type: t, fromX: px, fromY: py, path: mv.path, shifted: mv.shifted } });
               if (otherParents.has(newKey)) {
                 const path = reconstructBidirectionalPath(newKey, parentsF, parentsB);
                 return { path, nodes: nodesExplored, ms: performance.now() - t0 };
@@ -2570,9 +2626,13 @@
       "}",
       makeKeyFn.toString(),
       makeSolverBoard.toString(),
+      fi_set.toString(),
       computeGroupForPushSolver.toString(),
       buildSolverState.toString(),
       generateMovesForPiece.toString(),
+      erasePieceFromBoard.toString(),
+      placePieceOnBoard.toString(),
+      findPieceIndexByTypeAndPos.toString(),
       solveUnidirectional.toString(),
       reconstructBidirectionalPath.toString(),
       solveBidirectional.toString(),
@@ -3307,29 +3367,22 @@
     const working = game.pieces.map(p => ({ id: p.id, shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, x: p.x, y: p.y }));
     const states = [working.map(p => ({ id: p.id, x: p.x, y: p.y }))];
     for (const move of path) {
-      let piece = null;
-      if (typeof move.pieceIndex === 'number') piece = working[move.pieceIndex];
-      else {
-        piece = working.find(p =>
-          p.x === move.fromX && p.y === move.fromY &&
-          playback.typeMap.get(p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '')) === move.type
-        );
-      }
+      // Идентификация основной фигуры — по (тип, откуда)
+      const piece = working.find(p =>
+        p.x === move.fromX && p.y === move.fromY &&
+        playback.typeMap.get(p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '')) === move.type
+      );
       if (!piece) break;
       const shiftList = [];
       if (move.shifted) {
         for (const sh of move.shifted) {
-          if (typeof sh === 'number') {
-            if (working[sh] && working[sh] !== piece) shiftList.push(working[sh]);
-          } else {
-            const sp = working.find(q =>
-              q !== piece &&
-              !shiftList.includes(q) &&
-              q.x === sh.fromX && q.y === sh.fromY &&
-              playback.typeMap.get(q.shape + '|' + q.color + '|' + (q.dir || '') + '|' + (q.dmove || '') + '|' + (q.label || '')) === sh.type
-            );
-            if (sp) shiftList.push(sp);
-          }
+          const sp = working.find(q =>
+            q !== piece &&
+            !shiftList.includes(q) &&
+            q.x === sh.fromX && q.y === sh.fromY &&
+            playback.typeMap.get(q.shape + '|' + q.color + '|' + (q.dir || '') + '|' + (q.dmove || '') + '|' + (q.label || '')) === sh.type
+          );
+          if (sp) shiftList.push(sp);
         }
       }
       for (const [dx, dy] of (move.path || [])) { piece.x += dx; piece.y += dy; }
@@ -3385,12 +3438,13 @@
     if (!playback.playing) return;
     if (playback.currentStep >= playback.path.length) { playbackPause(); return; }
     const move = playback.path[playback.currentStep];
-    let piece = null;
-    if (typeof move.pieceIndex === 'number') piece = game.pieces[move.pieceIndex];
-    else {
-      piece = game.pieces.find(p => p.x === move.fromX && p.y === move.fromY && playback.typeMap.get(p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '')) === move.type);
-    }
+    // Идентификация основной фигуры — по (тип, откуда)
+    const piece = game.pieces.find(p =>
+      p.x === move.fromX && p.y === move.fromY &&
+      playback.typeMap.get(p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '')) === move.type
+    );
     if (!piece) { applyPlaybackStep(playback.currentStep + 1); playbackScheduleNext(); return; }
+    // Групповые ходы — мгновенно перейти к следующему состоянию
     if (move.shifted && move.shifted.length > 0) {
       applyPlaybackStep(playback.currentStep + 1);
       playbackScheduleNext();
@@ -3486,13 +3540,10 @@
     boardInnerEl.querySelectorAll('.hint-arrow, .hint-dot').forEach(el => el.remove());
   }
   function findPieceByTypeMove(move) {
-    if (typeof move.pieceIndex === 'number' && game.pieces[move.pieceIndex]) return game.pieces[move.pieceIndex];
-    const allPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label }))
-      .concat(game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label })));
-    const typeMap = new Map();
-    let nextType = 1;
-    for (const p of allPieces) { const key = p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || ''); if (!typeMap.has(key)) typeMap.set(key, nextType++); }
-    return game.pieces.find(p => p.x === move.fromX && p.y === move.fromY && typeMap.get(p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '')) === move.type);
+    return game.pieces.find(p =>
+      p.x === move.fromX && p.y === move.fromY &&
+      playback.typeMap.get(p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '')) === move.type
+    );
   }
   function showHintMove(move) {
     clearHint();
@@ -4927,7 +4978,6 @@
     catch (e) { return 0; }
   }
 
-  // Единый источник порядка: строит список групп по авторам и сортирует внутри.
   function getGalleryOrderedItems() {
     const items = [];
     for (let i = 0; i < PRESET_LEVELS.length; i++) {
@@ -4986,7 +5036,6 @@
            parts.join(',\n') + '\n];\n';
   }
 
-  // Копировать все — то, что видим в галерее, в текущем порядке.
   async function copyAllVisibleLevels() {
     const ordered = getGalleryOrderedItems();
     if (ordered.length === 0) { showToast(t('nothingToCopy'), true); return; }
@@ -5272,7 +5321,6 @@
   });
   document.getElementById('deleteEditBtn').addEventListener('click', deleteEditorLevel);
 
-  // Выпадающий список строится в порядке галереи.
   function buildLevelSelect() {
     if (!levelSelectEl) return;
     levelSelectEl.innerHTML = '';
@@ -5314,7 +5362,6 @@
       if (save !== false) safeSetItem(LEVEL_KEY, String(idx));
     } catch (err) { console.error(err); showToast(t('solverError', err.message), true); }
   }
-  // Кнопки ‹/› листают уровни в порядке галереи.
   function stepLevel(delta) {
     const ordered = getGalleryOrderedItems();
     if (ordered.length === 0) return;
@@ -5483,7 +5530,6 @@
       b.addEventListener('click', () => {
         gallerySortMode = opt.key;
         safeSetItem(GALLERY_SORT_KEY, gallerySortMode);
-        // Перестраиваем и галерею, и выпадающий список, чтобы сохранить единый порядок.
         buildGallery();
         buildLevelSelect();
         if (levelSelectEl) levelSelectEl.value = String(currentLevelIndex);
@@ -5562,13 +5608,12 @@
           previewsWrap.appendChild(brokenWrap);
         }
         card.appendChild(previewsWrap);
-        // Строка «Ходов: N» всегда присутствует и всегда внизу карточки.
         const stepEl = document.createElement('div');
         stepEl.className = 'gallery-card__step';
         if (parsed && parsed.step && parsed.step > 0) {
           stepEl.textContent = t('gallerySteps', parsed.step);
         } else {
-          stepEl.textContent = '\u00A0'; // невидимый пробел, чтобы сохранить высоту строки
+          stepEl.textContent = '\u00A0';
           stepEl.classList.add('empty');
         }
         card.appendChild(stepEl);
