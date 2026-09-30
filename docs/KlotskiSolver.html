@@ -19,6 +19,10 @@
     -webkit-tap-highlight-color: transparent;
     user-select: none; -webkit-user-select: none;
   }
+  @media (max-width: 640px) {
+    body { padding: 12px 22px; }
+    .app { width: 100%; max-width: 480px; }
+  }
   .solver-status, .title { user-select: text; -webkit-user-select: text; }
   .app { position: relative; width: min(96vw, 480px); display: flex; flex-direction: column; gap: 14px; transition: width .2s; }
   .app.editing { width: min(96vw, 780px); }
@@ -27,15 +31,11 @@
   .app-header .title { grid-column: 2; }
 
   .back-btn {
-    position: fixed;
-    top: 16px;
-    left: 12px;
-    z-index: 200;
+    position: fixed; top: 16px; left: 12px; z-index: 200;
     display: inline-flex; align-items: center; gap: 5px;
     height: 30px; padding: 0 12px;
     font: inherit; font-size: 12.5px; font-weight: 600;
-    color: #f0f4fa;
-    background: linear-gradient(180deg, #4d4d4d, #2e2e2e);
+    color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e);
     border: 1px solid rgba(255,255,255,.15);
     border-radius: 8px; cursor: pointer; line-height: 1; white-space: nowrap;
     box-shadow: 0 2px 8px rgba(0,0,0,.45);
@@ -47,8 +47,7 @@
   .level-nav {
     height: 36px; padding: 0; width: 34px;
     font: inherit; font-size: 18px; font-weight: 700; line-height: 1;
-    color: #f0f4fa;
-    background: linear-gradient(180deg, #4d4d4d, #2e2e2e);
+    color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e);
     border: 1px solid rgba(255,255,255,.15);
     border-radius: 10px; cursor: pointer;
     display: inline-flex; align-items: center; justify-content: center;
@@ -62,8 +61,7 @@
   .level-select {
     width: 100%; height: 36px; padding: 0 12px;
     font: inherit; font-size: 13px; font-weight: 600;
-    color: #f0f4fa;
-    background: linear-gradient(180deg, #4d4d4d, #2e2e2e);
+    color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e);
     border: 1px solid rgba(255,255,255,.15);
     border-radius: 10px; cursor: pointer; outline: none;
   }
@@ -101,18 +99,11 @@
     background-repeat: repeat;
   }
   .solver-status {
-    font-size: 11px;
-    line-height: 16px;
-    height: 16px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    text-align: center;
-    color: var(--sub);
-    min-height: 16px;
-    max-height: 16px;
-    letter-spacing: .02em;
-    font-variant-numeric: tabular-nums;
+    font-size: 11px; line-height: 16px; height: 16px;
+    overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    text-align: center; color: var(--sub);
+    min-height: 16px; max-height: 16px;
+    letter-spacing: .02em; font-variant-numeric: tabular-nums;
   }
   .solver-status b { color: var(--gold); font-weight: 700; }
   .solver-status.error { color: #ffb0b0; }
@@ -240,12 +231,15 @@
   .settings-block__lang-center { display: inline-flex; align-items: center; gap: 8px; }
   .settings-block__lang-label { font-size: 12px; color: var(--sub); white-space: nowrap; }
   .settings-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .settings-row--compact { flex-wrap: nowrap; }
   .settings-label { font-size: 12.5px; font-weight: 600; color: var(--sub); white-space: nowrap; }
   .settings-select { flex: 1 1 auto; min-width: 0; height: 34px; padding: 0 10px; font: inherit; font-size: 12.5px; font-weight: 600; color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; cursor: pointer; outline: none; }
   .settings-select:hover { color: #fff; }
   .settings-select option { background: #2e2e2e; color: #f0f4fa; }
   .settings-input { flex: 1 1 auto; min-width: 0; height: 34px; padding: 0 10px; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink); background: rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; outline: none; user-select: text; -webkit-user-select: text; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
   .settings-input:focus { border-color: rgba(255,209,102,.7); box-shadow: 0 0 0 2px rgba(255,209,102,.15); }
+  .settings-checkbox-label { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--sub); cursor: pointer; white-space: nowrap; flex: 0 0 auto; }
+  .settings-checkbox { width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--gold); }
   .settings-hint { font-size: 10.5px; line-height: 1.4; color: var(--sub); letter-spacing: .01em; }
   .lang-toggle { display: inline-flex; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,.15); flex: 0 0 auto; }
   .lang-toggle button {
@@ -447,7 +441,8 @@
   .gallery-card:active { transform: translateY(0); }
   .gallery-card .mini-board { width: 100%; border-radius: 8px; box-shadow: inset 0 0 0 2px #707070, inset 0 0 15px rgba(0,0,0,.18); }
   .gallery-card__name { font-size: 12px; font-weight: 600; color: var(--ink); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 2px 2px 6px; }
-  .gallery-card__step { font-size: 10.5px; font-weight: 700; color: var(--green); text-align: center; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 2px 2px 0; }
+  .gallery-card__step { font-size: 10.5px; font-weight: 700; color: var(--green); text-align: center; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 2px 0; margin-top: auto; min-height: 18px; }
+  .gallery-card__step.empty { color: transparent; }
   .gallery-card__broken { display: flex; align-items: center; justify-content: center; font-size: 20px; color: rgba(255,255,255,.4); background: rgba(0,0,0,.3); }
   .gallery-card.dragging { opacity: .35; }
   .gallery-card.drop-target { outline: 2px dashed rgba(255,209,102,.8); outline-offset: 2px; }
@@ -510,6 +505,27 @@
     background: linear-gradient(180deg, #ffd166, #d49a20);
     border: 1px solid rgba(255,255,255,.4);
     box-shadow: 0 2px 6px rgba(0,0,0,.5); cursor: grab;
+  }
+
+  .gallery-sort-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
+  .gallery-sort-row__label { font-size: 12px; font-weight: 600; color: var(--sub); white-space: nowrap; }
+  .gallery-sort-row button { height: 32px; padding: 0 14px; font: inherit; font-size: 12px; font-weight: 600; color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; cursor: pointer; white-space: nowrap; transition: background .12s, border-color .12s; }
+  .gallery-sort-row button:hover { background: linear-gradient(180deg, #5c5c5c, #383838); }
+  .gallery-sort-row button.active { background: linear-gradient(180deg, #d98a2b, #a05e10); border-color: var(--gold); color: #fff; }
+
+  .about-block { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px 16px; border-radius: 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); font-size: 11.5px; line-height: 1.6; color: var(--sub); }
+  .about-block__title { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); margin-bottom: 2px; }
+  .about-block a { color: #9ecbff; text-decoration: none; }
+  .about-block a:hover { text-decoration: underline; }
+  .about-block__authors { display: flex; flex-direction: column; gap: 0; }
+  .about-block__authors-label { margin-bottom: 6px; }
+  .about-block__authors-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px 18px;
+  }
+  @media (max-width: 520px) {
+    .about-block__authors-list { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -599,13 +615,17 @@
         </div>
         <span></span>
       </div>
-      <div class="settings-row">
+      <div class="settings-row settings-row--compact">
         <label class="settings-label" for="moveModeSelect" data-i18n="moveCountLabel">Как считать ходы:</label>
         <select id="moveModeSelect" class="settings-select" title="Move counting">
           <option value="1" data-i18n="moveModeCells">По клеткам (клетка = 1 ход)</option>
           <option value="2" data-i18n="moveModeLines">По прямым линиям (линия = 1 ход)</option>
           <option value="3" data-i18n="moveModePath">Весь путь (путь = 1 ход)</option>
         </select>
+        <label class="settings-checkbox-label" for="groupShiftCheck">
+          <input type="checkbox" id="groupShiftCheck" class="settings-checkbox">
+          <span data-i18n="groupShiftLabel">Групповой сдвиг</span>
+        </label>
       </div>
       <div class="settings-row">
         <label class="settings-label" for="maxStatesInput" data-i18n="stateLimitLabel">Лимит состояний:</label>
@@ -614,6 +634,20 @@
                placeholder="100 000 000">
       </div>
       <div class="settings-hint" id="maxStatesHint"></div>
+    </div>
+
+    <div class="about-block" id="aboutBlock">
+      <div class="about-block__title" data-i18n="aboutTitle">О программе</div>
+      <div data-i18n="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
+      <div class="about-block__authors">
+        <div class="about-block__authors-label" data-i18n="authorsLabel">Авторские головоломки:</div>
+        <div class="about-block__authors-list">
+          <div>Grigorusha - <a href="http://twistypuzzles.ru/forum/index.php/topic,1261.0.html" target="_blank" rel="noopener">twistypuzzles.ru</a></div>
+          <div>Gelo - <a href="https://vk.ru/geloart" target="_blank" rel="noopener">vk.ru/geloart</a></div>
+          <div>Minoru Abe - <a href="https://puzzleworld.org/SlidingBlockPuzzles/" target="_blank" rel="noopener">puzzleworld.org</a></div>
+          <div>Bricks - <a href="https://www.bricks-game.de/indexuk.html" target="_blank" rel="noopener">bricks-game.de</a></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -724,7 +758,6 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- Внешний файл уровней. Если отсутствует — используются встроенные. -->
 <script src="board.js"></script>
 
 <script>
@@ -768,6 +801,9 @@
       moveModeLinesShort: 'По прямым линиям',
       moveModePathShort: 'Весь путь',
       moveModeToast: 'Как считать ходы: %1',
+      groupShiftLabel: 'Групповой сдвиг',
+      groupShiftToast: 'Групповой сдвиг: %1',
+      onLabel: 'вкл', offLabel: 'выкл',
       stateLimitLabel: 'Лимит состояний:',
       languageLabel: 'Язык:',
       newBtn: 'Новая доска',
@@ -799,6 +835,7 @@
       decorCircleTitle: 'Круг',
       decorSquareTitle: 'Квадрат',
       decorStarTitle: 'Звезда',
+      decorSmileyTitle: 'Смайлик',
       dmoveVTitle: 'Движение плитки только по Вертикали',
       dmoveHTitle: 'Движение плитки только по Горизонтали',
       labelRowTitle: 'Надпись:',
@@ -812,9 +849,9 @@
       levelLoadedNewTiles: 'Уровень загружен, добавлены новые плитки',
       copiedToBuffer: 'Скопировано в буфер',
       textReadyCtrlC: 'Текст готов — нажмите Ctrl+C',
-      allLevelsCopied: 'Мои уровни (%1) скопированы (board.js)',
+      allLevelsCopied: 'Уровни (%1) скопированы (board.js)',
       copyFailed: 'Не удалось скопировать',
-      nothingToCopy: 'Нет моих уровней для копирования',
+      nothingToCopy: 'Нет уровней для копирования',
       pasteCtrlV: 'Вставьте текст уровня (Ctrl+V)',
       copyPiecesToTarget: 'Плитки скопированы на целевую доску',
       startCleared: 'Стартовая доска очищена',
@@ -859,7 +896,12 @@
       parserNoBoard: 'Не указан размер доски (Board:)',
       parserExpectedStartRows: 'Ожидалось %1 строк стартовой доски, найдено %2',
       parserExpectedGoalRows: 'Ожидалось %1 строк цели, найдено %2',
-      tooManyTiles: 'Слишком много плиток'
+      tooManyTiles: 'Слишком много плиток',
+      sortDefault: 'По умолчанию', sortName: 'По названию', sortSteps: 'По количеству шагов',
+      sortLabel: 'Сортировка:',
+      aboutTitle: 'О программе',
+      developersLabel: 'Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a>',
+      authorsLabel: 'Авторские головоломки:'
     },
     en: {
       htmlLang: 'en',
@@ -880,6 +922,9 @@
       moveModeLinesShort: 'By straight lines',
       moveModePathShort: 'Whole path',
       moveModeToast: 'Move counting: %1',
+      groupShiftLabel: 'Group shift',
+      groupShiftToast: 'Group shift: %1',
+      onLabel: 'on', offLabel: 'off',
       stateLimitLabel: 'State limit:',
       languageLabel: 'Language:',
       newBtn: 'New board',
@@ -911,6 +956,7 @@
       decorCircleTitle: 'Circle',
       decorSquareTitle: 'Square',
       decorStarTitle: 'Star',
+      decorSmileyTitle: 'Smiley',
       dmoveVTitle: 'Tile moves only vertically', dmoveHTitle: 'Tile moves only horizontally',
       labelRowTitle: 'Label:',
       labelClearTitle: 'Clear label',
@@ -923,9 +969,9 @@
       levelLoadedNewTiles: 'Level loaded, new tiles added',
       copiedToBuffer: 'Copied to clipboard',
       textReadyCtrlC: 'Text ready — press Ctrl+C',
-      allLevelsCopied: 'My levels (%1) copied (board.js)',
+      allLevelsCopied: 'Levels (%1) copied (board.js)',
       copyFailed: 'Copy failed',
-      nothingToCopy: 'No my levels to copy',
+      nothingToCopy: 'No levels to copy',
       pasteCtrlV: 'Paste level text (Ctrl+V)',
       copyPiecesToTarget: 'Pieces copied to the target board',
       startCleared: 'Start board cleared',
@@ -970,7 +1016,12 @@
       parserNoBoard: 'Board size not specified (Board:)',
       parserExpectedStartRows: 'Expected %1 start board rows, found %2',
       parserExpectedGoalRows: 'Expected %1 goal rows, found %2',
-      tooManyTiles: 'Too many tiles'
+      tooManyTiles: 'Too many tiles',
+      sortDefault: 'Default', sortName: 'By name', sortSteps: 'By steps',
+      sortLabel: 'Sort:',
+      aboutTitle: 'About',
+      developersLabel: 'Developers: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a>',
+      authorsLabel: 'Author puzzles:'
     }
   };
 
@@ -994,7 +1045,10 @@
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
       const val = t(key);
-      if (val) el.textContent = val;
+      if (val) {
+        if (val.indexOf('<a ') >= 0) el.innerHTML = val;
+        else el.textContent = val;
+      }
     });
     document.querySelectorAll('[data-i18n-title]').forEach(el => {
       const key = el.getAttribute('data-i18n-title');
@@ -1015,7 +1069,7 @@
   let ROWS = 5;
   let CELLS = COLS * ROWS;
 
-  const MIN_SIZE = 3;
+  const MIN_SIZE = 2;
   const MAX_SIZE = 15;
 
   const LEVEL_KEY         = 'ryzhiy-osel-level-v1';
@@ -1023,6 +1077,8 @@
   const CUSTOM_SHAPES_KEY = 'ryzhiy-osel-custom-shapes-v1';
   const MOVE_MODE_KEY     = 'ryzhiy-osel-move-mode-v1';
   const MAX_STATES_KEY    = 'ryzhiy-osel-max-states-v1';
+  const GROUP_SHIFT_KEY   = 'ryzhiy-osel-group-shift-v1';
+  const GALLERY_SORT_KEY  = 'ryzhiy-osel-gallery-sort-v1';
 
   let MOVE_MODE = 2;
   try {
@@ -1030,6 +1086,12 @@
     const nMode = parseInt(rawMode, 10);
     if (nMode >= 1 && nMode <= 3) MOVE_MODE = nMode;
   } catch (e) {}
+
+  let GROUP_SHIFT = false;
+  try { GROUP_SHIFT = safeGetItem(GROUP_SHIFT_KEY) === '1'; } catch (e) {}
+
+  let gallerySortMode = 'default';
+  try { const gs = safeGetItem(GALLERY_SORT_KEY); if (gs === 'name' || gs === 'steps') gallerySortMode = gs; } catch (e) {}
 
   const R  = 0.14;
   const RJ = 0.18;
@@ -1041,23 +1103,22 @@
   const DIR_EN_TO_ID = { up: 'up', down: 'down', left: 'left', right: 'right' };
   const DIR_ROT = { up: 0, right: 90, down: 180, left: 270 };
 
-  const DECOR_IDS = ['lineV', 'lineH', 'lineD1', 'lineD2', 'circle', 'square', 'star'];
+  const DECOR_IDS = ['lineV', 'lineH', 'lineD1', 'lineD2', 'circle', 'square', 'star', 'smiley'];
   const DECOR_ID_TO_EN = {
     lineV: 'LineV', lineH: 'LineH',
     lineD1: 'LineD1', lineD2: 'LineD2',
-    circle: 'Circle', square: 'Square', star: 'Star'
+    circle: 'Circle', square: 'Square', star: 'Star', smiley: 'Smiley'
   };
   const DECOR_EN_TO_ID = {
     linev: 'lineV', lineh: 'lineH',
     lined1: 'lineD1', lined2: 'lineD2',
     line1: 'lineD1', line2: 'lineD2',
-    circle: 'circle', square: 'square', star: 'star'
+    circle: 'circle', square: 'square', star: 'star', smiley: 'smiley', smile: 'smiley'
   };
   const DECOR_ORDER = ['', 'up', 'right', 'down', 'left',
                        'lineV', 'lineH', 'lineD1', 'lineD2',
-                       'circle', 'square', 'star'];
+                       'circle', 'square', 'star', 'smiley'];
 
-  // Светлые плитки — на них двунаправленная стрелка рисуется чёрным контуром.
   const LIGHT_TILE_COLORS = new Set(['yellow', 'lime', 'beige', 'white']);
 
   function dirTooltip(id) {
@@ -1073,6 +1134,7 @@
       case 'circle': return t('decorCircleTitle');
       case 'square': return t('decorSquareTitle');
       case 'star': return t('decorStarTitle');
+      case 'smiley': return t('decorSmileyTitle');
       default: return id;
     }
   }
@@ -1262,7 +1324,7 @@
   const PAL_CELL = 20;
 
   const COLORS = [
-    { id: 'yellow',    name: 'Жёлтый',      from: '#fdf0b0', to: '#d4b040', border: '#fff8d0' },
+    { id: 'yellow',    name: 'Жёлтый',      from: '#fff8d0', to: '#e8c860', border: '#fffff0' },
     { id: 'orange',    name: 'Оранжевый',   from: '#ffb066', to: '#c45e0e', border: '#ffd9a8' },
     { id: 'red',       name: 'Красный',     from: '#ff7070', to: '#b3123a', border: '#ffd166' },
     { id: 'lime',      name: 'Лаймовый',    from: '#b8e986', to: '#5a8f1a', border: '#dff5b8' },
@@ -1274,7 +1336,7 @@
     { id: 'pink',      name: 'Розовый',     from: '#f090c0', to: '#a22b66', border: '#f8c8e0' },
     { id: 'lilac',     name: 'Сиреневый',   from: '#b890d0', to: '#5e3480', border: '#d8b0e8' },
     { id: 'purple',    name: 'Фиолетовый',  from: '#8455b5', to: '#2f1455', border: '#c3a3e0' },
-    { id: 'beige',     name: 'Бежевый',     from: '#f0e0c8', to: '#b0906a', border: '#fff0d8' },
+    { id: 'beige',     name: 'Бежевый',     from: '#faf0dc', to: '#c8a87c', border: '#fff8e8' },
     { id: 'brown',     name: 'Коричневый',  from: '#b08060', to: '#5a3016', border: '#e0c0a8' },
     { id: 'white',     name: 'Белый',       from: '#ffffff', to: '#c8cdd4', border: '#ffffff' },
     { id: 'gray',      name: 'Серый',       from: '#a8b2bd', to: '#4a5560', border: '#d0d7de' },
@@ -1552,6 +1614,37 @@
     return best || { x: 0, y: 0, w: 1, h: 1, area: 1 };
   }
 
+  function bestRectForLabel(shape, n) {
+    if (!shape || !shape.cells || shape.cells.length === 0) return { x: 0, y: 0, w: 1, h: 1, area: 1 };
+    const cellSet = new Set(shape.cells.map(([x, y]) => x + ',' + y));
+    let best = null;
+    let bestFs = -1, bestArea = -1;
+    const nn = Math.max(1, n);
+    for (let y1 = 0; y1 < shape.h; y1++) {
+      for (let y2 = y1; y2 < shape.h; y2++) {
+        for (let x1 = 0; x1 < shape.w; x1++) {
+          for (let x2 = x1; x2 < shape.w; x2++) {
+            let allIn = true;
+            for (let y = y1; y <= y2 && allIn; y++) {
+              for (let x = x1; x <= x2; x++) {
+                if (!cellSet.has(x + ',' + y)) { allIn = false; break; }
+              }
+            }
+            if (allIn) {
+              const w = x2 - x1 + 1, h = y2 - y1 + 1;
+              const fs = Math.min(h * 0.72, w * 0.78 / nn);
+              const area = w * h;
+              if (fs > bestFs + 1e-9 || (Math.abs(fs - bestFs) < 1e-9 && area > bestArea)) {
+                bestFs = fs; bestArea = area; best = { x: x1, y: y1, w, h, area };
+              }
+            }
+          }
+        }
+      }
+    }
+    return best || { x: 0, y: 0, w: 1, h: 1, area: 1 };
+  }
+
   function pieceArrowMarkup(dir, cx, cy, rectW, rectH) {
     const isVertical = (dir === 'up' || dir === 'down');
     let length, width;
@@ -1579,8 +1672,6 @@
            '</g>';
   }
 
-  // Двунаправленная стрелка (модификатор v/h).
-  // На светлых плитках (yellow, lime, beige, white) — чёрный контур; на остальных — белый.
   function pieceBiArrowMarkup(axis, cx, cy, rectW, rectH, colorId) {
     const isVertical = (axis === 'v');
     let length, width;
@@ -1616,7 +1707,6 @@
            '</g>';
   }
 
-  // Полоски и фигуры. Толщина фиксированная — как у стрелок.
   function pieceDecorMarkup(decor, cx, cy, rectW, rectH) {
     if (!decor) return '';
     const minDim = Math.min(rectW, rectH);
@@ -1672,6 +1762,17 @@
       }
       d += 'Z';
       return `<path d="${d}" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw.toFixed(4)}" stroke-linejoin="round"/>`;
+    }
+    if (decor === 'smiley') {
+      const r = minDim * 0.34;
+      const eyeR = Math.max(0.02, r * 0.12);
+      const eyeY = cy - r * 0.22;
+      const eyeDX = r * 0.36;
+      const mouthPath = `M ${(cx - r*0.50).toFixed(4)} ${(cy + r*0.18).toFixed(4)} Q ${cx.toFixed(4)} ${(cy + r*0.68).toFixed(4)} ${(cx + r*0.50).toFixed(4)} ${(cy + r*0.18).toFixed(4)}`;
+      return `<circle cx="${cx.toFixed(4)}" cy="${cy.toFixed(4)}" r="${r.toFixed(4)}" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw.toFixed(4)}"/>` +
+             `<circle cx="${(cx - eyeDX).toFixed(4)}" cy="${eyeY.toFixed(4)}" r="${eyeR.toFixed(4)}" fill="rgba(0,0,0,0.85)"/>` +
+             `<circle cx="${(cx + eyeDX).toFixed(4)}" cy="${eyeY.toFixed(4)}" r="${eyeR.toFixed(4)}" fill="rgba(0,0,0,0.85)"/>` +
+             `<path d="${mouthPath}" fill="none" stroke="rgba(0,0,0,0.85)" stroke-width="${(sw*1.3).toFixed(4)}" stroke-linecap="round"/>`;
     }
     return '';
   }
@@ -1729,6 +1830,12 @@
       d += 'Z';
       inner = `<path d="${d}" fill="none" stroke="${c}" stroke-width="0.1" stroke-linejoin="round"/>`;
     }
+    else if (decor === 'smiley') {
+      inner = `<circle cx="0.5" cy="0.5" r="0.38" fill="none" stroke="${c}" stroke-width="0.1"/>` +
+              `<circle cx="0.38" cy="0.42" r="0.055" fill="${c}"/>` +
+              `<circle cx="0.62" cy="0.42" r="0.055" fill="${c}"/>` +
+              `<path d="M 0.32 0.6 Q 0.5 0.75 0.68 0.6" fill="none" stroke="${c}" stroke-width="0.1" stroke-linecap="round"/>`;
+    }
     return `<svg viewBox="0 0 1 1" aria-hidden="true">${inner}</svg>`;
   }
 
@@ -1755,21 +1862,27 @@
     if (mirror) { const cx = shape.w / 2; inner = `<g transform="translate(${2 * cx}, 0) scale(-1, 1)">${inner}</g>`; }
     let arrowContent = '';
     if (shapeKey !== 'blk') {
-      let preferAxis = null;
-      if (dmove === 'v') preferAxis = 'v';
-      else if (dmove === 'h') preferAxis = 'h';
-      else if (dir === 'up' || dir === 'down') preferAxis = 'v';
-      else if (dir === 'left' || dir === 'right') preferAxis = 'h';
-      const rect = largestInscribedRect(shape, preferAxis);
-      const acx = rect.x + rect.w / 2;
-      const acy = rect.y + rect.h / 2;
-      if (label) arrowContent = pieceLabelMarkup(label, acx, acy, rect.w, rect.h);
-      else if (dmove) arrowContent = pieceBiArrowMarkup(dmove, acx, acy, rect.w, rect.h, colorId);
-      else if (dir) {
-        if (dir === 'up' || dir === 'down' || dir === 'left' || dir === 'right') {
-          arrowContent = pieceArrowMarkup(dir, acx, acy, rect.w, rect.h);
-        } else {
-          arrowContent = pieceDecorMarkup(dir, acx, acy, rect.w, rect.h);
+      if (label) {
+        const rect = bestRectForLabel(shape, label.length);
+        const acx = rect.x + rect.w / 2;
+        const acy = rect.y + rect.h / 2;
+        arrowContent = pieceLabelMarkup(label, acx, acy, rect.w, rect.h);
+      } else {
+        let preferAxis = null;
+        if (dmove === 'v') preferAxis = 'v';
+        else if (dmove === 'h') preferAxis = 'h';
+        else if (dir === 'up' || dir === 'down') preferAxis = 'v';
+        else if (dir === 'left' || dir === 'right') preferAxis = 'h';
+        const rect = largestInscribedRect(shape, preferAxis);
+        const acx = rect.x + rect.w / 2;
+        const acy = rect.y + rect.h / 2;
+        if (dmove) arrowContent = pieceBiArrowMarkup(dmove, acx, acy, rect.w, rect.h, colorId);
+        else if (dir) {
+          if (dir === 'up' || dir === 'down' || dir === 'left' || dir === 'right') {
+            arrowContent = pieceArrowMarkup(dir, acx, acy, rect.w, rect.h);
+          } else {
+            arrowContent = pieceDecorMarkup(dir, acx, acy, rect.w, rect.h);
+          }
         }
       }
     }
@@ -2041,6 +2154,46 @@
   const KEY_CHARS = new Array(256);
   for (let i = 0; i < 256; i++) KEY_CHARS[i] = String.fromCharCode(32 + i);
 
+  function computeGroupForPushSolver(pieces, typeIndex, startIdx, dx, dy) {
+    const NPieces = pieces.length / 3;
+    const inGroup = new Set([startIdx]);
+    const queue = [startIdx];
+    let qi = 0;
+    while (qi < queue.length) {
+      const pi = queue[qi++];
+      const t = pieces[pi*3];
+      const info = typeIndex[t];
+      if (!info || info.fixed) return null;
+      const px = pieces[pi*3+1], py = pieces[pi*3+2];
+      const nx = px + dx, ny = py + dy;
+      if (nx < 0 || ny < 0 || nx + info.w > COLS || ny + info.h > ROWS) return null;
+      for (let ci = 0; ci < info.cells.length; ci++) {
+        const gx = nx + info.cells[ci][0];
+        const gy = ny + info.cells[ci][1];
+        for (let qj = 0; qj < NPieces; qj++) {
+          if (inGroup.has(qj)) continue;
+          const qt = pieces[qj*3];
+          const qinfo = typeIndex[qt];
+          if (!qinfo) continue;
+          const qx = pieces[qj*3+1], qy = pieces[qj*3+2];
+          let hit = false;
+          for (let qci = 0; qci < qinfo.cells.length; qci++) {
+            if (qx + qinfo.cells[qci][0] === gx && qy + qinfo.cells[qci][1] === gy) { hit = true; break; }
+          }
+          if (hit) {
+            if (qinfo.fixed) return null;
+            if (qinfo.dmove === 'v' && dx !== 0) return null;
+            if (qinfo.dmove === 'h' && dy !== 0) return null;
+            inGroup.add(qj);
+            queue.push(qj);
+            break;
+          }
+        }
+      }
+    }
+    return Array.from(inGroup);
+  }
+
   function buildSolverState(startPieces, targetPieces) {
     const allPieces = startPieces.concat(targetPieces);
     const typeMap = new Map();
@@ -2111,7 +2264,8 @@
     }
     return function keyOf(board) { const n = board.length; let s = ''; for (let i = 0; i < n; i++) s += KEY_CHARS[board[i]]; return s; };
   }
-  function generateMovesForPiece(board, px, py, t, info, freeCellLookup) {
+
+  function generateMovesForPiece(board, px, py, t, info, freeCellLookup, pieces, pi, typeIndex, groupShift) {
     const NC = info.cells.length, cells = info.cells, out = [];
     let dirs = SOLVER_DIRS;
     if (info.dmove === 'v') dirs = [[0,-1],[0,1]];
@@ -2125,9 +2279,7 @@
         for (let ci = 0; ci < NC; ci++) { const lc = (ny + cells[ci][1]) * COLS + (nx + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci < 0 || board[fci] !== 0) { ok = false; break; } }
         if (ok) out.push({ nx, ny, path: [[dx, dy]] });
       }
-      return out;
-    }
-    if (MOVE_MODE === 2) {
+    } else if (MOVE_MODE === 2) {
       for (let di = 0; di < dirs.length; di++) {
         const dx = dirs[di][0], dy = dirs[di][1];
         const path = [];
@@ -2141,32 +2293,52 @@
           out.push({ nx, ny, path: path.slice() });
         }
       }
-      return out;
+    } else {
+      const visited = new Set();
+      visited.add(px + ',' + py);
+      const queue = [{ x: px, y: py, path: [] }];
+      let qi = 0;
+      while (qi < queue.length) {
+        const cur = queue[qi++];
+        for (let di = 0; di < dirs.length; di++) {
+          const dx = dirs[di][0], dy = dirs[di][1];
+          const nx = cur.x + dx, ny = cur.y + dy;
+          if (nx < 0 || ny < 0 || nx + info.w > COLS || ny + info.h > ROWS) continue;
+          const k = nx + ',' + ny;
+          if (visited.has(k)) continue;
+          let ok = true;
+          for (let ci = 0; ci < NC; ci++) { const lc = (ny + cells[ci][1]) * COLS + (nx + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci < 0 || board[fci] !== 0) { ok = false; break; } }
+          if (!ok) continue;
+          visited.add(k);
+          const newPath = cur.path.concat([[dx, dy]]);
+          queue.push({ x: nx, y: ny, path: newPath });
+          out.push({ nx, ny, path: newPath });
+        }
+      }
     }
-    const visited = new Set();
-    visited.add(px + ',' + py);
-    const queue = [{ x: px, y: py, path: [] }];
-    let qi = 0;
-    while (qi < queue.length) {
-      const cur = queue[qi++];
+    if (groupShift && pieces && typeIndex && pi >= 0) {
       for (let di = 0; di < dirs.length; di++) {
         const dx = dirs[di][0], dy = dirs[di][1];
-        const nx = cur.x + dx, ny = cur.y + dy;
-        if (nx < 0 || ny < 0 || nx + info.w > COLS || ny + info.h > ROWS) continue;
-        const k = nx + ',' + ny;
-        if (visited.has(k)) continue;
-        let ok = true;
-        for (let ci = 0; ci < NC; ci++) { const lc = (ny + cells[ci][1]) * COLS + (nx + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci < 0 || board[fci] !== 0) { ok = false; break; } }
-        if (!ok) continue;
-        visited.add(k);
-        const newPath = cur.path.concat([[dx, dy]]);
-        queue.push({ x: nx, y: ny, path: newPath });
-        out.push({ nx, ny, path: newPath });
+        const nx1 = px + dx, ny1 = py + dy;
+        let singleOk = false;
+        if (nx1 >= 0 && ny1 >= 0 && nx1 + info.w <= COLS && ny1 + info.h <= ROWS) {
+          singleOk = true;
+          for (let ci = 0; ci < NC; ci++) {
+            const lc = (ny1 + cells[ci][1]) * COLS + (nx1 + cells[ci][0]);
+            const fci = freeCellLookup[lc];
+            if (fci < 0 || board[fci] !== 0) { singleOk = false; break; }
+          }
+        }
+        if (singleOk) continue;
+        const group = computeGroupForPushSolver(pieces, typeIndex, pi, dx, dy);
+        if (!group || group.length <= 1) continue;
+        out.push({ nx: nx1, ny: ny1, path: [[dx, dy]], shifted: group.filter(gi => gi !== pi) });
       }
     }
     return out;
   }
-  async function solveUnidirectional(state, stopCheck, onProgress, maxNodes) {
+
+  async function solveUnidirectional(state, stopCheck, onProgress, maxNodes, groupShift) {
     const { typeIndex, freeCellLookup, FREE_CELLS, startFlat, targetPieces, typeMap, NUM_TYPES } = state;
     const startBoard = makeSolverBoard(startFlat, typeIndex, freeCellLookup, FREE_CELLS);
     const keyOf = makeKeyFn(NUM_TYPES);
@@ -2223,20 +2395,41 @@
           const px = pieces[pi*3+1], py = pieces[pi*3+2];
           const cells = info.cells, NC = cells.length;
           for (let ci = 0; ci < NC; ci++) { const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) board[fci] = 0; }
-          const moves = generateMovesForPiece(board, px, py, t, info, freeCellLookup);
+          const moves = generateMovesForPiece(board, px, py, t, info, freeCellLookup, pieces, pi, typeIndex, groupShift);
+          for (let ci = 0; ci < NC; ci++) { const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) board[fci] = t; }
           for (let mi = 0; mi < moves.length; mi++) {
             const mv = moves[mi], nx = mv.nx, ny = mv.ny;
             const newBoard = board.slice();
-            for (let ci = 0; ci < NC; ci++) { const lc = (ny + cells[ci][1]) * COLS + (nx + cells[ci][0]); const fci = freeCellLookup[lc]; newBoard[fci] = t; }
+            for (let ci = 0; ci < NC; ci++) { const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) newBoard[fci] = 0; }
+            for (let ci = 0; ci < NC; ci++) { const lc = (ny + cells[ci][1]) * COLS + (nx + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) newBoard[fci] = t; }
+            const newPieces = pieces.slice();
+            newPieces[pi*3+1] = nx; newPieces[pi*3+2] = ny;
+            if (mv.shifted) {
+              const stepDx = mv.path[0][0], stepDy = mv.path[0][1];
+              for (let si = 0; si < mv.shifted.length; si++) {
+                const qj = mv.shifted[si];
+                const qinfo = typeIndex[newPieces[qj*3]];
+                const qx = newPieces[qj*3+1], qy = newPieces[qj*3+2];
+                for (let qci = 0; qci < qinfo.cells.length; qci++) {
+                  const lc = (qy + qinfo.cells[qci][1]) * COLS + (qx + qinfo.cells[qci][0]);
+                  const fci = freeCellLookup[lc];
+                  if (fci >= 0) newBoard[fci] = 0;
+                }
+                newPieces[qj*3+1] = qx + stepDx;
+                newPieces[qj*3+2] = qy + stepDy;
+                for (let qci = 0; qci < qinfo.cells.length; qci++) {
+                  const lc = (newPieces[qj*3+2] + qinfo.cells[qci][1]) * COLS + (newPieces[qj*3+1] + qinfo.cells[qci][0]);
+                  const fci = freeCellLookup[lc];
+                  if (fci >= 0) newBoard[fci] = newPieces[qj*3];
+                }
+              }
+            }
             const newKey = keyOf(newBoard);
             if (!parents.has(newKey)) {
-              parents.set(newKey, { parentKey: nodeKey, move: { type: t, fromX: px, fromY: py, path: mv.path } });
-              const newPieces = pieces.slice();
-              newPieces[pi*3+1] = nx; newPieces[pi*3+2] = ny;
+              parents.set(newKey, { parentKey: nodeKey, move: { type: t, fromX: px, fromY: py, path: mv.path, shifted: mv.shifted, pieceIndex: pi } });
               nextFrontier.push({ board: newBoard, pieces: newPieces, key: newKey });
             }
           }
-          for (let ci = 0; ci < NC; ci++) { const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) board[fci] = t; }
         }
       }
       frontier = nextFrontier;
@@ -2244,6 +2437,7 @@
     }
     return null;
   }
+
   function reconstructBidirectionalPath(meetKey, parentsF, parentsB) {
     const forwardMoves = [];
     let key = meetKey;
@@ -2259,12 +2453,13 @@
       for (let i = 0; i < n; i++) { fx += p[i][0]; fy += p[i][1]; }
       const revPath = new Array(n);
       for (let i = 0; i < n; i++) { const s = p[n - 1 - i]; revPath[i] = [-s[0], -s[1]]; }
-      backwardMoves.push({ type: m.type, fromX: fx, fromY: fy, path: revPath });
+      backwardMoves.push({ type: m.type, fromX: fx, fromY: fy, path: revPath, shifted: m.shifted, pieceIndex: m.pieceIndex });
       key = entry.parentKey;
     }
     return forwardMoves.concat(backwardMoves);
   }
-  async function solveBidirectional(state, stopCheck, onProgress, maxNodes) {
+
+  async function solveBidirectional(state, stopCheck, onProgress, maxNodes, groupShift) {
     const { typeIndex, freeCellLookup, FREE_CELLS, startFlat, targetFlat, NUM_TYPES } = state;
     const keyOf = makeKeyFn(NUM_TYPES);
     const startBoard = makeSolverBoard(startFlat, typeIndex, freeCellLookup, FREE_CELLS);
@@ -2306,24 +2501,45 @@
           const px = pieces[pi*3+1], py = pieces[pi*3+2];
           const cells = info.cells, NC = cells.length;
           for (let ci = 0; ci < NC; ci++) { const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) board[fci] = 0; }
-          const moves = generateMovesForPiece(board, px, py, t, info, freeCellLookup);
+          const moves = generateMovesForPiece(board, px, py, t, info, freeCellLookup, pieces, pi, typeIndex, groupShift);
+          for (let ci = 0; ci < NC; ci++) { const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) board[fci] = t; }
           for (let mi = 0; mi < moves.length; mi++) {
             const mv = moves[mi], nx = mv.nx, ny = mv.ny;
             const newBoard = board.slice();
-            for (let ci = 0; ci < NC; ci++) { const lc = (ny + cells[ci][1]) * COLS + (nx + cells[ci][0]); const fci = freeCellLookup[lc]; newBoard[fci] = t; }
+            for (let ci = 0; ci < NC; ci++) { const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) newBoard[fci] = 0; }
+            for (let ci = 0; ci < NC; ci++) { const lc = (ny + cells[ci][1]) * COLS + (nx + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) newBoard[fci] = t; }
+            const newPieces = pieces.slice();
+            newPieces[pi*3+1] = nx; newPieces[pi*3+2] = ny;
+            if (mv.shifted) {
+              const stepDx = mv.path[0][0], stepDy = mv.path[0][1];
+              for (let si = 0; si < mv.shifted.length; si++) {
+                const qj = mv.shifted[si];
+                const qinfo = typeIndex[newPieces[qj*3]];
+                const qx = newPieces[qj*3+1], qy = newPieces[qj*3+2];
+                for (let qci = 0; qci < qinfo.cells.length; qci++) {
+                  const lc = (qy + qinfo.cells[qci][1]) * COLS + (qx + qinfo.cells[qci][0]);
+                  const fci = freeCellLookup[lc];
+                  if (fci >= 0) newBoard[fci] = 0;
+                }
+                newPieces[qj*3+1] = qx + stepDx;
+                newPieces[qj*3+2] = qy + stepDy;
+                for (let qci = 0; qci < qinfo.cells.length; qci++) {
+                  const lc = (newPieces[qj*3+2] + qinfo.cells[qci][1]) * COLS + (newPieces[qj*3+1] + qinfo.cells[qci][0]);
+                  const fci = freeCellLookup[lc];
+                  if (fci >= 0) newBoard[fci] = newPieces[qj*3];
+                }
+              }
+            }
             const newKey = keyOf(newBoard);
             if (!myParents.has(newKey)) {
-              myParents.set(newKey, { parentKey: nodeKey, move: { type: t, fromX: px, fromY: py, path: mv.path } });
+              myParents.set(newKey, { parentKey: nodeKey, move: { type: t, fromX: px, fromY: py, path: mv.path, shifted: mv.shifted, pieceIndex: pi } });
               if (otherParents.has(newKey)) {
                 const path = reconstructBidirectionalPath(newKey, parentsF, parentsB);
                 return { path, nodes: nodesExplored, ms: performance.now() - t0 };
               }
-              const newPieces = pieces.slice();
-              newPieces[pi*3+1] = nx; newPieces[pi*3+2] = ny;
               nextFrontier.push({ board: newBoard, pieces: newPieces, key: newKey });
             }
           }
-          for (let ci = 0; ci < NC; ci++) { const lc = (py + cells[ci][1]) * COLS + (px + cells[ci][0]); const fci = freeCellLookup[lc]; if (fci >= 0) board[fci] = t; }
         }
       }
       if (expandForward) frontierF = nextFrontier; else frontierB = nextFrontier;
@@ -2339,6 +2555,7 @@
       "let COLS = 4, ROWS = 5, CELLS = 20;",
       "let SHAPES = {};",
       "let MOVE_MODE = 2;",
+      "let GROUP_SHIFT = false;",
       "const MAX_NODES = " + MAX_NODES + ";",
       "const SOLVER_DIRS = [[0,-1],[0,1],[-1,0],[1,0]];",
       "const KEY_CHARS = new Array(256);",
@@ -2353,6 +2570,7 @@
       "}",
       makeKeyFn.toString(),
       makeSolverBoard.toString(),
+      computeGroupForPushSolver.toString(),
       buildSolverState.toString(),
       generateMovesForPiece.toString(),
       solveUnidirectional.toString(),
@@ -2365,13 +2583,14 @@
       "    COLS = msg.COLS; ROWS = msg.ROWS; CELLS = COLS * ROWS;",
       "    SHAPES = msg.SHAPES;",
       "    MOVE_MODE = msg.MOVE_MODE || 2;",
+      "    GROUP_SHIFT = !!msg.GROUP_SHIFT;",
       "    const state = buildSolverState(msg.startPieces, msg.targetPieces);",
       "    const stopCheck = () => false;",
       "    const maxNodes = MAX_NODES;",
       "    const onProgress = (nodes, depth, ms) => self.postMessage({ type: 'progress', nodes: nodes, depth: depth, ms: ms });",
       "    let result;",
-      "    if (state.isFullTarget) result = await solveBidirectional(state, stopCheck, onProgress, maxNodes);",
-      "    else result = await solveUnidirectional(state, stopCheck, onProgress, maxNodes);",
+      "    if (state.isFullTarget) result = await solveBidirectional(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);",
+      "    else result = await solveUnidirectional(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);",
       "    if (!result) { self.postMessage({ type: 'none' }); return; }",
       "    self.postMessage({ type: 'result', path: result.path, nodes: result.nodes, ms: result.ms });",
       "  } catch (err) {",
@@ -2420,8 +2639,8 @@
     const state = buildSolverState(startPieces, targetPieces);
     const stopCheck = () => game.stopRequested;
     const maxNodes = MAX_NODES;
-    if (state.isFullTarget) return await solveBidirectional(state, stopCheck, onProgress, maxNodes);
-    return await solveUnidirectional(state, stopCheck, onProgress, maxNodes);
+    if (state.isFullTarget) return await solveBidirectional(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);
+    return await solveUnidirectional(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);
   }
   function solve(onProgress) {
     if (typeof Worker === 'undefined' || typeof Blob === 'undefined' || typeof URL === 'undefined') return solveOnMainThread(onProgress);
@@ -2435,7 +2654,7 @@
     const targetPieces = game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, x: p.x, y: p.y }));
     return new Promise((resolve, reject) => {
       solverPending = { resolve, reject, onProgress };
-      try { worker.postMessage({ type: 'solve', COLS, ROWS, SHAPES, MOVE_MODE, startPieces, targetPieces }); }
+      try { worker.postMessage({ type: 'solve', COLS, ROWS, SHAPES, MOVE_MODE, GROUP_SHIFT, startPieces, targetPieces }); }
       catch (err) { solverPending = null; terminateSolverWorker(); reject(err); }
     });
   }
@@ -2479,6 +2698,7 @@
   const maxStatesHint = document.getElementById('maxStatesHint');
   const knifeBtn = document.getElementById('knifeBtn');
   const langToggleEl = document.getElementById('langToggle');
+  const groupShiftCheckEl = document.getElementById('groupShiftCheck');
 
   const normalControlsRow = document.getElementById('normalControlsRow');
   const playbackControlsRow = document.getElementById('playbackControlsRow');
@@ -2727,6 +2947,54 @@
     }
     return true;
   }
+
+  function getGroupForMove(piece, dx, dy) {
+    const group = new Set();
+    group.add(piece);
+    const queue = [piece];
+    while (queue.length > 0) {
+      const p = queue.shift();
+      const shape = SHAPES[p.shape];
+      if (!shape || shape.fixed) return null;
+      const nx = p.x + dx, ny = p.y + dy;
+      if (nx < 0 || ny < 0 || nx + shape.w > COLS || ny + shape.h > ROWS) return null;
+      const newCells = new Set(shape.cells.map(([cx, cy]) => (nx + cx) + ',' + (ny + cy)));
+      for (const other of game.pieces) {
+        if (group.has(other)) continue;
+        const oShape = SHAPES[other.shape];
+        if (!oShape) continue;
+        let overlaps = false;
+        for (const [cx, cy] of oShape.cells) {
+          if (newCells.has((other.x + cx) + ',' + (other.y + cy))) { overlaps = true; break; }
+        }
+        if (overlaps) {
+          if (oShape.fixed) return null;
+          if (other.dmove === 'v' && dx !== 0) return null;
+          if (other.dmove === 'h' && dy !== 0) return null;
+          group.add(other);
+          queue.push(other);
+        }
+      }
+    }
+    return group;
+  }
+
+  function attemptMoveStep(piece, dx, dy) {
+    if (GROUP_SHIFT) {
+      const group = getGroupForMove(piece, dx, dy);
+      if (group) {
+        for (const pc of group) { pc.x += dx; pc.y += dy; }
+        return { moved: true, group };
+      }
+      return { moved: false, group: null };
+    }
+    if (canMovePiece(piece, dx, dy)) {
+      piece.x += dx; piece.y += dy;
+      return { moved: true, group: new Set([piece]) };
+    }
+    return { moved: false, group: null };
+  }
+
   function snapshotState() { return game.pieces.map(p => ({ id: p.id, x: p.x, y: p.y })); }
   function updateMovesUI() { movesEl.textContent = game.moves; }
   function updateUndoBtn() {
@@ -2847,13 +3115,13 @@
     if (Math.abs(dx) >= Math.abs(dy)) { if (dx !== 0) order.push([sx, 0]); if (dy !== 0) order.push([0, sy]); }
     else { if (dy !== 0) order.push([0, sy]); if (dx !== 0) order.push([sx, 0]); }
     for (const [mx, my] of order) {
-      if (canMovePiece(p, mx, my)) {
+      const res = attemptMoveStep(p, mx, my);
+      if (res.moved) {
         if (!g.timerStarted) { startGameTimer(); g.timerStarted = true; }
-        p.x += mx; p.y += my;
         g.hadMovement = true;
         game.session.cellCount += 1;
         refreshMoveCount();
-        positionGamePiece(g.el, p);
+        syncGamePieces();
         return true;
       }
     }
@@ -2879,7 +3147,12 @@
   function detectSingleDirection(piece) {
     const dirs = [[0,-1],[0,1],[-1,0],[1,0]];
     const available = [];
-    for (const d of dirs) if (canMovePiece(piece, d[0], d[1])) available.push(d);
+    for (const d of dirs) {
+      let can = false;
+      if (GROUP_SHIFT) can = !!getGroupForMove(piece, d[0], d[1]);
+      else can = canMovePiece(piece, d[0], d[1]);
+      if (can) available.push(d);
+    }
     if (available.length === 1) return available[0];
     return null;
   }
@@ -2890,14 +3163,14 @@
     if (!g.hadMovement) {
       const singleDir = detectSingleDirection(g.piece);
       if (singleDir) {
-        if (!g.timerStarted) startGameTimer();
-        g.piece.x += singleDir[0];
-        g.piece.y += singleDir[1];
-        game.session.cellCount += 1;
-        refreshMoveCount();
-        positionGamePiece(g.el, g.piece);
-        syncGamePieces(); updateUndoBtn(); checkWin();
-        return;
+        const res = attemptMoveStep(g.piece, singleDir[0], singleDir[1]);
+        if (res.moved) {
+          if (!g.timerStarted) startGameTimer();
+          game.session.cellCount += 1;
+          refreshMoveCount();
+          syncGamePieces(); updateUndoBtn(); checkWin();
+          return;
+        }
       }
     }
     syncGamePieces(); updateUndoBtn(); checkWin();
@@ -2963,7 +3236,7 @@
     if (!result) { stopSolving(t('solverNotFound'), true); return; }
     const seconds = result.ms / 1000;
     solverStatus.innerHTML = t('doneWord') + ' <b>' + result.path.length + '</b> ' + t('movesWord') + ' · ' + t('nodesWord') + ' <b>' + fmtNodes(result.nodes) + '</b> · ' + t('timeLabel') + ' <b>' + seconds.toFixed(2) + '</b> ' + t('secondsAbbr');
-    if (MOVE_MODE === 2 && currentLevelIndex >= PRESET_LEVELS.length) {
+    if (MOVE_MODE === 2 && !GROUP_SHIFT && currentLevelIndex >= PRESET_LEVELS.length) {
       const userIdx = currentLevelIndex - PRESET_LEVELS.length;
       if (userIdx >= 0 && userIdx < userLevels.length) {
         const steps = result.path.length;
@@ -3034,12 +3307,35 @@
     const working = game.pieces.map(p => ({ id: p.id, shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, x: p.x, y: p.y }));
     const states = [working.map(p => ({ id: p.id, x: p.x, y: p.y }))];
     for (const move of path) {
-      const piece = working.find(p =>
-        p.x === move.fromX && p.y === move.fromY &&
-        playback.typeMap.get(p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '')) === move.type
-      );
+      let piece = null;
+      if (typeof move.pieceIndex === 'number') piece = working[move.pieceIndex];
+      else {
+        piece = working.find(p =>
+          p.x === move.fromX && p.y === move.fromY &&
+          playback.typeMap.get(p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '')) === move.type
+        );
+      }
       if (!piece) break;
+      const shiftList = [];
+      if (move.shifted) {
+        for (const sh of move.shifted) {
+          if (typeof sh === 'number') {
+            if (working[sh] && working[sh] !== piece) shiftList.push(working[sh]);
+          } else {
+            const sp = working.find(q =>
+              q !== piece &&
+              !shiftList.includes(q) &&
+              q.x === sh.fromX && q.y === sh.fromY &&
+              playback.typeMap.get(q.shape + '|' + q.color + '|' + (q.dir || '') + '|' + (q.dmove || '') + '|' + (q.label || '')) === sh.type
+            );
+            if (sp) shiftList.push(sp);
+          }
+        }
+      }
       for (const [dx, dy] of (move.path || [])) { piece.x += dx; piece.y += dy; }
+      for (const sp of shiftList) {
+        for (const [dx, dy] of (move.path || [])) { sp.x += dx; sp.y += dy; }
+      }
       states.push(working.map(p => ({ id: p.id, x: p.x, y: p.y })));
     }
     return states;
@@ -3089,8 +3385,17 @@
     if (!playback.playing) return;
     if (playback.currentStep >= playback.path.length) { playbackPause(); return; }
     const move = playback.path[playback.currentStep];
-    const piece = game.pieces.find(p => p.x === move.fromX && p.y === move.fromY && playback.typeMap.get(p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '')) === move.type);
+    let piece = null;
+    if (typeof move.pieceIndex === 'number') piece = game.pieces[move.pieceIndex];
+    else {
+      piece = game.pieces.find(p => p.x === move.fromX && p.y === move.fromY && playback.typeMap.get(p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '')) === move.type);
+    }
     if (!piece) { applyPlaybackStep(playback.currentStep + 1); playbackScheduleNext(); return; }
+    if (move.shifted && move.shifted.length > 0) {
+      applyPlaybackStep(playback.currentStep + 1);
+      playbackScheduleNext();
+      return;
+    }
     playback.animating = true;
     const el = document.getElementById('piece-' + piece.id);
     if (el) el.classList.add('solver-anim');
@@ -3181,6 +3486,7 @@
     boardInnerEl.querySelectorAll('.hint-arrow, .hint-dot').forEach(el => el.remove());
   }
   function findPieceByTypeMove(move) {
+    if (typeof move.pieceIndex === 'number' && game.pieces[move.pieceIndex]) return game.pieces[move.pieceIndex];
     const allPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label }))
       .concat(game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label })));
     const typeMap = new Map();
@@ -3266,7 +3572,8 @@
     levelName: '', levelNameEng: '', levelAuthor: '', levelStep: 0,
     sourceLevelRef: { type: 'new' },
     knifeMode: false,
-    knifeWasOn: false
+    knifeWasOn: false,
+    visibleCustomShapes: null
   };
   const DOUBLE_CLICK_MS = 350;
 
@@ -3401,6 +3708,7 @@
       const stillExists = editor.startPieces.some(p => p.id === editor.selectedId) || editor.targetPieces.some(p => p.id === editor.selectedId);
       if (!stillExists) { editor.selectedId = null; editor.selectedBoard = null; }
     }
+    if (editor.visibleCustomShapes) editor.visibleCustomShapes.delete(key);
     buildPalette();
     return true;
   }
@@ -3580,33 +3888,30 @@
   function trashSvgMarkup() {
     return '<svg class="new-tile-btn__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
   }
+
   function buildPalette() {
     paletteEl.innerHTML = '';
-    const btnCol = document.createElement('div');
-    btnCol.className = 'palette-btn-col';
-    const newTileBtn = document.createElement('button');
-    newTileBtn.type = 'button';
-    newTileBtn.className = 'new-tile-btn';
-    newTileBtn.title = t('newTileLabel');
-    newTileBtn.innerHTML = '<span class="new-tile-btn__ico">＋</span><span class="new-tile-btn__lbl">' + t('newTileLabel') + '</span>';
-    newTileBtn.addEventListener('click', openTileEditor);
-    btnCol.appendChild(newTileBtn);
-    if (customShapes.length > 0) {
-      const delTileBtn = document.createElement('button');
-      delTileBtn.type = 'button';
-      delTileBtn.id = 'deleteTileBtn';
-      delTileBtn.className = 'new-tile-btn delete-tile-btn';
-      delTileBtn.title = t('dragToDelete');
-      delTileBtn.innerHTML = trashSvgMarkup() + '<span class="new-tile-btn__lbl">' + t('deleteBtn') + '</span>';
-      delTileBtn.addEventListener('click', () => showToast(t('dragToDelete')));
-      btnCol.appendChild(delTileBtn);
-    }
-    paletteEl.appendChild(btnCol);
+
     const tilesArea = document.createElement('div');
     tilesArea.className = 'palette-tiles-area';
 
     const row1 = document.createElement('div');
     row1.className = 'palette-tiles-row';
+
+    const newTileBtn = document.createElement('button');
+    newTileBtn.type = 'button';
+    newTileBtn.className = 'new-tile-btn';
+    newTileBtn.title = t('newTileLabel');
+    newTileBtn.style.width = '64px';
+    newTileBtn.style.minHeight = '52px';
+    newTileBtn.innerHTML = '<span class="new-tile-btn__ico">＋</span><span class="new-tile-btn__lbl">' + t('newTileLabel') + '</span>';
+    newTileBtn.addEventListener('click', openTileEditor);
+    row1.appendChild(newTileBtn);
+
+    const sepAfterNew = document.createElement('div');
+    sepAfterNew.className = 'palette-separator';
+    row1.appendChild(sepAfterNew);
+
     for (const key of PALETTE_ORDER) {
       if (key === 'blk') { const sep = document.createElement('div'); sep.className = 'palette-separator'; row1.appendChild(sep); }
       const item = makePaletteItem(key);
@@ -3619,12 +3924,36 @@
     row1.appendChild(makeDmoveButton('h'));
     tilesArea.appendChild(row1);
 
-    if (customShapes.length > 0) {
+    const visibleCustom = customShapes.filter(cs => {
+      if (editor.visibleCustomShapes === null) return true;
+      return editor.visibleCustomShapes.has(cs.key);
+    });
+    if (visibleCustom.length > 0) {
       const row2 = document.createElement('div');
       row2.className = 'palette-tiles-row';
-      for (const cs of customShapes) { const item = makePaletteItem(cs.key); if (item) row2.appendChild(item); }
+
+      const delTileBtn = document.createElement('button');
+      delTileBtn.type = 'button';
+      delTileBtn.id = 'deleteTileBtn';
+      delTileBtn.className = 'new-tile-btn delete-tile-btn';
+      delTileBtn.title = t('dragToDelete');
+      delTileBtn.style.width = '64px';
+      delTileBtn.style.minHeight = '52px';
+      delTileBtn.innerHTML = trashSvgMarkup() + '<span class="new-tile-btn__lbl">' + t('deleteBtn') + '</span>';
+      delTileBtn.addEventListener('click', () => showToast(t('dragToDelete')));
+      row2.appendChild(delTileBtn);
+
+      const sepAfterDel = document.createElement('div');
+      sepAfterDel.className = 'palette-separator';
+      row2.appendChild(sepAfterDel);
+
+      for (const cs of visibleCustom) {
+        const item = makePaletteItem(cs.key);
+        if (item) row2.appendChild(item);
+      }
       tilesArea.appendChild(row2);
     }
+
     paletteEl.appendChild(tilesArea);
   }
   function autoPlaceOnStart(shapeKey) {
@@ -3682,7 +4011,7 @@
     const sep2 = document.createElement('div');
     sep2.className = 'color-palette-sep';
     row2.appendChild(sep2);
-    for (const id of ['circle', 'square', 'star']) row2.appendChild(makeDirDecorButton(id));
+    for (const id of ['circle', 'square', 'star', 'smiley']) row2.appendChild(makeDirDecorButton(id));
     colorPaletteEl.appendChild(row2);
 
     const row3 = document.createElement('div');
@@ -4173,6 +4502,7 @@
     SHAPES[key] = shape;
     customShapes.push({ key, shape });
     saveCustomShapes();
+    if (editor.visibleCustomShapes) editor.visibleCustomShapes.add(key);
     cancelTileEditor();
     buildPalette(); refreshPaletteCounts();
     showToast(t('tileAdded'));
@@ -4222,6 +4552,7 @@
     editor.lastClick = { id: null, time: 0 };
     editor.knifeMode = false;
     editor.knifeWasOn = false;
+    editor.visibleCustomShapes = null;
     knifeSession = null;
     if (knifeBtn) knifeBtn.classList.remove('active');
     if (startBoardEl) startBoardEl.style.cursor = '';
@@ -4256,6 +4587,7 @@
     levelNameEngInput.value = editor.levelNameEng || '';
     levelAuthorInput.value = editor.levelAuthor || '';
     levelStepInput.value = editor.levelStep > 0 ? String(editor.levelStep) : '';
+    applyVisibleCustomShapesFromLevel();
     closeManualPaste();
     updateDeleteBtnVisibility();
     cancelTileEditor();
@@ -4263,6 +4595,12 @@
     buildPalette(); renderEditor();
     updateApplyBtn();
     syncLevelText();
+  }
+  function applyVisibleCustomShapesFromLevel() {
+    const used = new Set();
+    const scan = (list) => { for (const p of list) { if (isCustomShapeKey(p.shape)) used.add(p.shape); } };
+    scan(editor.startPieces); scan(editor.targetPieces);
+    editor.visibleCustomShapes = used;
   }
   function cancelEditor() {
     cleanupEditorDrag(); closeManualPaste(); cancelTileEditor();
@@ -4581,6 +4919,51 @@
     return parts.length > 0 ? parts.join('\n') : s;
   }
 
+  // ============================================================
+  // ПОРЯДОК УРОВНЕЙ (единый для галереи и выпадающего списка)
+  // ============================================================
+  function parseLevelStepSafe(text) {
+    try { const p = parseLevel(text); return (p && p.step) ? p.step : 0; }
+    catch (e) { return 0; }
+  }
+
+  // Единый источник порядка: строит список групп по авторам и сортирует внутри.
+  function getGalleryOrderedItems() {
+    const items = [];
+    for (let i = 0; i < PRESET_LEVELS.length; i++) {
+      const lvl = PRESET_LEVELS[i];
+      const author = lvl.author || extractAuthorFromText(lvl.text) || t('defaultAuthor');
+      items.push({ globalIdx: i, isUser: false, userIdx: -1, author, level: lvl });
+    }
+    for (let i = 0; i < userLevels.length; i++) {
+      const lvl = userLevels[i];
+      const author = (lvl.author && lvl.author.trim()) ? lvl.author.trim() : t('defaultAuthor');
+      items.push({ globalIdx: PRESET_LEVELS.length + i, isUser: true, userIdx: i, author, level: lvl });
+    }
+    const groups = new Map();
+    for (const it of items) {
+      if (!groups.has(it.author)) groups.set(it.author, []);
+      groups.get(it.author).push(it);
+    }
+    for (const arr of groups.values()) {
+      if (gallerySortMode === 'name') {
+        arr.sort((a, b) => levelDisplayName(a.level).toLowerCase().localeCompare(levelDisplayName(b.level).toLowerCase()));
+      } else if (gallerySortMode === 'steps') {
+        arr.sort((a, b) => {
+          const sa = parseLevelStepSafe(a.level.text);
+          const sb = parseLevelStepSafe(b.level.text);
+          if (sa === 0 && sb === 0) return 0;
+          if (sa === 0) return 1;
+          if (sb === 0) return -1;
+          return sa - sb;
+        });
+      }
+    }
+    const result = [];
+    for (const arr of groups.values()) for (const it of arr) result.push(it);
+    return result;
+  }
+
   function getOrderedUserLevels() {
     const userByAuthor = new Map();
     for (let i = 0; i < userLevels.length; i++) {
@@ -4601,6 +4984,16 @@
     return '// board.js — внешние уровни Klotski / Упрямый Осёл\n' +
            'window.BOARD_LEVELS = [\n' +
            parts.join(',\n') + '\n];\n';
+  }
+
+  // Копировать все — то, что видим в галерее, в текущем порядке.
+  async function copyAllVisibleLevels() {
+    const ordered = getGalleryOrderedItems();
+    if (ordered.length === 0) { showToast(t('nothingToCopy'), true); return; }
+    const list = ordered.map(it => it.level);
+    const text = userLevelsToJsSource(list);
+    levelTextEl.textContent = text;
+    await copyTextToClipboard(text, t('allLevelsCopied', list.length), t('copyFailed'));
   }
 
   let lastParseHadNewShapes = false;
@@ -4761,6 +5154,7 @@
     levelNameEngInput.value = editor.levelNameEng;
     levelAuthorInput.value = editor.levelAuthor;
     levelStepInput.value = editor.levelStep > 0 ? String(editor.levelStep) : '';
+    applyVisibleCustomShapesFromLevel();
     buildPalette();
     renderEditor();
   }
@@ -4817,13 +5211,7 @@
     levelTextEl.textContent = script;
     await copyTextToClipboard(script, t('copiedToBuffer'), t('textReadyCtrlC'));
   });
-  document.getElementById('copyAllLevelsBtn').addEventListener('click', async () => {
-    const list = getOrderedUserLevels();
-    if (list.length === 0) { showToast(t('nothingToCopy'), true); return; }
-    const text = userLevelsToJsSource(list);
-    levelTextEl.textContent = text;
-    await copyTextToClipboard(text, t('allLevelsCopied', list.length), t('copyFailed'));
-  });
+  document.getElementById('copyAllLevelsBtn').addEventListener('click', copyAllVisibleLevels);
 
   let manualPasteGlobalHandler = null;
   function looksLikeLevelText(text) {
@@ -4884,46 +5272,27 @@
   });
   document.getElementById('deleteEditBtn').addEventListener('click', deleteEditorLevel);
 
+  // Выпадающий список строится в порядке галереи.
   function buildLevelSelect() {
     if (!levelSelectEl) return;
     levelSelectEl.innerHTML = '';
-    const byAuthor = new Map();
-    for (let i = 0; i < PRESET_LEVELS.length; i++) {
-      const lvl = PRESET_LEVELS[i];
-      const author = lvl.author || extractAuthorFromText(lvl.text) || t('defaultAuthor');
-      if (!byAuthor.has(author)) byAuthor.set(author, []);
-      byAuthor.get(author).push({ lvl, idx: i });
+    const ordered = getGalleryOrderedItems();
+    const groupsMap = new Map();
+    for (const it of ordered) {
+      if (!groupsMap.has(it.author)) groupsMap.set(it.author, []);
+      groupsMap.get(it.author).push(it);
     }
-    for (const [author, items] of byAuthor) {
+    for (const [author, items] of groupsMap) {
       const group = document.createElement('optgroup');
-      group.label = author;
-      for (const { lvl, idx } of items) {
+      const isUser = items.length > 0 && items[0].isUser;
+      group.label = isUser ? (t('myLevels') + ' · ' + author) : author;
+      for (const it of items) {
         const opt = document.createElement('option');
-        opt.value = String(idx);
-        opt.textContent = levelDisplayName(lvl);
+        opt.value = String(it.globalIdx);
+        opt.textContent = levelDisplayName(it.level);
         group.appendChild(opt);
       }
       levelSelectEl.appendChild(group);
-    }
-    if (userLevels.length > 0) {
-      const userByAuthor = new Map();
-      for (let i = 0; i < userLevels.length; i++) {
-        const lvl = userLevels[i];
-        const a = (lvl.author && lvl.author.trim()) ? lvl.author.trim() : t('defaultAuthor');
-        if (!userByAuthor.has(a)) userByAuthor.set(a, []);
-        userByAuthor.get(a).push({ lvl, idx: PRESET_LEVELS.length + i });
-      }
-      for (const [author, items] of userByAuthor) {
-        const group = document.createElement('optgroup');
-        group.label = t('myLevels') + ' · ' + author;
-        for (const { lvl, idx } of items) {
-          const opt = document.createElement('option');
-          opt.value = String(idx);
-          opt.textContent = levelDisplayName(lvl);
-          group.appendChild(opt);
-        }
-        levelSelectEl.appendChild(group);
-      }
     }
   }
   function loadLevelToGame(level) {
@@ -4945,13 +5314,17 @@
       if (save !== false) safeSetItem(LEVEL_KEY, String(idx));
     } catch (err) { console.error(err); showToast(t('solverError', err.message), true); }
   }
+  // Кнопки ‹/› листают уровни в порядке галереи.
   function stepLevel(delta) {
-    const all = allLevels();
-    if (all.length === 0) return;
-    const n = all.length;
-    let idx = (currentLevelIndex + delta) % n;
-    if (idx < 0) idx += n;
-    selectLevel(idx);
+    const ordered = getGalleryOrderedItems();
+    if (ordered.length === 0) return;
+    const n = ordered.length;
+    let pos = -1;
+    for (let i = 0; i < n; i++) if (ordered[i].globalIdx === currentLevelIndex) { pos = i; break; }
+    if (pos < 0) { selectLevel(ordered[0].globalIdx); return; }
+    let newPos = (pos + delta) % n;
+    if (newPos < 0) newPos += n;
+    selectLevel(ordered[newPos].globalIdx);
   }
   function loadSavedOrFirstLevel() {
     const all = allLevels();
@@ -5090,57 +5463,78 @@
   function buildGallery() {
     galleryViewEl.innerHTML = '';
     hideLevelContextMenu();
-    const groups = [];
-    const presetByAuthor = new Map();
-    for (let i = 0; i < PRESET_LEVELS.length; i++) {
-      const lvl = PRESET_LEVELS[i];
-      const author = lvl.author || extractAuthorFromText(lvl.text) || t('defaultAuthor');
-      if (!presetByAuthor.has(author)) presetByAuthor.set(author, []);
-      presetByAuthor.get(author).push({ idx: i, name: lvl.name, nameEng: lvl.nameEng, text: lvl.text });
+
+    const sortRow = document.createElement('div');
+    sortRow.className = 'gallery-sort-row';
+    const sortLbl = document.createElement('span');
+    sortLbl.className = 'gallery-sort-row__label';
+    sortLbl.textContent = t('sortLabel');
+    sortRow.appendChild(sortLbl);
+    const sortOptions = [
+      { key: 'default', label: t('sortDefault') },
+      { key: 'name', label: t('sortName') },
+      { key: 'steps', label: t('sortSteps') }
+    ];
+    for (const opt of sortOptions) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = opt.label;
+      b.classList.toggle('active', gallerySortMode === opt.key);
+      b.addEventListener('click', () => {
+        gallerySortMode = opt.key;
+        safeSetItem(GALLERY_SORT_KEY, gallerySortMode);
+        // Перестраиваем и галерею, и выпадающий список, чтобы сохранить единый порядок.
+        buildGallery();
+        buildLevelSelect();
+        if (levelSelectEl) levelSelectEl.value = String(currentLevelIndex);
+      });
+      sortRow.appendChild(b);
     }
-    for (const [author, items] of presetByAuthor) groups.push({ title: author, items, isUser: false });
-    if (userLevels.length > 0) {
-      const userByAuthor = new Map();
-      for (let i = 0; i < userLevels.length; i++) {
-        const lvl = userLevels[i];
-        const a = (lvl.author && lvl.author.trim()) ? lvl.author.trim() : t('defaultAuthor');
-        if (!userByAuthor.has(a)) userByAuthor.set(a, []);
-        userByAuthor.get(a).push({ idx: PRESET_LEVELS.length + i, name: lvl.name, nameEng: lvl.nameEng, text: lvl.text, userIdx: i });
-      }
-      for (const [author, items] of userByAuthor) groups.push({ title: t('myLevels') + ' · ' + author, items, isUser: true });
+    galleryViewEl.appendChild(sortRow);
+
+    const ordered = getGalleryOrderedItems();
+
+    const groupsMap = new Map();
+    for (const it of ordered) {
+      if (!groupsMap.has(it.author)) groupsMap.set(it.author, []);
+      groupsMap.get(it.author).push(it);
     }
+
     const summaryEl = document.createElement('div');
     summaryEl.className = 'gallery-summary';
     summaryEl.textContent = t('gallerySummary', PRESET_LEVELS.length, userLevels.length);
     galleryViewEl.appendChild(summaryEl);
-    if (groups.length === 0) {
+
+    if (groupsMap.size === 0) {
       const empty = document.createElement('div');
       empty.className = 'gallery-empty';
       empty.textContent = t('galleryNoLevels');
       galleryViewEl.appendChild(empty);
       return;
     }
-    for (const g of groups) {
+
+    for (const [author, items] of groupsMap) {
+      const isUserGroup = items.length > 0 && items[0].isUser;
       const groupEl = document.createElement('div');
       groupEl.className = 'gallery-group';
       const titleEl = document.createElement('div');
       titleEl.className = 'gallery-group__title';
-      titleEl.textContent = g.title + ' (' + g.items.length + ')';
+      titleEl.textContent = (isUserGroup ? (t('myLevels') + ' · ' + author) : author) + ' (' + items.length + ')';
       groupEl.appendChild(titleEl);
       const gridEl = document.createElement('div');
       gridEl.className = 'gallery-grid';
-      for (let i = 0; i < g.items.length; i++) {
-        const item = g.items[i];
+      for (const item of items) {
         const card = document.createElement('div');
         card.className = 'gallery-card';
-        const dispName = levelDisplayName(item);
+        card.dataset.levelIndex = String(item.globalIdx);
+        const dispName = levelDisplayName(item.level);
         card.title = dispName;
         const nameEl = document.createElement('div');
         nameEl.className = 'gallery-card__name';
         nameEl.textContent = dispName;
         card.appendChild(nameEl);
         let parsed = null;
-        try { parsed = parseLevel(item.text); } catch (e) { parsed = null; }
+        try { parsed = parseLevel(item.level.text); } catch (e) { parsed = null; }
         const previewsWrap = document.createElement('div');
         previewsWrap.className = 'gallery-previews';
         if (parsed) {
@@ -5168,15 +5562,19 @@
           previewsWrap.appendChild(brokenWrap);
         }
         card.appendChild(previewsWrap);
+        // Строка «Ходов: N» всегда присутствует и всегда внизу карточки.
+        const stepEl = document.createElement('div');
+        stepEl.className = 'gallery-card__step';
         if (parsed && parsed.step && parsed.step > 0) {
-          const stepEl = document.createElement('div');
-          stepEl.className = 'gallery-card__step';
           stepEl.textContent = t('gallerySteps', parsed.step);
-          card.appendChild(stepEl);
+        } else {
+          stepEl.textContent = '\u00A0'; // невидимый пробел, чтобы сохранить высоту строки
+          stepEl.classList.add('empty');
         }
-        const idx = item.idx;
-        const isUser = !!g.isUser;
-        const userIdx = isUser ? item.userIdx : -1;
+        card.appendChild(stepEl);
+        const idx = item.globalIdx;
+        const isUser = item.isUser;
+        const userIdx = item.userIdx;
         card.addEventListener('click', () => {
           appEl.style.transition = 'none';
           setAppMode('game');
@@ -5220,6 +5618,13 @@
     setAppMode('gallery');
     void appEl.offsetWidth;
     appEl.style.transition = '';
+    requestAnimationFrame(() => {
+      const card = galleryViewEl.querySelector('.gallery-card[data-level-index="' + currentLevelIndex + '"]');
+      if (card) {
+        try { card.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+        catch (e) { card.scrollIntoView(); }
+      }
+    });
   }
   galleryBtn.addEventListener('click', openGallery);
   undoBtn.addEventListener('click', undoGame);
@@ -5265,6 +5670,14 @@
         showToast(t('moveModeToast', names[v] || v));
         renderLevelHint();
       }
+    });
+  }
+  if (groupShiftCheckEl) {
+    groupShiftCheckEl.checked = GROUP_SHIFT;
+    groupShiftCheckEl.addEventListener('change', () => {
+      GROUP_SHIFT = groupShiftCheckEl.checked;
+      safeSetItem(GROUP_SHIFT_KEY, GROUP_SHIFT ? '1' : '0');
+      showToast(t('groupShiftToast', GROUP_SHIFT ? t('onLabel') : t('offLabel')));
     });
   }
   function updateMaxStatesHint() {
