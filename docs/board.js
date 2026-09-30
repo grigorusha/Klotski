@@ -285,32 +285,9 @@ window.BOARD_LEVELS = [
     {
           text: [
           'Klotski: 5x5 v2',
-          'Author: Grigr',
-          'Step: 185',
-          'Board: 5x5',
-          '  _ABBB',
-          '  AACCC',
-          '  _D___',
-          '  DD_EE',
-          '  FF_EE',
-          'Goal:',
-          '  _DBBB',
-          '  DDCCC',
-          '  _A___',
-          '  AA_EE',
-          '  FF_EE',
-          'Tile:',
-          '  D-Red',
-          '  A-Cyan',
-          '  B,C,E,F-Blue'
-          ].join('\n')
-        },
-    {
-          text: [
-          'Klotski: 5x5 v2 (копия)',
           'NameEng: ',
           'Author: Grigr',
-          'Step: 185',
+          'Step: 255',
           'Board: 5x5',
           '  _ABBB',
           '  AACCC',
@@ -1478,34 +1455,6 @@ window.BOARD_LEVELS = [
     {
           text: [
           'Klotski: Climb Game 15',
-          'Author: Minoru Abe',
-          'Step: ',
-          'Board: 5x8',
-          '  .._..',
-          '  A___B',
-          '  CCDEF',
-          '  CDDEF',
-          '  GGHII',
-          '  GGHHI',
-          '  JJKLL',
-          '  MKKKN',
-          'Goal:',
-          '  __K__',
-          '  _KKK_',
-          '  _____',
-          '  _____',
-          '  _____',
-          '  _____',
-          '  _____',
-          '  _____',
-          'Tile:',
-          '  K-Red',
-          '  A,B,C,D,E,F,G,H,I,J,L,M,N-Blue'
-          ].join('\n')
-        },
-    {
-          text: [
-          'Klotski: Climb Game 15 (копия)',
           'NameEng: ',
           'Author: Minoru Abe',
           'Step: ',
