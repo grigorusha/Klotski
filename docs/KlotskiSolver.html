@@ -152,21 +152,24 @@
   .new-btn { flex: 0 0 auto; height: 28px; padding: 0 10px; font: inherit; font-size: 12px; font-weight: 600; color: #fff; background: linear-gradient(180deg, #4ea8de, #1d5f8a); border: 1px solid rgba(150,215,245,.6); border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 5px; line-height: 1; }
   .new-btn:hover { background: linear-gradient(180deg, #62b8e8, #2670a0); }
   .level-text-block { display: flex; flex-direction: column; gap: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
-  /* === ИЗМЕНЕНИЕ 1: расширяем поле «Название» и убираем зазор перед чекбоксом группового сдвига === */
-  .level-meta { display: grid; grid-template-columns: 2.5fr 1.5fr 1fr max-content max-content; gap: 8px; align-items: end; }
+  /* === ИЗМЕНЕНИЕ 3: все 5 реквизитов в одну строку: Название, Название EN, Автор, Ходы, Групповой сдвиг === */
+  .level-meta { display: grid; grid-template-columns: 1.6fr 1.6fr 1.6fr max-content max-content; gap: 8px; align-items: end; }
   .level-meta__field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .level-meta__field:last-child { gap: 0; }
+  .level-meta__field--groupmoves { justify-content: flex-end; }
   .level-meta__field--step { max-width: 100px; }
   .level-meta__field--step .level-meta__input { max-width: 88px; }
   .level-meta__label { font-size: 11px; font-weight: 600; color: var(--sub); letter-spacing: .02em; }
   .level-meta__input { height: 32px; padding: 0 10px; font: inherit; font-size: 12.5px; color: var(--ink); background: rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; outline: none; user-select: text; -webkit-user-select: text; min-width: 0; width: 100%; }
   .level-meta__input:focus { border-color: rgba(255,209,102,.7); box-shadow: 0 0 0 2px rgba(255,209,102,.15); }
-  .level-meta__author-row { display: flex; gap: 4px; align-items: stretch; }
-  .level-meta__author-btn { flex: 0 0 26px; width: 26px; min-width: 26px; height: 32px; padding: 0; font: inherit; font-size: 12px; font-weight: 700; color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; line-height: 1; transition: background .15s, transform .08s; user-select: none; }
+  /* Dropdown прижат вплотную к полю Автор */
+  .level-meta__author-row { display: flex; gap: 0; align-items: stretch; }
+  .level-meta__author-row .level-meta__input { border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; }
+  .level-meta__author-btn { flex: 0 0 26px; width: 26px; min-width: 26px; height: 32px; padding: 0; font: inherit; font-size: 12px; font-weight: 700; color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 0 8px 8px 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; line-height: 1; transition: background .15s, transform .08s; user-select: none; }
   .level-meta__author-btn:hover { background: linear-gradient(180deg, #5c5c5c, #383838); }
   .level-meta__author-btn:active { transform: translateY(1px); }
   .level-meta__checkbox-label { display: inline-flex; align-items: center; gap: 6px; height: 32px; font-size: 12px; font-weight: 600; color: var(--sub); cursor: pointer; white-space: nowrap; }
   .level-meta__checkbox-label input { width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--gold); }
+  .level-meta__checkbox-text { white-space: pre-line; line-height: 1.15; font-size: 11px; }
   .io-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: center; }
   .io-btn { flex: 0 0 auto; min-width: 0; height: 34px; padding: 0 12px; font-size: 12px; font-weight: 600; border-radius: 8px; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); color: #f0f4fa; cursor: pointer; border: 1px solid rgba(255,255,255,.15); display: inline-flex; align-items: center; justify-content: center; gap: 6px; line-height: 1; }
   .io-btn:hover:not(:disabled) { background: linear-gradient(180deg, #5c5c5c, #383838); }
@@ -180,11 +183,9 @@
   .manual-paste { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 10px; background: rgba(15,15,15,.97); border: 1px solid rgba(255,209,102,.55); box-shadow: 0 0 0 2px rgba(255,209,102,.12), 0 12px 28px rgba(0,0,0,.55); }
   .manual-paste__hint { margin: 0; font-size: 11px; line-height: 1.35; color: var(--gold); text-align: center; letter-spacing: .01em; user-select: text; -webkit-user-select: text; }
   .manual-paste__textarea { flex: 1 1 auto; min-height: 60px; padding: 6px 8px; box-sizing: border-box; border-radius: 6px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.55); color: #e6eef8; font-family: ui-monospace, "Cascadia Code", "Consolas", monospace; font-size: 11px; line-height: 1.45; outline: none; resize: none; white-space: pre; overflow: auto; user-select: text; -webkit-user-select: text; }
-  .palette { display: flex; flex-direction: row; align-items: flex-start; justify-content: flex-start; gap: 12px; padding: 14px 10px; min-height: 72px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); flex-wrap: wrap; }
-  .palette-btn-col { flex: 0 0 auto; width: 86px; display: flex; flex-direction: column; gap: 4px; align-self: flex-start; }
+  .palette { display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 14px 10px; min-height: 72px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
   .palette-tiles-area { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
-  .palette-tiles-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; }
-  .palette-tiles-row:first-child { min-height: 52px; }
+  .palette-tiles-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: flex-start; min-height: 52px; }
   .palette-item { position: relative; cursor: grab; touch-action: none; transition: transform .1s, filter .15s; filter: drop-shadow(0 2px 3px rgba(0,0,0,.4)); padding: 4px; align-self: center; }
   .palette-item:hover { transform: scale(1.08); filter: drop-shadow(0 3px 6px rgba(0,0,0,.55)) brightness(1.12); }
   .palette-item:active { transform: scale(.96); cursor: grabbing; }
@@ -203,19 +204,71 @@
   .palette-label-btn.palette-label-clear:hover { background: linear-gradient(180deg, #d84a4a, #8e1f1f); color: #fff; }
   .palette-count { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px; font-size: 10px; font-weight: 800; line-height: 16px; text-align: center; border-radius: 8px; background: var(--gold); color: #1a1209; box-shadow: 0 1px 3px rgba(0,0,0,.5); pointer-events: none; font-variant-numeric: tabular-nums; }
   .palette-count.empty { display: none; }
-  .new-tile-btn { flex: 0 0 auto; width: 100%; min-height: 52px; padding: 6px 4px; font: inherit; font-size: 10.5px; font-weight: 600; color: #ffffff; background: linear-gradient(180deg, #c9922c, #8a5e12); border: 1px solid rgba(255,209,102,.5); border-radius: 10px; cursor: pointer; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; line-height: 1.05; user-select: none; transition: transform .1s, filter .15s; filter: drop-shadow(0 2px 3px rgba(0,0,0,.35)); box-sizing: border-box; }
-  .new-tile-btn:hover { transform: scale(1.03); filter: drop-shadow(0 3px 6px rgba(0,0,0,.5)) brightness(1.08); }
-  .new-tile-btn:active { transform: scale(.97); }
+  /* Единый стиль кнопок-действий палитры */
+  .palette-action-btn {
+    flex: 0 0 auto;
+    width: 86px;
+    min-height: 52px;
+    padding: 6px 4px;
+    font: inherit;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #ffffff;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    line-height: 1.05;
+    user-select: none;
+    transition: transform .1s, filter .15s;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,.35));
+    box-sizing: border-box;
+    align-self: center;
+    background: linear-gradient(180deg, #4d4d4d, #2e2e2e);
+    border: 1px solid rgba(255,255,255,.15);
+  }
+  .palette-action-btn:hover { transform: scale(1.03); filter: drop-shadow(0 3px 6px rgba(0,0,0,.5)) brightness(1.08); }
+  .palette-action-btn:active { transform: scale(.97); }
+  .palette-new-btn { background: linear-gradient(180deg, #c9922c, #8a5e12); border-color: rgba(255,209,102,.5); }
+  .palette-delete-btn { background: linear-gradient(180deg, #d84a4a, #8e1f1f); border-color: rgba(255,140,140,.5); }
+  .palette-delete-btn.drop-target { outline: 2px dashed #ffb0b0; outline-offset: 2px; filter: brightness(1.25); }
+  .palette-show-btn { background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border-color: rgba(255,255,255,.15); }
+  .palette-show-btn.active { background: linear-gradient(180deg, #4ea8de, #1d5f8a); border-color: rgba(150,215,245,.6); color: #fff; }
+  /* Кнопка «Показать» высотой в одну строку */
+  .palette-show-btn {
+    width: auto;
+    min-width: 86px;
+    min-height: 32px;
+    height: 32px;
+    padding: 0 10px;
+    flex-direction: row;
+    gap: 5px;
+    font-size: 11px;
+  }
+  .palette-show-btn .new-tile-btn__svg { width: 14px; height: 14px; }
+  .palette-show-btn .new-tile-btn__lbl { font-size: 11px; line-height: 1; }
+  /* === ИЗМЕНЕНИЕ 2: кнопка «Новая плитка» тоже компактная по высоте === */
+  .palette-new-btn {
+    min-height: 32px;
+    height: 32px;
+    flex-direction: row;
+    gap: 5px;
+    padding: 0 10px;
+    font-size: 11px;
+    width: auto;
+    min-width: 86px;
+  }
+  .palette-new-btn .new-tile-btn__ico { width: 14px; height: 14px; font-size: 14px; line-height: 14px; }
+  .palette-new-btn .new-tile-btn__lbl { font-size: 11px; line-height: 1; }
+  /* Legacy (не используется) */
+  .palette-btn-col { display: none; }
+  .new-tile-btn, .show-hide-tile-btn { display: none; }
   .new-tile-btn__ico { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; font-size: 16px; font-weight: 700; line-height: 16px; }
   .new-tile-btn__svg { display: block; width: 20px; height: 20px; flex: 0 0 auto; }
   .new-tile-btn__lbl { font-size: 10px; letter-spacing: .01em; white-space: nowrap; }
-  .new-tile-btn.delete-tile-btn { width: 64px; min-width: 64px; max-width: 64px; align-self: flex-start; background: linear-gradient(180deg, #d84a4a, #8e1f1f); border-color: rgba(255,140,140,.5); color: #fff; }
-  .new-tile-btn.delete-tile-btn:hover { filter: drop-shadow(0 3px 6px rgba(0,0,0,.5)) brightness(1.1); }
-  .new-tile-btn.delete-tile-btn.drop-target { outline: 2px dashed #ffb0b0; outline-offset: 2px; filter: brightness(1.25); }
-  .show-hide-tile-btn { width: 100%; min-height: 26px; padding: 4px 4px; font: inherit; font-size: 10px; font-weight: 700; letter-spacing: .02em; color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; line-height: 1; white-space: nowrap; box-sizing: border-box; transition: background .15s, transform .08s; }
-  .show-hide-tile-btn:hover { background: linear-gradient(180deg, #5c5c5c, #383838); }
-  .show-hide-tile-btn:active { transform: translateY(1px); }
-  .show-hide-tile-btn.active { background: linear-gradient(180deg, #4ea8de, #1d5f8a); border-color: rgba(150,215,245,.6); color: #fff; }
   .editor-palette-hint { margin: -2px 0 0; font-size: 11px; line-height: 1.4; text-align: center; color: var(--sub); letter-spacing: .02em; }
   .editor-boards { position: relative; display: flex; gap: 1cm; justify-content: center; flex-wrap: wrap; align-items: flex-start; margin-top: 4px; }
   .editor-board-wrap { flex: 1 1 220px; max-width: 340px; display: flex; flex-direction: column; gap: 12px; }
@@ -262,7 +315,6 @@
   .gallery-card:active { transform: translateY(0); }
   .gallery-card .mini-board { width: 100%; border-radius: 8px; box-shadow: inset 0 0 0 2px #707070, inset 0 0 15px rgba(0,0,0,.18); }
   .gallery-card__name { font-size: 12px; font-weight: 600; color: var(--ink); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 2px 2px 6px; }
-  /* === ИЗМЕНЕНИЕ 2: синий цвет названия для уровней с групповым сдвигом === */
   .gallery-card__name--group { color: #7cc4ff; }
   .gallery-card__step { font-size: 10.5px; font-weight: 700; color: var(--green); text-align: center; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 2px 0; margin-top: auto; min-height: 18px; }
   .gallery-card__step.empty { color: transparent; }
@@ -427,9 +479,11 @@
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
         <div class="about-block__authors-list">
           <div>Grigorusha - <a href="http://twistypuzzles.ru/forum/index.php/topic,1261.0.html" target="_blank" rel="noopener">twistypuzzles.ru</a></div>
-          <div>Gelo - <a href="https://vk.ru/geloart" target="_blank" rel="noopener">vk.ru/geloart</a></div>
           <div>Minoru Abe - <a href="https://puzzleworld.org/SlidingBlockPuzzles/" target="_blank" rel="noopener">puzzleworld.org</a></div>
+          <div>Gelo - <a href="https://vk.ru/geloart" target="_blank" rel="noopener">vk.ru/geloart</a></div>
           <div>Bricks - <a href="https://www.bricks-game.de/indexuk.html" target="_blank" rel="noopener">bricks-game.de</a></div>
+          <div>Петр Грабарчук - <a href="http://twistypuzzles.ru/forum/index.php/topic,334.msg11805.html#msg11805" target="_blank" rel="noopener">twistypuzzles.ru</a></div>
+          <div>Alcamasoft - <a href="https://www.alcamasoft.com/" target="_blank" rel="noopener">alcamasoft.com</a></div>
         </div>
       </div>
     </div>
@@ -519,11 +573,11 @@
           <span class="level-meta__label" data-ruseng="levelStepLabel">Ходов (оптимум):</span>
           <input type="number" id="levelStepInput" class="level-meta__input" min="1" max="99999" step="1" placeholder="—" autocomplete="off">
         </label>
-        <div class="level-meta__field">
-          <span class="level-meta__label" data-ruseng="levelGroupMovesLabel">Групповой сдвиг:</span>
+        <div class="level-meta__field level-meta__field--groupmoves">
           <label class="level-meta__checkbox-label" for="levelGroupMovesInput">
             <input type="checkbox" id="levelGroupMovesInput">
-            <span data-ruseng="groupMovesRequiredLabel">только с груп. сдвигом</span>
+            <span class="level-meta__checkbox-text" data-ruseng="groupMovesRequiredLabel">только с
+групп. сдвигом</span>
           </label>
         </div>
       </div>
@@ -609,7 +663,7 @@
       setTargetTip: 'Перетащите хотя бы одну плитку на целевую доску',
       levelNameLabel: 'Название:', levelNameEngLabel: 'Название (EN):', levelAuthorLabel: 'Автор:', levelStepLabel: 'Ходов (оптимум):',
       levelGroupMovesLabel: 'Групповой сдвиг:',
-      groupMovesRequiredLabel: 'только с груп. сдвигом',
+      groupMovesRequiredLabel: 'только с\nгрупп. сдвигом',
       authorDropdownTitle: 'Выбрать автора',
       copy: 'Скопировать', paste: 'Вставить', copyAllJs: 'Копировать все', deleteBtn: 'Удалить',
       pasteHint: 'Вставьте текст уровня или скрипт (Ctrl+V) — загрузится автоматически. Esc — отмена.',
@@ -741,7 +795,7 @@
       setTargetTip: 'Drag at least one piece to the target board',
       levelNameLabel: 'Name:', levelNameEngLabel: 'Name (EN):', levelAuthorLabel: 'Author:', levelStepLabel: 'Moves (optimum):',
       levelGroupMovesLabel: 'Group moves:',
-      groupMovesRequiredLabel: 'group shift only',
+      groupMovesRequiredLabel: 'group shift\nonly',
       authorDropdownTitle: 'Choose author',
       copy: 'Copy', paste: 'Paste', copyAllJs: 'Copy all', deleteBtn: 'Delete',
       pasteHint: 'Paste level text or script (Ctrl+V) — will load automatically. Esc — cancel.',
@@ -857,9 +911,6 @@
     document.querySelectorAll('[data-ruseng-placeholder]').forEach(el => { const key = el.getAttribute('data-ruseng-placeholder'); const val = t(key); if (val) el.placeholder = val; });
   }
 
-  // ============================================================
-  // КОНСТАНТЫ
-  // ============================================================
   let COLS = 4, ROWS = 5;
   let CELLS = COLS * ROWS;
   const MIN_SIZE = 2;
@@ -1365,7 +1416,6 @@
     if (!shape || !shape.cells || shape.cells.length === 0) return { x: 0, y: 0, w: 1, h: 1, area: 1 };
     const lines = String(labelStr || '').split('\n');
     const lineCount = Math.max(1, lines.length);
-    /* === ИЗМЕНЕНИЕ 4: пробелы не учитываем при подсчёте ширины для авторазмера шрифта === */
     const maxLineLen = Math.max(1, ...lines.map(l => l.replace(/ /g, '').length));
     const cellSet = new Set(shape.cells.map(([x, y]) => x + ',' + y));
     let best = null, bestFs = -1, bestArea = -1;
@@ -1487,9 +1537,6 @@
     return '';
   }
 
-  /* === ИЗМЕНЕНИЕ 4: многострочная надпись с сохранением пробелов.
-     Пробелы не учитываются при расчёте авторазмера шрифта, но рендерятся
-     (trailing/leading) — за счёт white-space:pre буква визуально сдвигается. */
   function pieceLabelMarkup(label, cx, cy, rectW, rectH) {
     if (!label || label.length === 0) return '';
     const lines = String(label).split('\n');
@@ -1789,7 +1836,6 @@
     });
   }
 
-  // ================ СОЛВЕР ================
   const SOLVER_DIRS = [[0,-1],[0,1],[-1,0],[1,0]];
   const KEY_CHARS = new Array(256);
   for (let i = 0; i < 256; i++) KEY_CHARS[i] = String.fromCharCode(32 + i);
@@ -3424,31 +3470,13 @@
   function trashSvgMarkup() {
     return '<svg class="new-tile-btn__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
   }
+  function eyeSvgMarkup() {
+    return '<svg class="new-tile-btn__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  }
 
-  /* === ИЗМЕНЕНИЕ 3: кнопки «Новая плитка», «Показать», «Удалить плитку» прижаты к левому краю (все в левой колонке btnCol) === */
+  /* === Палитра: строка 1 — Новая плитка + встроенные + стрелки + Показать; строка 2 — Удалить + кастомные === */
   function buildPalette() {
     paletteEl.innerHTML = '';
-
-    const btnCol = document.createElement('div');
-    btnCol.className = 'palette-btn-col';
-
-    const newTileBtn = document.createElement('button');
-    newTileBtn.type = 'button';
-    newTileBtn.className = 'new-tile-btn';
-    newTileBtn.title = t('newTileLabel');
-    newTileBtn.innerHTML = '<span class="new-tile-btn__ico">＋</span><span class="new-tile-btn__lbl">' + t('newTileLabel') + '</span>';
-    newTileBtn.addEventListener('click', openTileEditor);
-    btnCol.appendChild(newTileBtn);
-
-    if (customShapes.length > 0) {
-      const toggleBtn = document.createElement('button');
-      toggleBtn.type = 'button';
-      toggleBtn.className = 'show-hide-tile-btn' + (editor.showAllCustom ? ' active' : '');
-      toggleBtn.textContent = editor.showAllCustom ? t('hideExtras') : t('showExtras');
-      toggleBtn.title = editor.showAllCustom ? t('hideExtras') : t('showExtras');
-      toggleBtn.addEventListener('click', () => { editor.showAllCustom = !editor.showAllCustom; buildPalette(); });
-      btnCol.appendChild(toggleBtn);
-    }
 
     const visibleCustom = customShapes.filter(cs => {
       if (editor.showAllCustom) return true;
@@ -3456,24 +3484,17 @@
       return true;
     });
 
-    if (visibleCustom.length > 0) {
-      const delTileBtn = document.createElement('button');
-      delTileBtn.type = 'button';
-      delTileBtn.id = 'deleteTileBtn';
-      delTileBtn.className = 'new-tile-btn delete-tile-btn';
-      delTileBtn.title = t('dragToDelete');
-      delTileBtn.innerHTML = trashSvgMarkup() + '<span class="new-tile-btn__lbl">' + t('deleteBtn') + '</span>';
-      delTileBtn.addEventListener('click', () => showToast(t('dragToDelete')));
-      btnCol.appendChild(delTileBtn);
-    }
-
-    paletteEl.appendChild(btnCol);
-
-    const tilesArea = document.createElement('div');
-    tilesArea.className = 'palette-tiles-area';
-
     const row1 = document.createElement('div');
     row1.className = 'palette-tiles-row';
+
+    const newTileBtn = document.createElement('button');
+    newTileBtn.type = 'button';
+    newTileBtn.className = 'palette-action-btn palette-new-btn';
+    newTileBtn.title = t('newTileLabel');
+    newTileBtn.innerHTML = '<span class="new-tile-btn__ico">＋</span><span class="new-tile-btn__lbl">' + t('newTileLabel') + '</span>';
+    newTileBtn.addEventListener('click', openTileEditor);
+    row1.appendChild(newTileBtn);
+
     for (const key of PALETTE_ORDER) {
       if (key === 'blk') { const sep = document.createElement('div'); sep.className = 'palette-separator'; row1.appendChild(sep); }
       const item = makePaletteItem(key);
@@ -3482,19 +3503,39 @@
     const sep2 = document.createElement('div'); sep2.className = 'palette-separator'; row1.appendChild(sep2);
     row1.appendChild(makeDmoveButton('v'));
     row1.appendChild(makeDmoveButton('h'));
-    tilesArea.appendChild(row1);
+
+    /* === ИЗМЕНЕНИЕ 1: убран горизонтальный разделитель между стрелками и кнопкой «Показать» === */
+    if (customShapes.length > 0) {
+      const toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.className = 'palette-action-btn palette-show-btn' + (editor.showAllCustom ? ' active' : '');
+      toggleBtn.title = editor.showAllCustom ? t('hideExtras') : t('showExtras');
+      toggleBtn.innerHTML = eyeSvgMarkup() + '<span class="new-tile-btn__lbl">' + (editor.showAllCustom ? t('hideExtras') : t('showExtras')) + '</span>';
+      toggleBtn.addEventListener('click', () => { editor.showAllCustom = !editor.showAllCustom; buildPalette(); });
+      row1.appendChild(toggleBtn);
+    }
+
+    paletteEl.appendChild(row1);
 
     if (visibleCustom.length > 0) {
       const row2 = document.createElement('div');
       row2.className = 'palette-tiles-row';
+
+      const delTileBtn = document.createElement('button');
+      delTileBtn.type = 'button';
+      delTileBtn.id = 'deleteTileBtn';
+      delTileBtn.className = 'palette-action-btn palette-delete-btn';
+      delTileBtn.title = t('dragToDelete');
+      delTileBtn.innerHTML = trashSvgMarkup() + '<span class="new-tile-btn__lbl">' + t('deleteBtn') + '</span>';
+      delTileBtn.addEventListener('click', () => showToast(t('dragToDelete')));
+      row2.appendChild(delTileBtn);
+
       for (const cs of visibleCustom) {
         const item = makePaletteItem(cs.key);
         if (item) row2.appendChild(item);
       }
-      tilesArea.appendChild(row2);
+      paletteEl.appendChild(row2);
     }
-
-    paletteEl.appendChild(tilesArea);
   }
   function autoPlaceOnStart(shapeKey) {
     const shape = SHAPES[shapeKey]; if (!shape) return;
@@ -3560,15 +3601,13 @@
     for (let i = 0; i < 26; i++) row3.appendChild(makeLabelButton(String.fromCharCode(65 + i)));
     colorPaletteEl.appendChild(row3);
 
-    /* === ИЗМЕНЕНИЕ 4: кнопка «Пробел» теперь левее "\", и того же стиля === */
     const row4 = document.createElement('div');
     row4.className = 'color-palette__row color-palette__row--chars';
     for (const ch of '1234567890') row4.appendChild(makeLabelButton(ch));
-    /* Кнопка «Пробел» — тот же стиль (palette-label-btn), левее "\" */
-    row4.appendChild(makeLabelButton(' '));
     const sepA = document.createElement('div'); sepA.className = 'color-palette-sep'; row4.appendChild(sepA);
     for (const ch of '*+#@') row4.appendChild(makeLabelButton(ch));
     const sepB = document.createElement('div'); sepB.className = 'color-palette-sep'; row4.appendChild(sepB);
+    row4.appendChild(makeLabelButton(' '));
     row4.appendChild(makeNewlineButton());
     row4.appendChild(makeLabelClearButton());
     colorPaletteEl.appendChild(row4);
@@ -4147,7 +4186,6 @@
     safeSetItem(LEVEL_KEY, String(saveIdx));
     const startCfg = editor.startPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label }));
     const targetCfg = editor.targetPieces.filter(p => p.shape !== 'hole').map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label }));
-    // === Применяем настройки GroupMoves из редактора к игре/чекбоксу ===
     game.groupMoves = !!editor.groupMoves;
     if (game.groupMoves) {
       GROUP_SHIFT = true;
@@ -4275,7 +4313,6 @@
     return { shapeKey: key, x: minX, y: minY, isNew: true };
   }
 
-  // ==== Сериализация надписи: \n → \\n, пробел → \\s, бэкслеш → \\b ====
   function escapeLabelForText(label) {
     return String(label == null ? '' : label)
       .replace(/\\/g, '\\b')
@@ -4666,7 +4703,6 @@
   levelStepInput.addEventListener('input', () => { const s = (levelStepInput.value || '').trim(); const n = parseInt(s, 10); editor.levelStep = (!isNaN(n) && n > 0) ? n : 0; syncLevelText(); });
   if (levelGroupMovesInput) levelGroupMovesInput.addEventListener('change', () => { editor.groupMoves = !!levelGroupMovesInput.checked; syncLevelText(); });
 
-  // ==== Выпадающий список авторов ====
   const authorDropdownBtn = document.getElementById('authorDropdownBtn');
   function closeAuthorDropdown() {
     const menu = document.getElementById('authorDropdownMenu');
@@ -5021,7 +5057,6 @@
         card.dataset.levelIndex = String(item.globalIdx);
         const dispName = levelDisplayName(item.level);
         card.title = dispName;
-        /* === ИЗМЕНЕНИЕ 2: сначала парсим уровень, чтобы узнать groupMoves, потом создаём название с классом === */
         let parsed = null;
         try { parsed = parseLevel(item.level.text); } catch (e) { parsed = null; }
         const nameEl = document.createElement('div');
