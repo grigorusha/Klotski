@@ -149,10 +149,51 @@
   .icon-btn { flex: 0 0 auto; width: 28px; height: 28px; min-width: 0; padding: 0; font-size: 16px; font-weight: 700; line-height: 1; border-radius: 8px; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); display: inline-flex; align-items: center; justify-content: center; color: #f0f4fa; cursor: pointer; border: 1px solid rgba(255,255,255,.15); }
   .icon-btn:disabled { opacity: .3; cursor: default; }
   .icon-btn.active { background: linear-gradient(180deg, #d98a2b, #a05e10); border-color: rgba(255,190,120,.6); color: #fff; }
-  .new-btn { flex: 0 0 auto; height: 28px; padding: 0 10px; font: inherit; font-size: 12px; font-weight: 600; color: #fff; background: linear-gradient(180deg, #4ea8de, #1d5f8a); border: 1px solid rgba(150,215,245,.6); border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 5px; line-height: 1; }
+  /* === ИЗМЕНЕНИЕ 1: «Новая доска» в две строки, высота как у «Новая плитка» === */
+  .new-btn {
+    flex: 0 0 auto;
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+    height: 68px;
+    min-height: 68px;
+    max-height: 68px;
+    padding: 8px 4px;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(180deg, #4ea8de, #1d5f8a);
+    border: 1px solid rgba(150,215,245,.6);
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    line-height: 1.15;
+    white-space: normal;
+    text-align: center;
+    box-sizing: border-box;
+    user-select: none;
+    transition: transform .1s, filter .15s;
+  }
+  .new-btn .btn-ico {
+    width: 20px; height: 20px; font-size: 20px; line-height: 20px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex: 0 0 auto;
+  }
+  .new-btn .btn-lbl {
+    white-space: normal;
+    line-height: 1.15;
+    text-align: center;
+    overflow: visible;
+    text-overflow: clip;
+  }
   .new-btn:hover { background: linear-gradient(180deg, #62b8e8, #2670a0); }
+  .new-btn:active { transform: scale(.97); }
   .level-text-block { display: flex; flex-direction: column; gap: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
-  /* === ИЗМЕНЕНИЕ 3: все 5 реквизитов в одну строку: Название, Название EN, Автор, Ходы, Групповой сдвиг === */
   .level-meta { display: grid; grid-template-columns: 1.6fr 1.6fr 1.6fr max-content max-content; gap: 8px; align-items: end; }
   .level-meta__field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
   .level-meta__field--groupmoves { justify-content: flex-end; }
@@ -161,7 +202,6 @@
   .level-meta__label { font-size: 11px; font-weight: 600; color: var(--sub); letter-spacing: .02em; }
   .level-meta__input { height: 32px; padding: 0 10px; font: inherit; font-size: 12.5px; color: var(--ink); background: rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; outline: none; user-select: text; -webkit-user-select: text; min-width: 0; width: 100%; }
   .level-meta__input:focus { border-color: rgba(255,209,102,.7); box-shadow: 0 0 0 2px rgba(255,209,102,.15); }
-  /* Dropdown прижат вплотную к полю Автор */
   .level-meta__author-row { display: flex; gap: 0; align-items: stretch; }
   .level-meta__author-row .level-meta__input { border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; }
   .level-meta__author-btn { flex: 0 0 26px; width: 26px; min-width: 26px; height: 32px; padding: 0; font: inherit; font-size: 12px; font-weight: 700; color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 0 8px 8px 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; line-height: 1; transition: background .15s, transform .08s; user-select: none; }
@@ -185,12 +225,13 @@
   .manual-paste__textarea { flex: 1 1 auto; min-height: 60px; padding: 6px 8px; box-sizing: border-box; border-radius: 6px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.55); color: #e6eef8; font-family: ui-monospace, "Cascadia Code", "Consolas", monospace; font-size: 11px; line-height: 1.45; outline: none; resize: none; white-space: pre; overflow: auto; user-select: text; -webkit-user-select: text; }
   .palette { display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 14px 10px; min-height: 72px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
   .palette-tiles-area { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
-  .palette-tiles-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: flex-start; min-height: 52px; }
+  .palette-tiles-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: flex-start; min-height: 40px; }
+  .palette-tiles-row--action { align-items: flex-start; }
   .palette-item { position: relative; cursor: grab; touch-action: none; transition: transform .1s, filter .15s; filter: drop-shadow(0 2px 3px rgba(0,0,0,.4)); padding: 4px; align-self: center; }
   .palette-item:hover { transform: scale(1.08); filter: drop-shadow(0 3px 6px rgba(0,0,0,.55)) brightness(1.12); }
   .palette-item:active { transform: scale(.96); cursor: grabbing; }
   .palette-item svg { display: block; width: 100%; height: 100%; overflow: visible; }
-  .palette-separator { align-self: stretch; width: 1px; min-height: 48px; margin: 0 2px; background: rgba(255,255,255,.25); border-radius: 1px; }
+  .palette-separator { align-self: stretch; width: 1px; min-height: 36px; margin: 0 2px; background: rgba(255,255,255,.25); border-radius: 1px; }
   .palette-dmove-btn { flex: 0 0 auto; width: 36px; height: 36px; border-radius: 9px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 2px solid transparent; color: #e8eef6; box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -3px 6px rgba(0,0,0,.35); transition: transform .1s, border-color .15s, background .15s; align-self: center; user-select: none; }
   .palette-dmove-btn:hover { transform: scale(1.1); }
   .palette-dmove-btn.active { border-color: var(--gold); transform: scale(1.12); background: linear-gradient(180deg, #d98a2b, #a05e10); color: #fff; }
@@ -204,24 +245,27 @@
   .palette-label-btn.palette-label-clear:hover { background: linear-gradient(180deg, #d84a4a, #8e1f1f); color: #fff; }
   .palette-count { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px; font-size: 10px; font-weight: 800; line-height: 16px; text-align: center; border-radius: 8px; background: var(--gold); color: #1a1209; box-shadow: 0 1px 3px rgba(0,0,0,.5); pointer-events: none; font-variant-numeric: tabular-nums; }
   .palette-count.empty { display: none; }
-  /* Единый стиль кнопок-действий палитры */
   .palette-action-btn {
     flex: 0 0 auto;
-    width: 86px;
-    min-height: 52px;
-    padding: 6px 4px;
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+    height: 32px;
+    min-height: 32px;
+    max-height: 32px;
+    padding: 0 8px;
     font: inherit;
-    font-size: 10.5px;
+    font-size: 11px;
     font-weight: 600;
     color: #ffffff;
     border-radius: 10px;
     cursor: pointer;
     display: inline-flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 2px;
-    line-height: 1.05;
+    gap: 4px;
+    line-height: 1;
     user-select: none;
     transition: transform .1s, filter .15s;
     filter: drop-shadow(0 2px 3px rgba(0,0,0,.35));
@@ -229,46 +273,65 @@
     align-self: center;
     background: linear-gradient(180deg, #4d4d4d, #2e2e2e);
     border: 1px solid rgba(255,255,255,.15);
+    overflow: hidden;
   }
   .palette-action-btn:hover { transform: scale(1.03); filter: drop-shadow(0 3px 6px rgba(0,0,0,.5)) brightness(1.08); }
   .palette-action-btn:active { transform: scale(.97); }
-  .palette-new-btn { background: linear-gradient(180deg, #c9922c, #8a5e12); border-color: rgba(255,209,102,.5); }
+  .palette-action-btn .new-tile-btn__svg { width: 14px; height: 14px; flex: 0 0 auto; }
+  .palette-action-btn .new-tile-btn__ico { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; font-size: 14px; font-weight: 700; line-height: 14px; flex: 0 0 auto; }
+  .palette-action-btn .new-tile-btn__lbl { font-size: 10.5px; letter-spacing: .01em; white-space: nowrap; line-height: 1; overflow: hidden; text-overflow: ellipsis; }
+  /* === ИЗМЕНЕНИЕ 1: «Новая плитка» в две строки, высота 68 === */
+  .palette-new-btn {
+    background: linear-gradient(180deg, #c9922c, #8a5e12);
+    border-color: rgba(255,209,102,.5);
+    height: 68px;
+    min-height: 68px;
+    max-height: 68px;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 4px;
+    align-self: flex-start;
+  }
+  .palette-new-btn .new-tile-btn__ico { width: 20px; height: 20px; font-size: 20px; line-height: 20px; }
+  .palette-new-btn .new-tile-btn__lbl {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.15;
+    overflow: visible;
+    text-overflow: clip;
+    max-width: 100%;
+  }
   .palette-delete-btn { background: linear-gradient(180deg, #d84a4a, #8e1f1f); border-color: rgba(255,140,140,.5); }
   .palette-delete-btn.drop-target { outline: 2px dashed #ffb0b0; outline-offset: 2px; filter: brightness(1.25); }
   .palette-show-btn { background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border-color: rgba(255,255,255,.15); }
   .palette-show-btn.active { background: linear-gradient(180deg, #4ea8de, #1d5f8a); border-color: rgba(150,215,245,.6); color: #fff; }
-  /* Кнопка «Показать» высотой в одну строку */
-  .palette-show-btn {
-    width: auto;
-    min-width: 86px;
-    min-height: 32px;
-    height: 32px;
-    padding: 0 10px;
-    flex-direction: row;
-    gap: 5px;
-    font-size: 11px;
+  .palette-delete-btn {
+    height: 68px;
+    min-height: 68px;
+    max-height: 68px;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 4px;
+    align-self: flex-start;
   }
-  .palette-show-btn .new-tile-btn__svg { width: 14px; height: 14px; }
-  .palette-show-btn .new-tile-btn__lbl { font-size: 11px; line-height: 1; }
-  /* === ИЗМЕНЕНИЕ 2: кнопка «Новая плитка» тоже компактная по высоте === */
-  .palette-new-btn {
-    min-height: 32px;
-    height: 32px;
-    flex-direction: row;
-    gap: 5px;
-    padding: 0 10px;
-    font-size: 11px;
-    width: auto;
-    min-width: 86px;
+  .palette-delete-btn .new-tile-btn__svg { width: 20px; height: 20px; }
+  .palette-delete-btn .new-tile-btn__lbl {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.15;
+    overflow: visible;
+    text-overflow: clip;
+    max-width: 100%;
   }
-  .palette-new-btn .new-tile-btn__ico { width: 14px; height: 14px; font-size: 14px; line-height: 14px; }
-  .palette-new-btn .new-tile-btn__lbl { font-size: 11px; line-height: 1; }
-  /* Legacy (не используется) */
+  .palette-actions-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 0 0 auto;
+    align-self: flex-start;
+  }
   .palette-btn-col { display: none; }
   .new-tile-btn, .show-hide-tile-btn { display: none; }
-  .new-tile-btn__ico { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; font-size: 16px; font-weight: 700; line-height: 16px; }
-  .new-tile-btn__svg { display: block; width: 20px; height: 20px; flex: 0 0 auto; }
-  .new-tile-btn__lbl { font-size: 10px; letter-spacing: .01em; white-space: nowrap; }
   .editor-palette-hint { margin: -2px 0 0; font-size: 11px; line-height: 1.4; text-align: center; color: var(--sub); letter-spacing: .02em; }
   .editor-boards { position: relative; display: flex; gap: 1cm; justify-content: center; flex-wrap: wrap; align-items: flex-start; margin-top: 4px; }
   .editor-board-wrap { flex: 1 1 220px; max-width: 340px; display: flex; flex-direction: column; gap: 12px; }
@@ -325,6 +388,90 @@
   .gallery-previews { display: flex; gap: 6px; width: 100%; justify-content: center; align-items: flex-start; }
   .gallery-preview-cell { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
   .gallery-preview-label { font-size: 9px; font-weight: 700; color: var(--sub); letter-spacing: .06em; text-transform: uppercase; }
+  .gallery-stack { position: relative; min-width: 0; }
+  .gallery-stack__collapsed { position: relative; cursor: pointer; z-index: 2; }
+  .gallery-stack__collapsed::before,
+  .gallery-stack__collapsed::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    pointer-events: none;
+  }
+  .gallery-stack__collapsed::before { transform: translate(4px, -4px); opacity: .55; z-index: -1; }
+  .gallery-stack__collapsed::after { transform: translate(8px, -8px); opacity: .3; z-index: -2; }
+  .gallery-stack__badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    border-radius: 11px;
+    background: var(--gold);
+    color: #1a1209;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 22px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,.5);
+    z-index: 5;
+    pointer-events: none;
+  }
+  .gallery-stack.expanded { grid-column: 1 / -1; }
+  .gallery-stack__expanded { display: none; }
+  .gallery-stack.expanded .gallery-stack__collapsed { display: none; }
+  .gallery-stack.expanded .gallery-stack__expanded { display: block; }
+  .gallery-stack.expanded .gallery-stack__expanded .gallery-card {
+    opacity: 0;
+    animation: stackCardFlyIn 0.45s cubic-bezier(.2,.9,.3,1.05) forwards;
+  }
+  .gallery-stack.expanded .gallery-stack__expanded .gallery-card:nth-child(1) { animation-delay: 0ms; }
+  .gallery-stack.expanded .gallery-stack__expanded .gallery-card:nth-child(2) { animation-delay: 55ms; }
+  .gallery-stack.expanded .gallery-stack__expanded .gallery-card:nth-child(3) { animation-delay: 110ms; }
+  .gallery-stack.expanded .gallery-stack__expanded .gallery-card:nth-child(4) { animation-delay: 165ms; }
+  .gallery-stack.expanded .gallery-stack__expanded .gallery-card:nth-child(5) { animation-delay: 220ms; }
+  .gallery-stack.expanded .gallery-stack__expanded .gallery-card:nth-child(6) { animation-delay: 275ms; }
+  .gallery-stack.expanded .gallery-stack__expanded .gallery-card:nth-child(7) { animation-delay: 330ms; }
+  .gallery-stack.expanded .gallery-stack__expanded .gallery-card:nth-child(8) { animation-delay: 385ms; }
+  @keyframes stackCardFlyIn {
+    0% { opacity: 0; transform: translate(60px, -80px) scale(0.35) rotate(-18deg); }
+    55% { opacity: 1; }
+    78% { transform: translate(-6px, 6px) scale(1.05) rotate(2deg); }
+    100% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0); }
+  }
+  .gallery-stack.expanded.collapsing .gallery-stack__expanded .gallery-card {
+    opacity: 1;
+    animation: stackCardFlyOut 0.32s cubic-bezier(.5,.1,.7,.4) forwards;
+  }
+  .gallery-stack.expanded.collapsing .gallery-stack__expanded .gallery-card:nth-child(1) { animation-delay: 0ms; }
+  .gallery-stack.expanded.collapsing .gallery-stack__expanded .gallery-card:nth-child(2) { animation-delay: 30ms; }
+  .gallery-stack.expanded.collapsing .gallery-stack__expanded .gallery-card:nth-child(3) { animation-delay: 60ms; }
+  .gallery-stack.expanded.collapsing .gallery-stack__expanded .gallery-card:nth-child(4) { animation-delay: 90ms; }
+  .gallery-stack.expanded.collapsing .gallery-stack__expanded .gallery-card:nth-child(5) { animation-delay: 120ms; }
+  .gallery-stack.expanded.collapsing .gallery-stack__expanded .gallery-card:nth-child(6) { animation-delay: 150ms; }
+  .gallery-stack.expanded.collapsing .gallery-stack__expanded .gallery-card:nth-child(7) { animation-delay: 180ms; }
+  .gallery-stack.expanded.collapsing .gallery-stack__expanded .gallery-card:nth-child(8) { animation-delay: 210ms; }
+  @keyframes stackCardFlyOut {
+    0% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0); }
+    100% { opacity: 0; transform: translate(60px, -80px) scale(0.35) rotate(-18deg); }
+  }
+  .gallery-stack__header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 8px; margin-bottom: 10px; font-size: 12px; font-weight: 800; letter-spacing: .04em; color: var(--gold); }
+  .gallery-stack__collapse-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 6px;
+    color: #f0f4fa;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 3px 10px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .gallery-stack__collapse-btn:hover { background: rgba(255,255,255,.12); }
   .level-context-menu { position: fixed; z-index: 20000; display: flex; flex-direction: column; min-width: 150px; max-height: 300px; overflow-y: auto; padding: 4px; border-radius: 10px; background: rgba(30,30,30,.98); border: 1px solid rgba(255,255,255,.18); box-shadow: 0 12px 32px rgba(0,0,0,.65); user-select: none; }
   .level-context-menu button { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; font: inherit; font-size: 12.5px; font-weight: 600; color: #f0f4fa; background: transparent; border: none; border-radius: 6px; cursor: pointer; text-align: left; white-space: nowrap; }
   .level-context-menu button:hover { background: rgba(255,255,255,.12); }
@@ -482,7 +629,7 @@
           <div>Minoru Abe - <a href="https://puzzleworld.org/SlidingBlockPuzzles/" target="_blank" rel="noopener">puzzleworld.org</a></div>
           <div>Gelo - <a href="https://vk.ru/geloart" target="_blank" rel="noopener">vk.ru/geloart</a></div>
           <div>Bricks - <a href="https://www.bricks-game.de/indexuk.html" target="_blank" rel="noopener">bricks-game.de</a></div>
-          <div>Петр Грабарчук - <a href="http://twistypuzzles.ru/forum/index.php/topic,334.msg11805.html#msg11805" target="_blank" rel="noopener">twistypuzzles.ru</a></div>
+          <div>Peter Grabarchuk - <a href="http://twistypuzzles.ru/forum/index.php/topic,334.msg11805.html#msg11805" target="_blank" rel="noopener">twistypuzzles.ru</a></div>
           <div>Alcamasoft - <a href="https://www.alcamasoft.com/" target="_blank" rel="noopener">alcamasoft.com</a></div>
         </div>
       </div>
@@ -752,7 +899,8 @@
       aboutTitle: 'О программе',
       developersLabel: 'Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a>',
       authorsLabel: 'Авторские головоломки:',
-      dupesRemoved: 'Удалено дублей из «Моих уровней»: %1'
+      dupesRemoved: 'Удалено дублей из «Моих уровней»: %1',
+      versionsLabel: 'Версий: %1'
     },
     en: {
       htmlLang: 'en',
@@ -883,7 +1031,8 @@
       aboutTitle: 'About',
       developersLabel: 'Developers: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a>',
       authorsLabel: 'Author puzzles:',
-      dupesRemoved: 'Removed duplicates from "My levels": %1'
+      dupesRemoved: 'Removed duplicates from "My levels": %1',
+      versionsLabel: 'Versions: %1'
     }
   };
 
@@ -1503,8 +1652,11 @@
     }
     if (decor === 'circle') { const r = minDim * 0.30; return `<circle cx="${cx.toFixed(4)}" cy="${cy.toFixed(4)}" r="${r.toFixed(4)}" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw}"/>`; }
     if (decor === 'triangle') {
-      const R = minDim * 0.42, dy = R * 0.9;
-      return `<path d="M ${cx.toFixed(4)} ${(cy - dy*0.75).toFixed(4)} L ${(cx+R).toFixed(4)} ${(cy+dy*0.6).toFixed(4)} L ${(cx-R).toFixed(4)} ${(cy+dy*0.6).toFixed(4)} Z" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw}" stroke-linejoin="round"/>`;
+      const R = minDim * 0.42;
+      const r23 = R * Math.sqrt(3) / 2;
+      const yTop = cy - R * 0.75;
+      const yBot = cy + R * 0.75;
+      return `<path d="M ${cx.toFixed(4)} ${yTop.toFixed(4)} L ${(cx + r23).toFixed(4)} ${yBot.toFixed(4)} L ${(cx - r23).toFixed(4)} ${yBot.toFixed(4)} Z" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw}" stroke-linejoin="round"/>`;
     }
     if (decor === 'square') { const s = minDim * 0.55; return `<rect x="${(cx - s/2).toFixed(4)}" y="${(cy - s/2).toFixed(4)}" width="${s.toFixed(4)}" height="${s.toFixed(4)}" rx="${(minDim*0.06).toFixed(4)}" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw}"/>`; }
     if (decor === 'star') {
@@ -1525,13 +1677,19 @@
              `<path d="${mouthPath}" fill="none" stroke="rgba(0,0,0,0.85)" stroke-width="${(sw*1.3).toFixed(4)}" stroke-linecap="round"/>`;
     }
     if (decor === 'heart') {
-      const R = minDim * 0.42;
-      const topY = cy - R * 0.55, lobeR = R * 0.55, bottomY = cy + R * 0.85;
-      const leftCX = cx - lobeR * 0.55, rightCX = cx + lobeR * 0.55;
-      const d = `M ${cx.toFixed(4)} ${bottomY.toFixed(4)} ` +
-        `C ${(cx - R * 1.05).toFixed(4)} ${(cy + R * 0.15).toFixed(4)} ${(leftCX - lobeR * 0.75).toFixed(4)} ${topY.toFixed(4)} ${leftCX.toFixed(4)} ${topY.toFixed(4)} ` +
-        `A ${lobeR.toFixed(4)} ${lobeR.toFixed(4)} 0 0 1 ${rightCX.toFixed(4)} ${topY.toFixed(4)} ` +
-        `C ${(rightCX + lobeR * 0.75).toFixed(4)} ${topY.toFixed(4)} ${(cx + R * 1.05).toFixed(4)} ${(cy + R * 0.15).toFixed(4)} ${cx.toFixed(4)} ${bottomY.toFixed(4)} Z`;
+      const s = minDim * 0.9;
+      const cx0 = 0.5, cy0 = 0.525;
+      const T = (x, y) => [(cx + (x - cx0) * s).toFixed(4), (cy + (y - cy0) * s).toFixed(4)];
+      const [b0x, b0y] = T(0.5, 0.85);
+      const [a1x, a1y] = T(0.1, 0.55);
+      const [a2x, a2y] = T(0.1, 0.22);
+      const [a3x, a3y] = T(0.3, 0.2);
+      const [a4x, a4y] = T(0.5, 0.32);
+      const [a5x, a5y] = T(0.7, 0.2);
+      const [a6x, a6y] = T(0.9, 0.22);
+      const [a7x, a7y] = T(0.9, 0.55);
+      const r = 0.18 * s;
+      const d = `M ${b0x} ${b0y} C ${a1x} ${a1y} ${a2x} ${a2y} ${a3x} ${a3y} A ${r.toFixed(4)} ${r.toFixed(4)} 0 0 1 ${a4x} ${a4y} A ${r.toFixed(4)} ${r.toFixed(4)} 0 0 1 ${a5x} ${a5y} C ${a6x} ${a6y} ${a7x} ${a7y} ${b0x} ${b0y} Z`;
       return `<path d="${d}" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw}" stroke-linejoin="round"/>`;
     }
     return '';
@@ -1580,7 +1738,7 @@
     else if (decor === 'lineD1') inner = `<line x1="0.2" y1="0.2" x2="0.8" y2="0.8" stroke="${c}" stroke-width="0.14" stroke-linecap="round"/>`;
     else if (decor === 'lineD2') inner = `<line x1="0.8" y1="0.2" x2="0.2" y2="0.8" stroke="${c}" stroke-width="0.14" stroke-linecap="round"/>`;
     else if (decor === 'circle') inner = `<circle cx="0.5" cy="0.5" r="0.32" fill="none" stroke="${c}" stroke-width="0.12"/>`;
-    else if (decor === 'triangle') inner = `<path d="M 0.5 0.15 L 0.85 0.8 L 0.15 0.8 Z" fill="none" stroke="${c}" stroke-width="0.12" stroke-linejoin="round"/>`;
+    else if (decor === 'triangle') inner = `<path d="M 0.5 0.12 L 0.88 0.78 L 0.12 0.78 Z" fill="none" stroke="${c}" stroke-width="0.12" stroke-linejoin="round"/>`;
     else if (decor === 'square') inner = `<rect x="0.2" y="0.2" width="0.6" height="0.6" rx="0.06" fill="none" stroke="${c}" stroke-width="0.12"/>`;
     else if (decor === 'star') {
       let d = '';
@@ -2456,6 +2614,7 @@
     appEl.classList.toggle('gallery', isGallery);
     if (!isEditor) { solverStatus.textContent = ''; solverStatus.classList.remove('error'); closeManualPaste(); }
     hideLevelContextMenu();
+    if (isGame) { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) { window.scrollTo(0, 0); } }
     scheduleMaskUpdate();
     if (!isGame) { updateBackBtnPosition(); requestAnimationFrame(updateBackBtnPosition); }
   }
@@ -3109,7 +3268,8 @@
     knifeMode: false,
     knifeWasOn: false,
     visibleCustomShapes: null,
-    showAllCustom: false
+    showAllCustom: false,
+    dirty: false
   };
   const DOUBLE_CLICK_MS = 350;
 
@@ -3208,6 +3368,7 @@
     piece.shape = newShapeKey;
     if (isCustomShapeKey(newShapeKey)) ensureVisibleCustomShapesSet().add(newShapeKey);
     if (boardName === 'start') enforceTargetInvariant();
+    editor.dirty = true;
     return true;
   }
   function copyPieceOnStart(piece) {
@@ -3218,6 +3379,7 @@
     editor.startPieces.push({ id, shape: piece.shape, x: spot.x, y: spot.y, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label });
     editor.selectedId = id; editor.selectedBoard = 'start';
     editor.activeColor = piece.color; editor.activeDir = piece.dir || null; editor.activeDmove = piece.dmove || null; editor.activeLabel = piece.label || '';
+    editor.dirty = true;
     renderEditor();
     return true;
   }
@@ -3234,6 +3396,7 @@
     editor.targetPieces.push({ id, shape: piece.shape, x: spot.x, y: spot.y, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label });
     editor.selectedId = id; editor.selectedBoard = 'target';
     editor.activeColor = piece.color; editor.activeDir = piece.dir || null; editor.activeDmove = piece.dmove || null; editor.activeLabel = piece.label || '';
+    editor.dirty = true;
     renderEditor();
     return true;
   }
@@ -3245,11 +3408,12 @@
       editor.targetPieces.push({ id: 'e' + (editor.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label });
     }
     editor.selectedId = null; editor.selectedBoard = null;
+    editor.dirty = true;
     renderEditor();
     showToast(t('copyPiecesToTarget'));
   }
-  function clearStartBoard() { editor.startPieces = []; editor.targetPieces = []; editor.selectedId = null; editor.selectedBoard = null; renderEditor(); showToast(t('startCleared')); }
-  function clearTargetBoard() { editor.targetPieces = editor.targetPieces.filter(p => p.shape === 'blk' || p.shape === 'hole'); editor.selectedId = null; editor.selectedBoard = null; renderEditor(); showToast(t('targetCleared')); }
+  function clearStartBoard() { editor.startPieces = []; editor.targetPieces = []; editor.selectedId = null; editor.selectedBoard = null; editor.dirty = true; renderEditor(); showToast(t('startCleared')); }
+  function clearTargetBoard() { editor.targetPieces = editor.targetPieces.filter(p => p.shape === 'blk' || p.shape === 'hole'); editor.selectedId = null; editor.selectedBoard = null; editor.dirty = true; renderEditor(); showToast(t('targetCleared')); }
   function deleteCustomShape(key) {
     const idx = customShapes.findIndex(cs => cs.key === key);
     if (idx < 0) return false;
@@ -3263,22 +3427,25 @@
       if (!stillExists) { editor.selectedId = null; editor.selectedBoard = null; }
     }
     if (editor.visibleCustomShapes instanceof Set) editor.visibleCustomShapes.delete(key);
+    editor.dirty = true;
     buildPalette();
     return true;
   }
   function isCustomShapeKey(key) { const sh = SHAPES[key]; return !!(sh && sh.custom); }
   function getDeleteBtnRect() { const el = document.getElementById('deleteTileBtn'); if (!el || el.hidden) return null; return el.getBoundingClientRect(); }
   function isOverDeleteBtn(clientX, clientY) { const r = getDeleteBtnRect(); if (!r) return false; return pointInRect(clientX, clientY, r); }
+
   function makePaletteItem(key) {
     const shape = SHAPES[key]; if (!shape) return null;
+    const isCustom = !!shape.custom;
     const item = document.createElement('div');
     item.className = 'palette-item';
     item.dataset.shape = key;
     if (key === 'blk') item.title = 'Block';
-    else if (shape.custom) item.title = 'Custom';
+    else if (isCustom) item.title = 'Custom';
     item.style.width = (shape.w * PAL_CELL + 8) + 'px';
     item.style.height = (shape.h * PAL_CELL + 8) + 'px';
-    item.innerHTML = shapeSVGInner(key, shape.custom ? 'blue' : 'gray', editor.activeDir, editor.activeDmove, editor.activeLabel);
+    item.innerHTML = shapeSVGInner(key, isCustom ? 'blue' : 'gray', null, null, null);
     const badge = document.createElement('span');
     badge.className = 'palette-count';
     const n = countShapeOnStart(key);
@@ -3311,12 +3478,14 @@
             const onStart = countByTypeColor(editor.startPieces, key);
             const onTarget = countByTypeColor(editor.targetPieces, key);
             if (onTarget > onStart) { p.dmove = prevDmove || undefined; p.dir = prevDir || undefined; p.label = prevLabel || undefined; }
+            else editor.dirty = true;
           } else {
             const targetMatch = prepareSyncTarget(p);
             p.dmove = newVal || undefined;
             if (newVal) { p.dir = undefined; p.label = undefined; }
             if (targetMatch) { targetMatch.dmove = newVal || undefined; if (newVal) { targetMatch.dir = undefined; targetMatch.label = undefined; } }
             enforceTargetInvariant();
+            editor.dirty = true;
           }
         }
         renderEditor();
@@ -3350,11 +3519,13 @@
             const onStart = countByTypeColor(editor.startPieces, key);
             const onTarget = countByTypeColor(editor.targetPieces, key);
             if (onTarget > onStart) { p.label = prevLabel; p.dir = prevDir; p.dmove = prevDmove; }
+            else editor.dirty = true;
           } else {
             const targetMatch = prepareSyncTarget(p);
             p.label = lbl || undefined; p.dir = undefined; p.dmove = undefined;
             if (targetMatch) { targetMatch.label = lbl || undefined; targetMatch.dir = undefined; targetMatch.dmove = undefined; }
             enforceTargetInvariant();
+            editor.dirty = true;
           }
         }
       }
@@ -3387,11 +3558,13 @@
             const onStart = countByTypeColor(editor.startPieces, key);
             const onTarget = countByTypeColor(editor.targetPieces, key);
             if (onTarget > onStart) p.label = prevLabel;
+            else editor.dirty = true;
           } else {
             const targetMatch = prepareSyncTarget(p);
             p.label = lbl || undefined;
             if (targetMatch) targetMatch.label = lbl || undefined;
             enforceTargetInvariant();
+            editor.dirty = true;
           }
         }
       }
@@ -3419,11 +3592,13 @@
             const onStart = countByTypeColor(editor.startPieces, key);
             const onTarget = countByTypeColor(editor.targetPieces, key);
             if (onTarget > onStart) p.label = prevLabel;
+            else editor.dirty = true;
           } else {
             const targetMatch = prepareSyncTarget(p);
             p.label = undefined;
             if (targetMatch) targetMatch.label = undefined;
             enforceTargetInvariant();
+            editor.dirty = true;
           }
         }
       }
@@ -3454,12 +3629,14 @@
             const onStart = countByTypeColor(editor.startPieces, key);
             const onTarget = countByTypeColor(editor.targetPieces, key);
             if (onTarget > onStart) { p.dir = prevDir || undefined; p.dmove = prevDmove || undefined; p.label = prevLabel || undefined; }
+            else editor.dirty = true;
           } else {
             const targetMatch = prepareSyncTarget(p);
             p.dir = newVal || undefined;
             if (newVal) { p.dmove = undefined; p.label = undefined; }
             if (targetMatch) { targetMatch.dir = newVal || undefined; if (newVal) { targetMatch.dmove = undefined; targetMatch.label = undefined; } }
             enforceTargetInvariant();
+            editor.dirty = true;
           }
         }
         renderEditor();
@@ -3474,7 +3651,72 @@
     return '<svg class="new-tile-btn__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
   }
 
-  /* === Палитра: строка 1 — Новая плитка + встроенные + стрелки + Показать; строка 2 — Удалить + кастомные === */
+  /* === ИЗМЕНЕНИЕ 4: каноничный отпечаток формы с учётом поворотов и отражений === */
+  function shapeCanonicalSig(shape) {
+    if (!shape || !shape.cells || shape.cells.length === 0) return '';
+    const cells = shape.cells;
+    const orients = [];
+    let cur = cells.map(c => [c[0], c[1]]);
+    for (let r = 0; r < 4; r++) {
+      orients.push(cur.map(c => [c[0], c[1]]));
+      orients.push(cur.map(c => [-c[0], c[1]]));
+      cur = cur.map(c => [-c[1], c[0]]);
+    }
+    const sigs = orients.map(orient => {
+      let minX = Infinity, minY = Infinity;
+      for (const c of orient) { if (c[0] < minX) minX = c[0]; if (c[1] < minY) minY = c[1]; }
+      const norm = orient.map(([x, y]) => [x - minX, y - minY]);
+      norm.sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+      let s = '';
+      for (const c of norm) { if (s) s += ';'; s += c[0] + ',' + c[1]; }
+      return s;
+    });
+    sigs.sort();
+    return sigs[0];
+  }
+  const ORIGINAL_PALETTE_ORDER = ['s1', 'v2', 'h2', 'sq', 'L1', 'L2', 'L3', 'L4', 'd1', 'd2'];
+  function originalIdxForShape(k) { const i = ORIGINAL_PALETTE_ORDER.indexOf(k); return i >= 0 ? i : 1000; }
+  function customIdxForShape(k) {
+    for (let i = 0; i < customShapes.length; i++) if (customShapes[i].key === k) return i;
+    return 1000;
+  }
+  /* Возвращает упорядоченный список ключей (без blk): группировка по каноничному отпечатку,
+     группы сортируются по площади (w*h), внутри группы — по исходному индексу или индексу кастома */
+  function computeSortedPaletteKeys(keys) {
+    const valid = keys.filter(k => SHAPES[k] && k !== 'blk' && k !== 'hole');
+    const info = {};
+    for (const k of valid) {
+      const sh = SHAPES[k];
+      info[k] = { area: sh.w * sh.h, cellCount: sh.cells.length, sig: shapeCanonicalSig(sh), key: k };
+    }
+    const groups = new Map();
+    for (const k of valid) {
+      const sig = info[k].sig;
+      if (!groups.has(sig)) groups.set(sig, []);
+      groups.get(sig).push(k);
+    }
+    const groupList = [];
+    groups.forEach((groupKeys, sig) => {
+      const anyKey = groupKeys[0];
+      groupList.push({ sig, keys: groupKeys, area: info[anyKey].area, cellCount: info[anyKey].cellCount });
+    });
+    groupList.sort((a, b) => {
+      if (a.area !== b.area) return a.area - b.area;
+      if (a.cellCount !== b.cellCount) return a.cellCount - b.cellCount;
+      return a.sig.localeCompare(b.sig);
+    });
+    const result = [];
+    for (const g of groupList) {
+      g.keys.sort((a, b) => {
+        const ia = originalIdxForShape(a), ib = originalIdxForShape(b);
+        if (ia !== ib) return ia - ib;
+        return customIdxForShape(a) - customIdxForShape(b);
+      });
+      for (const k of g.keys) result.push(k);
+    }
+    return result;
+  }
+
   function buildPalette() {
     paletteEl.innerHTML = '';
 
@@ -3483,6 +3725,10 @@
       if (editor.visibleCustomShapes instanceof Set) return editor.visibleCustomShapes.has(cs.key);
       return true;
     });
+
+    // Автоматически отсортированный порядок (без blk)
+    const builtinKeys = ['s1', 'v2', 'h2', 'sq', 'L1', 'L2', 'L3', 'L4', 'd1', 'd2'];
+    const sortedBuiltins = computeSortedPaletteKeys(builtinKeys);
 
     const row1 = document.createElement('div');
     row1.className = 'palette-tiles-row';
@@ -3495,43 +3741,55 @@
     newTileBtn.addEventListener('click', openTileEditor);
     row1.appendChild(newTileBtn);
 
-    for (const key of PALETTE_ORDER) {
-      if (key === 'blk') { const sep = document.createElement('div'); sep.className = 'palette-separator'; row1.appendChild(sep); }
+    for (const key of sortedBuiltins) {
       const item = makePaletteItem(key);
       if (item) row1.appendChild(item);
+    }
+    // blk — отделяем разделителем и ставим в конце
+    if (SHAPES['blk']) {
+      const sep = document.createElement('div'); sep.className = 'palette-separator'; row1.appendChild(sep);
+      const blkItem = makePaletteItem('blk');
+      if (blkItem) row1.appendChild(blkItem);
     }
     const sep2 = document.createElement('div'); sep2.className = 'palette-separator'; row1.appendChild(sep2);
     row1.appendChild(makeDmoveButton('v'));
     row1.appendChild(makeDmoveButton('h'));
 
-    /* === ИЗМЕНЕНИЕ 1: убран горизонтальный разделитель между стрелками и кнопкой «Показать» === */
+    paletteEl.appendChild(row1);
+
+    // Строка 2: колонка действий (Показать / Удалить) + кастомные плитки (тоже отсортированные)
     if (customShapes.length > 0) {
+      const row2 = document.createElement('div');
+      row2.className = 'palette-tiles-row palette-tiles-row--action';
+
+      const actionsCol = document.createElement('div');
+      actionsCol.className = 'palette-actions-col';
+
       const toggleBtn = document.createElement('button');
       toggleBtn.type = 'button';
       toggleBtn.className = 'palette-action-btn palette-show-btn' + (editor.showAllCustom ? ' active' : '');
       toggleBtn.title = editor.showAllCustom ? t('hideExtras') : t('showExtras');
       toggleBtn.innerHTML = eyeSvgMarkup() + '<span class="new-tile-btn__lbl">' + (editor.showAllCustom ? t('hideExtras') : t('showExtras')) + '</span>';
       toggleBtn.addEventListener('click', () => { editor.showAllCustom = !editor.showAllCustom; buildPalette(); });
-      row1.appendChild(toggleBtn);
-    }
+      actionsCol.appendChild(toggleBtn);
 
-    paletteEl.appendChild(row1);
+      if (visibleCustom.length > 0) {
+        const delTileBtn = document.createElement('button');
+        delTileBtn.type = 'button';
+        delTileBtn.id = 'deleteTileBtn';
+        delTileBtn.className = 'palette-action-btn palette-delete-btn';
+        delTileBtn.title = t('dragToDelete');
+        delTileBtn.innerHTML = trashSvgMarkup() + '<span class="new-tile-btn__lbl">' + t('deleteBtn') + ' плитку</span>';
+        delTileBtn.addEventListener('click', () => showToast(t('dragToDelete')));
+        actionsCol.appendChild(delTileBtn);
+      }
 
-    if (visibleCustom.length > 0) {
-      const row2 = document.createElement('div');
-      row2.className = 'palette-tiles-row';
+      row2.appendChild(actionsCol);
 
-      const delTileBtn = document.createElement('button');
-      delTileBtn.type = 'button';
-      delTileBtn.id = 'deleteTileBtn';
-      delTileBtn.className = 'palette-action-btn palette-delete-btn';
-      delTileBtn.title = t('dragToDelete');
-      delTileBtn.innerHTML = trashSvgMarkup() + '<span class="new-tile-btn__lbl">' + t('deleteBtn') + '</span>';
-      delTileBtn.addEventListener('click', () => showToast(t('dragToDelete')));
-      row2.appendChild(delTileBtn);
-
-      for (const cs of visibleCustom) {
-        const item = makePaletteItem(cs.key);
+      const visibleCustomKeys = visibleCustom.map(cs => cs.key);
+      const sortedCustom = computeSortedPaletteKeys(visibleCustomKeys);
+      for (const cKey of sortedCustom) {
+        const item = makePaletteItem(cKey);
         if (item) row2.appendChild(item);
       }
       paletteEl.appendChild(row2);
@@ -3544,6 +3802,7 @@
     const id = 'e' + (editor.nextId++);
     editor.startPieces.push({ id, shape: shapeKey, x: spot.x, y: spot.y, color: editor.activeColor, dir: editor.activeDir || undefined, dmove: editor.activeDmove || undefined, label: editor.activeLabel || undefined });
     editor.selectedId = id; editor.selectedBoard = 'start';
+    editor.dirty = true;
     renderEditor();
   }
   function buildColorPalette() {
@@ -3569,11 +3828,13 @@
               const onStart = countByTypeColor(editor.startPieces, key);
               const onTarget = countByTypeColor(editor.targetPieces, key);
               if (onTarget > onStart) p.color = prevColor;
+              else editor.dirty = true;
             } else {
               const targetMatch = prepareSyncTarget(p);
               p.color = c.id;
               if (targetMatch) targetMatch.color = c.id;
               enforceTargetInvariant();
+              editor.dirty = true;
             }
           }
           renderEditor();
@@ -3843,11 +4104,12 @@
           const id = 'e' + (editor.nextId++);
           dstList.push({ id, shape: d.shapeKey, x: newX, y: newY, color: d.color, dir: d.dir || undefined, dmove: d.dmove || undefined, label: d.label || undefined });
           editor.selectedId = id; editor.selectedBoard = boardName;
+          editor.dirty = true;
         }
       } else {
         if (boardName === d.sourceBoard) {
           const piece = dstList.find(p => p.id === d.pieceId);
-          if (piece && !overlapsAny(dstList, d.shapeKey, newX, newY, piece.id)) { piece.x = newX; piece.y = newY; }
+          if (piece && !overlapsAny(dstList, d.shapeKey, newX, newY, piece.id)) { piece.x = newX; piece.y = newY; editor.dirty = true; }
         } else {
           if (d.sourceBoard === 'start' && boardName === 'target') {
             const key = typeColorKey({ shape: d.shapeKey, color: d.color, dir: d.dir, dmove: d.dmove, label: d.label });
@@ -3857,6 +4119,7 @@
               const id = 'e' + (editor.nextId++);
               dstList.push({ id, shape: d.shapeKey, x: newX, y: newY, color: d.color, dir: d.dir || undefined, dmove: d.dmove || undefined, label: d.label || undefined });
               editor.selectedId = id; editor.selectedBoard = boardName;
+              editor.dirty = true;
             }
           }
         }
@@ -3876,11 +4139,12 @@
               for (let i = editor.targetPieces.length - 1; i >= 0; i--) if (typeColorKey(editor.targetPieces[i]) === key) { editor.targetPieces.splice(i, 1); break; }
               onTarget--;
             }
+            editor.dirty = true;
           }
         } else {
           const srcList = editor.targetPieces;
           const idx = srcList.findIndex(p => p.id === d.pieceId);
-          if (idx >= 0) { srcList.splice(idx, 1); if (editor.selectedId === d.pieceId) { editor.selectedId = null; editor.selectedBoard = null; } }
+          if (idx >= 0) { srcList.splice(idx, 1); if (editor.selectedId === d.pieceId) { editor.selectedId = null; editor.selectedBoard = null; } editor.dirty = true; }
         }
       }
     }
@@ -3910,10 +4174,11 @@
     if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return false;
     const list = editor.startPieces;
     const holeIdx = list.findIndex(p => p.shape === 'hole' && p.x === c && p.y === r);
-    if (holeIdx >= 0) { if (toggle) { list.splice(holeIdx, 1); return true; } return false; }
+    if (holeIdx >= 0) { if (toggle) { list.splice(holeIdx, 1); editor.dirty = true; return true; } return false; }
     if (hasPieceAtCell(c, r)) { if (toggle) showToast(t('knifeCellBlocked'), true); return false; }
     const id = 'h' + (editor.nextId++);
     list.push({ id, shape: 'hole', color: 'blk', x: c, y: r });
+    editor.dirty = true;
     return true;
   }
   function startKnifeSession(innerEl, e) {
@@ -4079,6 +4344,7 @@
     editor.knifeMode = false;
     editor.knifeWasOn = false;
     editor.showAllCustom = false;
+    editor.dirty = false;
     knifeSession = null;
     if (knifeBtn) knifeBtn.classList.remove('active');
     if (startBoardEl) startBoardEl.style.cursor = '';
@@ -4163,6 +4429,7 @@
     const typedNameEng = (levelNameEngInput.value || '').trim();
     const typedAuthor = (levelAuthorInput.value || '').trim();
     { const s = (levelStepInput.value || '').trim(); const n = parseInt(s, 10); editor.levelStep = (!isNaN(n) && n > 0) ? n : 0; }
+    if (editor.dirty) { editor.levelStep = 0; }
     if (levelGroupMovesInput) editor.groupMoves = !!levelGroupMovesInput.checked;
     const ref = editor.sourceLevelRef || { type: 'new' };
     let finalName, finalAuthor;
@@ -4251,6 +4518,7 @@
         onTarget--;
       }
     }
+    editor.dirty = true;
     renderEditor();
   }
   function clearBoards() {
@@ -4265,15 +4533,22 @@
     editor.activeLabel = '';
     editor.visibleCustomShapes = new Set();
     editor.showAllCustom = false;
+    editor.dirty = false;
     levelNameInput.value = ''; levelNameEngInput.value = ''; levelAuthorInput.value = '';
     levelStepInput.value = '';
     if (levelGroupMovesInput) levelGroupMovesInput.checked = false;
     updateDeleteBtnVisibility();
     renderEditor();
   }
+  /* === ИЗМЕНЕНИЕ 2: Del не срабатывает, если фокус в input/textarea/contentEditable === */
   window.addEventListener('keydown', e => {
     if (appMode !== 'editor') return;
     if (tileEditActive) return;
+    const tgt = e.target;
+    if (tgt) {
+      const tag = (tgt.tagName || '').toUpperCase();
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tgt.isContentEditable) return;
+    }
     if (e.key === 'Delete' || e.key === 'Del') {
       if (!editor.selectedId) return;
       e.preventDefault();
@@ -4463,8 +4738,15 @@
 
   function parseLevelStepSafe(text) { try { const p = parseLevel(text); return (p && p.step) ? p.step : 0; } catch (e) { return 0; } }
   function getGallerySortFn() {
+    const nameCollator = (typeof Intl !== 'undefined' && Intl.Collator)
+      ? new Intl.Collator(LANG === 'ru' ? 'ru' : 'en', { numeric: true, sensitivity: 'base' })
+      : null;
     return function (a, b) {
-      if (gallerySortMode === 'name') return levelDisplayName(a.level).toLowerCase().localeCompare(levelDisplayName(b.level).toLowerCase());
+      if (gallerySortMode === 'name') {
+        const na = levelDisplayName(a.level), nb = levelDisplayName(b.level);
+        if (nameCollator) return nameCollator.compare(na, nb);
+        return na.localeCompare(nb, undefined, { numeric: true, sensitivity: 'base' });
+      }
       if (gallerySortMode === 'steps') {
         const sa = parseLevelStepSafe(a.level.text), sb = parseLevelStepSafe(b.level.text);
         if (sa === 0 && sb === 0) return 0;
@@ -4678,6 +4960,7 @@
     COLS = newCols; ROWS = newRows; CELLS = COLS * ROWS;
     editor.startPieces = trimPiecesToBoard(editor.startPieces);
     editor.targetPieces = trimPiecesToBoard(editor.targetPieces);
+    editor.dirty = true;
     renderEditor();
     if (tileEditActive) { applyBoardSize(); renderTileBoard(); }
   }
@@ -4810,6 +5093,7 @@
       const level = parseLevel(text);
       applyParsedLevel(level);
       editor.sourceLevelRef = { type: 'new' };
+      editor.dirty = false;
       updateDeleteBtnVisibility();
       showToast(lastParseHadNewShapes ? t('levelLoadedNewTiles') : t('levelLoaded'));
       closeManualPaste();
@@ -5007,6 +5291,91 @@
     menu.style.left = left + 'px'; menu.style.top = top + 'px'; menu.style.visibility = '';
     contextMenuEl = menu;
   }
+
+  function createGalleryCard(item, displayNameOverride, noClickHandler) {
+    const card = document.createElement('div');
+    card.className = 'gallery-card';
+    card.dataset.levelIndex = String(item.globalIdx);
+    const dispName = (displayNameOverride != null) ? displayNameOverride : levelDisplayName(item.level);
+    card.title = dispName;
+    let parsed = null;
+    try { parsed = parseLevel(item.level.text); } catch (e) { parsed = null; }
+    const nameEl = document.createElement('div');
+    nameEl.className = 'gallery-card__name' + ((parsed && parsed.groupMoves) ? ' gallery-card__name--group' : '');
+    nameEl.textContent = dispName;
+    card.appendChild(nameEl);
+    const previewsWrap = document.createElement('div');
+    previewsWrap.className = 'gallery-previews';
+    if (parsed) {
+      const holesSet = getHoleSetFromPieces(parsed.startPieces);
+      const cellStart = document.createElement('div');
+      cellStart.className = 'gallery-preview-cell';
+      const lblS = document.createElement('div');
+      lblS.className = 'gallery-preview-label'; lblS.textContent = t('previewStart');
+      const prevS = buildMiniPreviewFromParsed(parsed.cols, parsed.rows, parsed.startPieces, holesSet);
+      cellStart.appendChild(lblS); cellStart.appendChild(prevS);
+      previewsWrap.appendChild(cellStart);
+      const cellTarget = document.createElement('div');
+      cellTarget.className = 'gallery-preview-cell';
+      const lblT = document.createElement('div');
+      lblT.className = 'gallery-preview-label'; lblT.textContent = t('previewTarget');
+      const prevT = buildMiniPreviewFromParsed(parsed.cols, parsed.rows, parsed.targetPieces, holesSet);
+      cellTarget.appendChild(lblT); cellTarget.appendChild(prevT);
+      previewsWrap.appendChild(cellTarget);
+    } else {
+      const brokenWrap = document.createElement('div');
+      brokenWrap.className = 'mini-board gallery-card__broken';
+      brokenWrap.textContent = '?';
+      previewsWrap.appendChild(brokenWrap);
+    }
+    card.appendChild(previewsWrap);
+    const stepEl = document.createElement('div');
+    stepEl.className = 'gallery-card__step';
+    if (parsed && parsed.step && parsed.step > 0) stepEl.textContent = t('gallerySteps', parsed.step);
+    else { stepEl.textContent = '\u00A0'; stepEl.classList.add('empty'); }
+    card.appendChild(stepEl);
+    const idx = item.globalIdx;
+    const isUser = item.isUser;
+    const userIdx = item.userIdx;
+    if (!noClickHandler) {
+      card.addEventListener('click', () => { appEl.style.transition = 'none'; setAppMode('game'); void appEl.offsetWidth; appEl.style.transition = ''; selectLevel(idx); });
+    }
+    card.addEventListener('contextmenu', e => { e.preventDefault(); e.stopPropagation(); showLevelContextMenu(e.clientX, e.clientY, idx, userIdx); });
+    if (isUser) {
+      card.draggable = true;
+      card.addEventListener('dragstart', e => { try { e.dataTransfer.setData('text/plain', String(userIdx)); e.dataTransfer.effectAllowed = 'move'; } catch (err) {} card.classList.add('dragging'); });
+      card.addEventListener('dragend', () => { card.classList.remove('dragging'); });
+      card.addEventListener('dragover', e => { e.preventDefault(); try { e.dataTransfer.dropEffect = 'move'; } catch (err) {} card.classList.add('drop-target'); });
+      card.addEventListener('dragleave', () => { card.classList.remove('drop-target'); });
+      card.addEventListener('drop', e => {
+        e.preventDefault(); card.classList.remove('drop-target');
+        let raw = ''; try { raw = e.dataTransfer.getData('text/plain'); } catch (err) {}
+        const fromIdx = parseInt(raw, 10), toIdx = userIdx;
+        if (isNaN(fromIdx) || fromIdx === toIdx) return;
+        reorderUserLevels(fromIdx, toIdx);
+      });
+    }
+    return card;
+  }
+
+  function extractVersionSuffix(name) {
+    const m = String(name || '').match(/^(.*?)\s+v(\d+)\s*$/i);
+    if (!m) return null;
+    return { baseName: m[1].trim(), version: parseInt(m[2], 10) };
+  }
+
+  function expandGalleryStack(stack) {
+    stack.classList.remove('collapsing');
+    stack.classList.add('expanded');
+  }
+  function collapseGalleryStack(stack) {
+    stack.classList.add('collapsing');
+    setTimeout(() => {
+      stack.classList.remove('expanded');
+      stack.classList.remove('collapsing');
+    }, 500);
+  }
+
   function buildGallery() {
     galleryViewEl.innerHTML = '';
     hideLevelContextMenu();
@@ -5051,69 +5420,78 @@
       groupEl.appendChild(titleEl);
       const gridEl = document.createElement('div');
       gridEl.className = 'gallery-grid';
-      for (const item of g.items) {
-        const card = document.createElement('div');
-        card.className = 'gallery-card';
-        card.dataset.levelIndex = String(item.globalIdx);
-        const dispName = levelDisplayName(item.level);
-        card.title = dispName;
-        let parsed = null;
-        try { parsed = parseLevel(item.level.text); } catch (e) { parsed = null; }
-        const nameEl = document.createElement('div');
-        nameEl.className = 'gallery-card__name' + ((parsed && parsed.groupMoves) ? ' gallery-card__name--group' : '');
-        nameEl.textContent = dispName;
-        card.appendChild(nameEl);
-        const previewsWrap = document.createElement('div');
-        previewsWrap.className = 'gallery-previews';
-        if (parsed) {
-          const holesSet = getHoleSetFromPieces(parsed.startPieces);
-          const cellStart = document.createElement('div');
-          cellStart.className = 'gallery-preview-cell';
-          const lblS = document.createElement('div');
-          lblS.className = 'gallery-preview-label'; lblS.textContent = t('previewStart');
-          const prevS = buildMiniPreviewFromParsed(parsed.cols, parsed.rows, parsed.startPieces, holesSet);
-          cellStart.appendChild(lblS); cellStart.appendChild(prevS);
-          previewsWrap.appendChild(cellStart);
-          const cellTarget = document.createElement('div');
-          cellTarget.className = 'gallery-preview-cell';
-          const lblT = document.createElement('div');
-          lblT.className = 'gallery-preview-label'; lblT.textContent = t('previewTarget');
-          const prevT = buildMiniPreviewFromParsed(parsed.cols, parsed.rows, parsed.targetPieces, holesSet);
-          cellTarget.appendChild(lblT); cellTarget.appendChild(prevT);
-          previewsWrap.appendChild(cellTarget);
-        } else {
-          const brokenWrap = document.createElement('div');
-          brokenWrap.className = 'mini-board gallery-card__broken';
-          brokenWrap.textContent = '?';
-          previewsWrap.appendChild(brokenWrap);
+
+      const items = g.items;
+      const rendered = [];
+      const used = new Array(items.length).fill(false);
+      for (let i = 0; i < items.length; i++) {
+        if (used[i]) continue;
+        const it = items[i];
+        const parsed = extractVersionSuffix(levelDisplayName(it.level));
+        if (!parsed) { rendered.push({ type: 'single', item: it }); used[i] = true; continue; }
+        const siblings = [it];
+        used[i] = true;
+        for (let j = i + 1; j < items.length; j++) {
+          if (used[j]) continue;
+          const other = extractVersionSuffix(levelDisplayName(items[j].level));
+          if (other && other.baseName.toLowerCase() === parsed.baseName.toLowerCase()) {
+            siblings.push(items[j]);
+            used[j] = true;
+          }
         }
-        card.appendChild(previewsWrap);
-        const stepEl = document.createElement('div');
-        stepEl.className = 'gallery-card__step';
-        if (parsed && parsed.step && parsed.step > 0) stepEl.textContent = t('gallerySteps', parsed.step);
-        else { stepEl.textContent = '\u00A0'; stepEl.classList.add('empty'); }
-        card.appendChild(stepEl);
-        const idx = item.globalIdx;
-        const isUser = item.isUser;
-        const userIdx = item.userIdx;
-        card.addEventListener('click', () => { appEl.style.transition = 'none'; setAppMode('game'); void appEl.offsetWidth; appEl.style.transition = ''; selectLevel(idx); });
-        card.addEventListener('contextmenu', e => { e.preventDefault(); e.stopPropagation(); showLevelContextMenu(e.clientX, e.clientY, idx, userIdx); });
-        if (isUser) {
-          card.draggable = true;
-          card.addEventListener('dragstart', e => { try { e.dataTransfer.setData('text/plain', String(userIdx)); e.dataTransfer.effectAllowed = 'move'; } catch (err) {} card.classList.add('dragging'); });
-          card.addEventListener('dragend', () => { card.classList.remove('dragging'); });
-          card.addEventListener('dragover', e => { e.preventDefault(); try { e.dataTransfer.dropEffect = 'move'; } catch (err) {} card.classList.add('drop-target'); });
-          card.addEventListener('dragleave', () => { card.classList.remove('drop-target'); });
-          card.addEventListener('drop', e => {
-            e.preventDefault(); card.classList.remove('drop-target');
-            let raw = ''; try { raw = e.dataTransfer.getData('text/plain'); } catch (err) {}
-            const fromIdx = parseInt(raw, 10), toIdx = userIdx;
-            if (isNaN(fromIdx) || fromIdx === toIdx) return;
-            reorderUserLevels(fromIdx, toIdx);
+        if (siblings.length >= 2) {
+          siblings.sort((a, b) => {
+            const av = extractVersionSuffix(levelDisplayName(a.level));
+            const bv = extractVersionSuffix(levelDisplayName(b.level));
+            return (av ? av.version : 0) - (bv ? bv.version : 0);
           });
+          rendered.push({ type: 'group', baseName: parsed.baseName, versions: siblings });
+        } else {
+          rendered.push({ type: 'single', item: siblings[0] });
         }
-        gridEl.appendChild(card);
       }
+
+      for (const r of rendered) {
+        if (r.type === 'single') {
+          gridEl.appendChild(createGalleryCard(r.item));
+        } else {
+          const stack = document.createElement('div');
+          stack.className = 'gallery-stack';
+          const collapsed = document.createElement('div');
+          collapsed.className = 'gallery-stack__collapsed';
+          const frontItem = r.versions[0];
+          const innerCard = createGalleryCard(frontItem, r.baseName, true);
+          innerCard.addEventListener('click', e => { e.stopPropagation(); e.preventDefault(); expandGalleryStack(stack); });
+          collapsed.appendChild(innerCard);
+          const badge = document.createElement('div');
+          badge.className = 'gallery-stack__badge';
+          badge.textContent = r.versions.length;
+          collapsed.appendChild(badge);
+          collapsed.addEventListener('click', () => expandGalleryStack(stack));
+          stack.appendChild(collapsed);
+          const expanded = document.createElement('div');
+          expanded.className = 'gallery-stack__expanded';
+          const header = document.createElement('div');
+          header.className = 'gallery-stack__header';
+          const headerLbl = document.createElement('span');
+          headerLbl.textContent = r.baseName + ' · ' + t('versionsLabel', r.versions.length);
+          header.appendChild(headerLbl);
+          const collapseBtn = document.createElement('button');
+          collapseBtn.type = 'button';
+          collapseBtn.className = 'gallery-stack__collapse-btn';
+          collapseBtn.textContent = '✕';
+          collapseBtn.addEventListener('click', e => { e.stopPropagation(); collapseGalleryStack(stack); });
+          header.appendChild(collapseBtn);
+          expanded.appendChild(header);
+          const innerGrid = document.createElement('div');
+          innerGrid.className = 'gallery-grid';
+          for (const ver of r.versions) innerGrid.appendChild(createGalleryCard(ver, r.baseName));
+          expanded.appendChild(innerGrid);
+          stack.appendChild(expanded);
+          gridEl.appendChild(stack);
+        }
+      }
+
       groupEl.appendChild(gridEl);
       galleryViewEl.appendChild(groupEl);
     }
