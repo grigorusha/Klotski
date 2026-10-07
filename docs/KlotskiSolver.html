@@ -206,7 +206,7 @@
   .level-meta__author-btn { flex: 0 0 26px; width: 26px; min-width: 26px; height: 32px; padding: 0; font: inherit; font-size: 12px; font-weight: 700; color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 0 8px 8px 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; line-height: 1; transition: background .15s, transform .08s; user-select: none; }
   .level-meta__author-btn:hover { background: linear-gradient(180deg, #5c5c5c, #383838); }
   .level-meta__author-btn:active { transform: translateY(1px); }
-  .level-meta__checkbox-label { display: inline-flex; align-items: center; gap: 6px; height: 32px; font-size: 12px; font-weight: 600; color: var(--sub); cursor: pointer; white-space: nowrap; }
+  .level-meta__checkbox-label { display: inline-flex; align-items: center; gap: 6px; height: 22px; font-size: 12px; font-weight: 600; color: var(--sub); cursor: pointer; white-space: nowrap; }
   .level-meta__checkbox-label input { width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--gold); }
   .level-meta__checkbox-text { white-space: pre-line; line-height: 1.15; font-size: 11px; }
   .io-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: center; }
@@ -554,7 +554,7 @@
     <button id="levelPrev" class="level-nav" type="button" data-ruseng-title="prevLevelTitle" title="Предыдущий уровень">‹</button>
     <select id="levelSelect" class="level-select" data-ruseng-title="selectLevelTitle" title="Выбрать уровень"></select>
     <button id="levelNext" class="level-nav" type="button" data-ruseng-title="nextLevelTitle" title="Следующий уровень">›</button>
-    <button id="galleryBtn" class="level-nav level-gallery" type="button" data-ruseng-title="openGalleryTitle" title="Открыть галерею">
+    <button id="galleryBtn" class="level-nav level-gallery" type="button" data-ruseng-title="hotkeyGallery" title="Галерея (F2)">
       <span class="btn-ico">▦</span><span class="btn-lbl" data-ruseng="gallery">Галерея</span>
     </button>
   </div>
@@ -597,9 +597,9 @@
     </div>
 
     <div class="controls">
-      <button id="hintBtn" class="hint-btn"><span class="btn-ico">💡</span><span class="btn-lbl" data-ruseng="hint">Подсказка</span></button>
-      <button id="solveBtn" class="solve"><span class="btn-ico">✦</span><span class="btn-lbl" data-ruseng="solve">Решить</span></button>
-      <button id="editBtn"><span class="btn-ico">✎</span><span class="btn-lbl" data-ruseng="editorBtn">Редактор</span></button>
+      <button id="hintBtn" class="hint-btn" data-ruseng-title="hotkeyHint" title="Подсказка (F4)"><span class="btn-ico">💡</span><span class="btn-lbl" data-ruseng="hint">Подсказка</span></button>
+      <button id="solveBtn" class="solve" data-ruseng-title="hotkeySolve" title="Решить (F8)"><span class="btn-ico">✦</span><span class="btn-lbl" data-ruseng="solve">Решить</span></button>
+      <button id="editBtn" data-ruseng-title="hotkeyEditor" title="Редактор (F9)"><span class="btn-ico">✎</span><span class="btn-lbl" data-ruseng="editorBtn">Редактор</span></button>
     </div>
 
     <p class="hint" data-ruseng="dragHint">Перетаскивайте плитки мышью или пальцем</p>
@@ -657,7 +657,7 @@
 
   <div class="editor-view" id="editorView" hidden>
     <div class="level-bar">
-      <button class="new-btn" id="newLevelBtn" type="button"><span class="btn-ico">＋</span><span class="btn-lbl" data-ruseng="newBtn">Новая доска</span></button>
+      <button class="new-btn" id="newLevelBtn" type="button" data-ruseng-title="hotkeyNew" title="Новая доска (F2)"><span class="btn-ico">＋</span><span class="btn-lbl" data-ruseng="newBtn">Новая доска</span></button>
       <div class="level-bar__sep"></div>
       <div class="size-group">
         <span class="size-title" data-ruseng="boardSizeTitle">Размер доски:</span>
@@ -714,8 +714,8 @@
     <div class="color-palette" id="colorPalette"></div>
 
     <div class="controls">
-      <button id="applyEditBtn" class="primary"><span class="btn-ico">▶</span><span class="btn-lbl" data-ruseng="run">Запустить</span></button>
-      <button id="cancelEditBtn"><span class="btn-ico">✕</span><span class="btn-lbl" data-ruseng="cancel">Отмена</span></button>
+      <button id="applyEditBtn" class="primary" data-ruseng-title="hotkeyRun" title="Запустить (F9)"><span class="btn-ico">▶</span><span class="btn-lbl" data-ruseng="run">Запустить</span></button>
+      <button id="cancelEditBtn" data-ruseng-title="hotkeyCancel" title="Отмена (Esc)"><span class="btn-ico">✕</span><span class="btn-lbl" data-ruseng="cancel">Отмена</span></button>
     </div>
 
     <div class="level-text-block">
@@ -743,6 +743,10 @@
           <input type="number" id="levelStepInput" class="level-meta__input" min="1" max="99999" step="1" placeholder="—" autocomplete="off">
         </label>
         <div class="level-meta__field level-meta__field--groupmoves">
+          <label class="level-meta__checkbox-label" for="levelRushHourInput">
+            <input type="checkbox" id="levelRushHourInput">
+            <span class="level-meta__checkbox-text" data-ruseng="rushHourLabel">Rush Hour</span>
+          </label>
           <label class="level-meta__checkbox-label" for="levelGroupMovesInput">
             <input type="checkbox" id="levelGroupMovesInput">
             <span class="level-meta__checkbox-text" data-ruseng="groupMovesRequiredLabel">только с
@@ -813,6 +817,7 @@
       moveModeToast: 'Как считать ходы: %1',
       groupShiftLabel: 'Групповой сдвиг',
       groupShiftToast: 'Групповой сдвиг: %1',
+      rushHourLabel: 'Rush Hour',
       onLabel: 'вкл', offLabel: 'выкл',
       stateLimitLabel: 'Лимит состояний:',
       languageLabel: 'Язык:',
@@ -865,6 +870,24 @@
       labelSpaceTitle: 'Пробел',
       prevLevelTitle: 'Предыдущий уровень', nextLevelTitle: 'Следующий уровень',
       selectLevelTitle: 'Выбрать уровень', openGalleryTitle: 'Открыть галерею',
+      hotkeyGallery: 'Галерея (F2)',
+      hotkeyHint: 'Подсказка (F4)',
+      hotkeySolve: 'Решить (F8)',
+      hotkeyStop: 'Стоп (Esc)',
+      hotkeyEditor: 'Редактор (F9)',
+      hotkeyNew: 'Новая доска (F2)',
+      hotkeyNewTile: 'Новая плитка (F4)',
+      hotkeyShow: 'Показать/Скрыть (F8)',
+      hotkeyRun: 'Запустить (F9)',
+      hotkeyCancel: 'Отмена (Esc)',
+      hotkeyBatch: 'Автопоиск решений (F8)',
+      batchStarted: 'Автопоиск: %1 нерешённых уровней',
+      batchDone: 'Автопоиск завершён',
+      batchStopped: 'Автопоиск остановлен',
+      batchAllSolved: 'Все уровни уже решены',
+      batchNoLevels: 'Нет уровней',
+      batchProgress: 'Автопоиск %1 / %2',
+      batchNext: 'Следующий нерешённый',
       playTitle: 'Играть', pauseTitle: 'Пауза',
       toStartTitle: 'В начало', toEndTitle: 'В конец',
       prevStepTitle: 'Шаг назад', nextStepTitle: 'Шаг вперёд',
@@ -952,6 +975,7 @@
       moveModeToast: 'Move counting: %1',
       groupShiftLabel: 'Group shift',
       groupShiftToast: 'Group shift: %1',
+      rushHourLabel: 'Rush Hour',
       onLabel: 'on', offLabel: 'off',
       stateLimitLabel: 'State limit:',
       languageLabel: 'Language:',
@@ -1003,6 +1027,24 @@
       labelSpaceTitle: 'Space',
       prevLevelTitle: 'Previous level', nextLevelTitle: 'Next level',
       selectLevelTitle: 'Select level', openGalleryTitle: 'Open gallery',
+      hotkeyGallery: 'Gallery (F2)',
+      hotkeyHint: 'Hint (F4)',
+      hotkeySolve: 'Solve (F8)',
+      hotkeyStop: 'Stop (Esc)',
+      hotkeyEditor: 'Editor (F9)',
+      hotkeyNew: 'New board (F2)',
+      hotkeyNewTile: 'New tile (F4)',
+      hotkeyShow: 'Show/Hide (F8)',
+      hotkeyRun: 'Run (F9)',
+      hotkeyCancel: 'Cancel (Esc)',
+      hotkeyBatch: 'Auto-solve (F8)',
+      batchStarted: 'Auto-solve: %1 unsolved levels',
+      batchDone: 'Auto-solve finished',
+      batchStopped: 'Auto-solve stopped',
+      batchAllSolved: 'All levels already solved',
+      batchNoLevels: 'No levels',
+      batchProgress: 'Auto-solve %1 / %2',
+      batchNext: 'Next unsolved',
       playTitle: 'Play', pauseTitle: 'Pause',
       toStartTitle: 'To start', toEndTitle: 'To end',
       prevStepTitle: 'Step back', nextStepTitle: 'Step forward',
@@ -1141,12 +1183,6 @@
                        'circle', 'triangle', 'square', 'star', 'smiley', 'heart', 'fire', 'car'];
   const LIGHT_TILE_COLORS = new Set(['yellow', 'lime', 'beige', 'white']);
 
-  // Three-tongued flame silhouette (emoji 🔥 style).
-  //   * small left tongue at (0.20, 0.28)
-  //   * tall central tongue at (0.50, 0.04)
-  //   * small right tongue at (0.80, 0.28)
-  //   * two valleys between tongues at (0.35, 0.56) and (0.65, 0.56)
-  //   * wide rounded base centered at (0.50, 0.96)
   const FIRE_PATH_D =
     'M 0.50 0.96 ' +
     'C 0.26 0.95 0.08 0.80 0.10 0.60 ' +
@@ -1433,17 +1469,12 @@
   function saveUserLevels() { try { safeSetItem(USER_LEVELS_KEY, JSON.stringify(userLevels)); } catch (e) {} }
   let userLevels = loadUserLevels();
 
-  // ===== Preset records (persisted across reloads) =====
-  // We persist the best-solved step count for built-in (preset) levels
-  // in localStorage, keyed by a stable signature of the level text.
-  // The signature is the normalized level text with the volatile lines
-  // (Step / GroupMoves / Group) removed, so it stays constant even
-  // after we inject a new Step value into the in-memory level.text.
   function makeLevelSignature(text) {
     return String(text || '').split(/\r?\n/).map(l => l.trim())
       .filter(l => l.length > 0
         && !/^step\s*:/i.test(l)
         && !/^groupmoves\s*:/i.test(l)
+        && !/^rushhour\s*:/i.test(l)
         && !/^group\s*:/i.test(l))
       .join('\n').toLowerCase();
   }
@@ -1474,8 +1505,6 @@
     return BUILTIN_LEVELS;
   })();
 
-  // Apply persisted records to preset levels BEFORE anything else
-  // (gallery, level select, dedupe all rely on level.text having Step).
   (function applyPresetRecordsToLevels() {
     for (const lvl of PRESET_LEVELS) {
       const sig = makeLevelSignature(lvl.text);
@@ -1927,7 +1956,11 @@
     return `<svg viewBox="0 0 1 1" aria-hidden="true">${inner}</svg>`;
   }
 
-  function shapeSVGInner(shapeKey, colorId, dir, dmove, label, round) {
+  // shapeSVGInner(shapeKey, colorId, dir, dmove, label, round, hideDirArrows)
+  // - hideDirArrows === true  → Rush Hour mode: decorations and labels are shown,
+  //   but ALL arrows (single-direction AND bidirectional) are hidden.
+  //   The dmove field still constrains movement — it's just not drawn.
+  function shapeSVGInner(shapeKey, colorId, dir, dmove, label, round, hideDirArrows) {
     if (shapeKey === 'hole') return '';
     if (shapeKey === 'blk') colorId = 'blk';
     const shape = SHAPES[shapeKey];
@@ -1957,12 +1990,15 @@
       if (rotation) inner = `<g transform="rotate(${rotation} 1 1)">${inner}</g>`;
       if (mirror) { const cx = shape.w / 2; inner = `<g transform="translate(${2 * cx}, 0) scale(-1, 1)">${inner}</g>`; }
     }
+
     let arrowContent = '';
     if (shapeKey !== 'blk') {
       if (label) {
         const rect = bestRectForLabel(shape, label);
         arrowContent = pieceLabelMarkup(label, rect.x + rect.w / 2, rect.y + rect.h / 2, rect.w, rect.h);
       } else {
+        const isArrowDir = (dir === 'up' || dir === 'down' || dir === 'left' || dir === 'right');
+        const isDecorDir = !!(dir && !isArrowDir);
         let preferAxis = null;
         if (dmove === 'v') preferAxis = 'v';
         else if (dmove === 'h') preferAxis = 'h';
@@ -1970,10 +2006,14 @@
         else if (dir === 'left' || dir === 'right') preferAxis = 'h';
         const rect = largestInscribedRect(shape, preferAxis);
         const acx = rect.x + rect.w / 2, acy = rect.y + rect.h / 2;
-        if (dmove) arrowContent = pieceBiArrowMarkup(dmove, acx, acy, rect.w, rect.h, colorId);
-        else if (dir) {
-          if (dir === 'up' || dir === 'down' || dir === 'left' || dir === 'right') arrowContent = pieceArrowMarkup(dir, acx, acy, rect.w, rect.h);
-          else arrowContent = pieceDecorMarkup(dir, acx, acy, rect.w, rect.h);
+        if (isDecorDir) {
+          // Decorations (car, fire, ring, stripes, shapes) are always shown.
+          arrowContent = pieceDecorMarkup(dir, acx, acy, rect.w, rect.h);
+        } else if (dmove && !hideDirArrows) {
+          // Bidirectional arrows are hidden in Rush Hour mode.
+          arrowContent = pieceBiArrowMarkup(dmove, acx, acy, rect.w, rect.h, colorId);
+        } else if (dir && !hideDirArrows) {
+          arrowContent = pieceArrowMarkup(dir, acx, acy, rect.w, rect.h);
         }
       }
     }
@@ -2468,6 +2508,7 @@
   }
 
   let solverWorker = null, solverPending = null, solverWorkerUrl = null;
+  let solveSessionId = 0;
   function buildSolverWorkerSource() {
     return [
       "'use strict';",
@@ -2611,6 +2652,7 @@
   const levelGroupInput = document.getElementById('levelGroupInput');
   const levelStepInput = document.getElementById('levelStepInput');
   const levelGroupMovesInput = document.getElementById('levelGroupMovesInput');
+  const levelRushHourInput = document.getElementById('levelRushHourInput');
   const levelHintEl = document.getElementById('levelHint');
   const manualPasteEl = document.getElementById('manualPaste');
   const manualPasteArea = document.getElementById('manualPasteArea');
@@ -2647,6 +2689,7 @@
     pieces: [], history: [], redoStack: [],
     moves: 0, won: false, step: 0,
     groupMoves: false,
+    rushHour: false,
     selectedId: null,
     gesture: null, dragRaf: null,
     startTime: null, timerId: null, nextId: 1,
@@ -2662,10 +2705,33 @@
     timer: null, animTimer: null, animating: false
   };
 
+  const batch = {
+    active: false,
+    list: [],
+    pos: 0,
+    skipRequested: false
+  };
+  let batchMode = false;
+
   let currentLevelIndex = 0;
   let appMode = 'game';
 
   function cloneCfg(cfg) { return cfg.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round })); }
+
+  function deriveRushHourDmove(shapeKey) {
+    const sh = SHAPES[shapeKey];
+    if (!sh) return undefined;
+    if (sh.w > sh.h) return 'h';
+    if (sh.h > sh.w) return 'v';
+    return undefined;
+  }
+  function applyRushHourToCfg(cfg) {
+    return cfg.map(p => {
+      const copy = { shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, label: p.label, round: p.round };
+      copy.dmove = deriveRushHourDmove(p.shape);
+      return copy;
+    });
+  }
 
   function resetSession() {
     game.session.pieceId = null;
@@ -2752,7 +2818,9 @@
     const grid = getOrCreateBoardGrid(boardInnerEl);
     applyMiniBoardMask(grid, COLS, ROWS, holeSet, true);
   }
-  function startGame(startCfg, targetCfg, step) {
+  function startGame(startCfg, targetCfg, step, rushHour) {
+    solveSessionId++;
+    cancelSolverWorker();
     stopGameTimer();
     exitPlaybackMode();
     if (game.dragRaf) { cancelAnimationFrame(game.dragRaf); game.dragRaf = null; }
@@ -2761,10 +2829,17 @@
     game.solving = false; game.stopRequested = false;
     solverStatus.textContent = ''; solverStatus.classList.remove('error');
     updateSolveBtn();
-    game.startCfg = cloneCfg(startCfg);
-    game.targetCfg = cloneCfg(targetCfg);
+    game.rushHour = !!rushHour;
+    let cfgStart = startCfg;
+    let cfgTarget = targetCfg;
+    if (game.rushHour) {
+      cfgStart = applyRushHourToCfg(startCfg);
+      cfgTarget = applyRushHourToCfg(targetCfg);
+    }
+    game.startCfg = cloneCfg(cfgStart);
+    game.targetCfg = cloneCfg(cfgTarget);
     game.nextId = 1;
-    game.pieces = startCfg.map(p => ({ id: 'p' + (game.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }));
+    game.pieces = cfgStart.map(p => ({ id: 'p' + (game.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }));
     game.history = []; game.redoStack = []; game.moves = 0; game.won = false;
     game.selectedId = null; game.startTime = null;
     game.step = (typeof step === 'number' && step > 0) ? step : 0;
@@ -2790,7 +2865,8 @@
       el.id = 'piece-' + p.id;
       el.style.width = (shape.w / COLS * 100) + '%';
       el.style.height = (shape.h / ROWS * 100) + '%';
-      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round);
+      // In Rush Hour: decorations shown, all arrows hidden.
+      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, game.rushHour);
       if (!isFixed) attachGamePieceEvents(el, p);
       boardInnerEl.appendChild(el);
     }
@@ -2814,7 +2890,7 @@
       const el = document.createElement('div'); el.className = 'mini-piece';
       el.style.left = (p.x / COLS * 100) + '%'; el.style.top = (p.y / ROWS * 100) + '%';
       el.style.width = (shape.w / COLS * 100) + '%'; el.style.height = (shape.h / ROWS * 100) + '%';
-      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round);
+      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, game.rushHour);
       miniBoardEl.appendChild(el);
     }
     if (game.startCfg) for (const p of game.startCfg) {
@@ -2822,7 +2898,7 @@
       const el = document.createElement('div'); el.className = 'mini-piece';
       el.style.left = (p.x / COLS * 100) + '%'; el.style.top = (p.y / ROWS * 100) + '%';
       el.style.width = (shape.w / COLS * 100) + '%'; el.style.height = (shape.h / ROWS * 100) + '%';
-      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round);
+      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, game.rushHour);
       miniBoardEl.appendChild(el);
     }
     applyMiniBoardMask(miniBoardEl, COLS, ROWS, holesSet);
@@ -3034,16 +3110,23 @@
     syncGamePieces(); updateUndoBtn(); checkWin();
   }
   function updateSolveBtn() {
-    if (game.solving) {
+    if (batch.active) {
       solveBtn.classList.remove('solve'); solveBtn.classList.add('stop');
       solveBtn.innerHTML = '<span class="btn-ico">■</span><span class="btn-lbl">' + t('stop') + '</span>';
+      solveBtn.title = t('hotkeyStop');
+    } else if (game.solving) {
+      solveBtn.classList.remove('solve'); solveBtn.classList.add('stop');
+      solveBtn.innerHTML = '<span class="btn-ico">■</span><span class="btn-lbl">' + t('stop') + '</span>';
+      solveBtn.title = t('hotkeyStop');
     } else {
       solveBtn.classList.add('solve'); solveBtn.classList.remove('stop');
       solveBtn.innerHTML = '<span class="btn-ico">✦</span><span class="btn-lbl">' + t('solve') + '</span>';
+      solveBtn.title = t('hotkeySolve');
     }
-    hintBtn.disabled = game.solving;
+    hintBtn.disabled = game.solving || batch.active;
   }
   function stopSolving(message, isError) {
+    solveSessionId++;
     if (game.animTimer) { clearTimeout(game.animTimer); game.animTimer = null; }
     exitPlaybackMode();
     cancelSolverWorker();
@@ -3052,12 +3135,90 @@
     if (message) { solverStatus.textContent = message; solverStatus.classList.toggle('error', !!isError); }
   }
   function oomMessage() { return t('solverOom', fmtNum(MAX_NODES)); }
+
+  function cancelBatch() {
+    if (!batch.active) return;
+    batch.active = false;
+    batch.skipRequested = false;
+    if (game.solving) {
+      stopSolving(t('batchStopped'));
+    } else {
+      solverStatus.textContent = t('batchStopped');
+      solverStatus.classList.remove('error');
+      updateSolveBtn();
+    }
+    showToast(t('batchStopped'));
+  }
+
+  async function batchStep() {
+    if (!batch.active) return;
+    if (batch.pos >= batch.list.length) {
+      batch.active = false;
+      solverStatus.textContent = t('batchDone');
+      solverStatus.classList.remove('error');
+      updateSolveBtn();
+      showToast(t('batchDone'));
+      return;
+    }
+    batch.skipRequested = false;
+    const globalIdx = batch.list[batch.pos];
+    if (appMode !== 'game') {
+      appEl.style.transition = 'none';
+      setAppMode('game');
+      void appEl.offsetWidth;
+      appEl.style.transition = '';
+    }
+    try { selectLevel(globalIdx, false); }
+    catch (e) { console.error(e); batch.pos++; batchStep(); return; }
+    solverStatus.textContent = t('batchProgress', batch.pos + 1, batch.list.length);
+    solverStatus.classList.remove('error');
+    updateSolveBtn();
+    await new Promise(r => setTimeout(r, 200));
+    if (!batch.active) return;
+    if (batch.skipRequested) {
+      batch.skipRequested = false;
+      batchStep();
+      return;
+    }
+    batchMode = true;
+    try { await runSolver(); } catch (e) { console.error(e); }
+    batchMode = false;
+    if (!batch.active) return;
+    if (batch.skipRequested) {
+      batch.skipRequested = false;
+    } else {
+      batch.pos++;
+    }
+    batchStep();
+  }
+
+  function startBatchSolve() {
+    const ordered = getGalleryOrderedItems();
+    if (ordered.length === 0) { showToast(t('batchNoLevels'), true); return; }
+    let startPos = ordered.findIndex(it => it.globalIdx === currentLevelIndex);
+    if (startPos < 0) startPos = 0;
+    const list = [];
+    for (let i = startPos; i < ordered.length; i++) {
+      const it = ordered[i];
+      const step = parseLevelStepSafe(it.level.text);
+      if (!(step > 0)) list.push(it.globalIdx);
+    }
+    if (list.length === 0) { showToast(t('batchAllSolved'), true); return; }
+    batch.active = true;
+    batch.list = list;
+    batch.pos = 0;
+    batch.skipRequested = false;
+    showToast(t('batchStarted', list.length));
+    batchStep();
+  }
+
   solveBtn.addEventListener('click', () => {
+    if (batch.active) { cancelBatch(); return; }
     if (game.solving) { stopSolving(t('solverStopped')); return; }
     if (game.won) return;
     runSolver();
   });
-  hintBtn.addEventListener('click', () => { if (game.won || game.solving) return; requestHint(); });
+  hintBtn.addEventListener('click', () => { if (game.won || game.solving || batch.active) return; requestHint(); });
 
   function updateLevelStepText(levelObj, steps) {
     if (!levelObj) return;
@@ -3078,42 +3239,62 @@
     return !!game.groupMoves;
   }
   async function runSolver() {
-    if (!game.targetCfg || game.targetCfg.length === 0) { stopSolving(t('solverNoTarget'), true); return; }
+    if (!game.targetCfg || game.targetCfg.length === 0) {
+      if (batchMode) return;
+      stopSolving(t('solverNoTarget'), true); return;
+    }
     if (game.session.pieceId) commitSession();
     clearHint();
+    const mySessionId = ++solveSessionId;
     solverStatus.classList.remove('error');
     solverStatus.innerHTML = t('searchingPrefix') + ' ' + t('statesWord') + ' <b>0</b> · ' + t('depthWord') + ' <b>0</b> · ' + t('timeLabel') + ' <b>0.00</b> ' + t('secondsAbbr');
     game.solving = true; game.stopRequested = false;
     updateSolveBtn(); updateUndoBtn();
     await new Promise(r => setTimeout(r, 20));
+    if (solveSessionId !== mySessionId) return;
     const onProgress = (nodes, depth, ms) => {
+      if (solveSessionId !== mySessionId) return;
       if (!game.solving) return;
       solverStatus.innerHTML = t('searchingPrefix') + ' ' + t('statesWord') + ' <b>' + fmtNodes(nodes) + '</b> · ' + t('depthWord') + ' <b>' + depth + '</b> · ' + t('timeLabel') + ' <b>' + fmtSolverTime(ms / 1000) + '</b>';
     };
     let result = null;
     try { result = await solve(onProgress); }
     catch (err) {
-      if (err && err.message === '__OOM__') { stopSolving(oomMessage(), true); return; }
+      if (solveSessionId !== mySessionId) return;
+      if (err && err.message === '__OOM__') {
+        if (batchMode) { game.solving = false; updateSolveBtn(); updateUndoBtn(); return; }
+        stopSolving(oomMessage(), true); return;
+      }
       console.error(err);
+      if (batchMode) { game.solving = false; updateSolveBtn(); updateUndoBtn(); return; }
       stopSolving(t('solverError', err.message), true);
       return;
     }
+    if (solveSessionId !== mySessionId) return;
     if (!game.solving) return;
-    if (!result) { stopSolving(t('solverNotFound'), true); return; }
+    if (!result) {
+      if (batchMode) { game.solving = false; updateSolveBtn(); updateUndoBtn(); return; }
+      stopSolving(t('solverNotFound'), true); return;
+    }
     solverStatus.innerHTML = t('doneWord') + ' <b>' + result.path.length + '</b> ' + t('movesWord') + ' · ' + t('nodesWord') + ' <b>' + fmtNodes(result.nodes) + '</b> · ' + t('timeLabel') + ' <b>' + fmtSolverTime(result.ms / 1000) + '</b>';
-    if (shouldSaveStep()) {
+    if (shouldSaveStep() && result.path.length > 0) {
       const steps = result.path.length;
       game.step = steps; renderLevelHint();
       try {
         if (currentLevelIndex >= PRESET_LEVELS.length) {
           const userIdx = currentLevelIndex - PRESET_LEVELS.length;
-          if (userIdx >= 0 && userIdx < userLevels.length) { updateUserLevelStep(userIdx, steps); showToast(t('levelSavedN', steps)); }
+          if (userIdx >= 0 && userIdx < userLevels.length) { updateUserLevelStep(userIdx, steps); if (!batchMode) showToast(t('levelSavedN', steps)); }
         } else if (currentLevelIndex >= 0 && currentLevelIndex < PRESET_LEVELS.length) {
           updateLevelStepText(PRESET_LEVELS[currentLevelIndex], steps);
           savePresetRecordForLevel(PRESET_LEVELS[currentLevelIndex], steps);
-          showToast(t('levelSavedN', steps));
+          if (!batchMode) showToast(t('levelSavedN', steps));
         }
       } catch (e) { console.error(e); }
+    }
+    if (batchMode) {
+      game.solving = false; game.stopRequested = false;
+      updateSolveBtn(); updateUndoBtn();
+      return;
     }
     animateSolution(result.path);
   }
@@ -3121,22 +3302,27 @@
     if (game.won || game.solving) return;
     clearHint();
     if (game.session.pieceId) commitSession();
+    const mySessionId = ++solveSessionId;
     solverStatus.textContent = t('analyzingPrefix');
     game.solving = true; game.stopRequested = false;
     updateSolveBtn(); updateUndoBtn();
     await new Promise(r => setTimeout(r, 20));
+    if (solveSessionId !== mySessionId) return;
     const onProgress = (nodes, depth, ms) => {
+      if (solveSessionId !== mySessionId) return;
       if (!game.solving) return;
       solverStatus.innerHTML = t('analyzingPrefix') + ' ' + t('timeLabel') + ' <b>' + fmtSolverTime(ms / 1000) + '</b>';
     };
     let result = null;
     try { result = await solve(onProgress); }
     catch (err) {
+      if (solveSessionId !== mySessionId) return;
       if (err && err.message === '__OOM__') { stopSolving(oomMessage(), true); return; }
       console.error(err);
       stopSolving(t('solverError', err.message), true);
       return;
     }
+    if (solveSessionId !== mySessionId) return;
     if (!game.solving) return;
     game.solving = false; game.stopRequested = false;
     updateSolveBtn(); updateUndoBtn();
@@ -3366,6 +3552,7 @@
     if (appMode !== 'game') return;
     if (!boardEl.contains(e.target)) return;
     if (playback.active) return;
+    if (batch.active) return;
     if (performance.now() - wheelLock < 220) { e.preventDefault(); return; }
     e.preventDefault();
     wheelLock = performance.now();
@@ -3373,12 +3560,66 @@
   }, { passive: false });
   window.addEventListener('contextmenu', e => { e.preventDefault(); });
   window.addEventListener('click', () => { hideLevelContextMenu(); });
+
   window.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { hideLevelContextMenu(); if (tileEditActive) cancelTileEditor(); }
+    const tgt = e.target;
+    const inInput = tgt && (['INPUT','TEXTAREA','SELECT'].indexOf((tgt.tagName||'').toUpperCase()) >= 0 || tgt.isContentEditable);
+
+    if (e.key === 'Escape') {
+      if (contextMenuEl) { hideLevelContextMenu(); e.preventDefault(); return; }
+      if (document.getElementById('authorDropdownMenu') || document.getElementById('groupDropdownMenu')) {
+        closeAllDropdowns(); e.preventDefault(); return;
+      }
+      if (appMode === 'game') {
+        if (playback.active) { exitPlaybackMode(); e.preventDefault(); return; }
+        if (batch.active) { cancelBatch(); e.preventDefault(); return; }
+        if (game.solving) { stopSolving(t('solverStopped')); e.preventDefault(); return; }
+        return;
+      }
+      if (appMode === 'editor') {
+        if (inInput) return;
+        if (tileEditActive) { cancelTileEditor(); e.preventDefault(); return; }
+        if (!manualPasteEl.hidden) { closeManualPaste(); e.preventDefault(); return; }
+        cancelEditor(); e.preventDefault(); return;
+      }
+      if (appMode === 'gallery') { backBtn.click(); e.preventDefault(); return; }
+      return;
+    }
+
     if (appMode === 'game' && playback.active) {
-      if (e.key === ' ') { e.preventDefault(); playbackToggle(); }
-      else if (e.key === 'ArrowLeft') { e.preventDefault(); playbackPause(); applyPlaybackStep(Math.max(0, playback.currentStep - 1)); }
-      else if (e.key === 'ArrowRight') { e.preventDefault(); playbackPause(); applyPlaybackStep(Math.min(playback.path.length, playback.currentStep + 1)); }
+      if (e.key === ' ') { e.preventDefault(); playbackToggle(); return; }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); playbackPause(); applyPlaybackStep(Math.max(0, playback.currentStep - 1)); return; }
+      if (e.key === 'ArrowRight') { e.preventDefault(); playbackPause(); applyPlaybackStep(Math.min(playback.path.length, playback.currentStep + 1)); return; }
+    }
+
+    if (appMode === 'game') {
+      if (e.key === 'F2') { e.preventDefault(); openGallery(); return; }
+      if (e.key === 'F4') { e.preventDefault(); if (batch.active) cancelBatch(); else if (!game.won && !game.solving) requestHint(); return; }
+      if (e.key === 'F8') {
+        e.preventDefault();
+        if (batch.active) { cancelBatch(); return; }
+        if (game.solving) stopSolving(t('solverStopped'));
+        else if (!game.won) runSolver();
+        return;
+      }
+      if (e.key === 'F9') { e.preventDefault(); openEditor(); return; }
+      return;
+    }
+    if (appMode === 'editor') {
+      if (e.key === 'F2') { e.preventDefault(); clearBoards(); return; }
+      if (e.key === 'F4') { e.preventDefault(); if (!tileEditActive) openTileEditor(); return; }
+      if (e.key === 'F8') {
+        e.preventDefault();
+        const toggleBtn = paletteEl.querySelector('.palette-show-btn');
+        if (toggleBtn) toggleBtn.click();
+        return;
+      }
+      if (e.key === 'F9') { e.preventDefault(); applyEditor(); return; }
+      return;
+    }
+    if (appMode === 'gallery') {
+      if (e.key === 'F8') { e.preventDefault(); startBatchSolve(); return; }
+      return;
     }
   });
 
@@ -3398,6 +3639,7 @@
     savedCols: 4, savedRows: 5,
     levelName: '', levelNameEng: '', levelAuthor: '', levelGroup: '', levelStep: 0,
     groupMoves: false,
+    rushHour: false,
     sourceLevelRef: { type: 'new' },
     knifeMode: false,
     knifeWasOn: false,
@@ -3580,7 +3822,7 @@
     else if (isCustom) item.title = 'Custom';
     item.style.width = (shape.w * PAL_CELL + 8) + 'px';
     item.style.height = (shape.h * PAL_CELL + 8) + 'px';
-    item.innerHTML = shapeSVGInner(key, isCustom ? 'blue' : 'gray', null, null, null, null);
+    item.innerHTML = shapeSVGInner(key, isCustom ? 'blue' : 'gray', null, null, null, null, false);
     const badge = document.createElement('span');
     badge.className = 'palette-count';
     const n = countShapeOnStart(key);
@@ -3905,7 +4147,7 @@
     const newTileBtn = document.createElement('button');
     newTileBtn.type = 'button';
     newTileBtn.className = 'palette-action-btn palette-new-btn';
-    newTileBtn.title = t('newTileLabel');
+    newTileBtn.title = t('hotkeyNewTile');
     newTileBtn.innerHTML = '<span class="new-tile-btn__ico">＋</span><span class="new-tile-btn__lbl">' + t('newTileLabel') + '</span>';
     newTileBtn.addEventListener('click', openTileEditor);
     row1.appendChild(newTileBtn);
@@ -3935,7 +4177,7 @@
       const toggleBtn = document.createElement('button');
       toggleBtn.type = 'button';
       toggleBtn.className = 'palette-action-btn palette-show-btn' + (editor.showAllCustom ? ' active' : '');
-      toggleBtn.title = editor.showAllCustom ? t('hideExtras') : t('showExtras');
+      toggleBtn.title = (editor.showAllCustom ? t('hideExtras') : t('showExtras')) + ' (F8)';
       toggleBtn.innerHTML = eyeSvgMarkup() + '<span class="new-tile-btn__lbl">' + (editor.showAllCustom ? t('hideExtras') : t('showExtras')) + '</span>';
       toggleBtn.addEventListener('click', () => { editor.showAllCustom = !editor.showAllCustom; buildPalette(); });
       actionsCol.appendChild(toggleBtn);
@@ -4060,7 +4302,8 @@
       el.style.top = (p.y / ROWS * 100) + '%';
       el.style.width = (shape.w / COLS * 100) + '%';
       el.style.height = (shape.h / ROWS * 100) + '%';
-      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round);
+      // In Rush Hour editor: decorations shown, all arrows hidden.
+      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, editor.rushHour);
       if (isLockedOnTarget) { innerEl.appendChild(el); continue; }
       el.addEventListener('pointerdown', e => {
         if (e.button !== 0) return;
@@ -4148,7 +4391,7 @@
     } else {
       btn.classList.remove('set-target'); btn.classList.add('primary');
       btn.innerHTML = '<span class="btn-ico">▶</span><span class="btn-lbl">' + t('run') + '</span>';
-      btn.title = '';
+      btn.title = t('hotkeyRun');
     }
   }
   function updateDeleteBtnVisibility() {
@@ -4167,7 +4410,7 @@
     ghost.className = 'drag-ghost';
     ghost.style.width = (shape.w * cellW) + 'px';
     ghost.style.height = (shape.h * cellH) + 'px';
-    ghost.innerHTML = shapeSVGInner(shapeKey, editor.activeColor, editor.activeDir, editor.activeDmove, editor.activeLabel, editor.activeRound);
+    ghost.innerHTML = shapeSVGInner(shapeKey, editor.activeColor, editor.activeDir, editor.activeDmove, editor.activeLabel, editor.activeRound, editor.rushHour);
     document.body.appendChild(ghost);
     editor.drag = { kind: 'palette', shapeKey, color: editor.activeColor, dir: editor.activeDir, dmove: editor.activeDmove, label: editor.activeLabel, round: editor.activeRound, pieceId: null, sourceBoard: null, offsetX: (shape.w - 1) / 2, offsetY: (shape.h - 1) / 2, ghost, startX: ev.clientX, startY: ev.clientY, moved: false, cellW, cellH };
     moveGhost(ev.clientX, ev.clientY);
@@ -4196,7 +4439,7 @@
     ghost.className = 'drag-ghost';
     ghost.style.width = (shape.w * cellW) + 'px';
     ghost.style.height = (shape.h * cellH) + 'px';
-    ghost.innerHTML = shapeSVGInner(piece.shape, piece.color, piece.dir, piece.dmove, piece.label, piece.round);
+    ghost.innerHTML = shapeSVGInner(piece.shape, piece.color, piece.dir, piece.dmove, piece.label, piece.round, editor.rushHour);
     document.body.appendChild(ghost);
     editor.drag = { kind: 'piece', shapeKey: piece.shape, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label, round: piece.round, pieceId: piece.id, sourceBoard: boardName, offsetX: pointerCellX - piece.x, offsetY: pointerCellY - piece.y, ghost, startX: ev.clientX, startY: ev.clientY, moved: false, cellW, cellH };
     const origEl = innerEl.querySelector(`.e-piece[data-id="${piece.id}"]`);
@@ -4507,6 +4750,7 @@
   document.getElementById('tileCancelBtn').addEventListener('click', cancelTileEditor);
 
   function openEditor() {
+    cancelBatch();
     if (game.session.pieceId) commitSession();
     editor.savedCols = COLS; editor.savedRows = ROWS;
     editor.startPieces = game.startCfg.map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }));
@@ -4546,21 +4790,30 @@
     editor.levelNameEng = extractNameEng(srcText);
     editor.levelGroup = extractGroupFromText(srcText);
     if (!editor.levelGroup) editor.levelGroup = editor.levelAuthor || t('defaultAuthor');
-    let step = 0, groupMoves = false;
+    let step = 0, groupMoves = false, rushHour = false;
     if (refType === 'user' && currentLevelIndex >= 0 && currentLevelIndex < all.length) {
       try {
         const parsed = parseLevel(all[currentLevelIndex].text);
         step = parsed.step || 0;
         groupMoves = !!parsed.groupMoves;
+        rushHour = !!parsed.rushHour;
+      } catch (e) {}
+    } else if (refType === 'preset' && currentLevelIndex >= 0 && currentLevelIndex < PRESET_LEVELS.length) {
+      try {
+        const parsed = parseLevel(PRESET_LEVELS[currentLevelIndex].text);
+        rushHour = !!parsed.rushHour;
+        groupMoves = !!parsed.groupMoves;
       } catch (e) {}
     }
     editor.levelStep = step;
     editor.groupMoves = groupMoves;
+    editor.rushHour = rushHour;
     levelNameInput.value = editor.levelName || '';
     levelAuthorInput.value = editor.levelAuthor || '';
     levelGroupInput.value = editor.levelGroup || '';
     levelStepInput.value = editor.levelStep > 0 ? String(editor.levelStep) : '';
     if (levelGroupMovesInput) levelGroupMovesInput.checked = !!editor.groupMoves;
+    if (levelRushHourInput) levelRushHourInput.checked = !!editor.rushHour;
     editor.visibleCustomShapes = computeVisibleCustomShapesFromLevel();
     closeManualPaste();
     updateDeleteBtnVisibility();
@@ -4606,6 +4859,7 @@
     { const s = (levelStepInput.value || '').trim(); const n = parseInt(s, 10); editor.levelStep = (!isNaN(n) && n > 0) ? n : 0; }
     if (editor.dirty) { editor.levelStep = 0; }
     if (levelGroupMovesInput) editor.groupMoves = !!levelGroupMovesInput.checked;
+    if (levelRushHourInput) editor.rushHour = !!levelRushHourInput.checked;
     const ref = editor.sourceLevelRef || { type: 'new' };
     let finalName, finalAuthor, finalGroup;
     if (ref.type === 'preset') { finalName = typedName || (((PRESET_LEVELS[ref.index] || {}).name || '') + t('copySuffix')); finalAuthor = typedAuthor || t('defaultAuthor'); }
@@ -4643,7 +4897,7 @@
     setAppMode('game');
     void appEl.offsetWidth;
     appEl.style.transition = '';
-    startGame(startCfg, targetCfg, editor.levelStep);
+    startGame(startCfg, targetCfg, editor.levelStep, editor.rushHour);
   }
   function deleteUserLevelAt(userIdx) {
     if (userIdx < 0 || userIdx >= userLevels.length) return { ok: false, wasCurrent: false };
@@ -4708,6 +4962,7 @@
     editor.levelName = ''; editor.levelNameEng = ''; editor.levelAuthor = ''; editor.levelGroup = '';
     editor.levelStep = 0;
     editor.groupMoves = false;
+    editor.rushHour = false;
     editor.activeLabel = '';
     editor.activeRound = false;
     editor.visibleCustomShapes = new Set();
@@ -4716,6 +4971,7 @@
     levelNameInput.value = ''; levelAuthorInput.value = ''; levelGroupInput.value = '';
     levelStepInput.value = '';
     if (levelGroupMovesInput) levelGroupMovesInput.checked = false;
+    if (levelRushHourInput) levelRushHourInput.checked = false;
     updateDeleteBtnVisibility();
     renderEditor();
   }
@@ -4786,6 +5042,7 @@
     lines.push('Author: ' + (editor.levelAuthor || ''));
     lines.push('Group: ' + (editor.levelGroup || editor.levelAuthor || ''));
     lines.push('Step: ' + ((editor.levelStep && editor.levelStep > 0) ? editor.levelStep : ''));
+    if (editor.rushHour) lines.push('RushHour: yes');
     if (editor.groupMoves) lines.push('GroupMoves: yes');
     lines.push('Board: ' + COLS + 'x' + ROWS);
     const allPieces = editor.startPieces.slice();
@@ -4845,7 +5102,13 @@
     for (const p of allPieces) {
       if (p.shape === 'hole' || p.shape === 'blk') continue;
       const L = pieceLetter.get(p.id); if (!L) continue;
-      const key = p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '') + '|' + (p.round ? '1' : '');
+      // In Rush Hour mode, derive dmove from shape (like the parser does).
+      let effDmove = p.dmove || '';
+      if (editor.rushHour) {
+        const derived = deriveRushHourDmove(p.shape);
+        effDmove = derived || '';
+      }
+      const key = p.color + '|' + (p.dir || '') + '|' + effDmove + '|' + (p.label || '') + '|' + (p.round ? '1' : '');
       if (!colorDirToLetters.has(key)) colorDirToLetters.set(key, []);
       colorDirToLetters.get(key).push(L);
     }
@@ -4868,15 +5131,16 @@
       letters.sort();
       const name = COLOR_ID_TO_EN[colorId] || colorId;
       let line = '  ' + letters.join(',') + '-' + name;
-      if (round) line += ',Circle';
-      else if (dmove === 'v') line += ',Vertical';
-      else if (dmove === 'h') line += ',Horizontal';
-      else if (dir) {
+      // Output ALL modifiers that are set (this allows e.g. Red,Car,Horizontal).
+      if (dir) {
         if (DIR_ID_TO_EN[dir]) line += ',' + DIR_ID_TO_EN[dir];
         else if (DECOR_ID_TO_EN[dir]) line += ',' + DECOR_ID_TO_EN[dir];
         else line += ',' + dir;
       }
-      else if (label) line += ',' + escapeLabelForText(label);
+      if (dmove === 'v') line += ',Vertical';
+      else if (dmove === 'h') line += ',Horizontal';
+      if (round) line += ',Circle';
+      if (label) line += ',' + escapeLabelForText(label);
       lines.push(line);
     }
     return lines.join('\n');
@@ -5082,7 +5346,7 @@
     for (const l of rawLines) { const t2 = l.trim(); if (!t2) continue; if (t2.startsWith('#')) continue; lines.push(t2); }
     if (lines.length === 0) throw new Error(t('parserEmpty'));
     let name = 'Level', nameEng = '', author = '', group = '', step = 0, cols = 0, rows = 0, boardWidth = 0;
-    let groupMoves = false;
+    let groupMoves = false, rushHour = false;
     const boardLines = [], goalLines = [], tileLines = [];
     let mode = 'header';
     for (const line of lines) {
@@ -5094,6 +5358,10 @@
         else if (low.startsWith('groupmoves:')) {
           const val = trim.substring(trim.indexOf(':') + 1).trim().toLowerCase();
           groupMoves = (val === 'yes' || val === 'true' || val === '1');
+        }
+        else if (low.startsWith('rushhour:')) {
+          const val = trim.substring(trim.indexOf(':') + 1).trim().toLowerCase();
+          rushHour = (val === 'yes' || val === 'true' || val === '1');
         }
         else if (low.startsWith('group:')) group = trim.substring(trim.indexOf(':') + 1).trim();
         else if (low.startsWith('step:') || low === 'step') {
@@ -5132,16 +5400,19 @@
       if (!colorParts.length) continue;
       const colorId = COLOR_EN_TO_ID[colorParts[0].toLowerCase()];
       if (!colorId) continue;
+      // Parse ALL modifiers after the color: each is one of
+      // Circle / Vertical / Horizontal / Direction / Decor / Label.
+      // This lets a tile carry e.g. "Red,Car,Horizontal" (decor + dmove).
       let dir = null, dmove = null, label = null, round = false;
-      if (colorParts[1]) {
-        const rawSecond = colorParts[1];
-        const p1 = rawSecond.toLowerCase();
+      for (let ci = 1; ci < colorParts.length; ci++) {
+        const raw = colorParts[ci];
+        const p1 = raw.toLowerCase();
         if (p1 === 'circle') round = true;
         else if (p1 === 'vertical') dmove = 'v';
         else if (p1 === 'horizontal') dmove = 'h';
         else if (DIR_EN_TO_ID[p1]) dir = DIR_EN_TO_ID[p1];
         else if (DECOR_EN_TO_ID[p1]) dir = DECOR_EN_TO_ID[p1];
-        else label = unescapeLabelFromText(rawSecond);
+        else label = unescapeLabelFromText(raw);
       }
       for (const L of letters) { letterToColor[L] = colorId; letterToDir[L] = dir; letterToDmove[L] = dmove; letterToLabel[L] = label; letterToRound[L] = round; }
     }
@@ -5161,8 +5432,9 @@
       const matched = ensureShapeFromCells(cells);
       if (matched.isNew) lastParseHadNewShapes = true;
       let color = letterToColor[L]; if (!color) color = 'gray';
-      const dir = letterToDir[L] || undefined;
-      const dmove = letterToDmove[L] || undefined;
+      let dir = letterToDir[L] || undefined;
+      let dmove = letterToDmove[L] || undefined;
+      if (rushHour) dmove = deriveRushHourDmove(matched.shapeKey);
       const label = letterToLabel[L] || undefined;
       const round = letterToRound[L] || undefined;
       startPieces.push({ shape: matched.shapeKey, color, dir, dmove, label, round, x: matched.x, y: matched.y });
@@ -5182,12 +5454,13 @@
       const cells = goalCellsByLetter[L];
       if (L === BLOCK_LETTER) { for (const [x, y] of cells) targetPieces.push({ shape: 'blk', color: 'blk', x, y }); continue; }
       let color = letterToColor[L]; if (!color) color = 'gray';
-      const dir = letterToDir[L] || undefined;
-      const dmove = letterToDmove[L] || undefined;
+      let dir = letterToDir[L] || undefined;
+      let dmove = letterToDmove[L] || undefined;
       const label = letterToLabel[L] || undefined;
       const round = letterToRound[L] || undefined;
       const startShape = letterShape[L];
       if (startShape && startShape !== 'blk') {
+        if (rushHour) dmove = deriveRushHourDmove(startShape);
         const shapeDef = SHAPES[startShape];
         const startKey = startShape + '|' + color + '|' + (dir || '') + '|' + (dmove || '') + '|' + (label || '') + '|' + (round ? '1' : '');
         const maxCount = startPieceCounts[startKey] || 0;
@@ -5213,10 +5486,11 @@
       }
       const matched = ensureShapeFromCells(cells);
       if (matched.isNew) lastParseHadNewShapes = true;
+      if (rushHour) dmove = deriveRushHourDmove(matched.shapeKey);
       targetPieces.push({ shape: matched.shapeKey, color, dir, dmove, label, round, x: matched.x, y: matched.y });
     }
     if (!group) group = author;
-    return { cols, rows, startPieces, targetPieces, name, nameEng, author, group, step, groupMoves };
+    return { cols, rows, startPieces, targetPieces, name, nameEng, author, group, step, groupMoves, rushHour };
   }
   function applyParsedLevel(level) {
     COLS = level.cols; ROWS = level.rows; CELLS = COLS * ROWS;
@@ -5229,11 +5503,13 @@
     editor.levelGroup = level.group || editor.levelAuthor || t('defaultAuthor');
     editor.levelStep = (level.step && level.step > 0) ? level.step : 0;
     editor.groupMoves = !!level.groupMoves;
+    editor.rushHour = !!level.rushHour;
     levelNameInput.value = editor.levelName;
     levelAuthorInput.value = editor.levelAuthor;
     levelGroupInput.value = editor.levelGroup;
     levelStepInput.value = editor.levelStep > 0 ? String(editor.levelStep) : '';
     if (levelGroupMovesInput) levelGroupMovesInput.checked = !!editor.groupMoves;
+    if (levelRushHourInput) levelRushHourInput.checked = !!editor.rushHour;
     editor.visibleCustomShapes = computeVisibleCustomShapesFromLevel();
     buildPalette();
     renderEditor();
@@ -5269,6 +5545,11 @@
   levelGroupInput.addEventListener('input', () => { editor.levelGroup = levelGroupInput.value; syncLevelText(); });
   levelStepInput.addEventListener('input', () => { const s = (levelStepInput.value || '').trim(); const n = parseInt(s, 10); editor.levelStep = (!isNaN(n) && n > 0) ? n : 0; syncLevelText(); });
   if (levelGroupMovesInput) levelGroupMovesInput.addEventListener('change', () => { editor.groupMoves = !!levelGroupMovesInput.checked; syncLevelText(); });
+  if (levelRushHourInput) levelRushHourInput.addEventListener('change', () => {
+    editor.rushHour = !!levelRushHourInput.checked;
+    syncLevelText();
+    renderEditor();
+  });
 
   function closeDropdownMenu(menuId) { const menu = document.getElementById(menuId); if (menu) menu.remove(); }
   function closeAllDropdowns() { closeDropdownMenu('authorDropdownMenu'); closeDropdownMenu('groupDropdownMenu'); }
@@ -5373,7 +5654,7 @@
   let manualPasteGlobalHandler = null;
   function looksLikeLevelText(text) {
     if (!text) return false;
-    if (/(klotski|board|goal|tile|groupmoves|group)\s*:/i.test(text)) return true;
+    if (/(klotski|board|goal|tile|groupmoves|rushhour|group)\s*:/i.test(text)) return true;
     if (/text\s*:\s*\[/i.test(text)) return true;
     return false;
   }
@@ -5461,7 +5742,7 @@
     applyGroupMovesFromLevel(level);
     const startCfg = level.startPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }));
     const targetCfg = level.targetPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }));
-    startGame(startCfg, targetCfg, level.step || 0);
+    startGame(startCfg, targetCfg, level.step || 0, !!level.rushHour);
   }
   function selectLevel(idx, save) {
     const all = allLevels();
@@ -5499,15 +5780,27 @@
       levelSelectEl.value = String(idx);
     } catch (err) { console.error(err); startGame(DEFAULT_START, DEFAULT_TARGET, 0); }
   }
-  levelSelectEl.addEventListener('change', e => { const idx = parseInt(e.target.value, 10); if (isNaN(idx)) return; selectLevel(idx); });
-  levelPrevBtn.addEventListener('click', () => stepLevel(-1));
-  levelNextBtn.addEventListener('click', () => stepLevel(1));
+  levelSelectEl.addEventListener('change', e => { cancelBatch(); const idx = parseInt(e.target.value, 10); if (isNaN(idx)) return; selectLevel(idx); });
+  levelPrevBtn.addEventListener('click', () => { cancelBatch(); stepLevel(-1); });
+  levelNextBtn.addEventListener('click', () => {
+    if (batch.active) {
+      batch.skipRequested = true;
+      batch.pos++;
+      if (game.solving) {
+        game.solving = false; game.stopRequested = false;
+        updateSolveBtn(); updateUndoBtn();
+        cancelSolverWorker();
+      }
+      return;
+    }
+    stepLevel(1);
+  });
   backBtn.addEventListener('click', () => {
-    if (appMode === 'editor') cancelEditor();
+    if (appMode === 'editor') { cancelEditor(); }
     else if (appMode === 'gallery') { appEl.style.transition = 'none'; setAppMode('game'); void appEl.offsetWidth; appEl.style.transition = ''; }
   });
 
-  function buildMiniPreviewFromParsed(cols, rows, pieces, holesSet) {
+  function buildMiniPreviewFromParsed(cols, rows, pieces, holesSet, hideDirArrows) {
     const el = document.createElement('div');
     el.className = 'mini-board';
     el.style.setProperty('--board-cols', cols);
@@ -5520,7 +5813,7 @@
       piece.style.top = (p.y / rows * 100) + '%';
       piece.style.width = (shape.w / cols * 100) + '%';
       piece.style.height = (shape.h / rows * 100) + '%';
-      piece.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round);
+      piece.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, !!hideDirArrows);
       el.appendChild(piece);
     }
     applyMiniBoardMask(el, cols, rows, holesSet);
@@ -5617,19 +5910,20 @@
     const previewsWrap = document.createElement('div');
     previewsWrap.className = 'gallery-previews';
     if (parsed) {
+      const hideArrows = !!parsed.rushHour;
       const holesSet = getHoleSetFromPieces(parsed.startPieces);
       const cellStart = document.createElement('div');
       cellStart.className = 'gallery-preview-cell';
       const lblS = document.createElement('div');
       lblS.className = 'gallery-preview-label'; lblS.textContent = t('previewStart');
-      const prevS = buildMiniPreviewFromParsed(parsed.cols, parsed.rows, parsed.startPieces, holesSet);
+      const prevS = buildMiniPreviewFromParsed(parsed.cols, parsed.rows, parsed.startPieces, holesSet, hideArrows);
       cellStart.appendChild(lblS); cellStart.appendChild(prevS);
       previewsWrap.appendChild(cellStart);
       const cellTarget = document.createElement('div');
       cellTarget.className = 'gallery-preview-cell';
       const lblT = document.createElement('div');
       lblT.className = 'gallery-preview-label'; lblT.textContent = t('previewTarget');
-      const prevT = buildMiniPreviewFromParsed(parsed.cols, parsed.rows, parsed.targetPieces, holesSet);
+      const prevT = buildMiniPreviewFromParsed(parsed.cols, parsed.rows, parsed.targetPieces, holesSet, hideArrows);
       cellTarget.appendChild(lblT); cellTarget.appendChild(prevT);
       previewsWrap.appendChild(cellTarget);
     } else {
@@ -5905,6 +6199,7 @@
     }
   }
   function openGallery() {
+    cancelBatch();
     if (game.session.pieceId) commitSession();
     buildGallery();
     appEl.style.transition = 'none'; setAppMode('gallery'); void appEl.offsetWidth; appEl.style.transition = '';
@@ -5916,8 +6211,8 @@
   galleryBtn.addEventListener('click', openGallery);
   undoBtn.addEventListener('click', undoGame);
   redoBtn.addEventListener('click', redoGame);
-  document.getElementById('resetBtn').addEventListener('click', () => { if (game.session.pieceId) commitSession(); startGame(game.startCfg, game.targetCfg, game.step); });
-  document.getElementById('againBtn').addEventListener('click', () => { resetSession(); startGame(game.startCfg, game.targetCfg, game.step); });
+  document.getElementById('resetBtn').addEventListener('click', () => { cancelBatch(); if (game.session.pieceId) commitSession(); startGame(game.startCfg, game.targetCfg, game.step, game.rushHour); });
+  document.getElementById('againBtn').addEventListener('click', () => { cancelBatch(); resetSession(); startGame(game.startCfg, game.targetCfg, game.step, game.rushHour); });
   document.getElementById('editBtn').addEventListener('click', openEditor);
   document.getElementById('cancelEditBtn').addEventListener('click', cancelEditor);
   document.getElementById('applyEditBtn').addEventListener('click', applyEditor);
