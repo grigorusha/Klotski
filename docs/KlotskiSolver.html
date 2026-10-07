@@ -20,7 +20,14 @@
     user-select: none; -webkit-user-select: none;
   }
   @media (max-width: 640px) { body { padding: 12px 0.5cm; } }
-  .solver-status, .title { user-select: text; -webkit-user-select: text; }
+  input, textarea, select,
+  .solver-status, .title, .about-block, .about-block a,
+  .level-text, .manual-paste, .manual-paste__textarea, .manual-paste__hint,
+  .gallery-group__description, .gallery-summary, .level-hint,
+  .settings-input, .level-meta__input, .editor-hint, .editor-palette-hint,
+  .settings-hint, .gallery-toc__link {
+    user-select: text; -webkit-user-select: text;
+  }
   .app { position: relative; width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; transition: width .2s; }
   .app.editing { max-width: 780px; }
   .app.gallery { max-width: 900px; }
@@ -367,7 +374,13 @@
   .editor-subhint { flex-basis: 100%; margin: 6px 0 0; font-size: 11px; line-height: 1.35; text-align: center; color: var(--sub); letter-spacing: .02em; }
   .gallery-view { display: flex; flex-direction: column; gap: 16px; }
   .gallery-summary { padding: 10px 14px; border-radius: 10px; background: rgba(90,200,110,.15); border: 1px solid rgba(120,220,140,.32); color: #000; font-size: 12.5px; font-weight: 500; text-align: center; letter-spacing: .01em; }
-  .gallery-group { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px 16px; border-radius: 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); }
+  .gallery-toc { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 16px; padding: 12px 16px; border-radius: 12px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); }
+  .gallery-toc__title { grid-column: 1 / -1; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+  .gallery-toc__link { font-size: 12px; color: #9ecbff; text-decoration: none; cursor: pointer; padding: 3px 6px; border-radius: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
+  .gallery-toc__link:hover { background: rgba(158,203,255,.12); text-decoration: underline; }
+  @media (max-width: 700px) { .gallery-toc { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 440px) { .gallery-toc { grid-template-columns: 1fr; } }
+  .gallery-group { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px 16px; border-radius: 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); scroll-margin-top: 12px; }
   .gallery-group__title { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
   .gallery-group__title.gallery-group__title--my { color: var(--green); }
   .gallery-group__description {
@@ -520,12 +533,10 @@
   input[type="range"].pb-scrubber::-moz-range-track, input[type="range"].pb-speed::-moz-range-track { height: 6px; background: linear-gradient(180deg, #2e2e2e, #4d4d4d); border-radius: 3px; border: 1px solid rgba(255,255,255,.15); }
   input[type="range"].pb-scrubber::-webkit-slider-thumb, input[type="range"].pb-speed::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: linear-gradient(180deg, #ffd166, #d49a20); border: 1px solid rgba(255,255,255,.4); margin-top: -6px; box-shadow: 0 2px 6px rgba(0,0,0,.5); cursor: grab; }
   input[type="range"].pb-scrubber::-moz-range-thumb, input[type="range"].pb-speed::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: linear-gradient(180deg, #ffd166, #d49a20); border: 1px solid rgba(255,255,255,.4); box-shadow: 0 2px 6px rgba(0,0,0,.5); cursor: grab; }
-  .gallery-sort-block { display: flex; flex-direction: column; gap: 8px; padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
-  .gallery-sort-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+  .gallery-sort-block { display: flex; flex-direction: row; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 10px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
+  .gallery-sort-item { display: flex; align-items: center; gap: 8px; }
+  .gallery-sort-item .settings-select { min-width: 150px; height: 32px; }
   .gallery-sort-row__label { font-size: 12px; font-weight: 600; color: var(--sub); white-space: nowrap; }
-  .gallery-sort-row button { height: 32px; padding: 0 14px; font: inherit; font-size: 12px; font-weight: 600; color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; cursor: pointer; white-space: nowrap; transition: background .12s, border-color .12s; }
-  .gallery-sort-row button:hover { background: linear-gradient(180deg, #5c5c5c, #383838); }
-  .gallery-sort-row button.active { background: linear-gradient(180deg, #d98a2b, #a05e10); border-color: var(--gold); color: #fff; }
   .about-block { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px 16px; border-radius: 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); font-size: 11.5px; line-height: 1.6; color: var(--sub); }
   .about-block__title { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); margin-bottom: 2px; }
   .about-block a { color: #9ecbff; text-decoration: none; }
@@ -783,6 +794,7 @@
   'use strict';
 
   const LANG_KEY = 'ryzhiy-osel-lang-v1';
+  const LAST_LEVEL_KEY = 'ryzhiy-osel-last-level-v1';
   function safeGetItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
   function safeSetItem(key, value) { try { localStorage.setItem(key, String(value)); } catch (e) {} }
 
@@ -858,6 +870,7 @@
       decorSquareTitle: 'Квадрат',
       decorStarTitle: 'Звезда',
       decorSmileyTitle: 'Смайлик',
+      decorSadSmileyTitle: 'Грустный смайлик',
       decorHeartTitle: 'Сердечко',
       decorFireTitle: 'Огонёк',
       decorCarTitle: 'Машинка',
@@ -928,7 +941,9 @@
       solverOom: 'Уровень слишком сложный: превышен лимит состояний (%1). Поднимите «Лимит состояний» в настройках или используйте Firefox для тяжёлых уровней (в Chrome действует ограничение ~4 ГБ на вкладку).',
       maxStatesHintFull: 'Солвер переберёт до %1 состояний. Расчётная память: ~%2.',
       maxStatesHintLimited: 'Солвер переберёт до %1 состояний (задано %2, ограничено доступной памятью). Расчётная память: ~%3.',
-      gallerySummary: 'Количество встроенных уровней %1, моих уровней %2',
+      gallerySummary: 'Встроенных уровней %1, моих %2, не решено: %3',
+      gallerySummaryNoUser: 'Встроенных уровней %1, не решено: %2',
+      tocTitle: 'Оглавление',
       galleryNoLevels: 'Уровни не найдены',
       previewStart: 'Старт', previewTarget: 'Цель',
       gallerySteps: 'Ходов: %1',
@@ -952,7 +967,9 @@
       developersLabel: 'Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a>',
       authorsLabel: 'Авторские головоломки:',
       dupesRemoved: 'Удалено дублей из «Моих уровней»: %1',
-      versionsLabel: 'Версий: %1'
+      versionsLabel: 'Версий: %1',
+      arrowTargetMismatch: 'Целевая доска не совпадает со стартовой по плиткам с ограничением движения (стрелки / Rush Hour). Проверьте, что каждая такая плитка стоит в той же строке (для горизонтальных) или том же столбце (для вертикальных), что и на старте.',
+      lastLevelRestored: 'Загружен последний уровень: %1'
     },
     en: {
       htmlLang: 'en',
@@ -1016,6 +1033,7 @@
       decorSquareTitle: 'Square',
       decorStarTitle: 'Star',
       decorSmileyTitle: 'Smiley',
+      decorSadSmileyTitle: 'Sad smiley',
       decorHeartTitle: 'Heart',
       decorFireTitle: 'Flame',
       decorCarTitle: 'Car',
@@ -1085,7 +1103,9 @@
       solverOom: 'Level is too complex: state limit exceeded (%1). Increase "State limit" in settings or use Firefox for heavy levels (Chrome caps a tab at ~4 GB).',
       maxStatesHintFull: 'Solver will explore up to %1 states. Estimated memory: ~%2.',
       maxStatesHintLimited: 'Solver will explore up to %1 states (requested %2, limited by available memory). Estimated memory: ~%3.',
-      gallerySummary: 'Built-in levels: %1, my levels: %2',
+      gallerySummary: 'Built-in: %1, mine: %2, unsolved: %3',
+      gallerySummaryNoUser: 'Built-in: %1, unsolved: %2',
+      tocTitle: 'Contents',
       galleryNoLevels: 'No levels found',
       previewStart: 'Start', previewTarget: 'Target',
       gallerySteps: 'Moves: %1',
@@ -1109,7 +1129,9 @@
       developersLabel: 'Developers: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a>',
       authorsLabel: 'Author puzzles:',
       dupesRemoved: 'Removed duplicates from "My levels": %1',
-      versionsLabel: 'Versions: %1'
+      versionsLabel: 'Versions: %1',
+      arrowTargetMismatch: 'Target board mismatch: a constrained piece (arrow / Rush Hour) is not on the same row (for horizontal) or column (for vertical) as its counterpart on the start board. Please fix.',
+      lastLevelRestored: 'Restored last level: %1'
     }
   };
 
@@ -1168,19 +1190,22 @@
   const DECOR_ID_TO_EN = {
     lineV: 'LineV', lineH: 'LineH',
     lineD1: 'LineD1', lineD2: 'LineD2',
-    circle: 'Ring', triangle: 'Triangle', square: 'Square', star: 'Star', smiley: 'Smiley', heart: 'Heart',
+    circle: 'Ring', triangle: 'Triangle', square: 'Square', star: 'Star',
+    smiley: 'Smiley', sad: 'SadSmiley', heart: 'Heart',
     fire: 'Fire', car: 'Car'
   };
   const DECOR_EN_TO_ID = {
     linev: 'lineV', lineh: 'lineH',
     lined1: 'lineD1', lined2: 'lineD2',
     line1: 'lineD1', line2: 'lineD2',
-    ring: 'circle', triangle: 'triangle', square: 'square', star: 'star', smiley: 'smiley', smile: 'smiley', heart: 'heart',
+    ring: 'circle', triangle: 'triangle', square: 'square', star: 'star',
+    smiley: 'smiley', smile: 'smiley', sadsmiley: 'sad', sad: 'sad', frown: 'sad',
+    heart: 'heart',
     fire: 'fire', flame: 'fire', car: 'car'
   };
   const DECOR_ORDER = ['', 'up', 'right', 'down', 'left',
                        'lineV', 'lineH', 'lineD1', 'lineD2',
-                       'circle', 'triangle', 'square', 'star', 'smiley', 'heart', 'fire', 'car'];
+                       'circle', 'triangle', 'square', 'star', 'smiley', 'sad', 'heart', 'fire', 'car'];
   const LIGHT_TILE_COLORS = new Set(['yellow', 'lime', 'beige', 'white']);
 
   const FIRE_PATH_D =
@@ -1213,6 +1238,7 @@
       case 'square': return t('decorSquareTitle');
       case 'star': return t('decorStarTitle');
       case 'smiley': return t('decorSmileyTitle');
+      case 'sad': return t('decorSadSmileyTitle');
       case 'heart': return t('decorHeartTitle');
       case 'fire': return t('decorFireTitle');
       case 'car': return t('decorCarTitle');
@@ -1848,6 +1874,14 @@
              `<circle cx="${(cx + eyeDX).toFixed(4)}" cy="${eyeY.toFixed(4)}" r="${eyeR.toFixed(4)}" fill="rgba(0,0,0,0.85)"/>` +
              `<path d="${mouthPath}" fill="none" stroke="rgba(0,0,0,0.85)" stroke-width="${(sw*1.3).toFixed(4)}" stroke-linecap="round"/>`;
     }
+    if (decor === 'sad') {
+      const r = minDim * 0.34, eyeR = Math.max(0.02, r * 0.12), eyeY = cy - r * 0.22, eyeDX = r * 0.36;
+      const mouthPath = `M ${(cx - r*0.50).toFixed(4)} ${(cy + r*0.50).toFixed(4)} Q ${cx.toFixed(4)} ${(cy - r*0.05).toFixed(4)} ${(cx + r*0.50).toFixed(4)} ${(cy + r*0.50).toFixed(4)}`;
+      return `<circle cx="${cx.toFixed(4)}" cy="${cy.toFixed(4)}" r="${r.toFixed(4)}" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw}"/>` +
+             `<circle cx="${(cx - eyeDX).toFixed(4)}" cy="${eyeY.toFixed(4)}" r="${eyeR.toFixed(4)}" fill="rgba(0,0,0,0.85)"/>` +
+             `<circle cx="${(cx + eyeDX).toFixed(4)}" cy="${eyeY.toFixed(4)}" r="${eyeR.toFixed(4)}" fill="rgba(0,0,0,0.85)"/>` +
+             `<path d="${mouthPath}" fill="none" stroke="rgba(0,0,0,0.85)" stroke-width="${(sw*1.3).toFixed(4)}" stroke-linecap="round"/>`;
+    }
     if (decor === 'heart') {
       const s = minDim * 0.9;
       const cx0 = 0.5, cy0 = 0.525;
@@ -1942,6 +1976,9 @@
     else if (decor === 'smiley') {
       inner = `<circle cx="0.5" cy="0.5" r="0.38" fill="none" stroke="${c}" stroke-width="0.1"/><circle cx="0.38" cy="0.42" r="0.055" fill="${c}"/><circle cx="0.62" cy="0.42" r="0.055" fill="${c}"/><path d="M 0.32 0.6 Q 0.5 0.75 0.68 0.6" fill="none" stroke="${c}" stroke-width="0.1" stroke-linecap="round"/>`;
     }
+    else if (decor === 'sad') {
+      inner = `<circle cx="0.5" cy="0.5" r="0.38" fill="none" stroke="${c}" stroke-width="0.1"/><circle cx="0.38" cy="0.42" r="0.055" fill="${c}"/><circle cx="0.62" cy="0.42" r="0.055" fill="${c}"/><path d="M 0.32 0.72 Q 0.5 0.55 0.68 0.72" fill="none" stroke="${c}" stroke-width="0.1" stroke-linecap="round"/>`;
+    }
     else if (decor === 'heart') {
       inner = `<path d="M 0.5 0.85 C 0.1 0.55 0.1 0.22 0.3 0.2 A 0.18 0.18 0 0 1 0.5 0.32 A 0.18 0.18 0 0 1 0.7 0.2 C 0.9 0.22 0.9 0.55 0.5 0.85 Z" fill="none" stroke="${c}" stroke-width="0.1" stroke-linejoin="round"/>`;
     }
@@ -1956,10 +1993,6 @@
     return `<svg viewBox="0 0 1 1" aria-hidden="true">${inner}</svg>`;
   }
 
-  // shapeSVGInner(shapeKey, colorId, dir, dmove, label, round, hideDirArrows)
-  // - hideDirArrows === true  → Rush Hour mode: decorations and labels are shown,
-  //   but ALL arrows (single-direction AND bidirectional) are hidden.
-  //   The dmove field still constrains movement — it's just not drawn.
   function shapeSVGInner(shapeKey, colorId, dir, dmove, label, round, hideDirArrows) {
     if (shapeKey === 'hole') return '';
     if (shapeKey === 'blk') colorId = 'blk';
@@ -2007,10 +2040,8 @@
         const rect = largestInscribedRect(shape, preferAxis);
         const acx = rect.x + rect.w / 2, acy = rect.y + rect.h / 2;
         if (isDecorDir) {
-          // Decorations (car, fire, ring, stripes, shapes) are always shown.
           arrowContent = pieceDecorMarkup(dir, acx, acy, rect.w, rect.h);
         } else if (dmove && !hideDirArrows) {
-          // Bidirectional arrows are hidden in Rush Hour mode.
           arrowContent = pieceBiArrowMarkup(dmove, acx, acy, rect.w, rect.h, colorId);
         } else if (dir && !hideDirArrows) {
           arrowContent = pieceArrowMarkup(dir, acx, acy, rect.w, rect.h);
@@ -2059,7 +2090,7 @@
     el.classList.toggle('err', !!isError);
     el.classList.add('show');
     clearTimeout(el._tid);
-    el._tid = setTimeout(() => el.classList.remove('show'), 1800);
+    el._tid = setTimeout(() => el.classList.remove('show'), 5000);
   }
   function findPlacementSpot(list, shapeKey, origX, origY) {
     const shape = SHAPES[shapeKey];
@@ -2709,7 +2740,8 @@
     active: false,
     list: [],
     pos: 0,
-    skipRequested: false
+    skipRequested: false,
+    stats: { solved: 0, notFound: 0, oom: 0, error: 0 }
   };
   let batchMode = false;
 
@@ -2865,7 +2897,6 @@
       el.id = 'piece-' + p.id;
       el.style.width = (shape.w / COLS * 100) + '%';
       el.style.height = (shape.h / ROWS * 100) + '%';
-      // In Rush Hour: decorations shown, all arrows hidden.
       el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, game.rushHour);
       if (!isFixed) attachGamePieceEvents(el, p);
       boardInnerEl.appendChild(el);
@@ -3136,10 +3167,26 @@
   }
   function oomMessage() { return t('solverOom', fmtNum(MAX_NODES)); }
 
+  function getLevelNameByGlobalIdx(idx) {
+    const all = allLevels();
+    if (idx < 0 || idx >= all.length) return '?';
+    return levelDisplayName(all[idx]);
+  }
+  function logMemory(tag) {
+    if (typeof performance === 'undefined' || !performance.memory) return;
+    try {
+      const used = performance.memory.usedJSHeapSize / 1048576;
+      const lim = performance.memory.jsHeapSizeLimit / 1048576;
+      console.log('[AutoSolve] ' + (tag || '') + ' memory: ' + used.toFixed(1) + '/' + lim.toFixed(1) + ' MB (' + ((used / lim) * 100).toFixed(1) + '%)');
+    } catch (e) {}
+  }
+
   function cancelBatch() {
     if (!batch.active) return;
     batch.active = false;
     batch.skipRequested = false;
+    console.log('[AutoSolve] Batch cancelled at ' + (batch.pos + 1) + '/' + batch.list.length + ' "' + getLevelNameByGlobalIdx(batch.list[batch.pos]) + '"');
+    console.log('[AutoSolve] Batch stats: solved=' + batch.stats.solved + ', notFound=' + batch.stats.notFound + ', oom=' + batch.stats.oom + ', error=' + batch.stats.error);
     if (game.solving) {
       stopSolving(t('batchStopped'));
     } else {
@@ -3154,6 +3201,7 @@
     if (!batch.active) return;
     if (batch.pos >= batch.list.length) {
       batch.active = false;
+      console.log('[AutoSolve] Batch complete: solved=' + batch.stats.solved + ', notFound=' + batch.stats.notFound + ', oom=' + batch.stats.oom + ', error=' + batch.stats.error);
       solverStatus.textContent = t('batchDone');
       solverStatus.classList.remove('error');
       updateSolveBtn();
@@ -3162,6 +3210,9 @@
     }
     batch.skipRequested = false;
     const globalIdx = batch.list[batch.pos];
+    const lvlName = getLevelNameByGlobalIdx(globalIdx);
+    console.log('[AutoSolve] ' + (batch.pos + 1) + '/' + batch.list.length + ' "' + lvlName + '" (globalIdx=' + globalIdx + ') starting...');
+    logMemory('before');
     if (appMode !== 'game') {
       appEl.style.transition = 'none';
       setAppMode('game');
@@ -3169,7 +3220,7 @@
       appEl.style.transition = '';
     }
     try { selectLevel(globalIdx, false); }
-    catch (e) { console.error(e); batch.pos++; batchStep(); return; }
+    catch (e) { console.error('[AutoSolve] selectLevel error:', e); batch.stats.error++; batch.pos++; batchStep(); return; }
     solverStatus.textContent = t('batchProgress', batch.pos + 1, batch.list.length);
     solverStatus.classList.remove('error');
     updateSolveBtn();
@@ -3177,12 +3228,14 @@
     if (!batch.active) return;
     if (batch.skipRequested) {
       batch.skipRequested = false;
+      console.log('[AutoSolve] Skipped "' + lvlName + '"');
       batchStep();
       return;
     }
     batchMode = true;
-    try { await runSolver(); } catch (e) { console.error(e); }
+    try { await runSolver(); } catch (e) { console.error('[AutoSolve] runSolver error:', e); batch.stats.error++; }
     batchMode = false;
+    logMemory('after');
     if (!batch.active) return;
     if (batch.skipRequested) {
       batch.skipRequested = false;
@@ -3208,6 +3261,9 @@
     batch.list = list;
     batch.pos = 0;
     batch.skipRequested = false;
+    batch.stats = { solved: 0, notFound: 0, oom: 0, error: 0 };
+    console.log('[AutoSolve] ================ Batch start ================');
+    console.log('[AutoSolve] Queue: ' + list.length + ' unsolved levels');
     showToast(t('batchStarted', list.length));
     batchStep();
   }
@@ -3246,13 +3302,16 @@
     if (game.session.pieceId) commitSession();
     clearHint();
     const mySessionId = ++solveSessionId;
+    const lvlNameForLog = getLevelNameByGlobalIdx(currentLevelIndex);
     solverStatus.classList.remove('error');
     solverStatus.innerHTML = t('searchingPrefix') + ' ' + t('statesWord') + ' <b>0</b> · ' + t('depthWord') + ' <b>0</b> · ' + t('timeLabel') + ' <b>0.00</b> ' + t('secondsAbbr');
     game.solving = true; game.stopRequested = false;
     updateSolveBtn(); updateUndoBtn();
     await new Promise(r => setTimeout(r, 20));
     if (solveSessionId !== mySessionId) return;
+    let lastNodes = 0, lastDepth = 0, lastMs = 0;
     const onProgress = (nodes, depth, ms) => {
+      lastNodes = nodes; lastDepth = depth; lastMs = ms;
       if (solveSessionId !== mySessionId) return;
       if (!game.solving) return;
       solverStatus.innerHTML = t('searchingPrefix') + ' ' + t('statesWord') + ' <b>' + fmtNodes(nodes) + '</b> · ' + t('depthWord') + ' <b>' + depth + '</b> · ' + t('timeLabel') + ' <b>' + fmtSolverTime(ms / 1000) + '</b>';
@@ -3262,21 +3321,33 @@
     catch (err) {
       if (solveSessionId !== mySessionId) return;
       if (err && err.message === '__OOM__') {
-        if (batchMode) { game.solving = false; updateSolveBtn(); updateUndoBtn(); return; }
+        if (batchMode) {
+          console.error('[AutoSolve] OOM on "' + lvlNameForLog + '" — states explored: ' + lastNodes + ', depth: ' + lastDepth + ', limit: ' + MAX_NODES);
+          batch.stats.oom++;
+          game.solving = false; updateSolveBtn(); updateUndoBtn(); return;
+        }
         stopSolving(oomMessage(), true); return;
       }
-      console.error(err);
-      if (batchMode) { game.solving = false; updateSolveBtn(); updateUndoBtn(); return; }
+      console.error('[AutoSolve] Solver error on "' + lvlNameForLog + '":', err);
+      if (batchMode) { batch.stats.error++; game.solving = false; updateSolveBtn(); updateUndoBtn(); return; }
       stopSolving(t('solverError', err.message), true);
       return;
     }
     if (solveSessionId !== mySessionId) return;
     if (!game.solving) return;
     if (!result) {
-      if (batchMode) { game.solving = false; updateSolveBtn(); updateUndoBtn(); return; }
+      if (batchMode) {
+        console.warn('[AutoSolve] NOT FOUND "' + lvlNameForLog + '" — states: ' + lastNodes + ', depth: ' + lastDepth + ', time: ' + (lastMs / 1000).toFixed(2) + 's');
+        batch.stats.notFound++;
+        game.solving = false; updateSolveBtn(); updateUndoBtn(); return;
+      }
       stopSolving(t('solverNotFound'), true); return;
     }
     solverStatus.innerHTML = t('doneWord') + ' <b>' + result.path.length + '</b> ' + t('movesWord') + ' · ' + t('nodesWord') + ' <b>' + fmtNodes(result.nodes) + '</b> · ' + t('timeLabel') + ' <b>' + fmtSolverTime(result.ms / 1000) + '</b>';
+    if (batchMode) {
+      console.log('[AutoSolve] SOLVED "' + lvlNameForLog + '" — moves: ' + result.path.length + ', states: ' + result.nodes + ', time: ' + (result.ms / 1000).toFixed(2) + 's');
+      batch.stats.solved++;
+    }
     if (shouldSaveStep() && result.path.length > 0) {
       const steps = result.path.length;
       game.step = steps; renderLevelHint();
@@ -3558,7 +3629,15 @@
     wheelLock = performance.now();
     if (e.deltaY > 0) undoGame(); else if (e.deltaY < 0) redoGame();
   }, { passive: false });
-  window.addEventListener('contextmenu', e => { e.preventDefault(); });
+
+  window.addEventListener('contextmenu', e => {
+    const tgt = e.target;
+    if (!tgt) { e.preventDefault(); return; }
+    const tag = (tgt.tagName || '').toUpperCase();
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tgt.isContentEditable) return;
+    if (tgt.closest && tgt.closest('.level-text, .manual-paste, .about-block, .gallery-group__description, .gallery-toc__link, .solver-status, .title')) return;
+    e.preventDefault();
+  });
   window.addEventListener('click', () => { hideLevelContextMenu(); });
 
   window.addEventListener('keydown', e => {
@@ -3587,7 +3666,6 @@
     }
 
     if (appMode === 'game' && playback.active) {
-      if (e.key === ' ') { e.preventDefault(); playbackToggle(); return; }
       if (e.key === 'ArrowLeft') { e.preventDefault(); playbackPause(); applyPlaybackStep(Math.max(0, playback.currentStep - 1)); return; }
       if (e.key === 'ArrowRight') { e.preventDefault(); playbackPause(); applyPlaybackStep(Math.min(playback.path.length, playback.currentStep + 1)); return; }
     }
@@ -3647,6 +3725,26 @@
     showAllCustom: false,
     dirty: false
   };
+
+  // Requirement #3: whenever the level is edited (structural change), clear the
+  // optimal step count immediately. We use a property accessor for `editor.dirty`
+  // so every `editor.dirty = true` also clears `editor.levelStep`.
+  (function setupEditorDirtyAccessor() {
+    let _dirtyFlag = !!editor.dirty;
+    Object.defineProperty(editor, 'dirty', {
+      configurable: true,
+      enumerable: true,
+      get: function () { return _dirtyFlag; },
+      set: function (v) {
+        _dirtyFlag = !!v;
+        if (v && editor.levelStep !== 0) {
+          editor.levelStep = 0;
+          if (levelStepInput) levelStepInput.value = '';
+        }
+      }
+    });
+  })();
+
   const DOUBLE_CLICK_MS = 350;
 
   function computeVisibleCustomShapesFromLevel() {
@@ -4259,7 +4357,7 @@
     const sep1 = document.createElement('div'); sep1.className = 'color-palette-sep'; row2.appendChild(sep1);
     for (const id of ['lineV', 'lineH', 'lineD1', 'lineD2']) row2.appendChild(makeDirDecorButton(id));
     const sep2 = document.createElement('div'); sep2.className = 'color-palette-sep'; row2.appendChild(sep2);
-    for (const id of ['circle', 'triangle', 'square', 'star', 'smiley', 'heart', 'fire', 'car']) row2.appendChild(makeDirDecorButton(id));
+    for (const id of ['circle', 'triangle', 'square', 'star', 'smiley', 'sad', 'heart', 'fire', 'car']) row2.appendChild(makeDirDecorButton(id));
     const sepRound = document.createElement('div'); sepRound.className = 'color-palette-sep'; row2.appendChild(sepRound);
     row2.appendChild(makeRoundButton());
     colorPaletteEl.appendChild(row2);
@@ -4302,7 +4400,6 @@
       el.style.top = (p.y / ROWS * 100) + '%';
       el.style.width = (shape.w / COLS * 100) + '%';
       el.style.height = (shape.h / ROWS * 100) + '%';
-      // In Rush Hour editor: decorations shown, all arrows hidden.
       el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, editor.rushHour);
       if (isLockedOnTarget) { innerEl.appendChild(el); continue; }
       el.addEventListener('pointerdown', e => {
@@ -4842,10 +4939,54 @@
     appEl.style.transition = '';
     playBoardAppear();
   }
+
+  // Requirement #1 (fixed for Rush Hour too):
+  // For every row, every non-fixed tile with axis 'h' on target must correspond to a
+  // tile of the SAME TYPE (shape + color) on start in the SAME row.
+  // For every column, every non-fixed tile with axis 'v' on target must correspond to a
+  // tile of the SAME TYPE on start in the SAME column.
+  // Axis is: explicit dmove in arrow mode; derived from shape (w vs h) in Rush Hour.
+  // Fewer tiles on target than on start is OK; extra is not.
+  // This catches "I moved the red vertical tile from column 0 to column 3" cases
+  // where the simple count-per-column check would pass.
+  function validateTargetArrows() {
+    const isRush = !!editor.rushHour;
+    const axisOf = (p) => {
+      if (!p || p.shape === 'blk' || p.shape === 'hole') return '';
+      if (isRush) return deriveRushHourDmove(p.shape) || '';
+      return p.dmove || '';
+    };
+    const typeOf = (p) => (p.shape || '') + '|' + (p.color || '');
+    const countMap = (list) => {
+      const m = {};
+      for (const p of list) {
+        const a = axisOf(p);
+        if (a !== 'h' && a !== 'v') continue;
+        const line = (a === 'h') ? p.y : p.x;
+        if (typeof line !== 'number' || line < 0) continue;
+        if (a === 'h' && line >= ROWS) continue;
+        if (a === 'v' && line >= COLS) continue;
+        const k = a + '|' + line + '|' + typeOf(p);
+        m[k] = (m[k] || 0) + 1;
+      }
+      return m;
+    };
+    const startMap = countMap(editor.startPieces);
+    const targetMap = countMap(editor.targetPieces);
+    for (const k in targetMap) {
+      if (targetMap[k] > (startMap[k] || 0)) return false;
+    }
+    return true;
+  }
+
   function applyEditor() {
     if (editor.startPieces.length === 0) return;
     const movableTargets = editor.targetPieces.filter(p => { const sh = SHAPES[p.shape]; return sh && !sh.fixed; });
     if (movableTargets.length === 0) return;
+    if (!validateTargetArrows()) {
+      showToast(t('arrowTargetMismatch'), true);
+      return;
+    }
     cleanupEditorDrag(); closeManualPaste(); cancelTileEditor();
     knifeSession = null;
     editor.knifeMode = false;
@@ -5038,7 +5179,8 @@
   function serializeLevel() {
     const lines = [];
     lines.push('Klotski: ' + (editor.levelName || t('defaultLevelName')));
-    lines.push('NameEng: ' + (editor.levelNameEng || ''));
+    // Requirement #2: omit NameEng line entirely when empty.
+    if (editor.levelNameEng) lines.push('NameEng: ' + editor.levelNameEng);
     lines.push('Author: ' + (editor.levelAuthor || ''));
     lines.push('Group: ' + (editor.levelGroup || editor.levelAuthor || ''));
     lines.push('Step: ' + ((editor.levelStep && editor.levelStep > 0) ? editor.levelStep : ''));
@@ -5102,7 +5244,6 @@
     for (const p of allPieces) {
       if (p.shape === 'hole' || p.shape === 'blk') continue;
       const L = pieceLetter.get(p.id); if (!L) continue;
-      // In Rush Hour mode, derive dmove from shape (like the parser does).
       let effDmove = p.dmove || '';
       if (editor.rushHour) {
         const derived = deriveRushHourDmove(p.shape);
@@ -5131,7 +5272,6 @@
       letters.sort();
       const name = COLOR_ID_TO_EN[colorId] || colorId;
       let line = '  ' + letters.join(',') + '-' + name;
-      // Output ALL modifiers that are set (this allows e.g. Red,Car,Horizontal).
       if (dir) {
         if (DIR_ID_TO_EN[dir]) line += ',' + DIR_ID_TO_EN[dir];
         else if (DECOR_ID_TO_EN[dir]) line += ',' + DECOR_ID_TO_EN[dir];
@@ -5183,13 +5323,26 @@
 
   function parseLevelStepSafe(text) { try { const p = parseLevel(text); return (p && p.step) ? p.step : 0; } catch (e) { return 0; } }
 
-  function formatGroupTitle(group, authors, count) {
+  function formatGroupTitle(group, authors, total, unsolved) {
     const valid = (authors || []).filter(a => a && String(a).trim() && String(a).trim() !== group);
     let label;
     if (valid.length === 0) label = group;
     else if (valid.length === 1) label = group + ' (' + valid[0] + ')';
     else label = group + ' (' + valid.join(', ') + ')';
-    return label + ' - (' + count + ')';
+    if (typeof unsolved === 'number' && unsolved > 0 && unsolved < total) return label + ' - (' + total + ' / ' + unsolved + ')';
+    return label + ' - (' + total + ')';
+  }
+  function formatTocTitle(group, total, unsolved) {
+    if (typeof unsolved === 'number' && unsolved > 0 && unsolved < total) return group + ' - (' + total + ' / ' + unsolved + ')';
+    return group + ' - (' + total + ')';
+  }
+  function countUnsolvedItems(items) {
+    let n = 0;
+    for (const it of items) {
+      const step = parseLevelStepSafe(it.level.text);
+      if (!(step > 0)) n++;
+    }
+    return n;
   }
 
   function makeBoardSortFn() {
@@ -5245,8 +5398,9 @@
     const presetGroups = [];
     for (const [group, g] of presetByGroup) {
       const authorList = Array.from(g.authors);
+      const unsolved = countUnsolvedItems(g.items);
       presetGroups.push({
-        title: formatGroupTitle(group, authorList, g.items.length),
+        title: formatGroupTitle(group, authorList, g.items.length, unsolved),
         group, authors: authorList, isUser: false,
         items: g.items
       });
@@ -5265,8 +5419,9 @@
     const userGroups = [];
     for (const [group, g] of userByGroup) {
       const authorList = Array.from(g.authors);
+      const unsolved = countUnsolvedItems(g.items);
       userGroups.push({
-        title: t('myLevels') + ' · ' + formatGroupTitle(group, authorList, g.items.length),
+        title: t('myLevels') + ' · ' + formatGroupTitle(group, authorList, g.items.length, unsolved),
         group, authors: authorList, isUser: true,
         items: g.items
       });
@@ -5400,9 +5555,6 @@
       if (!colorParts.length) continue;
       const colorId = COLOR_EN_TO_ID[colorParts[0].toLowerCase()];
       if (!colorId) continue;
-      // Parse ALL modifiers after the color: each is one of
-      // Circle / Vertical / Horizontal / Direction / Decor / Label.
-      // This lets a tile carry e.g. "Red,Car,Horizontal" (decor + dmove).
       let dir = null, dmove = null, label = null, round = false;
       for (let ci = 1; ci < colorParts.length; ci++) {
         const raw = colorParts[ci];
@@ -5540,7 +5692,15 @@
       if (targetBoardEl) targetBoardEl.style.cursor = editor.knifeMode ? 'crosshair' : '';
     });
   }
-  levelNameInput.addEventListener('input', () => { editor.levelName = levelNameInput.value; syncLevelText(); });
+  // Requirement #2: on name change, clear NameEng (stale EN name).
+  levelNameInput.addEventListener('input', () => {
+    const newVal = levelNameInput.value;
+    if (editor.levelName !== newVal) {
+      editor.levelName = newVal;
+      if (editor.levelNameEng) editor.levelNameEng = '';
+    }
+    syncLevelText();
+  });
   levelAuthorInput.addEventListener('input', () => { editor.levelAuthor = levelAuthorInput.value; syncLevelText(); });
   levelGroupInput.addEventListener('input', () => { editor.levelGroup = levelGroupInput.value; syncLevelText(); });
   levelStepInput.addEventListener('input', () => { const s = (levelStepInput.value || '').trim(); const n = parseInt(s, 10); editor.levelStep = (!isNaN(n) && n > 0) ? n : 0; syncLevelText(); });
@@ -5768,11 +5928,60 @@
     if (newPos < 0) newPos += n;
     selectLevel(ordered[newPos].globalIdx);
   }
+
+  function getCurrentLevelIdentity() {
+    const all = allLevels();
+    if (currentLevelIndex < 0 || currentLevelIndex >= all.length) return null;
+    const lvl = all[currentLevelIndex];
+    const name = lvl.name || extractNameFromText(lvl.text) || '';
+    const group = lvl.group || extractGroupFromText(lvl.text) || lvl.author || '';
+    return { name, group };
+  }
+  function findLevelIdxByNameAndGroup(name, group) {
+    if (!name) return -1;
+    const all = allLevels();
+    const g = String(group || '').trim();
+    const n = String(name).trim();
+    for (let i = 0; i < all.length; i++) {
+      const lvl = all[i];
+      const lvlName = (lvl.name || extractNameFromText(lvl.text) || '').trim();
+      const lvlGroup = (lvl.group || extractGroupFromText(lvl.text) || lvl.author || '').trim();
+      if (lvlName === n && (g ? lvlGroup === g : true)) return i;
+    }
+    for (let i = 0; i < all.length; i++) {
+      const lvl = all[i];
+      const lvlName = (lvl.name || extractNameFromText(lvl.text) || '').trim();
+      if (lvlName === n) return i;
+    }
+    return -1;
+  }
+  function saveLastLevelIdentity() {
+    try {
+      const id = getCurrentLevelIdentity();
+      if (id && id.name) safeSetItem(LAST_LEVEL_KEY, JSON.stringify(id));
+    } catch (e) {}
+  }
+  window.addEventListener('pagehide', saveLastLevelIdentity);
+  window.addEventListener('beforeunload', saveLastLevelIdentity);
+
   function loadSavedOrFirstLevel() {
     const all = allLevels();
     if (all.length === 0) { startGame(DEFAULT_START, DEFAULT_TARGET, 0); return; }
-    let idx = parseInt(safeGetItem(LEVEL_KEY) || '', 10);
-    if (isNaN(idx) || idx < 0 || idx >= all.length) idx = 0;
+    let idx = -1;
+    try {
+      const raw = safeGetItem(LAST_LEVEL_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.name) {
+          idx = findLevelIdxByNameAndGroup(parsed.name, parsed.group);
+        }
+      }
+    } catch (e) { idx = -1; }
+    if (idx < 0) {
+      const saved = parseInt(safeGetItem(LEVEL_KEY) || '', 10);
+      if (!isNaN(saved) && saved >= 0 && saved < all.length) idx = saved;
+    }
+    if (idx < 0 || idx >= all.length) idx = 0;
     try {
       const level = parseLevel(all[idx].text);
       loadLevelToGame(level);
@@ -6037,64 +6246,63 @@
     const sortBlock = document.createElement('div');
     sortBlock.className = 'gallery-sort-block';
 
-    const groupSortRow = document.createElement('div');
-    groupSortRow.className = 'gallery-sort-row';
+    const groupSortItem = document.createElement('div');
+    groupSortItem.className = 'gallery-sort-item';
     const groupSortLbl = document.createElement('span');
     groupSortLbl.className = 'gallery-sort-row__label';
     groupSortLbl.textContent = t('sortGroupsLabel');
-    groupSortRow.appendChild(groupSortLbl);
-    const groupSortOptions = [
-      { key: 'default', label: t('sortDefault') },
-      { key: 'name', label: t('sortName') },
-      { key: 'size', label: t('sortSize') }
-    ];
-    for (const opt of groupSortOptions) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.textContent = opt.label;
-      b.classList.toggle('active', gallerySortMode === opt.key);
-      b.addEventListener('click', () => {
-        gallerySortMode = opt.key;
-        safeSetItem(GALLERY_GROUP_SORT_KEY, gallerySortMode);
-        buildGallery(); buildLevelSelect();
-        if (levelSelectEl) levelSelectEl.value = String(currentLevelIndex);
-      });
-      groupSortRow.appendChild(b);
+    groupSortItem.appendChild(groupSortLbl);
+    const groupSelect = document.createElement('select');
+    groupSelect.className = 'settings-select';
+    for (const opt of [['default', t('sortDefault')], ['name', t('sortName')], ['size', t('sortSize')]]) {
+      const o = document.createElement('option');
+      o.value = opt[0]; o.textContent = opt[1];
+      if (gallerySortMode === opt[0]) o.selected = true;
+      groupSelect.appendChild(o);
     }
-    sortBlock.appendChild(groupSortRow);
+    groupSelect.addEventListener('change', () => {
+      gallerySortMode = groupSelect.value;
+      safeSetItem(GALLERY_GROUP_SORT_KEY, gallerySortMode);
+      buildGallery(); buildLevelSelect();
+      if (levelSelectEl) levelSelectEl.value = String(currentLevelIndex);
+    });
+    groupSortItem.appendChild(groupSelect);
+    sortBlock.appendChild(groupSortItem);
 
-    const boardSortRow = document.createElement('div');
-    boardSortRow.className = 'gallery-sort-row';
+    const boardSortItem = document.createElement('div');
+    boardSortItem.className = 'gallery-sort-item';
     const boardSortLbl = document.createElement('span');
     boardSortLbl.className = 'gallery-sort-row__label';
     boardSortLbl.textContent = t('sortBoardsLabel');
-    boardSortRow.appendChild(boardSortLbl);
-    const boardSortOptions = [
-      { key: 'default', label: t('sortDefault') },
-      { key: 'name', label: t('sortBoardName') },
-      { key: 'steps', label: t('sortSteps') }
-    ];
-    for (const opt of boardSortOptions) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.textContent = opt.label;
-      b.classList.toggle('active', boardSortMode === opt.key);
-      b.addEventListener('click', () => {
-        boardSortMode = opt.key;
-        safeSetItem(GALLERY_SORT_KEY, boardSortMode);
-        buildGallery(); buildLevelSelect();
-        if (levelSelectEl) levelSelectEl.value = String(currentLevelIndex);
-      });
-      boardSortRow.appendChild(b);
+    boardSortItem.appendChild(boardSortLbl);
+    const boardSelect = document.createElement('select');
+    boardSelect.className = 'settings-select';
+    for (const opt of [['default', t('sortDefault')], ['name', t('sortBoardName')], ['steps', t('sortSteps')]]) {
+      const o = document.createElement('option');
+      o.value = opt[0]; o.textContent = opt[1];
+      if (boardSortMode === opt[0]) o.selected = true;
+      boardSelect.appendChild(o);
     }
-    sortBlock.appendChild(boardSortRow);
+    boardSelect.addEventListener('change', () => {
+      boardSortMode = boardSelect.value;
+      safeSetItem(GALLERY_SORT_KEY, boardSortMode);
+      buildGallery(); buildLevelSelect();
+      if (levelSelectEl) levelSelectEl.value = String(currentLevelIndex);
+    });
+    boardSortItem.appendChild(boardSelect);
+    sortBlock.appendChild(boardSortItem);
 
     galleryViewEl.appendChild(sortBlock);
 
     const groups = getGalleryGroups();
     const summaryEl = document.createElement('div');
     summaryEl.className = 'gallery-summary';
-    summaryEl.textContent = t('gallerySummary', PRESET_LEVELS.length, userLevels.length);
+    const totalPreset = PRESET_LEVELS.length;
+    const totalUser = userLevels.length;
+    let totalUnsolved = 0;
+    for (const g of groups) totalUnsolved += countUnsolvedItems(g.items);
+    if (totalUser > 0) summaryEl.textContent = t('gallerySummary', totalPreset, totalUser, totalUnsolved);
+    else summaryEl.textContent = t('gallerySummaryNoUser', totalPreset, totalUnsolved);
     galleryViewEl.appendChild(summaryEl);
     if (groups.length === 0) {
       const empty = document.createElement('div');
@@ -6103,9 +6311,34 @@
       galleryViewEl.appendChild(empty);
       return;
     }
-    for (const g of groups) {
+
+    const tocEl = document.createElement('div');
+    tocEl.className = 'gallery-toc';
+    const tocTitle = document.createElement('div');
+    tocTitle.className = 'gallery-toc__title';
+    tocTitle.textContent = t('tocTitle');
+    tocEl.appendChild(tocTitle);
+    for (let i = 0; i < groups.length; i++) {
+      const g = groups[i];
+      const gUnsolved = countUnsolvedItems(g.items);
+      const link = document.createElement('a');
+      link.className = 'gallery-toc__link';
+      link.textContent = formatTocTitle(g.group, g.items.length, gUnsolved);
+      link.href = '#gallery-group-' + i;
+      link.addEventListener('click', ev => {
+        ev.preventDefault();
+        const target = document.getElementById('gallery-group-' + i);
+        if (target) { try { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) { target.scrollIntoView(); } }
+      });
+      tocEl.appendChild(link);
+    }
+    galleryViewEl.appendChild(tocEl);
+
+    for (let gi = 0; gi < groups.length; gi++) {
+      const g = groups[gi];
       const groupEl = document.createElement('div');
       groupEl.className = 'gallery-group';
+      groupEl.id = 'gallery-group-' + gi;
       const titleEl = document.createElement('div');
       titleEl.className = 'gallery-group__title' + (g.isUser ? ' gallery-group__title--my' : '');
       titleEl.textContent = g.title;
