@@ -145,8 +145,11 @@
   .mini-board { --board-cols: 4; --board-rows: 5; position: relative; aspect-ratio: var(--board-cols) / var(--board-rows); border-radius: 10px; background: linear-gradient(160deg, #e8e8e8 0%, #d0d0d0 55%, #b4b4b4 100%); box-shadow: inset 0 0 0 2px #707070, inset 0 0 20px rgba(0,0,0,.18); overflow: hidden; }
   .mini-board::before { content: ''; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(to right, rgba(0,0,0,.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,.12) 1px, transparent 1px); background-size: calc(100% / var(--board-cols)) calc(100% / var(--board-rows)); }
   .editor-view { display: flex; flex-direction: column; gap: 12px; }
-  .level-bar { display: flex; flex-wrap: wrap; gap: 1cm; align-items: center; justify-content: flex-start; padding: 8px 10px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
+  .level-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-start; padding: 8px 10px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
   .level-bar__sep { flex: 0 0 auto; width: 1px; align-self: stretch; min-height: 24px; background: rgba(255,255,255,.25); border-radius: 1px; }
+  .level-bar__btn-pair { display: inline-flex; align-items: stretch; flex: 0 0 auto; }
+  .level-bar__btn-pair .new-btn:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+  .level-bar__btn-pair .new-btn:last-child { border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px; }
   .level-bar__label { font-size: 12px; font-weight: 600; color: var(--sub); white-space: nowrap; }
   .knife-group { display: flex; align-items: center; gap: 6px; }
   .size-group { display: flex; align-items: center; gap: 6px; }
@@ -199,6 +202,11 @@
   }
   .new-btn:hover { background: linear-gradient(180deg, #62b8e8, #2670a0); }
   .new-btn:active { transform: scale(.97); }
+  .copy-btn {
+    background: linear-gradient(180deg, #6fb85a, #2f7a1e);
+    border-color: rgba(160,230,150,.6);
+  }
+  .copy-btn:hover { background: linear-gradient(180deg, #82c96c, #3a8a26); }
   .level-text-block { display: flex; flex-direction: column; gap: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
   .level-meta { display: grid; grid-template-columns: 1.6fr 1.6fr 1.6fr max-content max-content; gap: 8px; align-items: end; }
   .level-meta__field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
@@ -238,9 +246,31 @@
   .palette-item:active { transform: scale(.96); cursor: grabbing; }
   .palette-item svg { display: block; width: 100%; height: 100%; overflow: visible; }
   .palette-separator { align-self: stretch; width: 1px; min-height: 36px; margin: 0 2px; background: rgba(255,255,255,.25); border-radius: 1px; }
-  .palette-dmove-btn { flex: 0 0 auto; width: 36px; height: 36px; border-radius: 9px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 2px solid transparent; color: #e8eef6; box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -3px 6px rgba(0,0,0,.35); transition: transform .1s, border-color .15s, background .15s; align-self: center; user-select: none; }
-  .palette-dmove-btn:hover { transform: scale(1.1); }
-  .palette-dmove-btn.active { border-color: var(--gold); transform: scale(1.12); background: linear-gradient(180deg, #d98a2b, #a05e10); color: #fff; }
+  /* Requirement: flat look for dmove buttons — no inset bevel shadows */
+  .palette-dmove-btn {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #3a3a3a;
+    border: 2px solid rgba(255,255,255,.10);
+    color: #e8eef6;
+    box-shadow: none;
+    transition: transform .1s, border-color .15s, background .15s;
+    align-self: center;
+    user-select: none;
+  }
+  .palette-dmove-btn:hover { transform: scale(1.1); background: #4a4a4a; }
+  .palette-dmove-btn.active {
+    border-color: var(--gold);
+    transform: scale(1.12);
+    background: linear-gradient(180deg, #d98a2b, #a05e10);
+    color: #fff;
+  }
   .palette-dmove-btn svg { width: 24px; height: 24px; display: block; overflow: visible; }
   .palette-row-label { flex: 0 0 auto; margin-right: 4px; font-size: 10px; font-weight: 700; color: var(--sub); letter-spacing: .02em; white-space: nowrap; }
   .palette-label-btn { flex: 0 0 auto; width: 18px; height: 18px; padding: 0; margin: 0; font: inherit; font-size: 10px; font-weight: 800; line-height: 1; color: #e8eef6; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; user-select: none; transition: background .12s, border-color .12s, transform .08s; }
@@ -296,8 +326,10 @@
     gap: 4px;
     padding: 8px 4px;
     align-self: flex-start;
+    transition: transform .1s, filter .15s, box-shadow .15s;
   }
   .palette-new-btn .new-tile-btn__ico { width: 20px; height: 20px; font-size: 20px; line-height: 20px; }
+  .palette-new-btn .new-tile-btn__svg { width: 22px; height: 22px; flex: 0 0 auto; display: block; }
   .palette-new-btn .new-tile-btn__lbl {
     white-space: normal;
     text-align: center;
@@ -305,6 +337,12 @@
     overflow: visible;
     text-overflow: clip;
     max-width: 100%;
+  }
+  .palette-new-btn.drop-target {
+    outline: 3px dashed #ffd166;
+    outline-offset: 3px;
+    box-shadow: 0 0 14px rgba(255, 209, 102, 0.85);
+    transform: scale(1.08);
   }
   .palette-delete-btn { background: linear-gradient(180deg, #d84a4a, #8e1f1f); border-color: rgba(255,140,140,.5); }
   .palette-delete-btn.drop-target { outline: 2px dashed #ffb0b0; outline-offset: 2px; filter: brightness(1.25); }
@@ -367,9 +405,23 @@
   .color-swatch.active { border-color: var(--gold); transform: scale(1.12); }
   .color-palette-sep { align-self: stretch; width: 1px; min-height: 30px; margin: 0 4px; background: rgba(255,255,255,.28); border-radius: 1px; }
   .color-palette__row--chars .color-palette-sep { min-height: 18px; margin: 0 2px; }
-  .color-swatch.dir-swatch { display: inline-flex; align-items: center; justify-content: center; color: #e8eef6; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -3px 6px rgba(0,0,0,.35); }
-  .color-swatch.dir-swatch:hover { transform: scale(1.1); }
-  .color-swatch.dir-swatch.active { border-color: var(--gold); transform: scale(1.12); background: linear-gradient(180deg, #d98a2b, #a05e10); color: #fff; }
+  /* Requirement: flat look for dir / decor buttons (arrows, lines, symbols) */
+  .color-swatch.dir-swatch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #e8eef6;
+    background: #3a3a3a;
+    border: 2px solid rgba(255,255,255,.10);
+    box-shadow: none;
+  }
+  .color-swatch.dir-swatch:hover { transform: scale(1.1); background: #4a4a4a; }
+  .color-swatch.dir-swatch.active {
+    border-color: var(--gold);
+    transform: scale(1.12);
+    background: linear-gradient(180deg, #d98a2b, #a05e10);
+    color: #fff;
+  }
   .color-swatch.dir-swatch svg { width: 20px; height: 20px; display: block; }
   .editor-subhint { flex-basis: 100%; margin: 6px 0 0; font-size: 11px; line-height: 1.35; text-align: center; color: var(--sub); letter-spacing: .02em; }
   .gallery-view { display: flex; flex-direction: column; gap: 16px; }
@@ -378,6 +430,7 @@
   .gallery-toc__title { grid-column: 1 / -1; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
   .gallery-toc__link { font-size: 12px; color: #9ecbff; text-decoration: none; cursor: pointer; padding: 3px 6px; border-radius: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
   .gallery-toc__link:hover { background: rgba(158,203,255,.12); text-decoration: underline; }
+  .gallery-toc__section-title { grid-column: 1 / -1; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--green); margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,.22); }
   @media (max-width: 700px) { .gallery-toc { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 440px) { .gallery-toc { grid-template-columns: 1fr; } }
   .gallery-group { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px 16px; border-radius: 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); scroll-margin-top: 12px; }
@@ -514,6 +567,7 @@
   .drag-ghost { position: fixed; pointer-events: none; z-index: 9999; opacity: .92; padding: 4px; }
   .drag-ghost svg { display: block; width: 100%; height: 100%; filter: drop-shadow(0 10px 22px rgba(0,0,0,.75)); }
   .drag-ghost.delete-hover svg { filter: drop-shadow(0 10px 22px rgba(255,0,0,.75)) brightness(1.15); opacity: .55; }
+  .drag-ghost.new-tile-hover svg { filter: drop-shadow(0 10px 22px rgba(255,209,102,.75)) brightness(1.2); }
   .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(20px); padding: 10px 16px; border-radius: 10px; font-size: 13px; color: #fff; background: rgba(30,122,52,.95); box-shadow: 0 6px 18px rgba(0,0,0,.5); opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 10000; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .toast.err { background: rgba(142,31,31,.95); }
@@ -668,7 +722,10 @@
 
   <div class="editor-view" id="editorView" hidden>
     <div class="level-bar">
-      <button class="new-btn" id="newLevelBtn" type="button" data-ruseng-title="hotkeyNew" title="Новая доска (F2)"><span class="btn-ico">＋</span><span class="btn-lbl" data-ruseng="newBtn">Новая доска</span></button>
+      <div class="level-bar__btn-pair">
+        <button class="new-btn" id="newLevelBtn" type="button" data-ruseng-title="hotkeyNew" title="Новая доска (F2)"><span class="btn-ico">＋</span><span class="btn-lbl" data-ruseng="newBtn">Новая доска</span></button>
+        <button class="new-btn copy-btn" id="copyBoardsBtn" type="button" data-ruseng-title="hotkeyCopyBoard" title="Копировать доску (F4)"><span class="btn-ico">⎘</span><span class="btn-lbl" data-ruseng="copyBoardBtn">Копировать</span></button>
+      </div>
       <div class="level-bar__sep"></div>
       <div class="size-group">
         <span class="size-title" data-ruseng="boardSizeTitle">Размер доски:</span>
@@ -774,7 +831,7 @@
       <div class="level-text-wrap">
         <pre class="level-text" id="levelText"></pre>
         <div class="manual-paste" id="manualPaste" hidden>
-          <p class="manual-paste__hint" data-ruseng="pasteHint">Вставьте текст уровня или скрипт (Ctrl+V) — загрузится автоматически. Esc — отмена.</p>
+          <p class="manual-paste__hint" data-ruseng="pasteHint">Вставьте текст уровня (Ctrl+V) — загрузится автоматически. Esc — отмена.</p>
           <textarea id="manualPasteArea" class="manual-paste__textarea" spellcheck="false" autocomplete="off" data-ruseng-placeholder="pastePlaceholder" placeholder="Ctrl+V…"></textarea>
         </div>
       </div>
@@ -807,6 +864,11 @@
   }
   let LANG = detectLang();
 
+  const SYSTEM_LANG = (typeof navigator !== 'undefined')
+    ? (navigator.language || navigator.userLanguage || 'en').toLowerCase()
+    : 'en';
+  const IS_RUSSIAN_SYSTEM = SYSTEM_LANG.startsWith('ru');
+
   const RUSENG = {
     ru: {
       htmlLang: 'ru',
@@ -834,6 +896,8 @@
       stateLimitLabel: 'Лимит состояний:',
       languageLabel: 'Язык:',
       newBtn: 'Новая доска',
+      copyBoardBtn: 'Копировать',
+      hotkeyCopyBoard: 'Копировать доску (F4)',
       boardSizeTitle: 'Размер доски:',
       cutBoard: 'Обрезать доску:',
       paletteHint: 'двойной клик — копирование плитки, правая кнопка — поворот, кнопка Del или вынести с доски — удалить',
@@ -854,7 +918,7 @@
       authorDropdownTitle: 'Выбрать автора',
       groupDropdownTitle: 'Выбрать группу',
       copy: 'Скопировать', paste: 'Вставить', copyAllJs: 'Копировать все', deleteBtn: 'Удалить',
-      pasteHint: 'Вставьте текст уровня или скрипт (Ctrl+V) — загрузится автоматически. Esc — отмена.',
+      pasteHint: 'Вставьте текст уровня (Ctrl+V) — загрузится автоматически. Esc — отмена.',
       pastePlaceholder: 'Ctrl+V…',
       wonTitle: 'Победа!', wonText: 'Цель достигнута.',
       movesLabel: 'Ходов:', timeLabel: 'Время:', playAgain: 'Играть снова',
@@ -889,7 +953,7 @@
       hotkeyStop: 'Стоп (Esc)',
       hotkeyEditor: 'Редактор (F9)',
       hotkeyNew: 'Новая доска (F2)',
-      hotkeyNewTile: 'Новая плитка (F4)',
+      hotkeyNewTile: 'Новая плитка (Ins)',
       hotkeyShow: 'Показать/Скрыть (F8)',
       hotkeyRun: 'Запустить (F9)',
       hotkeyCancel: 'Отмена (Esc)',
@@ -927,6 +991,7 @@
       levelDeleted: 'Уровень удалён',
       levelSavedN: 'Уровень сохранён: %1 ходов',
       dragToDelete: 'Перетащите плитку на кнопку, чтобы удалить',
+      dragToNewTile: 'Отпустите над кнопкой — откроется редактор плиток',
       stateLimitSet: 'Лимит состояний: %1',
       stateLimitMemory: ' (ограничен памятью)',
       deleteLevelConfirm: 'Удалить уровень "%1" из «Моих уровней»?',
@@ -997,6 +1062,8 @@
       stateLimitLabel: 'State limit:',
       languageLabel: 'Language:',
       newBtn: 'New board',
+      copyBoardBtn: 'Copy',
+      hotkeyCopyBoard: 'Copy board (F4)',
       boardSizeTitle: 'Board size:',
       cutBoard: 'Cut board:',
       paletteHint: 'double-click — copy, right-click — rotate, Del or drag off board — delete',
@@ -1017,7 +1084,7 @@
       authorDropdownTitle: 'Choose author',
       groupDropdownTitle: 'Choose group',
       copy: 'Copy', paste: 'Paste', copyAllJs: 'Copy all', deleteBtn: 'Delete',
-      pasteHint: 'Paste level text or script (Ctrl+V) — will load automatically. Esc — cancel.',
+      pasteHint: 'Paste level text (Ctrl+V) — will load automatically. Esc — cancel.',
       pastePlaceholder: 'Ctrl+V…',
       wonTitle: 'Victory!', wonText: 'Goal reached.',
       movesLabel: 'Moves:', timeLabel: 'Time:', playAgain: 'Play again',
@@ -1051,7 +1118,7 @@
       hotkeyStop: 'Stop (Esc)',
       hotkeyEditor: 'Editor (F9)',
       hotkeyNew: 'New board (F2)',
-      hotkeyNewTile: 'New tile (F4)',
+      hotkeyNewTile: 'New tile (Ins)',
       hotkeyShow: 'Show/Hide (F8)',
       hotkeyRun: 'Run (F9)',
       hotkeyCancel: 'Cancel (Esc)',
@@ -1089,6 +1156,7 @@
       levelDeleted: 'Level deleted',
       levelSavedN: 'Level saved: %1 moves',
       dragToDelete: 'Drag a tile to the button to delete it',
+      dragToNewTile: 'Release over the button to open tile editor',
       stateLimitSet: 'State limit: %1',
       stateLimitMemory: ' (limited by memory)',
       deleteLevelConfirm: 'Delete level "%1" from "My levels"?',
@@ -1396,7 +1464,7 @@
   }
   loadCustomShapes();
 
-  const ROTATE_MAP = { s1: 's1', v2: 'h2', h2: 'v2', sq: 'sq', L1: 'L2', L2: 'L3', L3: 'L4', L4: 'L1', d1: 'd2', d2: 'd1', blk: 'blk', hole: 'hole' };
+  const ROTATE_MAP = { s1: 's1', v2: 'h2', h2: 'v2', sq: 'sq', L1: 'L2', L2: 'L4', L3: 'L1', L4: 'L3', d1: 'd2', d2: 'd1', blk: 'blk', hole: 'hole' };
   const L_ROTATION = { L1: 90, L2: 180, L3: 0, L4: 270 };
   const RECT_SHAPES = new Set(['s1','v2','h2','sq']);
   const DIAG_SHAPES = new Set(['d1','d2']);
@@ -1954,6 +2022,13 @@
   }
   function roundGlyphSvg() {
     return '<svg viewBox="0 0 1 1" aria-hidden="true"><circle cx="0.5" cy="0.5" r="0.4" fill="currentColor"/></svg>';
+  }
+  function newTileIconSvgMarkup() {
+    return '<svg class="new-tile-btn__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/>' +
+      '<line x1="12" y1="8.5" x2="12" y2="15.5"/>' +
+      '<line x1="8.5" y1="12" x2="15.5" y2="12"/>' +
+      '</svg>';
   }
   function decorGlyphSvg(decor) {
     const c = 'currentColor';
@@ -3659,6 +3734,7 @@
         if (inInput) return;
         if (tileEditActive) { cancelTileEditor(); e.preventDefault(); return; }
         if (!manualPasteEl.hidden) { closeManualPaste(); e.preventDefault(); return; }
+        if (editor.showAllCustom) { editor.showAllCustom = false; buildPalette(); e.preventDefault(); return; }
         cancelEditor(); e.preventDefault(); return;
       }
       if (appMode === 'gallery') { backBtn.click(); e.preventDefault(); return; }
@@ -3685,7 +3761,8 @@
     }
     if (appMode === 'editor') {
       if (e.key === 'F2') { e.preventDefault(); clearBoards(); return; }
-      if (e.key === 'F4') { e.preventDefault(); if (!tileEditActive) openTileEditor(); return; }
+      if (e.key === 'Insert') { e.preventDefault(); if (!tileEditActive) openTileEditor(); return; }
+      if (e.key === 'F4') { e.preventDefault(); if (!tileEditActive) copyBoardsToNew(); return; }
       if (e.key === 'F8') {
         e.preventDefault();
         const toggleBtn = paletteEl.querySelector('.palette-show-btn');
@@ -3696,7 +3773,7 @@
       return;
     }
     if (appMode === 'gallery') {
-      if (e.key === 'F8') { e.preventDefault(); startBatchSolve(); return; }
+      if (e.key === 'F8' && IS_RUSSIAN_SYSTEM) { e.preventDefault(); startBatchSolve(); return; }
       return;
     }
   });
@@ -3726,9 +3803,6 @@
     dirty: false
   };
 
-  // Requirement #3: whenever the level is edited (structural change), clear the
-  // optimal step count immediately. We use a property accessor for `editor.dirty`
-  // so every `editor.dirty = true` also clears `editor.levelStep`.
   (function setupEditorDirtyAccessor() {
     let _dirtyFlag = !!editor.dirty;
     Object.defineProperty(editor, 'dirty', {
@@ -3746,6 +3820,36 @@
   })();
 
   const DOUBLE_CLICK_MS = 350;
+
+  // Requirement: tolerance around the board edges when dropping a dragged tile —
+  // the mouse may be slightly outside the board rect (top-left corner, top row)
+  // and the tile should still be placed with coordinates clamped to [0..max].
+  const DROP_MARGIN_PX = 32;
+  function rectContainsPoint(r, x, y) { return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom; }
+  function expandRectBy(r, m) { return { left: r.left - m, right: r.right + m, top: r.top - m, bottom: r.bottom + m }; }
+  function pickDropBoard(clientX, clientY) {
+    const sRect = startBoardInnerEl.getBoundingClientRect();
+    const tRect = targetBoardInnerEl.getBoundingClientRect();
+    // 1) Strict hit (prefer the exact board under cursor).
+    if (rectContainsPoint(sRect, clientX, clientY)) return { name: 'start', rect: sRect };
+    if (rectContainsPoint(tRect, clientX, clientY)) return { name: 'target', rect: tRect };
+    // 2) Expanded hit — allow dropping from slightly outside the board.
+    const sExp = expandRectBy(sRect, DROP_MARGIN_PX);
+    const tExp = expandRectBy(tRect, DROP_MARGIN_PX);
+    const inS = rectContainsPoint(sExp, clientX, clientY);
+    const inT = rectContainsPoint(tExp, clientX, clientY);
+    if (inS && inT) {
+      // Both expanded areas overlap — pick the closest board center.
+      const scx = (sRect.left + sRect.right) / 2, scy = (sRect.top + sRect.bottom) / 2;
+      const tcx = (tRect.left + tRect.right) / 2, tcy = (tRect.top + tRect.bottom) / 2;
+      const ds = Math.hypot(clientX - scx, clientY - scy);
+      const dt = Math.hypot(clientX - tcx, clientY - tcy);
+      return ds <= dt ? { name: 'start', rect: sRect } : { name: 'target', rect: tRect };
+    }
+    if (inS) return { name: 'start', rect: sRect };
+    if (inT) return { name: 'target', rect: tRect };
+    return null;
+  }
 
   function computeVisibleCustomShapesFromLevel() {
     const used = new Set();
@@ -3909,6 +4013,8 @@
   function isCustomShapeKey(key) { const sh = SHAPES[key]; return !!(sh && sh.custom); }
   function getDeleteBtnRect() { const el = document.getElementById('deleteTileBtn'); if (!el || el.hidden) return null; return el.getBoundingClientRect(); }
   function isOverDeleteBtn(clientX, clientY) { const r = getDeleteBtnRect(); if (!r) return false; return pointInRect(clientX, clientY, r); }
+  function getNewTileBtnRect() { const el = document.getElementById('newTileBtn'); if (!el || el.hidden) return null; return el.getBoundingClientRect(); }
+  function isOverNewTileBtn(clientX, clientY) { const r = getNewTileBtnRect(); if (!r) return false; return pointInRect(clientX, clientY, r); }
 
   function makePaletteItem(key) {
     const shape = SHAPES[key]; if (!shape) return null;
@@ -4244,9 +4350,10 @@
 
     const newTileBtn = document.createElement('button');
     newTileBtn.type = 'button';
+    newTileBtn.id = 'newTileBtn';
     newTileBtn.className = 'palette-action-btn palette-new-btn';
     newTileBtn.title = t('hotkeyNewTile');
-    newTileBtn.innerHTML = '<span class="new-tile-btn__ico">＋</span><span class="new-tile-btn__lbl">' + t('newTileLabel') + '</span>';
+    newTileBtn.innerHTML = newTileIconSvgMarkup() + '<span class="new-tile-btn__lbl">' + t('newTileLabel') + '</span>';
     newTileBtn.addEventListener('click', openTileEditor);
     row1.appendChild(newTileBtn);
 
@@ -4516,6 +4623,10 @@
     window.addEventListener('pointercancel', onEditorPointerUp);
   }
   function beginPieceDrag(piece, boardName, ev) {
+    try {
+      const ae = document.activeElement;
+      if (ae && typeof ae.blur === 'function') ae.blur();
+    } catch (e) {}
     editor.selectedId = piece.id;
     editor.selectedBoard = boardName;
     if (piece.shape !== 'blk' && piece.shape !== 'hole') {
@@ -4568,6 +4679,12 @@
       delBtn.classList.toggle('drop-target', canDel && over);
       if (d.ghost) d.ghost.classList.toggle('delete-hover', canDel && over);
     }
+    const newTileBtn = document.getElementById('newTileBtn');
+    if (newTileBtn && d.kind === 'palette') {
+      const over = isOverNewTileBtn(ev.clientX, ev.clientY);
+      newTileBtn.classList.toggle('drop-target', over);
+      if (d.ghost) d.ghost.classList.toggle('new-tile-hover', over);
+    }
   }
   function restoreKnifeIfNeeded() {
     if (!editor.knifeWasOn) return;
@@ -4586,7 +4703,13 @@
     if (d.ghost && d.ghost.parentNode) d.ghost.remove();
     const delBtn = document.getElementById('deleteTileBtn');
     if (delBtn) delBtn.classList.remove('drop-target');
+    const newTileBtnEl = document.getElementById('newTileBtn');
+    if (newTileBtnEl) newTileBtnEl.classList.remove('drop-target');
     if (!d.moved) { renderEditor(); restoreKnifeIfNeeded(); return; }
+    if (d.kind === 'palette' && isOverNewTileBtn(ev.clientX, ev.clientY)) {
+      openTileEditorWithShape(d.shapeKey);
+      return;
+    }
     if (isCustomShapeKey(d.shapeKey) && isOverDeleteBtn(ev.clientX, ev.clientY)) {
       deleteCustomShape(d.shapeKey);
       renderEditor();
@@ -4594,13 +4717,13 @@
       restoreKnifeIfNeeded();
       return;
     }
-    const startRect = startBoardInnerEl.getBoundingClientRect();
-    const targetRect = targetBoardInnerEl.getBoundingClientRect();
-    const overStart = pointInRect(ev.clientX, ev.clientY, startRect);
-    const overTarget = pointInRect(ev.clientX, ev.clientY, targetRect);
+    // Requirement: wider drop area with tolerance around the board edges.
+    const drop = pickDropBoard(ev.clientX, ev.clientY);
+    const overStart = !!drop && drop.name === 'start';
+    const overTarget = !!drop && drop.name === 'target';
     const shape = SHAPES[d.shapeKey];
     if (!shape) { renderEditor(); restoreKnifeIfNeeded(); return; }
-    if (overStart || overTarget) {
+    if (drop) {
       const innerEl = overStart ? startBoardInnerEl : targetBoardInnerEl;
       const boardName = overStart ? 'start' : 'target';
       if (d.kind === 'palette' && boardName === 'target') { renderEditor(); restoreKnifeIfNeeded(); return; }
@@ -4783,6 +4906,24 @@
     applyBoardSize();
     renderTileBoard();
   }
+  function openTileEditorWithShape(shapeKey) {
+    const shape = SHAPES[shapeKey];
+    if (!shape || !shape.cells || shape.cells.length === 0) return;
+    tileEditActive = true;
+    tileCells = new Set();
+    tilePaintMode = null; tilePaintPointerId = null;
+    const cx = Math.max(0, Math.floor((COLS - shape.w) / 2));
+    const cy = Math.max(0, Math.floor((ROWS - shape.h) / 2));
+    for (const [dx, dy] of shape.cells) {
+      const tx = cx + dx, ty = cy + dy;
+      if (tx >= 0 && tx < COLS && ty >= 0 && ty < ROWS) tileCells.add(tx + ',' + ty);
+    }
+    if (tileCells.size === 0) tileCells.add(Math.floor(COLS / 2) + ',' + Math.floor(ROWS / 2));
+    editorBoardsEl.hidden = true;
+    tileEditorEl.hidden = false;
+    applyBoardSize();
+    renderTileBoard();
+  }
   function cancelTileEditor() {
     tileEditActive = false;
     tileCells = new Set();
@@ -4940,15 +5081,32 @@
     playBoardAppear();
   }
 
-  // Requirement #1 (fixed for Rush Hour too):
-  // For every row, every non-fixed tile with axis 'h' on target must correspond to a
-  // tile of the SAME TYPE (shape + color) on start in the SAME row.
-  // For every column, every non-fixed tile with axis 'v' on target must correspond to a
-  // tile of the SAME TYPE on start in the SAME column.
-  // Axis is: explicit dmove in arrow mode; derived from shape (w vs h) in Rush Hour.
-  // Fewer tiles on target than on start is OK; extra is not.
-  // This catches "I moved the red vertical tile from column 0 to column 3" cases
-  // where the simple count-per-column check would pass.
+  function copyBoardsToNew() {
+    cleanupEditorDrag(); closeManualPaste(); cancelTileEditor();
+    knifeSession = null;
+    editor.knifeMode = false;
+    editor.knifeWasOn = false;
+    if (knifeBtn) knifeBtn.classList.remove('active');
+    if (startBoardEl) startBoardEl.style.cursor = '';
+    if (targetBoardEl) targetBoardEl.style.cursor = '';
+    editor.selectedId = null; editor.selectedBoard = null;
+    editor.sourceLevelRef = { type: 'new' };
+    editor.activeLabel = '';
+    editor.activeRound = false;
+    editor.dirty = false;
+    const suffix = t('copySuffix');
+    const curName = (editor.levelName || t('defaultLevelName')).trim();
+    const cleanBase = curName.endsWith(suffix) ? curName.slice(0, -suffix.length).trimEnd() : curName;
+    editor.levelName = cleanBase + suffix;
+    editor.levelNameEng = '';
+    editor.levelStep = 0;
+    levelNameInput.value = editor.levelName;
+    if (levelStepInput) levelStepInput.value = '';
+    updateDeleteBtnVisibility();
+    renderEditor();
+    syncLevelText();
+  }
+
   function validateTargetArrows() {
     const isRush = !!editor.rushHour;
     const axisOf = (p) => {
@@ -5179,7 +5337,6 @@
   function serializeLevel() {
     const lines = [];
     lines.push('Klotski: ' + (editor.levelName || t('defaultLevelName')));
-    // Requirement #2: omit NameEng line entirely when empty.
     if (editor.levelNameEng) lines.push('NameEng: ' + editor.levelNameEng);
     lines.push('Author: ' + (editor.levelAuthor || ''));
     lines.push('Group: ' + (editor.levelGroup || editor.levelAuthor || ''));
@@ -5677,6 +5834,7 @@
     if (tileEditActive) { applyBoardSize(); renderTileBoard(); }
   }
   document.getElementById('newLevelBtn').addEventListener('click', clearBoards);
+  document.getElementById('copyBoardsBtn').addEventListener('click', copyBoardsToNew);
   document.getElementById('colsDec').addEventListener('click', () => setBoardSize(COLS - 1, ROWS));
   document.getElementById('colsInc').addEventListener('click', () => setBoardSize(COLS + 1, ROWS));
   document.getElementById('rowsDec').addEventListener('click', () => setBoardSize(COLS, ROWS - 1));
@@ -5692,7 +5850,6 @@
       if (targetBoardEl) targetBoardEl.style.cursor = editor.knifeMode ? 'crosshair' : '';
     });
   }
-  // Requirement #2: on name change, clear NameEng (stale EN name).
   levelNameInput.addEventListener('input', () => {
     const newVal = levelNameInput.value;
     if (editor.levelName !== newVal) {
@@ -5805,9 +5962,8 @@
   document.getElementById('copyLevelBtn').addEventListener('click', async () => {
     let text;
     try { text = serializeLevel(); } catch (err) { showToast(t('solverError', err.message), true); return; }
-    const script = levelToScript(text);
-    levelTextEl.textContent = script;
-    await copyTextToClipboard(script, t('copiedToBuffer'), t('textReadyCtrlC'));
+    levelTextEl.textContent = text;
+    await copyTextToClipboard(text, t('copiedToBuffer'), t('textReadyCtrlC'));
   });
   document.getElementById('copyAllLevelsBtn').addEventListener('click', copyAllVisibleLevels);
 
@@ -6005,8 +6161,17 @@
     stepLevel(1);
   });
   backBtn.addEventListener('click', () => {
-    if (appMode === 'editor') { cancelEditor(); }
-    else if (appMode === 'gallery') { appEl.style.transition = 'none'; setAppMode('game'); void appEl.offsetWidth; appEl.style.transition = ''; }
+    if (appMode === 'editor') {
+      if (tileEditActive) { cancelTileEditor(); return; }
+      if (!manualPasteEl.hidden) { closeManualPaste(); return; }
+      if (editor.showAllCustom) { editor.showAllCustom = false; buildPalette(); return; }
+      cancelEditor();
+    } else if (appMode === 'gallery') {
+      appEl.style.transition = 'none';
+      setAppMode('game');
+      void appEl.offsetWidth;
+      appEl.style.transition = '';
+    }
   });
 
   function buildMiniPreviewFromParsed(cols, rows, pieces, holesSet, hideDirArrows) {
@@ -6318,8 +6483,16 @@
     tocTitle.className = 'gallery-toc__title';
     tocTitle.textContent = t('tocTitle');
     tocEl.appendChild(tocTitle);
+    let userSectionAdded = false;
     for (let i = 0; i < groups.length; i++) {
       const g = groups[i];
+      if (g.isUser && !userSectionAdded && userLevels.length > 0) {
+        userSectionAdded = true;
+        const sectionTitle = document.createElement('div');
+        sectionTitle.className = 'gallery-toc__section-title';
+        sectionTitle.textContent = t('myLevels');
+        tocEl.appendChild(sectionTitle);
+      }
       const gUnsolved = countUnsolvedItems(g.items);
       const link = document.createElement('a');
       link.className = 'gallery-toc__link';
@@ -6543,6 +6716,12 @@
   }
 
   window.addEventListener('resize', () => { scheduleMaskUpdate(); positionWinOverlay(); updateBackBtnPosition(); });
+
+  (function applyRussianSystemVisibility() {
+    if (IS_RUSSIAN_SYSTEM) return;
+    const copyAllBtn = document.getElementById('copyAllLevelsBtn');
+    if (copyAllBtn) copyAllBtn.hidden = true;
+  })();
 
   applyStaticTranslations();
   updatePlayPauseBtn();
