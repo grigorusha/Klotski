@@ -76,6 +76,25 @@
   @keyframes hintDotPulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.12);opacity:.95} }
   .hint-arrow { position: absolute; pointer-events: none; z-index: 30; transform-origin: 0 50%; }
   .hint-arrow svg { display: block; overflow: visible; }
+  /* Requirement: marker dots on cells where a single target piece must be placed.
+     - small radius
+     - always ABOVE pieces, including the currently dragged one (z-index: 25)
+     - only a white ring by default; grey ring for light-coloured targets
+       (white / beige / yellow) so it stays visible on such tiles */
+  .target-marker {
+    position: absolute;
+    width: calc(100% / var(--board-cols) * 0.28);
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 25;
+    border: 2px solid #fff;
+  }
+  .target-marker.target-marker--light {
+    border-color: #8a8a8a;
+  }
   .mini-piece { padding: 2px; cursor: default; z-index: 2; }
   .e-piece { cursor: grab; }
   .e-piece.selected svg { filter: drop-shadow(0 0 4px var(--gold)) drop-shadow(0 0 12px rgba(255,209,102,.65)) brightness(1.05); }
@@ -246,7 +265,7 @@
   .palette-item:active { transform: scale(.96); cursor: grabbing; }
   .palette-item svg { display: block; width: 100%; height: 100%; overflow: visible; }
   .palette-separator { align-self: stretch; width: 1px; min-height: 36px; margin: 0 2px; background: rgba(255,255,255,.25); border-radius: 1px; }
-  /* Requirement: flat look for dmove buttons — no inset bevel shadows */
+  /* Requirement 1: flat look with grey outline matching other similar buttons. */
   .palette-dmove-btn {
     flex: 0 0 auto;
     width: 36px;
@@ -257,7 +276,7 @@
     align-items: center;
     justify-content: center;
     background: #3a3a3a;
-    border: 2px solid rgba(255,255,255,.10);
+    border: 2px solid rgba(255,255,255,.22);
     color: #e8eef6;
     box-shadow: none;
     transition: transform .1s, border-color .15s, background .15s;
@@ -405,14 +424,14 @@
   .color-swatch.active { border-color: var(--gold); transform: scale(1.12); }
   .color-palette-sep { align-self: stretch; width: 1px; min-height: 30px; margin: 0 4px; background: rgba(255,255,255,.28); border-radius: 1px; }
   .color-palette__row--chars .color-palette-sep { min-height: 18px; margin: 0 2px; }
-  /* Requirement: flat look for dir / decor buttons (arrows, lines, symbols) */
+  /* Requirement 1: dir / decor buttons — flat look with grey outline matching other similar buttons. */
   .color-swatch.dir-swatch {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: #e8eef6;
     background: #3a3a3a;
-    border: 2px solid rgba(255,255,255,.10);
+    border: 2px solid rgba(255,255,255,.22);
     box-shadow: none;
   }
   .color-swatch.dir-swatch:hover { transform: scale(1.1); background: #4a4a4a; }
@@ -1187,7 +1206,7 @@
       parserBoardRange: 'Board size must be between %1 and %2',
       parserNoBoard: 'Board size not specified (Board:)',
       parserExpectedStartRows: 'Expected %1 start board rows, found %2',
-      parserExpectedGoalRows: 'Expected %1 goal rows, found %2',
+      parserExpectedGoalRows: 'Expected %1 goal board rows, found %2',
       tooManyTiles: 'Too many tiles',
       sortGroupsLabel: 'Sort groups:',
       sortBoardsLabel: 'Sort boards:',
@@ -1275,6 +1294,9 @@
                        'lineV', 'lineH', 'lineD1', 'lineD2',
                        'circle', 'triangle', 'square', 'star', 'smiley', 'sad', 'heart', 'fire', 'car'];
   const LIGHT_TILE_COLORS = new Set(['yellow', 'lime', 'beige', 'white']);
+  /* For target-marker ring: exactly the colours the user listed
+     (white / beige / yellow) — the ring must be grey on those tiles. */
+  const LIGHT_MARKER_COLORS = new Set(['yellow', 'beige', 'white']);
 
   const FIRE_PATH_D =
     'M 0.50 0.96 ' +
@@ -2956,13 +2978,14 @@
     applyBoardSize();
     clearHint();
     buildGamePieces(); syncGamePieces();
+    renderTargetMarkers();
     updateMovesUI(); updateUndoBtn(); renderMiniBoard();
     renderLevelHint();
     playBoardAppear();
     scheduleMaskUpdate();
   }
   function buildGamePieces() {
-    boardInnerEl.querySelectorAll('.piece, .hint-arrow, .hint-dot').forEach(el => el.remove());
+    boardInnerEl.querySelectorAll('.piece, .hint-arrow, .hint-dot, .target-marker').forEach(el => el.remove());
     for (const p of game.pieces) {
       const shape = SHAPES[p.shape];
       if (!shape || shape.hole) continue;
@@ -3009,6 +3032,44 @@
     }
     applyMiniBoardMask(miniBoardEl, COLS, ROWS, holesSet);
   }
+
+  /* Requirement: when the target board holds exactly one movable target piece,
+     draw a small colored dot at the center of each cell of that piece's target
+     position on the game board.
+     - only a white ring by default; grey ring for white / beige / yellow targets
+     - markers always sit on top (z-index: 25) so they never hide under pieces,
+       not even while dragging */
+  function appendTargetMarkers(container, cols, rows, targetPieces) {
+    if (!container) return;
+    const movable = (targetPieces || []).filter(p => {
+      const sh = SHAPES[p.shape];
+      return !!sh && !sh.fixed && !sh.hole;
+    });
+    if (movable.length !== 1) return;
+    const tgt = movable[0];
+    const shape = SHAPES[tgt.shape];
+    if (!shape) return;
+    const color = COLORS_MAP[tgt.color] || COLORS_MAP.blue;
+    const grad = `linear-gradient(150deg, ${color.from}, ${color.to})`;
+    const isLightTarget = LIGHT_MARKER_COLORS.has(tgt.color);
+    for (const [dx, dy] of shape.cells) {
+      const cx = tgt.x + dx, cy = tgt.y + dy;
+      if (cx < 0 || cx >= cols || cy < 0 || cy >= rows) continue;
+      const el = document.createElement('div');
+      el.className = 'target-marker' + (isLightTarget ? ' target-marker--light' : '');
+      el.style.left = ((cx + 0.5) / cols * 100) + '%';
+      el.style.top = ((cy + 0.5) / rows * 100) + '%';
+      el.style.background = grad;
+      container.appendChild(el);
+    }
+  }
+  function renderTargetMarkers() {
+    if (!boardInnerEl) return;
+    boardInnerEl.querySelectorAll('.target-marker').forEach(el => el.remove());
+    if (!game || !game.targetCfg) return;
+    appendTargetMarkers(boardInnerEl, COLS, ROWS, game.targetCfg);
+  }
+
   function canMovePiece(p, dx, dy) {
     const shape = SHAPES[p.shape]; if (!shape) return false;
     if (shape.fixed) return false;
@@ -3821,25 +3882,19 @@
 
   const DOUBLE_CLICK_MS = 350;
 
-  // Requirement: tolerance around the board edges when dropping a dragged tile —
-  // the mouse may be slightly outside the board rect (top-left corner, top row)
-  // and the tile should still be placed with coordinates clamped to [0..max].
   const DROP_MARGIN_PX = 32;
   function rectContainsPoint(r, x, y) { return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom; }
   function expandRectBy(r, m) { return { left: r.left - m, right: r.right + m, top: r.top - m, bottom: r.bottom + m }; }
   function pickDropBoard(clientX, clientY) {
     const sRect = startBoardInnerEl.getBoundingClientRect();
     const tRect = targetBoardInnerEl.getBoundingClientRect();
-    // 1) Strict hit (prefer the exact board under cursor).
     if (rectContainsPoint(sRect, clientX, clientY)) return { name: 'start', rect: sRect };
     if (rectContainsPoint(tRect, clientX, clientY)) return { name: 'target', rect: tRect };
-    // 2) Expanded hit — allow dropping from slightly outside the board.
     const sExp = expandRectBy(sRect, DROP_MARGIN_PX);
     const tExp = expandRectBy(tRect, DROP_MARGIN_PX);
     const inS = rectContainsPoint(sExp, clientX, clientY);
     const inT = rectContainsPoint(tExp, clientX, clientY);
     if (inS && inT) {
-      // Both expanded areas overlap — pick the closest board center.
       const scx = (sRect.left + sRect.right) / 2, scy = (sRect.top + sRect.bottom) / 2;
       const tcx = (tRect.left + tRect.right) / 2, tcy = (tRect.top + tRect.bottom) / 2;
       const ds = Math.hypot(clientX - scx, clientY - scy);
@@ -4016,6 +4071,11 @@
   function getNewTileBtnRect() { const el = document.getElementById('newTileBtn'); if (!el || el.hidden) return null; return el.getBoundingClientRect(); }
   function isOverNewTileBtn(clientX, clientY) { const r = getNewTileBtnRect(); if (!r) return false; return pointInRect(clientX, clientY, r); }
 
+  /* Requirement: unified double-click handling for palette items.
+     Previously the palette used a native 'dblclick' event, but micro mouse
+     movements during the first click caused renderEditor() to rebuild the
+     palette and swallow the second click's dblclick. Now we detect a double
+     click inside pointerdown by timing, exactly like board pieces. */
   function makePaletteItem(key) {
     const shape = SHAPES[key]; if (!shape) return null;
     const isCustom = !!shape.custom;
@@ -4033,8 +4093,20 @@
     badge.textContent = n;
     if (n === 0) badge.classList.add('empty');
     item.appendChild(badge);
-    item.addEventListener('pointerdown', e => { e.preventDefault(); beginPaletteDrag(key, e); });
-    item.addEventListener('dblclick', e => { e.preventDefault(); autoPlaceOnStart(key); });
+    item.addEventListener('pointerdown', e => {
+      if (e.button !== 0 && e.pointerType === 'mouse') return;
+      e.preventDefault();
+      const now = Date.now();
+      const myId = 'pal:' + key;
+      const isDouble = editor.lastClick.id === myId && (now - editor.lastClick.time) < DOUBLE_CLICK_MS;
+      if (isDouble) {
+        editor.lastClick = { id: null, time: 0 };
+        autoPlaceOnStart(key);
+        return;
+      }
+      editor.lastClick = { id: myId, time: now };
+      beginPaletteDrag(key, e);
+    });
     return item;
   }
   function makeDmoveButton(axis) {
@@ -4717,7 +4789,6 @@
       restoreKnifeIfNeeded();
       return;
     }
-    // Requirement: wider drop area with tolerance around the board edges.
     const drop = pickDropBoard(ev.clientX, ev.clientY);
     const overStart = !!drop && drop.name === 'start';
     const overTarget = !!drop && drop.name === 'target';
@@ -6174,7 +6245,7 @@
     }
   });
 
-  function buildMiniPreviewFromParsed(cols, rows, pieces, holesSet, hideDirArrows) {
+  function buildMiniPreviewFromParsed(cols, rows, pieces, holesSet, hideDirArrows, markerTargets) {
     const el = document.createElement('div');
     el.className = 'mini-board';
     el.style.setProperty('--board-cols', cols);
@@ -6190,6 +6261,7 @@
       piece.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, !!hideDirArrows);
       el.appendChild(piece);
     }
+    if (markerTargets && markerTargets.length) appendTargetMarkers(el, cols, rows, markerTargets);
     applyMiniBoardMask(el, cols, rows, holesSet);
     return el;
   }
@@ -6269,6 +6341,18 @@
     contextMenuEl = menu;
   }
 
+  /* Requirement (gallery): if the target board contains exactly one movable
+     target piece, show only the start board preview (full width) with the
+     target-marker dots drawn on it — the target board preview is not shown. */
+  function countMovableTargets(parsed) {
+    if (!parsed || !parsed.targetPieces) return 0;
+    let n = 0;
+    for (const p of parsed.targetPieces) {
+      const sh = SHAPES[p.shape];
+      if (sh && !sh.fixed && !sh.hole) n++;
+    }
+    return n;
+  }
   function createGalleryCard(item, displayNameOverride, noClickHandler) {
     const card = document.createElement('div');
     card.className = 'gallery-card';
@@ -6286,20 +6370,26 @@
     if (parsed) {
       const hideArrows = !!parsed.rushHour;
       const holesSet = getHoleSetFromPieces(parsed.startPieces);
+      const singleTarget = countMovableTargets(parsed) === 1;
       const cellStart = document.createElement('div');
       cellStart.className = 'gallery-preview-cell';
       const lblS = document.createElement('div');
       lblS.className = 'gallery-preview-label'; lblS.textContent = t('previewStart');
-      const prevS = buildMiniPreviewFromParsed(parsed.cols, parsed.rows, parsed.startPieces, holesSet, hideArrows);
+      const prevS = buildMiniPreviewFromParsed(
+        parsed.cols, parsed.rows, parsed.startPieces, holesSet, hideArrows,
+        singleTarget ? parsed.targetPieces : null
+      );
       cellStart.appendChild(lblS); cellStart.appendChild(prevS);
       previewsWrap.appendChild(cellStart);
-      const cellTarget = document.createElement('div');
-      cellTarget.className = 'gallery-preview-cell';
-      const lblT = document.createElement('div');
-      lblT.className = 'gallery-preview-label'; lblT.textContent = t('previewTarget');
-      const prevT = buildMiniPreviewFromParsed(parsed.cols, parsed.rows, parsed.targetPieces, holesSet, hideArrows);
-      cellTarget.appendChild(lblT); cellTarget.appendChild(prevT);
-      previewsWrap.appendChild(cellTarget);
+      if (!singleTarget) {
+        const cellTarget = document.createElement('div');
+        cellTarget.className = 'gallery-preview-cell';
+        const lblT = document.createElement('div');
+        lblT.className = 'gallery-preview-label'; lblT.textContent = t('previewTarget');
+        const prevT = buildMiniPreviewFromParsed(parsed.cols, parsed.rows, parsed.targetPieces, holesSet, hideArrows);
+        cellTarget.appendChild(lblT); cellTarget.appendChild(prevT);
+        previewsWrap.appendChild(cellTarget);
+      }
     } else {
       const brokenWrap = document.createElement('div');
       brokenWrap.className = 'mini-board gallery-card__broken';
