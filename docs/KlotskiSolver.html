@@ -30,12 +30,113 @@
   }
   .app { position: relative; width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; transition: width .2s; }
   .app.editing { max-width: 780px; }
+  .app.analyzing { max-width: 900px; }
+  .app-version { color: #fff; font-weight: 400; letter-spacing: normal; }
+  .analyzer-view { overflow-anchor: none; display: flex; flex-direction: column; gap: 16px; }
+  .analyzer-title { margin: 8px 0; text-align: center; font-size: 18px; color: var(--gold); }
+  .analyzer-boards { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .analyzer-column { display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; }
+  .analyzer-board-host { width: 100%; max-width: 360px; aspect-ratio: var(--board-cols) / var(--board-rows); }
+  .analyzer-board-host .mini-board { width: 100%; }
+  .analyzer-empty { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; margin: 0; padding: 16px; text-align: center; color: var(--muted); border: 1px dashed rgba(255,255,255,.3); border-radius: 12px; }
+  .analyzer-status, .analyzer-rules { text-align: center; line-height: 1.5; color: var(--sub); overflow-wrap: anywhere; }
+  .analyzer-status { min-height: 3em; font-size: 13px; user-select: text; }
+  .analyzer-rules { font-size: 12px; color: var(--muted); }
+  .analyzer-nav { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; font-size: 12px; }
+  .analyzer-toolbar { width: 100%; max-width: 540px; align-self: center; }
+  .analyzer-path-nav { width: 100%; max-width: 360px; display: flex; flex-wrap: nowrap; align-items: center; gap: 5px; }
+  .analyzer-filter { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 12px 0 20px; padding: 14px; border: 1px solid #ffffff30; border-radius: 12px; }
+  .analyzer-filter[hidden] { display: none; }
+  .analyzer-filter select { max-width: 100%; padding: 7px; background: #202733; color: white; border: 1px solid #ffffff40; border-radius: 6px; font: inherit; }
+  .analyzer-help { width: 100%; box-sizing: border-box; border: 1px solid rgba(255,255,255,.28); border-radius: 10px; padding: 10px 12px; background: rgba(255,255,255,.035); }
+  .analyzer-help-group { display: flex; flex-direction: column; gap: 10px; }
+  #analyzerView, #analyzerView .analyzer-rules, #analyzerView .analyzer-path-info, #analyzerView .analyzer-status, #analyzerView td, #analyzerView th, #analyzerView label { user-select: text; -webkit-user-select: text; }
+  #analyzerView button, #analyzerView input[type="range"], #analyzerView .analyzer-board-host { user-select: none; -webkit-user-select: none; }
+  .analyzer-underboards { display: grid; width: 100%; }
+  .analyzer-sliders { grid-area: 1 / 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+  .analyzer-underboards.filter-open .analyzer-sliders { visibility: hidden; pointer-events: none; }
+  .analyzer-underboards .analyzer-filter { grid-area: 1 / 1; z-index: 2; align-self: stretch; margin: 0; background: #454545; }
+  .analyzer-filter-toggle { max-width: 170px; }
+  @media (max-width: 520px) { .analyzer-sliders { gap: 12px; } }
+  .analyzer-sliders { row-gap: 18px; }
+  .analyzer-source-path { grid-area: 1 / 1; }
+  .analyzer-target-path { grid-area: 1 / 2; }
+  .analyzer-near-group { grid-area: 2 / 1; justify-self: center; }
+  .analyzer-far-group { grid-area: 2 / 2; justify-self: center; }
+  .analyzer-center-gallery { justify-self: center; width: 72px; max-width: 72px; height: 34px; min-height: 34px; z-index: 1; }
+  .analyzer-path-gallery { grid-area: 1 / 1 / 2 / 3; align-self: start; }
+  .analyzer-states-gallery { grid-area: 2 / 1 / 3 / 3; align-self: center; }
+  .analyzer-center-gallery button { height: 34px; min-height: 34px; max-height: 34px; padding: 0 3px; font-size: 10px; gap: 3px; }
+  .analyzer-status-row { display: flex; align-items: center; gap: 12px; }
+  .analyzer-status-row > .analyzer-status { flex: 1; min-width: 0; }
+  .analyzer-status-row .analyzer-filter-toggle { flex: 0 0 108px; width: 108px; margin: 0; }
+  @media (max-width: 840px) { .analyzer-center-gallery { width: 24px; max-width: 24px; } .analyzer-center-gallery .btn-lbl { display: none; } .analyzer-center-gallery .btn-ico { width: 16px; } }
+  .analyzer-mini-gallery.mini-split { overflow: hidden; }
+  .mini-split .analyzer-mini-inner { height: 100%; display: flex; flex-direction: column; }
+  .mini-split #anaMiniContent { flex: 1; min-height: 0; }
+  .mini-split .analyzer-mini-halves { height: 100%; }
+  .mini-split .analyzer-mini-halves > section { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+  .mini-split .analyzer-mini-grid { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; align-content: start; }
+  .mini-split .analyzer-mini-pager { flex: 0 0 auto; }
+
+  .analyzer-path-nav .analyzer-mini-button { flex: 0 0 auto; min-width: 0; width: auto; font-size: 11px; padding: 0 7px; }
+  .analyzer-mini-gallery { position: fixed; inset: 0; z-index: 12000; overflow: auto; background: #454545; color: var(--ink); user-select: text; -webkit-user-select: text; }
+  .analyzer-mini-inner { max-width: 1280px; margin: auto; padding: 58px 14px 28px; }
+  .analyzer-mini-gallery .back-btn { display: inline-flex; z-index: 12001; left: max(12px, calc((100vw - 1280px) / 2)); }
+  .analyzer-mini-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 12px 0; }
+  .analyzer-mini-halves { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+  .analyzer-mini-halves::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #ffffff50; }
+  .analyzer-mini-card { display: flex; flex-direction: column; gap: 6px; min-width: 0; padding: 8px; border: 1px solid #ffffff35; border-radius: 11px; background: #ffffff0a; color: var(--ink); font: inherit; cursor: pointer; }
+  .analyzer-mini-card:hover:not(:disabled), .analyzer-mini-card.selected { border-color: var(--gold); background: #ffd16620; }
+  .analyzer-mini-card:disabled { opacity: .55; cursor: default; }
+  .analyzer-mini-card .mini-board { width: 100%; pointer-events: none; }
+  .analyzer-mini-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; width: 100%; }
+  .analyzer-mini-caption { text-align: center; font-size: 12px; overflow-wrap: anywhere; }
+  .analyzer-mini-moves { text-align: center; color: var(--green); font-size: 12px; }
+  .analyzer-mini-pager { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 10px 0; }
+  .analyzer-mini-pager button { padding: 5px 12px; border: 1px solid #ffffff40; border-radius: 8px; background: #333; color: white; font: inherit; cursor: pointer; }
+  @media (max-width: 620px) { .analyzer-mini-inner { padding-left: 6px; padding-right: 6px; } .analyzer-mini-halves { gap: 8px; } .analyzer-mini-grid { gap: 5px; } .analyzer-mini-card { padding: 3px; } .analyzer-mini-caption, .analyzer-mini-moves { font-size: 10px; } }
+  .analyzer-inverted { direction: rtl; }
+  .analyzer-separator { flex: 0 0 1px; width: 1px; align-self: center; height: 26px; margin: 0 3px; background: rgba(255,255,255,.35); }
+  .analyzer-far { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; max-width: 360px; }
+  .analyzer-space { display: flex; flex-direction: column; align-items: center; gap: 14px; border-top: 1px solid rgba(255,255,255,.2); margin-top: 8px; padding-top: 18px; }
+  .analyzer-space .analyzer-title { margin: 0; }
+  .analyzer-space-controls { width: 100%; max-width: 540px; }
+  .analyzer-space .analyzer-status { min-height: 1.5em; }
+  .analyzer-space-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; width: 100%; align-items: start; }
+  .analyzer-space-browser { width: 100%; max-width: 360px; justify-self: center; display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; }
+  .analyzer-space-browser .controls { width: 100%; }
+  .analyzer-contours-frame { position: relative; min-width: 0; min-height: 0; align-self: stretch; }
+  .analyzer-contours { position: absolute; inset: 0; width: 100%; min-width: 0; overflow: auto; border: 1px solid rgba(255,255,255,.18); border-radius: 10px; }
+  .analyzer-contours table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+  .analyzer-contours caption { text-align: left; padding: 12px; font-weight: 700; color: var(--gold); }
+  .analyzer-contours th, .analyzer-contours td { padding: 9px 8px; border-top: 1px solid rgba(255,255,255,.12); }
+  .analyzer-contours th { color: var(--muted); font-weight: 600; }
+  .analyzer-contours .selected { background: rgba(78,168,222,.22); }
+  .analyzer-contours td button { width: 100%; padding: 3px 0; border: 0; background: transparent; color: var(--ink); text-align: left; font: inherit; cursor: pointer; }
+  .analyzer-contours td button:disabled { opacity: .45; cursor: default; }
+  .analyzer-contours td button:hover:not(:disabled) { color: var(--gold); }
+  .analyzer-contour-count { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .analyzer-contour-empty { color: var(--muted); line-height: 1.5; }
+  .analyzer-contours th .analyzer-sort { display: inline-flex; align-items: center; justify-content: flex-end; gap: 5px; border: 0; padding: 0; background: none; color: inherit; font: inherit; text-align: right; cursor: pointer; }
+  .analyzer-contours th .analyzer-sort:hover { color: var(--gold); }
+  #anaFullStatus { position: sticky; top: 54px; z-index: 30; width: 100%; min-height: 64px; margin: 0; padding: 10px 12px; border: 1px solid rgba(255,209,102,.35); border-radius: 10px; background: rgba(42,42,42,.97); color: var(--ink); font-size: 12px; line-height: 1.6; }
+  @media (max-width: 640px) { .analyzer-space-layout { grid-template-columns: minmax(0, 1fr); gap: 18px; } .analyzer-contours-frame { align-self: start; } .analyzer-contours { position: relative; inset: auto; max-height: 560px; } }
+  .analyzer-path-nav button { min-width: 26px; padding: 0 5px; }
+  .analyzer-path-nav input { flex: 1 1 0; min-width: 0; width: 0; cursor: pointer; accent-color: var(--gold); }
+  .analyzer-path-info { min-height: 1.5em; text-align: center; font-size: 12px; color: var(--muted); }
+  .analyzer-nav button { min-height: 34px; padding: 0 12px; font: inherit; font-size: 12.5px; font-weight: 600; color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 9px; cursor: pointer; }
+  .analyzer-nav button { min-width: 34px; }
+  .analyzer-nav button:hover:not(:disabled) { background: linear-gradient(180deg, #5c5c5c, #383838); }
+  .analyzer-nav button:disabled { opacity: .38; cursor: default; }
+  @media (max-width: 520px) { .analyzer-column .analyzer-path-nav button { min-width: 24px; width: 24px; flex: 0 0 24px; padding: 0; } .analyzer-path-nav { gap: 3px; } .analyzer-boards { gap: 12px; } .analyzer-column .controls { gap: 5px; } .analyzer-column button { padding-left: 8px; padding-right: 8px; font-size: 12px; } }
   .app.gallery { max-width: 900px; }
   .app-header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
   .app-header .title { grid-column: 2; }
   .back-btn { position: fixed; top: 16px; left: 12px; z-index: 200; display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 12px; font: inherit; font-size: 12.5px; font-weight: 600; color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; cursor: pointer; line-height: 1; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.45); }
   .back-btn:hover { background: linear-gradient(180deg, #5c5c5c, #383838); }
   .back-btn[hidden] { display: none !important; }
+  .scroll-top-btn { left: auto; right: 12px; }
   .level-row { display: grid; grid-template-columns: auto auto 1fr auto auto; align-items: center; gap: 6px; }
   .level-row__label { font-size: 12px; font-weight: 600; color: var(--sub); white-space: nowrap; padding-right: 2px; }
   .level-nav { height: 36px; padding: 0; width: 34px; font: inherit; font-size: 18px; font-weight: 700; line-height: 1; color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 10px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; user-select: none; white-space: nowrap; gap: 5px; }
@@ -76,14 +177,10 @@
   @keyframes hintDotPulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.12);opacity:.95} }
   .hint-arrow { position: absolute; pointer-events: none; z-index: 30; transform-origin: 0 50%; }
   .hint-arrow svg { display: block; overflow: visible; }
-  /* Requirement: marker dots on cells where a single target piece must be placed.
-     - small radius
-     - always ABOVE pieces, including the currently dragged one (z-index: 25)
-     - only a white ring by default; grey ring for light-coloured targets
-       (white / beige / yellow) so it stays visible on such tiles */
+  /* Marker dots on cells where a single target piece must be placed. */
   .target-marker {
     position: absolute;
-    width: calc(100% / var(--board-cols) * 0.28);
+    width: calc(100% / var(--board-cols) * var(--marker-size-factor, 0.28));
     aspect-ratio: 1 / 1;
     border-radius: 50%;
     transform: translate(-50%, -50%);
@@ -147,12 +244,14 @@
   .settings-block__lang-label { font-size: 12px; color: var(--sub); white-space: nowrap; }
   .settings-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .settings-row--compact { flex-wrap: nowrap; }
-  .settings-label { font-size: 12.5px; font-weight: 600; color: var(--sub); white-space: nowrap; }
+  .settings-label { font-size: 12.5px; font-weight: 600; color: var(--sub); white-space: nowrap; flex: 0 0 auto; }
   .settings-select { flex: 1 1 auto; min-width: 0; height: 34px; padding: 0 10px; font: inherit; font-size: 12.5px; font-weight: 600; color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; cursor: pointer; outline: none; }
   .settings-select:hover { color: #fff; }
   .settings-select option { background: #2e2e2e; color: #f0f4fa; }
-  .settings-input { flex: 1 1 auto; min-width: 0; height: 34px; padding: 0 10px; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink); background: rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; outline: none; user-select: text; -webkit-user-select: text; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+  .settings-input { flex: 1 1 0; min-width: 0; height: 34px; padding: 0 8px; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink); background: rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; outline: none; user-select: text; -webkit-user-select: text; font-variant-numeric: tabular-nums; letter-spacing: .02em; text-align: center; }
   .settings-input:focus { border-color: rgba(255,209,102,.7); box-shadow: 0 0 0 2px rgba(255,209,102,.15); }
+  .settings-input--ram { flex: 0 0 68px; max-width: 68px; min-width: 68px; }
+  .settings-input--states { flex: 1 1 0; min-width: 0; }
   .settings-checkbox-label { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--sub); cursor: pointer; white-space: nowrap; flex: 0 0 auto; }
   .settings-checkbox { width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--gold); }
   .settings-hint { font-size: 10.5px; line-height: 1.4; color: var(--sub); letter-spacing: .01em; }
@@ -265,7 +364,6 @@
   .palette-item:active { transform: scale(.96); cursor: grabbing; }
   .palette-item svg { display: block; width: 100%; height: 100%; overflow: visible; }
   .palette-separator { align-self: stretch; width: 1px; min-height: 36px; margin: 0 2px; background: rgba(255,255,255,.25); border-radius: 1px; }
-  /* Requirement 1: flat look with grey outline matching other similar buttons. */
   .palette-dmove-btn {
     flex: 0 0 auto;
     width: 36px;
@@ -424,7 +522,6 @@
   .color-swatch.active { border-color: var(--gold); transform: scale(1.12); }
   .color-palette-sep { align-self: stretch; width: 1px; min-height: 30px; margin: 0 4px; background: rgba(255,255,255,.28); border-radius: 1px; }
   .color-palette__row--chars .color-palette-sep { min-height: 18px; margin: 0 2px; }
-  /* Requirement 1: dir / decor buttons — flat look with grey outline matching other similar buttons. */
   .color-swatch.dir-swatch {
     display: inline-flex;
     align-items: center;
@@ -611,7 +708,7 @@
   .gallery-sort-item .settings-select { min-width: 150px; height: 32px; }
   .gallery-sort-row__label { font-size: 12px; font-weight: 600; color: var(--sub); white-space: nowrap; }
   .about-block { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px 16px; border-radius: 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); font-size: 11.5px; line-height: 1.6; color: var(--sub); }
-  .about-block__title { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); margin-bottom: 2px; }
+  .about-block__title { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: none; color: var(--gold); margin-bottom: 2px; }
   .about-block a { color: #9ecbff; text-decoration: none; }
   .about-block a:hover { text-decoration: underline; }
   .about-block__authors { display: flex; flex-direction: column; gap: 0; }
@@ -626,6 +723,7 @@
 
 <div class="app" id="app">
   <button id="backBtn" class="back-btn" hidden><span class="btn-ico">←</span><span class="btn-lbl" data-ruseng="back">Назад</span></button>
+  <button id="scrollTopBtn" class="back-btn scroll-top-btn" type="button" hidden><span class="btn-ico">↑</span><span class="btn-lbl" data-ruseng="scrollTop">Наверх</span></button>
 
   <div class="app-header">
     <span></span>
@@ -717,15 +815,17 @@
           <span data-ruseng="groupShiftLabel">Групповой сдвиг</span>
         </label>
       </div>
-      <div class="settings-row">
+      <div class="settings-row settings-row--compact">
+        <label class="settings-label" for="maxRamInput" data-ruseng="ramLimitLabel">Лимит ОЗУ, ГБ:</label>
+        <input type="text" id="maxRamInput" class="settings-input settings-input--ram" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="3.8">
         <label class="settings-label" for="maxStatesInput" data-ruseng="stateLimitLabel">Лимит состояний:</label>
-        <input type="text" id="maxStatesInput" class="settings-input" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="100 000 000">
+        <input type="text" id="maxStatesInput" class="settings-input settings-input--states" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="13 600 000">
       </div>
       <div class="settings-hint" id="maxStatesHint"></div>
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title" data-ruseng="aboutTitle">О программе</div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.18)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -803,6 +903,7 @@
     <div class="controls">
       <button id="applyEditBtn" class="primary" data-ruseng-title="hotkeyRun" title="Запустить (F9)"><span class="btn-ico">▶</span><span class="btn-lbl" data-ruseng="run">Запустить</span></button>
       <button id="cancelEditBtn" data-ruseng-title="hotkeyCancel" title="Отмена (Esc)"><span class="btn-ico">✕</span><span class="btn-lbl" data-ruseng="cancel">Отмена</span></button>
+      <button id="analyzerBtn" class="hint-btn" type="button"><span class="btn-ico">🔬</span><span class="btn-lbl" data-ruseng="analyzerBtn">Анализатор</span></button>
     </div>
 
     <div class="level-text-block">
@@ -857,9 +958,175 @@
     </div>
   </div>
 
+  <div class="analyzer-view" id="analyzerView" hidden>
+    <h2 class="analyzer-title" data-ruseng="anaTitle">Анализ головоломки</h2>
+    <div class="analyzer-rules" id="anaRules"></div>
+    <div class="controls analyzer-toolbar">
+      <button id="anaSearch" type="button" class="solve"><span class="btn-ico">🔍</span><span class="btn-lbl" data-ruseng="anaSearch"></span></button>
+      <button id="anaSwap" type="button" disabled><span class="btn-ico">⇄</span><span class="btn-lbl" data-ruseng="anaSwap"></span></button>
+      <span class="analyzer-separator" aria-hidden="true"></span>
+      <button id="anaAuto" type="button" class="hint-btn"><span class="btn-ico">↻</span><span class="btn-lbl" data-ruseng="anaAuto"></span></button>
+
+    </div>
+    <div class="analyzer-boards">
+      <div class="analyzer-column">
+        <div class="editor-board__label" data-ruseng="startBoardLabel">Стартовая доска</div>
+        <div id="anaSource" class="analyzer-board-host"></div>
+      </div>
+      <div class="analyzer-column">
+        <div class="editor-board__label" data-ruseng="targetBoardLabel">Целевая доска</div>
+        <div id="anaTarget" class="analyzer-board-host"></div>
+      </div>
+    </div>
+    <div class="analyzer-underboards">
+      <div id="anaSliders" class="analyzer-sliders">
+        <div class="analyzer-column analyzer-source-path">
+        <div class="analyzer-nav analyzer-path-nav">
+          <button id="anaSourceFirst" type="button" data-ruseng-title="toStartTitle" disabled>«</button>
+          <button id="anaSourcePrev" type="button" data-ruseng-title="prevStepTitle" disabled>‹</button>
+          <input id="anaSourceSlider" type="range" min="0" max="0" value="0" step="1" data-ruseng-title="posTitle" disabled>
+          <button id="anaSourceNext" type="button" data-ruseng-title="nextStepTitle" disabled>›</button>
+          <button id="anaSourceLast" type="button" data-ruseng-title="toEndTitle" disabled>»</button>
+        </div>
+        <div id="anaSourceStepInfo" class="analyzer-path-info"></div>
+        </div>
+        <div class="analyzer-column analyzer-target-path">
+        <div class="analyzer-nav analyzer-path-nav">
+          <button id="anaTargetFirst" type="button" data-ruseng-title="toStartTitle" disabled>«</button>
+          <button id="anaTargetPrev" type="button" data-ruseng-title="prevStepTitle" disabled>‹</button>
+          <input id="anaTargetSlider" class="analyzer-inverted" type="range" min="0" max="0" value="0" step="1" data-ruseng-title="posTitle" disabled>
+          <button id="anaTargetNext" type="button" data-ruseng-title="nextStepTitle" disabled>›</button>
+          <button id="anaTargetLast" type="button" data-ruseng-title="toEndTitle" disabled>»</button>
+        </div>
+        <div id="anaTargetStepInfo" class="analyzer-path-info"></div>
+        </div>
+        <div class="controls analyzer-center-gallery analyzer-path-gallery"><button id="anaSourceGallery" class="hint-btn" type="button" data-ruseng-title="gallery" disabled><span class="btn-ico">▦</span><span class="btn-lbl" data-ruseng="gallery">Галерея</span></button></div>
+        <div class="analyzer-far analyzer-near-group">
+          <span class="analyzer-rules" data-ruseng="anaNearStates">Ближние состояния:</span>
+          <div class="analyzer-nav analyzer-path-nav">
+            <button id="anaNearFirst" type="button" data-ruseng-title="toStartTitle" disabled>«</button>
+            <button id="anaNearPrev" type="button" data-ruseng-title="prevStepTitle" disabled>‹</button>
+            <input id="anaNearSlider" data-ruseng-title="posTitle" type="range" min="0" max="0" value="0" step="1" disabled aria-label="Ближние состояния">
+            <button id="anaNearNext" type="button" data-ruseng-title="nextStepTitle" disabled>›</button>
+            <button id="anaNearLast" type="button" data-ruseng-title="toEndTitle" disabled>»</button>
+          </div>
+          <span id="anaNearInfo" class="analyzer-path-info">0 / 0</span>
+        </div>
+        <div class="analyzer-far analyzer-far-group">
+          <span class="analyzer-rules" data-ruseng="anaFarStates">Дальние состояния:</span>
+          <div class="analyzer-nav analyzer-path-nav">
+            <button id="anaFarFirst" type="button" data-ruseng-title="toStartTitle" disabled>«</button>
+            <button id="anaPrev" type="button" data-ruseng-title="prevStepTitle" disabled>‹</button>
+            <input id="anaFarSlider" class="analyzer-inverted" type="range" min="0" max="0" value="0" step="1" data-ruseng-title="posTitle" disabled>
+            <button id="anaNext" type="button" data-ruseng-title="nextStepTitle" disabled>›</button>
+            <button id="anaFarLast" type="button" data-ruseng-title="toEndTitle" disabled>»</button>
+          </div>
+          <span id="anaIndex" class="analyzer-path-info">0 / 0</span>
+        </div>
+        <div class="controls analyzer-center-gallery analyzer-states-gallery"><button id="anaTargetGallery" class="hint-btn" type="button" data-ruseng-title="gallery" disabled><span class="btn-ico">▦</span><span class="btn-lbl" data-ruseng="gallery">Галерея</span></button></div>
+      </div>
+    <div class="analyzer-filter" id="anaFilterPanel" hidden>
+      <label><span data-ruseng="anaSymmetry">Симметрия:</span>
+        <select id="anaSymmetry">
+          <option value="any" data-ruseng="anaSymAny">Любая</option>
+          <option value="vertical" data-ruseng="anaSymVertical">Вертикальная</option>
+          <option value="horizontal" data-ruseng="anaSymHorizontal">Горизонтальная</option>
+          <option value="both" data-ruseng="anaSymBoth">Обоюдная</option>
+          <option value="diagonal" data-ruseng="anaSymDiagonal">Любая диагональная</option>
+          <option value="main" data-ruseng="anaSymMain">Главная диагональ</option>
+          <option value="anti" data-ruseng="anaSymAnti">Побочная диагональ</option>
+          <option value="rotation" data-ruseng="anaSymRotation">Вращательная (любая)</option>
+          <option value="rotate180" data-ruseng="anaSym180">Поворот на 180°</option>
+          <option value="rotate90" data-ruseng="anaSym90">Поворот на 90°</option>
+          <option value="rotate270" data-ruseng="anaSym270">Поворот на 270°</option>
+        </select>
+      </label>
+      <div id="anaFilterInfo" class="analyzer-rules" role="status" aria-live="polite"></div>
+      <div class="analyzer-nav analyzer-path-nav">
+        <button id="anaPairFirst" type="button" data-ruseng-title="toStartTitle" disabled>«</button>
+        <button id="anaPairPrev" type="button" data-ruseng-title="prevStepTitle" disabled>‹</button>
+        <input id="anaPairSlider" data-ruseng-title="posTitle" type="range" min="0" max="0" value="0" step="1" disabled aria-label="Пары симметричных состояний">
+        <button id="anaPairNext" type="button" data-ruseng-title="nextStepTitle" disabled>›</button>
+        <button id="anaPairLast" type="button" data-ruseng-title="toEndTitle" disabled>»</button>
+        <button id="anaPairsGallery" type="button" class="analyzer-mini-button" disabled><span data-ruseng="gallery">Галерея</span></button>
+      </div>
+      <div id="anaPairInfo" class="analyzer-path-info"></div>
+      <div id="anaFilterDistance" class="analyzer-rules"></div>
+      <div class="analyzer-rules analyzer-help" data-ruseng="anaFilterHint">Доски пары связаны выбранным отражением или поворотом. Обоюдная: совпадение при обоих осевых отражениях. Расстояние — кратчайший путь между досками.</div>
+    </div>
+    </div>
+    <div id="anaInfo" class="analyzer-rules"></div>
+    <div class="analyzer-status-row">
+      <div class="analyzer-status" id="anaStatus" role="status" aria-live="polite"></div>
+    <div class="controls analyzer-toolbar analyzer-filter-toggle">
+      <button id="anaFilter" type="button" class="hint-btn" disabled><span class="btn-ico">⚑</span><span class="btn-lbl" data-ruseng="anaFilter">Фильтр</span></button>
+    </div>
+    </div>
+    <div class="controls" id="anaStopRow" hidden>
+      <button id="anaStop" class="stop" type="button" data-ruseng="stop" hidden>Стоп</button>
+    </div>
+    <div class="controls analyzer-toolbar">
+      <button id="anaRun" type="button" class="primary" disabled><span class="btn-ico">▶</span><span class="btn-lbl" data-ruseng="run"></span></button>
+      <button id="anaApply" type="button" disabled><span class="btn-ico">✎</span><span class="btn-lbl" data-ruseng="anaApply"></span></button>
+      <span class="analyzer-separator" aria-hidden="true"></span>
+      <button id="anaCancel" type="button"><span class="btn-ico">✕</span><span class="btn-lbl" data-ruseng="cancel"></span></button>
+    </div>
+    <div class="analyzer-rules analyzer-help" data-ruseng="anaExplanation"></div>
+    <section class="analyzer-space" aria-labelledby="anaSpaceTitle">
+      <h2 id="anaSpaceTitle" class="analyzer-title" data-ruseng="spaceTitle">Пространство состояний</h2>
+      <div class="controls analyzer-space-controls">
+        <button id="anaStates" class="hint-btn" type="button"><span class="btn-ico">▦</span><span class="btn-lbl" data-ruseng="spaceButton">Все состояния</span></button>
+        <button id="anaDissect" type="button" disabled><span class="btn-ico">◫</span><span class="btn-lbl" data-ruseng="contourDissect">Разобрать</span></button>
+        <span class="analyzer-separator" aria-hidden="true"></span>
+        <button id="anaFull" type="button" class="primary"><span class="btn-ico">⟳</span><span class="btn-lbl" data-ruseng="fullButton">Полностью</span></button>
+        <button id="anaSpaceStop" class="stop" type="button" data-ruseng="stop" hidden>Стоп</button>
+      </div>
+      <div id="anaSpaceStatus" class="analyzer-status" role="status" aria-live="polite"></div>
+      <div id="anaFullStatus" class="analyzer-status" role="status" aria-live="polite" hidden></div>
+      <div class="analyzer-space-layout">
+        <div class="analyzer-space-browser">
+          <div id="anaSpaceViewLabel" class="analyzer-rules"></div>
+          <div id="anaSpaceBoard" class="analyzer-board-host"></div>
+          <div class="analyzer-nav analyzer-path-nav">
+            <button id="anaSpaceFirst" type="button" data-ruseng-title="toStartTitle" disabled>«</button>
+            <button id="anaSpacePrev" type="button" data-ruseng-title="prevStepTitle" disabled>‹</button>
+            <input id="anaSpaceSlider" type="range" min="0" max="0" value="0" step="1" data-ruseng-title="posTitle" disabled>
+            <button id="anaSpaceNext" type="button" data-ruseng-title="nextStepTitle" disabled>›</button>
+            <button id="anaSpaceLast" type="button" data-ruseng-title="toEndTitle" disabled>»</button>
+          </div>
+          <div id="anaSpaceIndex" class="analyzer-path-info">0 / 0</div>
+          <div class="controls">
+            <button id="anaSpaceChoose" type="button" class="primary" disabled><span class="btn-ico">↖</span><span class="btn-lbl" data-ruseng="contourChoose">Выбрать</span></button>
+          </div>
+        </div>
+        <div class="analyzer-contours-frame">
+        <div id="anaContoursPanel" class="analyzer-contours">
+          <table>
+            <caption data-ruseng="contourTitle">Контуры</caption>
+            <thead><tr><th scope="col" data-ruseng="contourSet">Набор</th><th id="anaSortStatesHeader" scope="col" class="analyzer-contour-count" aria-sort="none"><button id="anaSortStates" class="analyzer-sort" type="button" data-ruseng-title="contourSortStates"><span data-ruseng="contourCount">Состояний</span><span id="anaSortStatesArrow">↕</span></button></th><th id="anaSortStepsHeader" scope="col" class="analyzer-contour-count" aria-sort="descending"><button id="anaSortSteps" class="analyzer-sort" type="button" data-ruseng-title="contourSortSteps"><span data-ruseng="contourMaxSteps">Макс. шагов</span><span id="anaSortStepsArrow">↓</span></button></th><th scope="col" data-ruseng="contourStatus">Статус</th></tr></thead>
+            <tbody id="anaContoursBody"></tbody>
+          </table>
+        </div>
+        </div>
+      </div>
+      <div class="analyzer-help analyzer-help-group">
+        <div class="analyzer-rules" data-ruseng="spaceExplanation"></div>
+        <div class="analyzer-rules" data-ruseng="contourHelp"></div>
+        <div class="analyzer-rules" data-ruseng="fullExplanation"></div>
+      </div>
+    </section>
+  </div>
   <div class="gallery-view" id="galleryView" hidden></div>
 </div>
 
+<div id="anaMiniGallery" class="analyzer-mini-gallery" role="dialog" aria-modal="true" aria-labelledby="anaMiniTitle" hidden>
+  <button id="anaMiniBack" class="back-btn" type="button"><span class="btn-ico">←</span><span data-ruseng="back">Назад</span></button>
+  <div class="analyzer-mini-inner">
+    <h2 id="anaMiniTitle" class="analyzer-title"></h2>
+    <div id="anaMiniHint" class="analyzer-rules" role="status" aria-live="polite"></div>
+    <div id="anaMiniContent"></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script src="board.js"></script>
@@ -869,6 +1136,7 @@
 (function () {
   'use strict';
 
+  const APP_VERSION = '2.18';
   const LANG_KEY = 'ryzhiy-osel-lang-v1';
   const LAST_LEVEL_KEY = 'ryzhiy-osel-last-level-v1';
   function safeGetItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
@@ -887,10 +1155,141 @@
     ? (navigator.language || navigator.userLanguage || 'en').toLowerCase()
     : 'en';
   const IS_RUSSIAN_SYSTEM = SYSTEM_LANG.startsWith('ru');
+  const IS_FIREFOX = (typeof navigator !== 'undefined') && /firefox/i.test(navigator.userAgent || '');
 
   const RUSENG = {
     ru: {
       htmlLang: 'ru',
+      contourSortSteps: "Сортировать по количеству шагов; повторный щелчок меняет направление",
+      contourSortStates: "Сортировать по количеству состояний; повторный щелчок меняет направление",
+      fullBestContour: "контур %1 — %2 состояний",
+      fullBestDistance: "контур %1 — ≥ %2 шагов",
+      fullNoBest: "ещё не найден",
+      fullButton: "Полностью",
+      contourMaxSteps: "Макс. шагов",
+      contourDistanceHint: "Наибольшее найденное кратчайшее расстояние. Знак ≥ означает нижнюю границу диаметра; автопоиск не гарантирует точный диаметр.",
+      fullPreparing: "Полный цикл: подготовка пространства состояний…",
+      fullProgress: "Обработано: %1 / %2 (%3%). Контуров: %4. Текущее дерево: %5 состояний. Крупнейший: %6. Лучшее расстояние: %7.",
+      fullDone: "Полный разбор завершён. Обработано: %1 / %2 (%3%). Контуров: %4. Последнее дерево: %5 состояний. Крупнейший: %6. Лучшее расстояние: %7.",
+      fullStopped: "Полный цикл остановлен. Сохранены завершённые контуры. Разобрано: %1 / %2.",
+      fullInterrupted: "Полный цикл прерван: %1 Сохранены завершённые контуры. Разобрано: %2 / %3.",
+      fullNeedCompleteSpace: "Перебор всех состояний не завершён. Проверьте лимит ресурсов.",
+      fullNeedCompleteTree: "Автопоиск контура не завершён. Проверьте лимит ресурсов.",
+      fullNoProgress: "Новый контур не выделен; разбор не продвинулся.",
+      fullDissectFailed: "Не удалось сопоставить дерево с пространством состояний.",
+      fullExplanation: "«Полностью» повторяет автопоиск и разбор для всех оставшихся состояний. Найденные контуры сохраняются. «Макс. шагов» показывает наибольшее найденное расстояние, а не гарантированно точный диаметр.",
+      contourDissect: "Разобрать",
+      contourChoose: "Выбрать",
+      contourTitle: "Контуры",
+      contourSet: "Набор",
+      contourCount: "Состояний",
+      contourStatus: "Статус",
+      contourName: "Контур %1",
+      contourRemaining: "Не разобрано",
+      contourFullSet: "Полный набор",
+      contourPartialSet: "Частичный набор",
+      contourComplete: "Полный контур",
+      contourPartial: "Часть дерева",
+      contourUnassigned: "Вне выделенных контуров",
+      contourTableEmpty: "Сначала нажмите «Все состояния». Затем выполните поиск сверху и нажмите «Разобрать».",
+      contourView: "%1 · Состояний: %2",
+      contourEmpty: "В выбранном наборе нет состояний.",
+      contourProgress: "Разбор дерева… Обработано: %1 / %2.",
+      contourAdded: "Выделен контур %1: %2 состояний. Не разобрано: %3.",
+      contourAddedPartial: "Выделена часть дерева — контур %1: %2 новых состояний. Уже учтено: %3, отсутствует в сохранённом наборе: %4.",
+      contourNoNew: "Новых состояний для контура нет. Уже учтено: %1; отсутствует в сохранённом наборе: %2.",
+      contourChosen: "На старт перенесена доска из набора «%1». Выполните поиск и нажмите «Разобрать» для выделения следующего контура.",
+      contourStopped: "Разбор остановлен. Контуры не изменены.",
+      contourError: "Разбор прерван: %1. Контуры не изменены.",
+      contourMismatch: "Дерево анализа и пространство состояний относятся к разным наборам плиток.",
+      contourMemory: "Недостаточно свободной памяти для сопоставления состояний.",
+      contourHelp: "«Разобрать» выделяет все найденные состояния дерева BFS, а не только 1000 дальних. Контуры не пересекаются. Для следующего контура выберите «Не разобрано», перенесите доску кнопкой «Выбрать» и повторите поиск и разбор.",
+      spaceTitle: "Пространство состояний",
+      spaceButton: "Все состояния",
+      spaceReady: "Нажмите «Все состояния», чтобы перебрать все допустимые расстановки этого набора плиток.",
+      spaceProgress: "Перебор… Расстановок: %1 · Проверено размещений: %2 · Время: %3",
+      spaceDone: "Всего валидных расстановок: %1. Перебор полный. Время: %2.",
+      spaceCapped: "Найдено расстановок: %1. Перебор неполный: достигнут лимит ресурсов. Время: %2.",
+      spaceStopped: "Перебор остановлен. Последний прогресс: %1 расстановок. Полное количество не определено.",
+      spaceError: "Перебор прерван: %1. Полное количество не определено.",
+      spaceNoStates: "Валидных расстановок не найдено.",
+      spaceExplanation: "Все размещения без наложений и выхода за границы поля, без поворотов и отражений плиток. Блоки и вырезанные клетки неподвижны. Одинаковые плитки взаимозаменяемы; достижимость ходами не проверяется.",
+      anaFarStates: "Дальние состояния:",
+      anaFilter: "Фильтр",
+      anaMiniPairs: "Галерея пар фильтра",
+      anaMiniStates: "Галерея ближних и дальних состояний",
+      anaMiniPath: "Галерея состояний найденного пути",
+      anaMiniPathStep: "Шаг %1",
+      anaMiniChooseSourceOnly: "Целевая позиция выбрана. Теперь выберите начальную слева.",
+      anaMiniChooseSource: "Выберите по одной позиции в каждой колонке, в любом порядке.",
+      anaMiniChooseTarget: "Начальная позиция выбрана. Теперь выберите целевую справа.",
+      anaMiniMoves: "Ходов: %1",
+      anaMiniPage: "%1 / %2",
+      anaMiniSources: "Начальные позиции",
+      anaMiniTargets: "Целевые позиции",
+      anaMiniPair: "Пара %1",
+      anaMiniPairHint: "Выберите пару для размещения на досках. Число ходов уточняется в фоне.",
+
+      anaFilterWindow: " Выборка: по %1 состояний с начала и конца, не более 1000 пар.",
+      anaFullBestBoard: "Лучшая найденная позиция: %1 шагов",
+      anaCloseFilter: "Закрыть",
+      anaSearchTip: "Найти самые дальние состояния односторонним поиском в ширину от текущей стартовой доски.",
+      anaAutoTip: "Повторять поиск от дальнего состояния, пока найденное расстояние не перестанет увеличиваться.",
+      anaSwapTip: "Перенести отображаемую целевую доску на стартовую для нового поиска.",
+      anaFilterTip: "Открыть поиск пар состояний, связанных отражением или поворотом.",
+      anaCloseFilterTip: "Закрыть фильтр и вернуться к бегункам состояний. Текущий расчёт фильтра будет остановлен.",
+
+      anaNearStates: "Ближние состояния:",
+      anaSymmetry: "Симметрия:",
+      anaSymAny: "Любая",
+      anaSymVertical: "Вертикальная",
+      anaSymHorizontal: "Горизонтальная",
+      anaSymBoth: "Обоюдная",
+      anaSymDiagonal: "Любая диагональная",
+      anaSymMain: "Главная диагональ",
+      anaSymAnti: "Побочная диагональ",
+      anaSymRotation: "Вращательная (любая)",
+      anaSym180: "Поворот на 180°",
+      anaSym90: "Поворот на 90°",
+      anaSym270: "Поворот на 270°",
+      anaFilterIndexing: "Фильтр: подготовлено %1 из %2 состояний.",
+      anaFilterHint: "Доски пары связаны выбранным отражением или поворотом. Обоюдная: совпадение при обоих осевых отражениях. Расстояние — кратчайший путь между досками.",
+      anaFilterFound: "Состояний в симметричных парах: %1 из %2. Пар: %3.%4",
+      anaFilterPartial: " Дерево неполное: результаты относятся к найденной части.",
+      anaFilterProgress: "Фильтр: проверено %1 из %2; найдено пар %3.",
+      anaPairLabel: "Пара %1 / %2 · состояния дерева №%3 → №%4",
+      anaPairProgress: "Поиск кратчайшего пути между выбранными досками: %1 состояний.",
+      anaPairMeasuring: "Вычисляется кратчайшее расстояние…",
+      anaPairUnknown: "Расстояние не определено: остановка или ограничение ресурсов.",
+      anaPairNoPath: "Пути от выбранной стартовой доски к целевой нет.",
+      anaPairReady: "Выбрана пара. Расстояние: %1.",
+      anaNearLabel: "%1 / %2 · состояние дерева №%3",
+
+      anaSourceStep: "От старта: шаг %1 / %2",
+      anaTargetStep: "От цели назад: шаг %1 / %2",
+      anaReverseDistance: "Доски выбраны в обратном порядке. Расстояние с групповым сдвигом нужно проверить решателем.",
+      anaPathHint: "Пошаговый просмотр доступен после поиска.",
+      analyzerBtn: "Анализатор",
+      anaTitle: "Анализ головоломки",
+      anaAuto: "Авто",
+      anaSearch: "Поиск",
+      anaSwap: "Поменять",
+      anaApply: "Редактировать",
+      anaEmpty: "Нажмите «Поиск», чтобы найти дальние состояния.",
+      anaReady: "Готово к поиску. Стартовая доска взята из редактора.",
+      anaNoPieces: "Добавьте на стартовую доску хотя бы одну подвижную плитку.",
+      anaPosition: "%1 / %2",
+      anaDistance: "Расстояние между показанными досками: %1 ход(ов).",
+      anaRules: "Подсчёт: %1 · Групповой сдвиг: %2 · Лимит состояний: %3",
+      anaProgress: "Поиск №%1 · Состояний: %2 · Глубина: %3 · Время: %4",
+      anaDone: "Поиск завершён. Максимальное расстояние: %1. Найдено состояний: %2. Для просмотра: %3 (до 20%, не более 1000). Время: %4.",
+      anaCapped: "Поиск неполный: достигнут лимит ресурсов. Найденное расстояние: %1. Состояний: %2. Для просмотра: %3 (до 20%, не более 1000). Автопоиск остановлен.",
+      anaAutoDone: "Авто завершено: поисков — %1. Лучшее расстояние — %2, последний поиск — %3. Состояний в дереве — %4. Расстояние больше не растёт; показана лучшая пара.",
+      anaStopped: "Поиск остановлен.",
+      anaSwapped: "Выбранная целевая доска перенесена на старт. Можно повторить поиск или включить «Авто».",
+      anaError: "Поиск прерван из-за ошибки: %1. Уменьшите лимит состояний, если не хватает памяти.",
+      anaExplanation: "Дальние состояния — до 20% самых удалённых позиций, не более 1000. Под досками можно листать кратчайший путь: слева от старта вперёд, справа от цели назад. Поиск, Поменять, Запустить и Редактировать используют показанные позиции. Авто приближает диаметр графа.",
+      scrollTop: 'Наверх',
       back: 'Назад', puzzle: 'Головоломка:', gallery: 'Галерея',
       moves: 'Ходы', time: 'Время',
       undo: 'Назад', redo: 'Вперёд', reset: 'Заново',
@@ -913,6 +1312,7 @@
       rushHourLabel: 'Rush Hour',
       onLabel: 'вкл', offLabel: 'выкл',
       stateLimitLabel: 'Лимит состояний:',
+      ramLimitLabel: 'Лимит ОЗУ, ГБ:',
       languageLabel: 'Язык:',
       newBtn: 'Новая доска',
       copyBoardBtn: 'Копировать',
@@ -1022,8 +1422,9 @@
       solverNoTarget: 'Не задана цель.',
       solverZero: 'Решение: 0 ходов (уже собрано).',
       solverError: 'Ошибка: %1',
-      solverOom: 'Уровень слишком сложный: превышен лимит состояний (%1). Поднимите «Лимит состояний» в настройках или используйте Firefox для тяжёлых уровней (в Chrome действует ограничение ~4 ГБ на вкладку).',
-      maxStatesHintFull: 'Солвер переберёт до %1 состояний. Расчётная память: ~%2.',
+      solverOom: 'Превышен лимит состояний (%1). Поднимите «Лимит ОЗУ, ГБ» в настройках.',
+      solverOomProgress: 'Не хватило памяти. Пройдено позиций: %1. Расчётно израсходовано ОЗУ: ~%2 ГБ. Поднимите «Лимит ОЗУ, ГБ» в настройках (или уменьшите, если браузер сбрасывает вкладку).',
+      maxStatesHintFull: 'Лимит ОЗУ %1 ГБ ≈ до %2 состояний (память на состояние зависит от размера доски).',
       maxStatesHintLimited: 'Солвер переберёт до %1 состояний (задано %2, ограничено доступной памятью). Расчётная память: ~%3.',
       gallerySummary: 'Встроенных уровней %1, моих %2, не решено: %3',
       gallerySummaryNoUser: 'Встроенных уровней %1, не решено: %2',
@@ -1047,7 +1448,7 @@
       sortBoardsLabel: 'Сортировка досок:',
       sortDefault: 'По умолчанию', sortName: 'Наименование', sortBoardName: 'Название', sortSize: 'Размер', sortSteps: 'Количество шагов',
       sortLabel: 'Сортировка:',
-      aboutTitle: 'О программе',
+      aboutTitle: 'О ПРОГРАММЕ :',
       developersLabel: 'Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a>',
       authorsLabel: 'Авторские головоломки:',
       dupesRemoved: 'Удалено дублей из «Моих уровней»: %1',
@@ -1057,6 +1458,136 @@
     },
     en: {
       htmlLang: 'en',
+      contourSortSteps: "Sort by moves; click again to reverse",
+      contourSortStates: "Sort by states; click again to reverse",
+      fullBestContour: "contour %1 — %2 states",
+      fullBestDistance: "contour %1 — ≥ %2 moves",
+      fullNoBest: "not found yet",
+      fullButton: "Complete",
+      contourMaxSteps: "Max. moves",
+      contourDistanceHint: "Largest shortest-path distance found. ≥ denotes a lower bound on the diameter; automatic sweeps do not guarantee the exact diameter.",
+      fullPreparing: "Full cycle: preparing the state space…",
+      fullProgress: "Processed: %1 / %2 (%3%). Contours: %4. Current tree: %5 states. Largest: %6. Best distance: %7.",
+      fullDone: "Full partition complete. Processed: %1 / %2 (%3%). Contours: %4. Last tree: %5 states. Largest: %6. Best distance: %7.",
+      fullStopped: "Full cycle stopped. Completed contours are preserved. Assigned: %1 / %2.",
+      fullInterrupted: "Full cycle interrupted: %1 Completed contours are preserved. Assigned: %2 / %3.",
+      fullNeedCompleteSpace: "State enumeration is incomplete. Check resource limits.",
+      fullNeedCompleteTree: "Automatic search of the contour is incomplete. Check resource limits.",
+      fullNoProgress: "No new contour was extracted; partitioning made no progress.",
+      fullDissectFailed: "Could not match the search tree to the state space.",
+      fullExplanation: "Complete repeats automatic distance sweeps and extraction for all remaining states. Existing contours are preserved. Max. moves shows the largest distance found, not a guaranteed exact diameter.",
+      contourDissect: "Separate",
+      contourChoose: "Choose",
+      contourTitle: "Contours",
+      contourSet: "Set",
+      contourCount: "States",
+      contourStatus: "Status",
+      contourName: "Contour %1",
+      contourRemaining: "Unassigned",
+      contourFullSet: "Complete set",
+      contourPartialSet: "Partial set",
+      contourComplete: "Complete contour",
+      contourPartial: "Partial tree",
+      contourUnassigned: "Outside assigned contours",
+      contourTableEmpty: "First press All states. Run a search above, then press Separate.",
+      contourView: "%1 · States: %2",
+      contourEmpty: "The selected set is empty.",
+      contourProgress: "Separating the tree… Processed: %1 / %2.",
+      contourAdded: "Contour %1 extracted: %2 states. Unassigned: %3.",
+      contourAddedPartial: "Partial tree extracted as contour %1: %2 new states. Already assigned: %3; absent from the stored set: %4.",
+      contourNoNew: "No new states for a contour. Already assigned: %1; absent from the stored set: %2.",
+      contourChosen: "The selected board from “%1” is now the start. Search and Separate again to extract the next contour.",
+      contourStopped: "Separation stopped. Contours are unchanged.",
+      contourError: "Separation interrupted: %1. Contours are unchanged.",
+      contourMismatch: "The search tree and state space use different tile sets.",
+      contourMemory: "Insufficient free memory to match the states.",
+      contourHelp: "Separate extracts every discovered BFS state, beyond the 1000 distant results. Contours are disjoint. To extract another contour, select Unassigned, press Choose, then Search and Separate again.",
+      spaceTitle: "State space",
+      spaceButton: "All states",
+      spaceReady: "Press All states to enumerate every valid arrangement of this tile set.",
+      spaceProgress: "Enumerating… Arrangements: %1 · Placements checked: %2 · Time: %3",
+      spaceDone: "Total valid arrangements: %1. Enumeration complete. Time: %2.",
+      spaceCapped: "Arrangements found: %1. Incomplete enumeration: resource limit reached. Time: %2.",
+      spaceStopped: "Enumeration stopped. Last progress: %1 arrangements. The total is unknown.",
+      spaceError: "Enumeration interrupted: %1. The total is unknown.",
+      spaceNoStates: "No valid arrangements found.",
+      spaceExplanation: "All placements without overlap or leaving the board, without rotating or reflecting tiles. Blocks and cutouts stay fixed. Identical tiles are interchangeable; move reachability is not checked.",
+      anaFarStates: "Distant states:",
+      anaFilter: "Filter",
+      anaMiniPairs: "Filtered pair gallery",
+      anaMiniStates: "Nearby and distant state gallery",
+      anaMiniPath: "Solution path gallery",
+      anaMiniPathStep: "Step %1",
+      anaMiniChooseSourceOnly: "Target selected. Now choose a start on the left.",
+      anaMiniChooseSource: "Choose one position in each column, in either order.",
+      anaMiniChooseTarget: "Start selected. Now choose a target on the right.",
+      anaMiniMoves: "Moves: %1",
+      anaMiniPage: "%1 / %2",
+      anaMiniSources: "Start positions",
+      anaMiniTargets: "Target positions",
+      anaMiniPair: "Pair %1",
+      anaMiniPairHint: "Choose a pair to display on the boards. Distances are calculated in the background.",
+
+      anaFilterWindow: " Sample: %1 states at each end, up to 1000 pairs.",
+      anaFullBestBoard: "Best position found: %1 moves",
+      anaCloseFilter: "Close",
+      anaSearchTip: "Find the most distant states with breadth-first search from the displayed start board.",
+      anaAutoTip: "Repeat searches from distant states until the distance stops increasing.",
+      anaSwapTip: "Use the displayed target board as the start for a new search.",
+      anaFilterTip: "Open the search for pairs related by reflection or rotation.",
+      anaCloseFilterTip: "Close the filter and return to the state sliders. Any filter calculation will be stopped.",
+
+      anaNearStates: "Nearby states:",
+      anaSymmetry: "Symmetry:",
+      anaSymAny: "Any",
+      anaSymVertical: "Vertical",
+      anaSymHorizontal: "Horizontal",
+      anaSymBoth: "Both axes",
+      anaSymDiagonal: "Either diagonal",
+      anaSymMain: "Main diagonal",
+      anaSymAnti: "Other diagonal",
+      anaSymRotation: "Rotational (any)",
+      anaSym180: "Rotation by 180°",
+      anaSym90: "Rotation by 90°",
+      anaSym270: "Rotation by 270°",
+      anaFilterIndexing: "Filter: indexed %1 of %2 states.",
+      anaFilterHint: "The boards of each pair are related by the selected reflection or rotation. Both axes: the same pair matches under either axial reflection. Distance is the shortest path between the boards.",
+      anaFilterFound: "States in symmetric pairs: %1 of %2. Pairs: %3.%4",
+      anaFilterPartial: " Incomplete tree: only discovered states are included.",
+      anaFilterProgress: "Filter: checked %1 of %2; pairs found %3.",
+      anaPairLabel: "Pair %1 / %2 · tree states #%3 → #%4",
+      anaPairProgress: "Finding shortest path between selected boards: %1 states.",
+      anaPairMeasuring: "Computing shortest distance…",
+      anaPairUnknown: "Distance unavailable: stopped or resource limit reached.",
+      anaPairNoPath: "No path from the selected start board to the target.",
+      anaPairReady: "Pair selected. Distance: %1.",
+      anaNearLabel: "%1 / %2 · tree state #%3",
+
+      anaSourceStep: "From start: step %1 / %2",
+      anaTargetStep: "Back from target: step %1 / %2",
+      anaReverseDistance: "The boards are selected in reverse order. Check the distance with group shift using the solver.",
+      anaPathHint: "Step through the path after running a search.",
+      analyzerBtn: "Analyzer",
+      anaTitle: "Puzzle analysis",
+      anaAuto: "Auto",
+      anaSearch: "Search",
+      anaSwap: "Swap",
+      anaApply: "Edit",
+      anaEmpty: "Press Search to find distant states.",
+      anaReady: "Ready to search. The starting board comes from the editor.",
+      anaNoPieces: "Add at least one movable tile to the starting board.",
+      anaPosition: "%1 / %2",
+      anaDistance: "Distance between displayed boards: %1 move(s).",
+      anaRules: "Counting: %1 · Group shift: %2 · State limit: %3",
+      anaProgress: "Search #%1 · States: %2 · Depth: %3 · Time: %4",
+      anaDone: "Search complete. Maximum distance: %1. States found: %2. Available to browse: %3 (up to 20%, at most 1000). Time: %4.",
+      anaCapped: "Incomplete search: resource limit reached. Distance found: %1. States: %2. Available to browse: %3 (up to 20%, at most 1000). Auto stopped.",
+      anaAutoDone: "Auto complete: %1 searches. Best distance: %2; last search: %3. States in the tree: %4. Distance no longer increases; showing the best pair.",
+      anaStopped: "Search stopped.",
+      anaSwapped: "The selected target is now the starting board. Search again or use Auto.",
+      anaError: "Search interrupted by an error: %1. Reduce the state limit if memory is insufficient.",
+      anaExplanation: "Distant states are up to the furthest 20% of discovered positions, at most 1000. Step along a shortest path below each board: forward from the start, backward from the target. Search, Swap, Run and Edit use the displayed positions. Auto approximates the graph diameter.",
+      scrollTop: 'Top',
       back: 'Back', puzzle: 'Puzzle:', gallery: 'Gallery',
       moves: 'Moves', time: 'Time',
       undo: 'Undo', redo: 'Redo', reset: 'Reset',
@@ -1079,6 +1610,7 @@
       rushHourLabel: 'Rush Hour',
       onLabel: 'on', offLabel: 'off',
       stateLimitLabel: 'State limit:',
+      ramLimitLabel: 'RAM limit, GB:',
       languageLabel: 'Language:',
       newBtn: 'New board',
       copyBoardBtn: 'Copy',
@@ -1187,8 +1719,9 @@
       solverNoTarget: 'No target set.',
       solverZero: 'Solution: 0 moves (already solved).',
       solverError: 'Error: %1',
-      solverOom: 'Level is too complex: state limit exceeded (%1). Increase "State limit" in settings or use Firefox for heavy levels (Chrome caps a tab at ~4 GB).',
-      maxStatesHintFull: 'Solver will explore up to %1 states. Estimated memory: ~%2.',
+      solverOom: 'State limit exceeded (%1). Increase "RAM limit, GB" in settings.',
+      solverOomProgress: 'Out of memory. Positions explored: %1. Estimated RAM used: ~%2 GB. Increase "RAM limit, GB" in settings (or decrease it if the browser unloads the tab).',
+      maxStatesHintFull: 'RAM limit %1 GB ≈ up to %2 states (memory per state depends on board size).',
       maxStatesHintLimited: 'Solver will explore up to %1 states (requested %2, limited by available memory). Estimated memory: ~%3.',
       gallerySummary: 'Built-in: %1, mine: %2, unsolved: %3',
       gallerySummaryNoUser: 'Built-in: %1, unsolved: %2',
@@ -1212,7 +1745,7 @@
       sortBoardsLabel: 'Sort boards:',
       sortDefault: 'Default', sortName: 'Name', sortBoardName: 'Name', sortSize: 'Size', sortSteps: 'Number of moves',
       sortLabel: 'Sort:',
-      aboutTitle: 'About',
+      aboutTitle: 'ABOUT :',
       developersLabel: 'Developers: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a>',
       authorsLabel: 'Author puzzles:',
       dupesRemoved: 'Removed duplicates from "My levels": %1',
@@ -1233,6 +1766,7 @@
   function fmtNum(n) { try { return Number(n).toLocaleString(LANG === 'ru' ? 'ru-RU' : 'en-US'); } catch (e) { return String(n); } }
 
   function applyStaticTranslations() {
+    document.getElementById('appVersion').textContent = 'Klotski (v' + APP_VERSION + ')';
     document.documentElement.lang = RUSENG[LANG] ? RUSENG[LANG].htmlLang : 'en';
     document.querySelectorAll('[data-ruseng]').forEach(el => {
       const key = el.getAttribute('data-ruseng');
@@ -1255,6 +1789,7 @@
   const USER_LEVELS_KEY        = 'ryzhiy-osel-user-levels-v1';
   const CUSTOM_SHAPES_KEY      = 'ryzhiy-osel-custom-shapes-v1';
   const MAX_STATES_KEY         = 'ryzhiy-osel-max-states-v1';
+  const MAX_RAM_KEY            = 'ryzhiy-osel-ram-gb-v1';
   const GALLERY_SORT_KEY       = 'ryzhiy-osel-gallery-sort-v1';
   const GALLERY_GROUP_SORT_KEY = 'ryzhiy-osel-gallery-group-sort-v1';
   const PRESET_RECORDS_KEY     = 'ryzhiy-osel-preset-records-v1';
@@ -1294,8 +1829,6 @@
                        'lineV', 'lineH', 'lineD1', 'lineD2',
                        'circle', 'triangle', 'square', 'star', 'smiley', 'sad', 'heart', 'fire', 'car'];
   const LIGHT_TILE_COLORS = new Set(['yellow', 'lime', 'beige', 'white']);
-  /* For target-marker ring: exactly the colours the user listed
-     (white / beige / yellow) — the ring must be grey on those tiles. */
   const LIGHT_MARKER_COLORS = new Set(['yellow', 'beige', 'white']);
 
   const FIRE_PATH_D =
@@ -1340,8 +1873,14 @@
   function dmoveTooltip(id) { return id === 'v' ? t('dmoveVTitle') : t('dmoveHTitle'); }
 
   const MAX_NODES_HARD_CAP = 1000000000;
-  const MAX_NODES_DEFAULT  = 100000000;
-  const BYTES_PER_STATE = 300;
+  const GB_BYTES = 1073741824;
+  /* Browser-specific default RAM budgets:
+       Chrome  — ~4 GB cap per tab, so default 3.8 GB.
+       Firefox — can survive larger heaps, but may still reclaim the tab
+                 when the OS is under pressure; default 10 GB. */
+  const DEFAULT_RAM_GB_CHROME  = 3.8;
+  const DEFAULT_RAM_GB_FIREFOX = 10;
+  const DEFAULT_RAM_GB = IS_FIREFOX ? DEFAULT_RAM_GB_FIREFOX : DEFAULT_RAM_GB_CHROME;
 
   function fmtBytes(b) {
     if (!isFinite(b) || b <= 0) return '0';
@@ -1350,31 +1889,6 @@
     if (b < 1073741824) return (b / 1048576).toFixed(1) + ' MB';
     return (b / 1073741824).toFixed(2) + ' GB';
   }
-  function getHeapLimitMB() { try { if (typeof performance !== 'undefined' && performance.memory) { const lim = performance.memory.jsHeapSizeLimit; if (typeof lim === 'number' && lim > 0) return Math.floor(lim / 1048576); } } catch (e) {} return 0; }
-  const JS_HEAP_LIMIT_MB = getHeapLimitMB();
-  function clampMaxNodesByMemory(target) {
-    let budgetBytes = 0;
-    if (JS_HEAP_LIMIT_MB > 0) budgetBytes = JS_HEAP_LIMIT_MB * 1048576 * 0.70;
-    const dm = (typeof navigator !== 'undefined') ? navigator.deviceMemory : undefined;
-    if (typeof dm === 'number' && dm > 0) {
-      const dmBudget = dm * 1073741824 * 0.50;
-      budgetBytes = budgetBytes > 0 ? Math.min(budgetBytes, dmBudget) : dmBudget;
-    }
-    if (budgetBytes <= 0) return target;
-    const cap = Math.floor(budgetBytes / BYTES_PER_STATE);
-    return Math.max(500000, Math.min(target, cap));
-  }
-  let MAX_NODES = MAX_NODES_DEFAULT, MAX_NODES_USER = MAX_NODES_DEFAULT;
-  function loadMaxNodesSetting() {
-    let user = MAX_NODES_DEFAULT;
-    try {
-      const raw = safeGetItem(MAX_STATES_KEY);
-      if (raw) { const n = parseInt(raw, 10); if (isFinite(n) && n >= 100000) user = Math.min(MAX_NODES_HARD_CAP, n); }
-    } catch (e) {}
-    MAX_NODES_USER = user;
-    MAX_NODES = clampMaxNodesByMemory(user);
-  }
-  function saveMaxNodesSetting(userValue) { MAX_NODES_USER = userValue; safeSetItem(MAX_STATES_KEY, String(userValue)); MAX_NODES = clampMaxNodesByMemory(userValue); }
   function isMemoryHigh() {
     if (typeof performance !== 'undefined' && performance.memory) {
       const used = performance.memory.usedJSHeapSize, lim = performance.memory.jsHeapSizeLimit;
@@ -1382,7 +1896,86 @@
     }
     return false;
   }
-  loadMaxNodesSetting();
+
+  /* Per-state memory footprint in bytes. Depends on board size, because:
+       - the solver's state key is a string of length ~FREE_CELLS/2,
+         each character ~2 bytes in JS (UTF-16);
+       - every parent entry also holds a small object plus a reference
+         to the parent entry, plus a copy of the pieces array.
+     A rough empirical model: 200 bytes fixed + ~2 bytes per cell. */
+  function bytesPerState(cells) {
+    cells = (typeof cells === 'number' && cells > 0) ? cells : CELLS;
+    return 200 + cells * 2;
+  }
+
+  function ramGbToStates(gb) {
+    const per = bytesPerState(CELLS);
+    const v = Math.floor((Number(gb) || 0) * GB_BYTES / per);
+    return Math.max(100000, Math.min(MAX_NODES_HARD_CAP, v));
+  }
+  function statesToRamGb(states) {
+    return states * bytesPerState(CELLS) / GB_BYTES;
+  }
+
+  let MAX_RAM_GB_USER = DEFAULT_RAM_GB;
+  let MAX_NODES_USER = ramGbToStates(DEFAULT_RAM_GB);
+  let MAX_NODES = MAX_NODES_USER;
+
+  function loadMemorySettings() {
+    let gb = null;
+    try {
+      const rawGb = safeGetItem(MAX_RAM_KEY);
+      if (rawGb) {
+        const v = parseFloat(rawGb);
+        if (isFinite(v) && v > 0.03) gb = v;
+      }
+    } catch (e) {}
+    if (gb == null) {
+      // Backwards compat: earlier versions stored the state count only.
+      try {
+        const rawStates = safeGetItem(MAX_STATES_KEY);
+        if (rawStates) {
+          const n = parseInt(rawStates, 10);
+          if (isFinite(n) && n >= 100000) gb = Math.min(n, MAX_NODES_HARD_CAP) * bytesPerState(CELLS) / GB_BYTES;
+        }
+      } catch (e) {}
+    }
+    if (gb == null) gb = DEFAULT_RAM_GB;
+    // Clamp by current hard cap.
+    const maxGb = MAX_NODES_HARD_CAP * bytesPerState(CELLS) / GB_BYTES;
+    if (gb > maxGb) gb = maxGb;
+    MAX_RAM_GB_USER = gb;
+    MAX_NODES_USER = ramGbToStates(gb);
+    MAX_NODES = MAX_NODES_USER;
+  }
+
+  function saveRamSetting(gb) {
+    const maxGb = MAX_NODES_HARD_CAP * bytesPerState(CELLS) / GB_BYTES;
+    if (gb > maxGb) gb = maxGb;
+    if (!isFinite(gb) || gb < 0.03) gb = DEFAULT_RAM_GB;
+    MAX_RAM_GB_USER = gb;
+    MAX_NODES_USER = ramGbToStates(gb);
+    MAX_NODES = MAX_NODES_USER;
+    safeSetItem(MAX_RAM_KEY, String(gb));
+  }
+  function saveStatesSetting(states) {
+    if (!isFinite(states) || states < 100000) states = ramGbToStates(DEFAULT_RAM_GB);
+    if (states > MAX_NODES_HARD_CAP) states = MAX_NODES_HARD_CAP;
+    MAX_NODES_USER = states;
+    MAX_NODES = states;
+    MAX_RAM_GB_USER = statesToRamGb(states);
+    safeSetItem(MAX_RAM_KEY, String(MAX_RAM_GB_USER));
+  }
+  /* Called whenever CELLS changes (level switch / board resize) so the
+     displayed "Лимит состояний" reflects the new board size while the
+     user's RAM budget stays the same. */
+  function recalcMemoryForBoard() {
+    MAX_NODES_USER = ramGbToStates(MAX_RAM_GB_USER);
+    MAX_NODES = MAX_NODES_USER;
+    if (typeof syncMemoryInputs === 'function') { try { syncMemoryInputs(); } catch (e) {} }
+    if (typeof updateMaxStatesHint === 'function') { try { updateMaxStatesHint(); } catch (e) {} }
+  }
+  loadMemorySettings();
 
   function applyBoardSize() {
     CELLS = COLS * ROWS;
@@ -2688,7 +3281,7 @@
       "  } catch (err) {",
       "    const msgOut = (err && err.message) || String(err);",
       "    if (msgOut === '__OOM__') self.postMessage({ type: 'oom' });",
-      "    else self.postMessage({ type: 'error', message: msgOut });",
+      "    else self.postMessage({ type: 'error', message: msgOut, isBrowserOom: /out of memory|allocation failed/i.test(msgOut) });",
       "  }",
       "};"
     ].join('\n');
@@ -2712,14 +3305,23 @@
     terminateSolverWorker();
     if (msg.type === 'result') pending.resolve({ path: msg.path, nodes: msg.nodes, ms: msg.ms });
     else if (msg.type === 'oom') pending.reject(new Error('__OOM__'));
-    else if (msg.type === 'error') pending.reject(new Error(msg.message));
+    else if (msg.type === 'error') {
+      const err = new Error(msg.message);
+      if (msg.isBrowserOom) err.isBrowserOom = true;
+      pending.reject(err);
+    }
     else pending.resolve(null);
   }
   function handleSolverError(e) {
     const pending = solverPending;
     solverPending = null;
     terminateSolverWorker();
-    if (pending) pending.reject(new Error((e && e.message) || 'Worker error'));
+    if (pending) {
+      const msg = (e && e.message) || 'Worker error';
+      const err = new Error(msg);
+      if (/out of memory|allocation failed/i.test(msg)) err.isBrowserOom = true;
+      pending.reject(err);
+    }
   }
   function cancelSolverWorker() {
     terminateSolverWorker();
@@ -2774,6 +3376,7 @@
   const levelNextBtn = document.getElementById('levelNext');
   const galleryBtn = document.getElementById('galleryBtn');
   const backBtn = document.getElementById('backBtn');
+  const scrollTopBtn = document.getElementById('scrollTopBtn');
   const statsEl = document.getElementById('stats');
   const levelNameInput = document.getElementById('levelNameInput');
   const levelAuthorInput = document.getElementById('levelAuthorInput');
@@ -2789,6 +3392,7 @@
   const tileEditorEl = document.getElementById('tileEditor');
   const tileBoardInnerEl = document.getElementById('tileBoardInner');
   const maxStatesInput = document.getElementById('maxStatesInput');
+  const maxRamInput = document.getElementById('maxRamInput');
   const maxStatesHint = document.getElementById('maxStatesHint');
   const knifeBtn = document.getElementById('knifeBtn');
   const langToggleEl = document.getElementById('langToggle');
@@ -2805,10 +3409,20 @@
   const pbSpeedLabel = document.getElementById('pbSpeedLabel');
 
   function updateBackBtnPosition() {
-    if (!backBtn || backBtn.hidden) return;
     const r = appEl.getBoundingClientRect();
-    backBtn.style.left = Math.max(4, r.left) + 'px';
+    if (backBtn && !backBtn.hidden) backBtn.style.left = Math.max(4, r.left) + 'px';
+    if (scrollTopBtn) scrollTopBtn.style.right = Math.max(4, window.innerWidth - r.right) + 'px';
+    updateScrollTopButton();
   }
+  function updateScrollTopButton() {
+    if (!scrollTopBtn) return;
+    scrollTopBtn.hidden = appMode !== 'gallery' || window.scrollY <= 1;
+  }
+  scrollTopBtn.addEventListener('click', () => {
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    catch (e) { window.scrollTo(0, 0); }
+  });
+  window.addEventListener('scroll', updateScrollTopButton, { passive: true });
   window.addEventListener('resize', updateBackBtnPosition);
   window.addEventListener('orientationchange', updateBackBtnPosition);
 
@@ -2922,12 +3536,15 @@
     if (!isGame) exitPlaybackMode();
     gameViewEl.hidden = !isGame;
     editorViewEl.hidden = !isEditor;
+    analyzerViewEl.hidden = mode !== 'analyzer';
     galleryViewEl.hidden = !isGallery;
     levelRowEl.hidden = !isGame;
     statsEl.hidden = !isGame;
     backBtn.hidden = isGame;
+    updateScrollTopButton();
     appEl.classList.toggle('editing', isEditor);
     appEl.classList.toggle('gallery', isGallery);
+    appEl.classList.toggle('analyzing', mode === 'analyzer');
     if (!isEditor) { solverStatus.textContent = ''; solverStatus.classList.remove('error'); closeManualPaste(); }
     hideLevelContextMenu();
     if (isGame) { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) { window.scrollTo(0, 0); } }
@@ -2976,6 +3593,8 @@
     timeEl.textContent = '0:00'; movesEl.textContent = '0';
     overlayEl.classList.add('hidden');
     applyBoardSize();
+    // Recalculate "лимит состояний" for the current board size.
+    recalcMemoryForBoard();
     clearHint();
     buildGamePieces(); syncGamePieces();
     renderTargetMarkers();
@@ -3033,12 +3652,6 @@
     applyMiniBoardMask(miniBoardEl, COLS, ROWS, holesSet);
   }
 
-  /* Requirement: when the target board holds exactly one movable target piece,
-     draw a small colored dot at the center of each cell of that piece's target
-     position on the game board.
-     - only a white ring by default; grey ring for white / beige / yellow targets
-     - markers always sit on top (z-index: 25) so they never hide under pieces,
-       not even while dragging */
   function appendTargetMarkers(container, cols, rows, targetPieces) {
     if (!container) return;
     const movable = (targetPieces || []).filter(p => {
@@ -3052,6 +3665,10 @@
     const color = COLORS_MAP[tgt.color] || COLORS_MAP.blue;
     const grad = `linear-gradient(150deg, ${color.from}, ${color.to})`;
     const isLightTarget = LIGHT_MARKER_COLORS.has(tgt.color);
+    const totalCells = cols * rows;
+    const extra = Math.max(0, totalCells - 20);
+    const factor = Math.min(0.40, 0.28 + extra * 0.0015);
+    container.style.setProperty('--marker-size-factor', factor.toFixed(4));
     for (const [dx, dy] of shape.cells) {
       const cx = tgt.x + dx, cy = tgt.y + dy;
       if (cx < 0 || cx >= cols || cy < 0 || cy >= rows) continue;
@@ -3302,6 +3919,10 @@
     if (message) { solverStatus.textContent = message; solverStatus.classList.toggle('error', !!isError); }
   }
   function oomMessage() { return t('solverOom', fmtNum(MAX_NODES)); }
+  function oomMessageProgress(nodes) {
+    const memGB = (Math.max(0, nodes) * bytesPerState(CELLS)) / GB_BYTES;
+    return t('solverOomProgress', fmtNum(nodes), memGB.toFixed(2));
+  }
 
   function getLevelNameByGlobalIdx(idx) {
     const all = allLevels();
@@ -3456,13 +4077,16 @@
     try { result = await solve(onProgress); }
     catch (err) {
       if (solveSessionId !== mySessionId) return;
-      if (err && err.message === '__OOM__') {
+      const errMsg = (err && err.message) || String(err);
+      const isOurOom = errMsg === '__OOM__';
+      const isBrowserOom = !!(err && err.isBrowserOom) || /out of memory|allocation failed/i.test(errMsg);
+      if (isOurOom || isBrowserOom) {
         if (batchMode) {
-          console.error('[AutoSolve] OOM on "' + lvlNameForLog + '" — states explored: ' + lastNodes + ', depth: ' + lastDepth + ', limit: ' + MAX_NODES);
+          console.error('[AutoSolve] OOM on "' + lvlNameForLog + '" — positions: ' + lastNodes + ', depth: ' + lastDepth + ', estimated RAM: ' + ((lastNodes * bytesPerState(CELLS)) / GB_BYTES).toFixed(2) + ' GB, limit: ' + MAX_NODES);
           batch.stats.oom++;
           game.solving = false; updateSolveBtn(); updateUndoBtn(); return;
         }
-        stopSolving(oomMessage(), true); return;
+        stopSolving(oomMessageProgress(lastNodes), true); return;
       }
       console.error('[AutoSolve] Solver error on "' + lvlNameForLog + '":', err);
       if (batchMode) { batch.stats.error++; game.solving = false; updateSolveBtn(); updateUndoBtn(); return; }
@@ -3515,7 +4139,9 @@
     updateSolveBtn(); updateUndoBtn();
     await new Promise(r => setTimeout(r, 20));
     if (solveSessionId !== mySessionId) return;
+    let lastNodes = 0;
     const onProgress = (nodes, depth, ms) => {
+      lastNodes = nodes;
       if (solveSessionId !== mySessionId) return;
       if (!game.solving) return;
       solverStatus.innerHTML = t('analyzingPrefix') + ' ' + t('timeLabel') + ' <b>' + fmtSolverTime(ms / 1000) + '</b>';
@@ -3524,7 +4150,10 @@
     try { result = await solve(onProgress); }
     catch (err) {
       if (solveSessionId !== mySessionId) return;
-      if (err && err.message === '__OOM__') { stopSolving(oomMessage(), true); return; }
+      const errMsg = (err && err.message) || String(err);
+      const isOurOom = errMsg === '__OOM__';
+      const isBrowserOom = !!(err && err.isBrowserOom) || /out of memory|allocation failed/i.test(errMsg);
+      if (isOurOom || isBrowserOom) { stopSolving(oomMessageProgress(lastNodes), true); return; }
       console.error(err);
       stopSolving(t('solverError', err.message), true);
       return;
@@ -3771,7 +4400,7 @@
     if (!tgt) { e.preventDefault(); return; }
     const tag = (tgt.tagName || '').toUpperCase();
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tgt.isContentEditable) return;
-    if (tgt.closest && tgt.closest('.level-text, .manual-paste, .about-block, .gallery-group__description, .gallery-toc__link, .solver-status, .title')) return;
+    if (tgt.closest && tgt.closest('#analyzerView, .level-text, .manual-paste, .about-block, .gallery-group__description, .gallery-toc__link, .solver-status, .title')) return;
     e.preventDefault();
   });
   window.addEventListener('click', () => { hideLevelContextMenu(); });
@@ -3785,6 +4414,8 @@
       if (document.getElementById('authorDropdownMenu') || document.getElementById('groupDropdownMenu')) {
         closeAllDropdowns(); e.preventDefault(); return;
       }
+      if (analyzerMini.open) { closeAnalyzerMini(); e.preventDefault(); return; }
+      if (appMode === 'analyzer') { if (analyzer.filterOpen) toggleAnalyzerFilter(); else exitAnalyzer(false); e.preventDefault(); return; }
       if (appMode === 'game') {
         if (playback.active) { exitPlaybackMode(); e.preventDefault(); return; }
         if (batch.active) { cancelBatch(); e.preventDefault(); return; }
@@ -4071,11 +4702,6 @@
   function getNewTileBtnRect() { const el = document.getElementById('newTileBtn'); if (!el || el.hidden) return null; return el.getBoundingClientRect(); }
   function isOverNewTileBtn(clientX, clientY) { const r = getNewTileBtnRect(); if (!r) return false; return pointInRect(clientX, clientY, r); }
 
-  /* Requirement: unified double-click handling for palette items.
-     Previously the palette used a native 'dblclick' event, but micro mouse
-     movements during the first click caused renderEditor() to rebuild the
-     palette and swallow the second click's dblclick. Now we detect a double
-     click inside pointerdown by timing, exactly like board pieces. */
   function makePaletteItem(key) {
     const shape = SHAPES[key]; if (!shape) return null;
     const isCustom = !!shape.custom;
@@ -5549,7 +6175,23 @@
     return parts.length > 0 ? parts.join('\n') : s;
   }
 
-  function parseLevelStepSafe(text) { try { const p = parseLevel(text); return (p && p.step) ? p.step : 0; } catch (e) { return 0; } }
+  const levelStepCache = new Map();
+  function parseLevelStepSafe(text) {
+    const source = String(text || '');
+    if (levelStepCache.has(source)) return levelStepCache.get(source);
+    // Sorting and group counters need only the header, never board geometry.
+    let step = 0;
+    for (const raw of source.split(/\r?\n/)) {
+      const line = raw.trim(), low = line.toLowerCase();
+      if (low.startsWith('board:')) break;
+      if (!low.startsWith('step:')) continue;
+      const value = parseInt(line.substring(line.indexOf(':') + 1).trim(), 10);
+      if (!isNaN(value) && value > 0) step = value;
+    }
+    if (levelStepCache.size >= 2048) levelStepCache.clear();
+    levelStepCache.set(source, step);
+    return step;
+  }
 
   function formatGroupTitle(group, authors, total, unsolved) {
     const valid = (authors || []).filter(a => a && String(a).trim() && String(a).trim() !== group);
@@ -6113,6 +6755,7 @@
       }
       levelSelectEl.appendChild(optgroup);
     }
+    levelSelectEl.value = String(currentLevelIndex);
   }
   function applyGroupMovesFromLevel(level) {
     game.groupMoves = !!level.groupMoves;
@@ -6126,6 +6769,8 @@
   }
   function loadLevelToGame(level) {
     COLS = level.cols; ROWS = level.rows; CELLS = COLS * ROWS;
+    // "Лимит ОЗУ" is the primary setting: recompute the state limit for
+    // the new board size. This is also done in startGame (which runs next).
     applyGroupMovesFromLevel(level);
     const startCfg = level.startPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }));
     const targetCfg = level.targetPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }));
@@ -6191,6 +6836,22 @@
   window.addEventListener('pagehide', saveLastLevelIdentity);
   window.addEventListener('beforeunload', saveLastLevelIdentity);
 
+  function showStartupLevelOption(level, index) {
+    if (!levelSelectEl) return;
+    levelSelectEl.innerHTML = '';
+    const option = document.createElement('option');
+    option.value = String(index); option.textContent = levelDisplayName(level);
+    levelSelectEl.appendChild(option); levelSelectEl.value = String(index);
+  }
+  function prepareLevelListAfterFirstPaint() {
+    // A second animation frame guarantees a paint opportunity for the initial
+    // board and its contour/mask before any catalog-wide work is scheduled.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const prepare = () => buildLevelSelect();
+      if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(prepare, { timeout: 500 });
+      else setTimeout(prepare, 0);
+    }));
+  }
   function loadSavedOrFirstLevel() {
     const all = allLevels();
     if (all.length === 0) { startGame(DEFAULT_START, DEFAULT_TARGET, 0); return; }
@@ -6211,8 +6872,9 @@
     if (idx < 0 || idx >= all.length) idx = 0;
     try {
       const level = parseLevel(all[idx].text);
-      loadLevelToGame(level);
       currentLevelIndex = idx;
+      showStartupLevelOption(all[idx], idx);
+      loadLevelToGame(level);
       levelSelectEl.value = String(idx);
     } catch (err) { console.error(err); startGame(DEFAULT_START, DEFAULT_TARGET, 0); }
   }
@@ -6232,6 +6894,7 @@
     stepLevel(1);
   });
   backBtn.addEventListener('click', () => {
+    if (appMode === 'analyzer') { exitAnalyzer(false); return; }
     if (appMode === 'editor') {
       if (tileEditActive) { cancelTileEditor(); return; }
       if (!manualPasteEl.hidden) { closeManualPaste(); return; }
@@ -6341,9 +7004,6 @@
     contextMenuEl = menu;
   }
 
-  /* Requirement (gallery): if the target board contains exactly one movable
-     target piece, show only the start board preview (full width) with the
-     target-marker dots drawn on it — the target board preview is not shown. */
   function countMovableTargets(parsed) {
     if (!parsed || !parsed.targetPieces) return 0;
     let n = 0;
@@ -6749,23 +7409,28 @@
   }
   function updateMaxStatesHint() {
     if (!maxStatesHint) return;
-    const eff = MAX_NODES, user = MAX_NODES_USER;
-    const memBytes = eff * BYTES_PER_STATE;
-    if (eff < user) maxStatesHint.textContent = t('maxStatesHintLimited', fmtNum(eff), fmtNum(user), fmtBytes(memBytes));
-    else maxStatesHint.textContent = t('maxStatesHintFull', fmtNum(eff), fmtBytes(memBytes));
+    const states = MAX_NODES_USER;
+    const ramGb = MAX_RAM_GB_USER;
+    const gbStr = (ramGb >= 1) ? (Math.round(ramGb * 10) / 10).toString() : (Math.round(ramGb * 100) / 100).toString();
+    maxStatesHint.textContent = t('maxStatesHintFull', gbStr, fmtNum(states));
+  }
+  function syncMemoryInputs() {
+    if (maxStatesInput) maxStatesInput.value = fmtNum(MAX_NODES_USER);
+    if (maxRamInput) {
+      let gb = MAX_RAM_GB_USER;
+      gb = (gb >= 1) ? Math.round(gb * 10) / 10 : Math.round(gb * 100) / 100;
+      maxRamInput.value = String(gb);
+    }
   }
   if (maxStatesInput) {
-    maxStatesInput.value = MAX_NODES_USER.toLocaleString('ru-RU');
-    updateMaxStatesHint();
-    const applyMaxStates = () => {
+    const applyStates = () => {
       const cleaned = (maxStatesInput.value || '').replace(/\D+/g, '');
       let v = parseInt(cleaned, 10);
-      if (!isFinite(v) || v < 100000) v = MAX_NODES_DEFAULT;
-      if (v > MAX_NODES_HARD_CAP) v = MAX_NODES_HARD_CAP;
-      maxStatesInput.value = fmtNum(v);
-      saveMaxNodesSetting(v);
+      if (!isFinite(v) || v < 100000) v = MAX_NODES_USER;
+      saveStatesSetting(v);
+      syncMemoryInputs();
       updateMaxStatesHint();
-      showToast(t('stateLimitSet', fmtNum(MAX_NODES)) + (MAX_NODES < v ? t('stateLimitMemory') : ''));
+      showToast(t('stateLimitSet', fmtNum(MAX_NODES_USER)));
     };
     maxStatesInput.addEventListener('input', () => {
       const raw = maxStatesInput.value;
@@ -6774,10 +7439,26 @@
       const formatted = parseInt(cleaned, 10).toLocaleString(LANG === 'ru' ? 'ru-RU' : 'en-US');
       if (raw !== formatted) maxStatesInput.value = formatted;
     });
-    maxStatesInput.addEventListener('change', applyMaxStates);
-    maxStatesInput.addEventListener('blur', applyMaxStates);
-    maxStatesInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); applyMaxStates(); maxStatesInput.blur(); } });
+    maxStatesInput.addEventListener('change', applyStates);
+    maxStatesInput.addEventListener('blur', applyStates);
+    maxStatesInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); applyStates(); maxStatesInput.blur(); } });
   }
+  if (maxRamInput) {
+    const applyRam = () => {
+      const raw = (maxRamInput.value || '').replace(',', '.').replace(/[^\d.]/g, '');
+      let gb = parseFloat(raw);
+      if (!isFinite(gb) || gb < 0.03) gb = MAX_RAM_GB_USER;
+      saveRamSetting(gb);
+      syncMemoryInputs();
+      updateMaxStatesHint();
+      showToast(t('stateLimitSet', fmtNum(MAX_NODES_USER)));
+    };
+    maxRamInput.addEventListener('change', applyRam);
+    maxRamInput.addEventListener('blur', applyRam);
+    maxRamInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); applyRam(); maxRamInput.blur(); } });
+  }
+  syncMemoryInputs();
+  updateMaxStatesHint();
 
   function updateLangToggle() {
     if (!langToggleEl) return;
@@ -6795,12 +7476,13 @@
     updateSolveBtn();
     updatePlayPauseBtn();
     renderLevelHint();
-    if (maxStatesInput) maxStatesInput.value = fmtNum(MAX_NODES_USER);
+    syncMemoryInputs();
     updateMaxStatesHint();
     buildLevelSelect();
     if (levelSelectEl) levelSelectEl.value = String(currentLevelIndex);
     if (appMode === 'editor') { buildPalette(); renderEditor(); }
     else if (appMode === 'gallery') { buildGallery(); }
+    else if (appMode === 'analyzer') { renderAnalyzer(); }
     else { renderLevelHint(); }
     updateLangToggle();
   }
@@ -6813,12 +7495,1615 @@
     if (copyAllBtn) copyAllBtn.hidden = true;
   })();
 
+  /* Analyzer: breadth-first exploration, shared movement rules with the solver. */
+  async function exploreAnalyzer(startPieces, maxStates, stopCheck, onProgress, goalPieces = null) {
+    const state = buildSolverState(startPieces, []);
+    const { typeIndex, freeCellLookup, FREE_CELLS, startFlat, NUM_TYPES } = state;
+    const keyOf = makeKeyFn(NUM_TYPES);
+    const rootKey = keyOf(makeSolverBoard(startFlat, typeIndex, freeCellLookup, FREE_CELLS));
+    let goalKey = null, goalNode = -1;
+    if (goalPieces) {
+      const flat = [];
+      for (const p of goalPieces) flat.push(state.typeMap.get(solverPieceKey(p)), p.x, p.y);
+      goalKey = keyOf(makeSolverBoard(flat, typeIndex, freeCellLookup, FREE_CELLS));
+      if (goalKey === rootKey) goalNode = 0;
+    }
+    const visited = new Set([rootKey]);
+    const states = [startFlat], parentList = [-1];
+    const layers = [[0]];
+    let frontier = goalNode === 0 ? [] : layers[0], capped = false;
+    const started = performance.now();
+    let lastYield = started;
+    while (frontier.length) {
+      const next = [];
+      expandLayer: for (const nodeIndex of frontier) {
+        if (stopCheck()) return null;
+        const pieces = states[nodeIndex];
+        const board = makeSolverBoard(pieces, typeIndex, freeCellLookup, FREE_CELLS);
+        for (let pi = 0; pi < pieces.length / 3; pi++) {
+          const type = pieces[pi * 3], info = typeIndex[type];
+          if (!info || info.fixed) continue;
+          const px = pieces[pi * 3 + 1], py = pieces[pi * 3 + 2];
+          erasePieceFromBoard(board, pieces, pi, typeIndex, freeCellLookup);
+          const moves = generateMovesForPiece(board, px, py, type, info, freeCellLookup, pieces, pi, typeIndex, GROUP_SHIFT);
+          placePieceOnBoard(board, pieces, pi, typeIndex, freeCellLookup);
+          for (const move of moves) {
+            const nextBoard = board.slice(), nextPieces = pieces.slice();
+            erasePieceFromBoard(nextBoard, pieces, pi, typeIndex, freeCellLookup);
+            const shifts = [];
+            if (move.shifted) for (const sh of move.shifted) {
+              const qi = findPieceIndexByTypeAndPos(pieces, sh.type, sh.fromX, sh.fromY);
+              if (qi < 0 || qi === pi) continue;
+              erasePieceFromBoard(nextBoard, pieces, qi, typeIndex, freeCellLookup);
+              shifts.push(qi);
+            }
+            nextPieces[pi * 3 + 1] = move.nx;
+            nextPieces[pi * 3 + 2] = move.ny;
+            placePieceOnBoard(nextBoard, nextPieces, pi, typeIndex, freeCellLookup);
+            for (const qi of shifts) {
+              nextPieces[qi * 3 + 1] += move.path[0][0];
+              nextPieces[qi * 3 + 2] += move.path[0][1];
+              placePieceOnBoard(nextBoard, nextPieces, qi, typeIndex, freeCellLookup);
+            }
+            const key = keyOf(nextBoard);
+            if (visited.has(key)) continue;
+            if (visited.size >= maxStates) { capped = true; break expandLayer; }
+            visited.add(key);
+            const childIndex = states.length;
+            states.push(nextPieces); parentList.push(nodeIndex);
+            next.push(childIndex);
+            if (goalKey !== null && key === goalKey) { goalNode = childIndex; break expandLayer; }
+          }
+        }
+        const now = performance.now();
+        if (now - lastYield > 35) {
+          onProgress(visited.size, layers.length - 1 + (next.length ? 1 : 0), now - started);
+          await new Promise(resolve => setTimeout(resolve, 0));
+          if (stopCheck()) return null;
+          lastYield = performance.now();
+          if (isMemoryHigh()) { capped = true; break expandLayer; }
+        }
+      }
+      if (next.length) layers.push(next);
+      if (capped || goalNode >= 0) break;
+      frontier = next;
+    }
+    if (stopCheck()) return null;
+    // Keep compact states and parents for path inspection; only the furthest 20% appear in the results selector.
+    const count = Math.min(1000, Math.max(1, Math.ceil(visited.size * 0.2)));
+    const stride = startFlat.length;
+    const positions = new Uint8Array(states.length * stride);
+    const parents = new Int32Array(states.length);
+    const selection = new Uint32Array(count);
+    const depths = new Uint32Array(count);
+    for (let i = 0; i < states.length; i++) {
+      positions.set(states[i], i * stride); parents[i] = parentList[i];
+      if ((i & 2047) === 0 && performance.now() - lastYield > 35) {
+        await new Promise(resolve => setTimeout(resolve, 0));
+        if (stopCheck()) return null;
+        lastYield = performance.now();
+      }
+    }
+    let index = 0;
+    for (let depth = layers.length - 1; depth >= 0 && index < count; depth--) {
+      for (const nodeIndex of layers[depth]) {
+        selection[index] = nodeIndex; depths[index++] = depth;
+        if (index === count) break;
+        if ((index & 2047) === 0 && performance.now() - lastYield > 35) {
+          await new Promise(resolve => setTimeout(resolve, 0));
+          if (stopCheck()) return null;
+          lastYield = performance.now();
+        }
+      }
+    }
+    return { positions, parents, selection, depths, stride, count, goalNode, depth: layers.length - 1,
+      nodes: visited.size, capped, ms: performance.now() - started };
+  }
+
+  const analyzerViewEl = document.getElementById('analyzerView');
+  const anaSourceEl = document.getElementById('anaSource');
+  const anaTargetEl = document.getElementById('anaTarget');
+  const anaStatusEl = document.getElementById('anaStatus');
+  const anaInfoEl = document.getElementById('anaInfo');
+  const anaIndexEl = document.getElementById('anaIndex');
+  const anaAutoBtn = document.getElementById('anaAuto');
+  const anaSearchBtn = document.getElementById('anaSearch');
+  const anaStopBtn = document.getElementById('anaStop');
+  const anaPrevBtn = document.getElementById('anaPrev');
+  const anaNextBtn = document.getElementById('anaNext');
+  const anaSwapBtn = document.getElementById('anaSwap');
+  const anaApplyBtn = document.getElementById('anaApply');
+  const anaRunBtn = document.getElementById('anaRun');
+  const analyzer = {
+    source: [], templates: {}, result: null, index: 0,
+    route: [], routeResult: null, routeIndex: -1, sourceStep: 0, targetStep: 0,
+    cols: 4, rows: 5, moveMode: 3, groupShift: false, rushHour: false,
+    maxStates: 0, running: false, auto: false, generation: 0,
+    worker: null, url: null, pending: null, round: 0, best: null,
+    statusKey: 'anaReady', statusArgs: [], job: null,
+    spaceResult: null, spaceSource: null, spaceIndex: 0, spaceLimit: 0, spaceFound: 0,
+    spaceStatusKey: 'spaceReady', spaceStatusArgs: [],
+    spaceContours: [], spaceOwners: null, spaceIndexMap: null, spaceRemaining: null, spaceAssigned: 0, spaceView: 'all',
+    spaceTableVersion: 0, spaceTableRendered: -1, spaceTableView: null, spaceTableBusy: null, spaceTableResult: null, spaceTableLabel: null,
+    fullActive: false, fullGeneration: 0, fullStatusKey: null, fullStatusArgs: [], fullPaintTimer: null, fullStatusTimer: null, fullStatusPaint: -Infinity, fullCurrentNodes: 0,
+    fullUpperSnapshot: null, fullInitialSource: null, fullBestCfg: null, fullBestSteps: -1, fullBestKey: null,
+    spaceSort: 'steps', spaceSortDescending: true,
+    nearIndex: 0, pairView: null, filterBase: null, filterMatches: null, filterPairs: null, filterIndex: 0, filterOpen: false, filterMode: 'any', filterWindow: 0,
+    pairGeneration: 0, pairWorker: null, pairUrl: null, pairResolve: null, pairCacheBase: null, pairCache: new Map()
+  };
+  function analyzerStatus(key, ...args) {
+    analyzer.statusKey = key; analyzer.statusArgs = args;
+    if (!analyzer.fullActive) {
+      const viewport = captureAnalyzerViewport(); anaStatusEl.textContent = t(key, ...args); restoreAnalyzerViewport(viewport);
+    }
+  }
+  function analyzerConfigAt(result, nodeIndex) {
+    if (!result || nodeIndex < 0 || nodeIndex >= result.nodes) return null;
+    const cfg = [], offset = nodeIndex * result.stride;
+    for (let i = 0; i < result.stride; i += 3) {
+      const template = analyzer.templates[result.positions[offset + i]];
+      cfg.push({ ...template, x: result.positions[offset + i + 1], y: result.positions[offset + i + 2] });
+    }
+    return cfg;
+  }
+  function analyzerNodeAt(nodeIndex) { return analyzerConfigAt(analyzer.result, nodeIndex); }
+  function analyzerTargetAt(index) {
+    const result = analyzer.result;
+    return result && index >= 0 && index < result.count ? analyzerNodeAt(result.selection[index]) : null;
+  }
+  function currentAnalyzerPairView() {
+    if (analyzer.pairView && analyzer.pairView.base !== analyzer.result) { cancelAnalyzerPairSearch(); analyzer.pairView = null; }
+    return analyzer.pairView;
+  }
+  function syncAnalyzerRoute() {
+    const view = currentAnalyzerPairView();
+    const result = view ? view.tree : analyzer.result;
+    const index = result ? (view ? view.goalNode : result.selection[analyzer.index]) : -1;
+    if (analyzer.routeResult === result && analyzer.routeIndex === index) return;
+    if (analyzer.routeResult !== result && !view) analyzer.nearIndex = 0;
+    analyzer.routeResult = result; analyzer.routeIndex = index;
+    analyzer.route = []; analyzer.sourceStep = 0; analyzer.targetStep = 0;
+    if (!result) return;
+    let nodeIndex = index;
+    while (nodeIndex >= 0) {
+      analyzer.route.push(nodeIndex); nodeIndex = result.parents[nodeIndex];
+    }
+    analyzer.route.reverse();
+  }
+  function analyzerDisplayedPair() {
+    syncAnalyzerRoute();
+    const view = currentAnalyzerPairView(), last = analyzer.route.length - 1;
+    return {
+      source: last >= 0 ? analyzerConfigAt(analyzer.routeResult, analyzer.route[analyzer.sourceStep])
+        : view ? analyzerNodeAt(view.source) : analyzer.source,
+      target: last >= 0 ? analyzerConfigAt(analyzer.routeResult, analyzer.route[last - analyzer.targetStep])
+        : view ? analyzerNodeAt(view.target) : null,
+      distance: last >= 0 ? last - analyzer.targetStep - analyzer.sourceStep : null
+    };
+  }
+  function updateAnalyzerPathControls(side, step, last) {
+    const active = !analyzer.running && !analyzer.fullActive && last >= 0;
+    const slider = document.getElementById('ana' + side + 'Slider');
+    slider.max = String(Math.max(0, last)); slider.value = String(step); slider.disabled = !active || last === 0;
+    const reverse = side === 'Target';
+    document.getElementById('ana' + side + 'First').disabled = !active || (reverse ? step >= last : step === 0);
+    document.getElementById('ana' + side + 'Prev').disabled = !active || (reverse ? step >= last : step === 0);
+    document.getElementById('ana' + side + 'Next').disabled = !active || (reverse ? step === 0 : step >= last);
+    document.getElementById('ana' + side + 'Last').disabled = !active || (reverse ? step === 0 : step >= last);
+  }
+  function stepAnalyzerPath(side, value) {
+    if (analyzer.running || analyzer.fullActive) return;
+    syncAnalyzerRoute();
+    const last = analyzer.route.length - 1;
+    if (last < 0) return;
+    analyzer[side === 'Source' ? 'sourceStep' : 'targetStep'] = Math.max(0, Math.min(last, value));
+    renderAnalyzer();
+  }
+  function renderAnalyzerBoard(container, pieces, emptyKey = 'anaEmpty') {
+    container.textContent = '';
+    container.style.setProperty('--board-cols', analyzer.cols);
+    container.style.setProperty('--board-rows', analyzer.rows);
+    if (!pieces) {
+      const hint = document.createElement('p'); hint.className = 'analyzer-empty';
+      hint.textContent = t(emptyKey); container.appendChild(hint); return;
+    }
+    const preview = buildMiniPreviewFromParsed(analyzer.cols, analyzer.rows, pieces,
+      getHoleSetFromPieces(analyzer.source), analyzer.rushHour);
+    container.appendChild(preview);
+  }
+  function updateAnalyzerButtons() {
+    syncAnalyzerRoute();
+    const busy = analyzer.running || analyzer.fullActive;
+    const result = analyzer.result;
+    const hasResult = !!(result && result.count);
+    updateAnalyzerCommand(anaAutoBtn, 'anaAuto', '↻', 'hint-btn', busy);
+    updateAnalyzerCommand(anaSearchBtn, 'anaSearch', '🔍', 'solve', busy);
+    anaStopBtn.hidden = true;
+    document.getElementById('anaStopRow').hidden = anaStopBtn.hidden;
+    anaPrevBtn.disabled = busy || !hasResult || analyzer.index >= result.count - 1;
+    anaNextBtn.disabled = busy || !hasResult || analyzer.index <= 0;
+    document.getElementById('anaFarFirst').disabled = anaPrevBtn.disabled;
+    document.getElementById('anaFarLast').disabled = anaNextBtn.disabled;
+    const farSlider = document.getElementById('anaFarSlider');
+    farSlider.max = String(hasResult ? result.count - 1 : 0); farSlider.value = String(analyzer.index);
+    farSlider.disabled = busy || !hasResult || result.count <= 1;
+    anaSwapBtn.disabled = busy || !hasResult;
+    anaApplyBtn.disabled = busy || !hasResult;
+    anaRunBtn.disabled = busy || !hasResult || (analyzerDisplayedPair().distance === null || analyzerDisplayedPair().distance === 0);
+    const last = analyzer.route.length - 1;
+    updateAnalyzerPathControls('Source', analyzer.sourceStep, last);
+    updateAnalyzerPathControls('Target', analyzer.targetStep, last);
+    updateAnalyzerSelectionControls(busy);
+    updateAnalyzerSpaceControls();
+  }
+  function renderAnalyzer() {
+    const viewport = captureAnalyzerViewport();
+    try {
+      if (analyzer.fullActive) { updateAnalyzerButtons(); renderAnalyzerSpace(); return; }
+      const pair = analyzerDisplayedPair();
+      renderAnalyzerBoard(anaSourceEl, pair.source);
+      renderAnalyzerBoard(anaTargetEl, pair.target);
+      const result = analyzer.result;
+      anaIndexEl.textContent = result ? t('anaPosition', fmtNum(analyzer.index + 1), fmtNum(result.count)) : '0 / 0';
+      const last = analyzer.route.length - 1;
+      document.getElementById('anaSourceStepInfo').textContent = last >= 0 ? t('anaSourceStep', analyzer.sourceStep, last) : t('anaPathHint');
+      document.getElementById('anaTargetStepInfo').textContent = last >= 0 ? t('anaTargetStep', analyzer.targetStep, last) : '';
+      anaInfoEl.textContent = !result ? '' : pair.distance === null ? t((currentAnalyzerPairView() && analyzer.pairView.pending) ? 'anaPairMeasuring' : 'anaPairUnknown') : pair.distance < 0 && analyzer.groupShift
+        ? t('anaReverseDistance') : t('anaDistance', fmtNum(Math.abs(pair.distance)));
+      const modeKey = { 1: 'moveModeCellsShort', 2: 'moveModeLinesShort', 3: 'moveModePathShort' }[analyzer.moveMode];
+      document.getElementById('anaRules').textContent = t('anaRules', t(modeKey),
+        analyzer.groupShift ? t('onLabel') : t('offLabel'), fmtNum(analyzer.maxStates));
+      anaStatusEl.textContent = t(analyzer.statusKey, ...analyzer.statusArgs);
+      updateAnalyzerButtons(); renderAnalyzerSpace();
+    } finally { restoreAnalyzerViewport(viewport); }
+  }
+  function enterAnalyzer() {
+    if (appMode !== 'editor' || tileEditActive) return;
+    cleanupEditorDrag(); closeManualPaste(); closeAllDropdowns();
+    if (!editor.startPieces.some(p => SHAPES[p.shape] && !SHAPES[p.shape].fixed)) {
+      showToast(t('anaNoPieces'), true); return;
+    }
+    stopAnalyzer(false);
+    analyzer.cols = COLS; analyzer.rows = ROWS;
+    analyzer.moveMode = MOVE_MODE;
+    analyzer.groupShift = !!(editor.groupMoves || GROUP_SHIFT);
+    analyzer.rushHour = !!editor.rushHour;
+    analyzer.source = analyzer.rushHour ? applyRushHourToCfg(editor.startPieces) : cloneCfg(editor.startPieces);
+    let state;
+    try { state = buildSolverState(analyzer.source, []); }
+    catch (err) { showToast(err.message || String(err), true); return; }
+    analyzer.templates = {};
+    for (const p of analyzer.source) analyzer.templates[state.typeMap.get(solverPieceKey(p))] = { ...p };
+    const perState = 280 + CELLS * 2 + analyzer.source.length * 3;
+    analyzer.maxStates = Math.max(1, Math.min(MAX_NODES_USER,
+      Math.floor(MAX_RAM_GB_USER * GB_BYTES / perState)));
+    resetAnalyzerSelections();
+    analyzer.result = null; analyzer.index = 0; analyzer.round = 0; analyzer.best = null;
+    analyzer.spaceResult = null; analyzer.spaceSource = null; analyzer.spaceIndex = 0;
+    analyzer.spaceStatusKey = 'spaceReady'; analyzer.spaceStatusArgs = []; analyzer.job = null; resetAnalyzerContours();
+    analyzer.fullStatusKey = null; analyzer.fullStatusArgs = [];
+    analyzerStatus('anaReady');
+    setAppMode('analyzer'); renderAnalyzer();
+    window.scrollTo(0, 0);
+  }
+  function releaseAnalyzerWorker() {
+    if (analyzer.worker) { analyzer.worker.terminate(); analyzer.worker = null; }
+    if (analyzer.url) { URL.revokeObjectURL(analyzer.url); analyzer.url = null; }
+  }
+  function clearAnalyzerFullPaintTimer() {
+    if (analyzer.fullStatusTimer !== null) clearInterval(analyzer.fullStatusTimer);
+    analyzer.fullStatusTimer = null;
+    if (analyzer.fullPaintTimer !== null) clearInterval(analyzer.fullPaintTimer);
+    analyzer.fullPaintTimer = null;
+  }
+  function stopAnalyzer(showStatus = true) {
+    cancelAnalyzerPairSearch();
+    const wasSpace = analyzer.job === 'space', wasDissect = analyzer.job === 'dissect', wasFull = analyzer.fullActive;
+    clearAnalyzerFullPaintTimer();
+    analyzer.fullActive = false; analyzer.fullGeneration++;
+    if (!wasFull && analyzer.running && analyzer.best) {
+      analyzer.source = analyzer.best.source; analyzer.result = analyzer.best.result; analyzer.index = 0;
+      renderAnalyzer();
+    }
+    analyzer.best = null;
+    analyzer.generation++;
+    releaseAnalyzerWorker();
+    if (analyzer.pending) { const pending = analyzer.pending; analyzer.pending = null; pending.resolve(null); }
+    analyzer.running = false; analyzer.auto = false;
+    analyzer.job = null;
+    if (showStatus && wasFull) analyzerFullStatus('fullStopped', fmtNum(analyzer.spaceAssigned), fmtNum(analyzer.spaceResult ? analyzer.spaceResult.count : 0));
+    if (showStatus) {
+      if (wasDissect) analyzerSpaceStatus('contourStopped');
+      else if (wasSpace) analyzerSpaceStatus('spaceStopped', fmtNum(analyzer.spaceFound));
+      else analyzerStatus('anaStopped');
+    }
+    if (wasFull) restoreAnalyzerFullUpper();
+    updateAnalyzerButtons();
+    if (wasFull) { selectAnalyzerFullBest(); renderAnalyzer(); }
+  }
+  function exitAnalyzer(apply) {
+    if (apply && (!analyzer.result || analyzer.running || analyzer.fullActive)) return;
+    if (apply) {
+      const pair = analyzerDisplayedPair(), target = pair.target;
+      editor.startPieces = pair.source.map(p => ({ ...p, id: 'e' + editor.nextId++ }));
+      editor.targetPieces = target.map(p => ({ ...p, id: 'e' + editor.nextId++ }));
+      editor.groupMoves = analyzer.groupShift;
+      if (levelGroupMovesInput) levelGroupMovesInput.checked = editor.groupMoves;
+      editor.selectedId = null; editor.selectedBoard = null;
+      editor.dirty = true;
+    }
+    stopAnalyzer(false);
+    setAppMode('editor');
+    renderEditor();
+    // Search storage may be large; release it when leaving the analyzer.
+    resetAnalyzerSelections();
+    analyzer.result = null;
+    analyzer.source = [];
+    analyzer.routeResult = null; analyzer.route = [];
+    analyzer.spaceResult = null; analyzer.spaceSource = null; resetAnalyzerContours();
+  }
+  function buildAnalyzerWorkerSource() {
+    const shared = buildSolverWorkerSource().split('self.onmessage = async function (e) {')[0];
+    return shared + '\nfunction t() { return "Too many tile types"; }\n' + exploreAnalyzer.toString() + '\n' + enumerateAnalyzerSpace.toString() + '\n' + compactAnalyzerPairPath.toString() + `
+self.onmessage = async function (e) {
+  const msg = e.data;
+  try {
+    COLS = msg.cols; ROWS = msg.rows; CELLS = COLS * ROWS;
+    SHAPES = msg.shapes; MOVE_MODE = msg.moveMode; GROUP_SHIFT = msg.groupShift;
+    const progress = (nodes, depth, ms) => self.postMessage({ type: 'progress', nodes, depth, ms });
+    const result = msg.kind === 'space'
+      ? await enumerateAnalyzerSpace(msg.source, msg.maxStates, () => false, progress)
+      : await exploreAnalyzer(msg.source, msg.maxStates, () => false, progress, msg.goalPieces || null);
+    if (msg.kind === 'distance') {
+      const path = result.goalNode >= 0 ? compactAnalyzerPairPath(result) : null;
+      self.postMessage({ type: 'distance', distance: path ? path.nodes - 1 : null, path },
+        path ? [path.positions.buffer, path.parents.buffer] : []);
+      return;
+    }
+    const transfers = msg.kind === 'space' ? [result.positions.buffer]
+      : [result.positions.buffer, result.parents.buffer, result.selection.buffer, result.depths.buffer];
+    self.postMessage({ type: 'result', result }, transfers);
+  } catch (err) { self.postMessage({ type: 'error', message: err.message || String(err) }); }
+};`;
+  }
+  async function runAnalyzerSearch(source, generation, kind = 'search') {
+    const progress = (nodes, depth, ms) => {
+      if (analyzer.generation !== generation || !analyzer.running) return;
+      if (kind === 'space') {
+        analyzer.spaceFound = nodes;
+        analyzerSpaceStatus('spaceProgress', fmtNum(nodes), fmtNum(depth), fmtSolverTime(ms / 1000));
+      } else {
+        if (analyzer.fullActive) { analyzer.fullCurrentNodes = nodes; refreshAnalyzerFullStatus(); }
+        analyzerStatus('anaProgress', analyzer.round, fmtNum(nodes), depth, fmtSolverTime(ms / 1000));
+      }
+    };
+    if (kind === 'search' && analyzer.fullActive) return exploreAnalyzer(source, analyzer.maxStates,
+      () => analyzer.generation !== generation, progress);
+    let worker = null;
+    if (typeof Worker !== 'undefined' && typeof Blob !== 'undefined' && typeof URL !== 'undefined') {
+      try {
+        analyzer.url = URL.createObjectURL(new Blob([buildAnalyzerWorkerSource()], { type: 'application/javascript' }));
+        worker = new Worker(analyzer.url);
+      } catch (err) { releaseAnalyzerWorker(); }
+    }
+    const limit = kind === 'space' ? analyzer.spaceLimit : analyzer.maxStates;
+    if (!worker) return (kind === 'space' ? enumerateAnalyzerSpace : exploreAnalyzer)(source, limit,
+      () => analyzer.generation !== generation, progress);
+    analyzer.worker = worker;
+    return new Promise((resolve, reject) => {
+      analyzer.pending = { resolve, reject };
+      const finish = (result, error) => {
+        if (analyzer.worker !== worker) return;
+        analyzer.pending = null; releaseAnalyzerWorker();
+        if (error) reject(error); else resolve(result);
+      };
+      worker.onmessage = e => {
+        const msg = e.data;
+        if (msg.type === 'progress') progress(msg.nodes, msg.depth, msg.ms);
+        else if (msg.type === 'result') finish(msg.result);
+        else if (msg.type === 'error') finish(null, new Error(msg.message));
+      };
+      worker.onerror = e => finish(null, new Error(e.message || 'Worker error'));
+      try { worker.postMessage({ kind, source, maxStates: limit, cols: analyzer.cols,
+        rows: analyzer.rows, shapes: SHAPES, moveMode: analyzer.moveMode, groupShift: analyzer.groupShift }); }
+      catch (err) { finish(null, err); }
+    });
+  }
+  async function startAnalyzerSearch(auto, internal = false) {
+    if (analyzer.running || (analyzer.fullActive && !internal)) return;
+    const generation = ++analyzer.generation;
+    analyzer.running = true; analyzer.auto = !!auto; analyzer.round = 0; analyzer.best = null; analyzer.job = 'search';
+    let source = cloneCfg(analyzerDisplayedPair().source);
+    resetAnalyzerSelections();
+    // Retain only the best displayed pair between automatic passes.
+    let best = null;
+    try {
+      while (analyzer.generation === generation) {
+        analyzer.round++;
+        if (analyzer.fullActive) { analyzer.fullCurrentNodes = 0; refreshAnalyzerFullStatus(); }
+        analyzer.source = source; analyzer.result = null; analyzer.index = 0;
+        renderAnalyzer(); analyzerStatus('anaProgress', analyzer.round, '0', 0, '0.00');
+        const result = await runAnalyzerSearch(source, generation);
+        if (generation !== analyzer.generation || !result) return;
+        analyzer.result = result;
+        if (analyzer.fullActive) { analyzer.fullCurrentNodes = result.nodes; refreshAnalyzerFullStatus(); }
+        renderAnalyzer();
+        if (result.capped) {
+          analyzerStatus('anaCapped', result.depth, fmtNum(result.nodes), fmtNum(result.count));
+          break;
+        }
+        if (analyzer.fullActive) rememberAnalyzerFullBest(result);
+        if (!auto) {
+          analyzerStatus('anaDone', result.depth, fmtNum(result.nodes), fmtNum(result.count), fmtSolverTime(result.ms / 1000));
+          break;
+        }
+        if (best && result.depth <= best.result.depth) {
+          analyzer.source = best.source; analyzer.result = best.result; analyzer.index = 0;
+          renderAnalyzer();
+          analyzerStatus('anaAutoDone', analyzer.round, best.result.depth, result.depth, fmtNum(best.result.nodes));
+          break;
+        }
+        best = { source: cloneCfg(source), result };
+        analyzer.best = best;
+        if (result.depth === 0) {
+          analyzerStatus('anaAutoDone', analyzer.round, 0, 0, fmtNum(result.nodes)); break;
+        }
+        source = analyzerTargetAt(0);
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
+    } catch (err) {
+      if (generation !== analyzer.generation) return;
+      if (best) { analyzer.source = best.source; analyzer.result = best.result; analyzer.index = 0; renderAnalyzer(); }
+      analyzerStatus('anaError', err.message || String(err));
+    } finally {
+      if (generation === analyzer.generation) {
+        if (analyzer.result) analyzer.result.autoSwept = !!(auto && analyzer.statusKey === 'anaAutoDone' && !analyzer.result.capped);
+        analyzer.running = false; analyzer.auto = false; analyzer.best = null; analyzer.job = null; releaseAnalyzerWorker(); updateAnalyzerButtons();
+      }
+    }
+  }
+  document.getElementById('analyzerBtn').addEventListener('click', enterAnalyzer);
+  anaSearchBtn.addEventListener('click', () => handleAnalyzerCommand('anaSearch', () => startAnalyzerSearch(false)));
+  anaAutoBtn.addEventListener('click', () => handleAnalyzerCommand('anaAuto', () => startAnalyzerSearch(true)));
+  anaStopBtn.addEventListener('click', () => stopAnalyzer());
+  function stepAnalyzerFar(index) {
+    if (analyzer.running || analyzer.fullActive || !analyzer.result) return;
+    analyzer.index = Math.max(0, Math.min(analyzer.result.count - 1, index));
+    const near = analyzer.nearIndex;
+    analyzer.filterIndex = -1;
+    if (near > 0) selectAnalyzerPair(near, analyzer.result.selection[analyzer.index]);
+    else { analyzer.pairView = null; renderAnalyzer(); }
+  }
+  anaPrevBtn.addEventListener('click', () => stepAnalyzerFar(analyzer.index + 1));
+  anaNextBtn.addEventListener('click', () => stepAnalyzerFar(analyzer.index - 1));
+  document.getElementById('anaFarFirst').addEventListener('click', () => stepAnalyzerFar(analyzer.result ? analyzer.result.count - 1 : 0));
+  document.getElementById('anaFarLast').addEventListener('click', () => stepAnalyzerFar(0));
+  document.getElementById('anaFarSlider').addEventListener('input', e => stepAnalyzerFar(Number(e.target.value)));
+  anaSwapBtn.addEventListener('click', () => {
+    if (analyzer.running || analyzer.fullActive) return;
+    const cfg = analyzerDisplayedPair().target; if (!cfg) return;
+    analyzer.source = cfg; analyzer.result = null; analyzer.index = 0;
+    analyzerStatus('anaSwapped'); renderAnalyzer();
+  });
+  anaApplyBtn.addEventListener('click', () => exitAnalyzer(true));
+  anaRunBtn.addEventListener('click', () => {
+    if (analyzer.running || analyzer.fullActive || !analyzer.result || (analyzerDisplayedPair().distance === null || analyzerDisplayedPair().distance === 0)) return;
+    exitAnalyzer(true); applyEditor();
+  });
+  document.getElementById('anaCancel').addEventListener('click', () => exitAnalyzer(false));
+  for (const side of ['Source', 'Target']) {
+    const stepKey = side === 'Source' ? 'sourceStep' : 'targetStep';
+    document.getElementById('ana' + side + 'First').addEventListener('click', () => stepAnalyzerPath(side, side === 'Target' ? analyzer.route.length - 1 : 0));
+    document.getElementById('ana' + side + 'Prev').addEventListener('click', () => stepAnalyzerPath(side, analyzer[stepKey] + (side === 'Target' ? 1 : -1)));
+    document.getElementById('ana' + side + 'Next').addEventListener('click', () => stepAnalyzerPath(side, analyzer[stepKey] + (side === 'Target' ? -1 : 1)));
+    document.getElementById('ana' + side + 'Last').addEventListener('click', () => stepAnalyzerPath(side, side === 'Target' ? 0 : analyzer.route.length - 1));
+    document.getElementById('ana' + side + 'Slider').addEventListener('input', e => stepAnalyzerPath(side, Number(e.target.value)));
+  }
+
+
+  /* Geometric state space: fixed obstacles, fixed orientations, indistinguishable equal tiles. */
+  async function enumerateAnalyzerSpace(source, maxStates, stopCheck, onProgress) {
+    const state = buildSolverState(source, []);
+    const flat = state.startFlat.slice(), stride = flat.length;
+    let fixedMask = 0n, movableArea = 0;
+    const groupsByKey = new Map();
+    for (let i = 0; i < source.length; i++) {
+      const p = source[i], shape = SHAPES[p.shape];
+      if (shape.fixed) {
+        for (const [dx, dy] of shape.cells) fixedMask |= 1n << BigInt((p.y + dy) * COLS + p.x + dx);
+      } else {
+        movableArea += shape.cells.length;
+        const key = solverPieceKey(p);
+        if (!groupsByKey.has(key)) groupsByKey.set(key, { shape, indices: [] });
+        groupsByKey.get(key).indices.push(i);
+      }
+    }
+    const groups = Array.from(groupsByKey.values()).sort((a, b) => b.shape.cells.length - a.shape.cells.length || b.indices.length - a.indices.length);
+    const slots = [];
+    for (const group of groups) {
+      group.placements = [];
+      const shape = group.shape;
+      for (let y = 0; y + shape.h <= ROWS; y++) for (let x = 0; x + shape.w <= COLS; x++) {
+        let mask = 0n;
+        for (const [dx, dy] of shape.cells) mask |= 1n << BigInt((y + dy) * COLS + x + dx);
+        if (!(mask & fixedMask)) group.placements.push({ x, y, mask });
+      }
+      for (const pieceIndex of group.indices) slots.push({ group, pieceIndex });
+    }
+    const started = performance.now();
+    let lastYield = started, count = 0, examined = 0, capped = false;
+    const chunkSize = Math.max(1, Math.min(2048, Math.floor(1048576 / Math.max(1, stride))));
+    const chunks = [];
+    const choices = new Int32Array(slots.length).fill(-1);
+    const occupied = [fixedMask];
+    let depth = 0;
+    let freeCells = CELLS;
+    for (let bits = fixedMask; bits; bits &= bits - 1n) freeCells--;
+    if (movableArea > freeCells || groups.some(g => g.placements.length < g.indices.length)) depth = -1;
+    while (depth >= 0) {
+      if (stopCheck()) return null;
+      if (depth === slots.length) {
+        if (count >= maxStates) { capped = true; break; }
+        const chunkIndex = Math.floor(count / chunkSize), offset = count % chunkSize;
+        if (!chunks[chunkIndex]) chunks[chunkIndex] = new Uint8Array(Math.min(chunkSize, maxStates - count) * stride);
+        chunks[chunkIndex].set(flat, offset * stride);
+        count++; depth--;
+      } else {
+        const slot = slots[depth], placements = slot.group.placements;
+        let choice = choices[depth] + 1;
+        // Increasing placement indices remove permutations of equal tile instances.
+        if (choices[depth] < 0 && depth > 0 && slots[depth - 1].group === slot.group) choice = choices[depth - 1] + 1;
+        for (; choice < placements.length; choice++) {
+          examined++;
+          const placement = placements[choice];
+          if (placement.mask & occupied[depth]) continue;
+          choices[depth] = choice;
+          flat[slot.pieceIndex * 3 + 1] = placement.x;
+          flat[slot.pieceIndex * 3 + 2] = placement.y;
+          occupied[depth + 1] = occupied[depth] | placement.mask;
+          depth++;
+          if (depth < slots.length) choices[depth] = -1;
+          break;
+        }
+        if (choice === placements.length) { choices[depth] = -1; depth--; }
+      }
+      const now = performance.now();
+      if (now - lastYield > 35) {
+        onProgress(count, examined, now - started);
+        await new Promise(resolve => setTimeout(resolve, 0));
+        if (stopCheck()) return null;
+        lastYield = performance.now();
+        if (isMemoryHigh()) { capped = true; break; }
+      }
+    }
+    if (stopCheck()) return null;
+    const positions = new Uint8Array(count * stride);
+    for (let i = 0; i < chunks.length; i++) {
+      const offset = i * chunkSize * stride;
+      positions.set(chunks[i].subarray(0, Math.min(chunks[i].length, positions.length - offset)), offset);
+      if (performance.now() - lastYield > 35) {
+        await new Promise(resolve => setTimeout(resolve, 0));
+        if (stopCheck()) return null;
+        lastYield = performance.now();
+      }
+    }
+    return { positions, stride, count, nodes: count, examined, capped, ms: performance.now() - started };
+  }
+
+  function analyzerSpaceStatus(key, ...args) {
+    analyzer.spaceStatusKey = key; analyzer.spaceStatusArgs = args;
+    if (analyzer.fullActive) return;
+    const viewport = captureAnalyzerViewport();
+    document.getElementById('anaSpaceStatus').textContent = t(key, ...args);
+    restoreAnalyzerViewport(viewport);
+  }
+  function updateAnalyzerSpaceControls(forcePaint = false) {
+    const result = analyzer.spaceResult, last = analyzerSpaceViewCount() - 1;
+    const busy = analyzer.running || analyzer.fullActive;
+    const active = !busy && last >= 0, index = analyzer.spaceIndex;
+    updateAnalyzerCommand(document.getElementById('anaStates'), 'spaceButton', '▦', 'hint-btn', busy);
+    updateAnalyzerCommand(document.getElementById('anaFull'), 'fullButton', '⟳', 'primary', busy);
+    if (!analyzer.fullActive) analyzerFullStatus(analyzer.fullStatusKey, ...analyzer.fullStatusArgs);
+    document.getElementById('anaSpaceStop').hidden = true;
+    const dissectButton = document.getElementById('anaDissect');
+    updateAnalyzerCommand(dissectButton, 'contourDissect', '◫', '', busy);
+    if (!busy) dissectButton.disabled = !result || !analyzer.result || !result.count;
+    document.getElementById('anaSpaceChoose').disabled = !active;
+    const slider = document.getElementById('anaSpaceSlider');
+    if (!analyzer.fullActive) { slider.max = String(Math.max(0, last)); slider.value = String(index); }
+    slider.disabled = !active || last === 0;
+    for (const id of ['First', 'Prev']) document.getElementById('anaSpace' + id).disabled = !active || index === 0;
+    for (const id of ['Next', 'Last']) document.getElementById('anaSpace' + id).disabled = !active || index >= last;
+    renderAnalyzerContours(forcePaint);
+  }
+  function renderAnalyzerSpace(force = false) {
+    if (analyzer.fullActive && !force) return;
+    const viewport = captureAnalyzerViewport();
+    try {
+      const result = analyzer.spaceResult;
+      const count = analyzerSpaceViewCount();
+      const nodeIndex = analyzerSpaceNodeIndex();
+      const cfg = analyzer.fullActive ? (analyzer.fullBestCfg || analyzer.fullInitialSource)
+        : result ? (nodeIndex >= 0 ? analyzerConfigAt(result, nodeIndex) : null) : (analyzer.spaceSource || analyzer.source);
+      renderAnalyzerBoard(document.getElementById('anaSpaceBoard'), cfg, 'contourEmpty');
+      document.getElementById('anaSpaceViewLabel').textContent = analyzer.fullActive && analyzer.fullBestCfg
+        ? t('anaFullBestBoard', fmtNum(analyzer.fullBestSteps)) : result ? t('contourView', analyzerSpaceViewName(), fmtNum(count)) : '';
+      if (!analyzer.fullActive) document.getElementById('anaSpaceIndex').textContent = count
+        ? t('anaPosition', fmtNum(analyzer.spaceIndex + 1), fmtNum(count)) : '0 / 0';
+      document.getElementById('anaSpaceStatus').textContent = t(analyzer.spaceStatusKey, ...analyzer.spaceStatusArgs);
+      updateAnalyzerSpaceControls(true);
+    } finally { restoreAnalyzerViewport(viewport); }
+  }
+  function stepAnalyzerSpace(index) {
+    const count = analyzerSpaceViewCount();
+    if (analyzer.running || analyzer.fullActive || !count) return;
+    analyzer.spaceIndex = Math.max(0, Math.min(count - 1, index));
+    renderAnalyzerSpace();
+  }
+  async function startAnalyzerSpace(internal = false) {
+    if (analyzer.running || (analyzer.fullActive && !internal)) return;
+    if (analyzer.spaceResult && !analyzer.spaceResult.capped) { selectAnalyzerContour('all'); return; }
+    const generation = ++analyzer.generation;
+    const source = cloneCfg(analyzerDisplayedPair().source);
+    analyzer.running = true; analyzer.auto = false; analyzer.job = 'space'; analyzer.best = null;
+    analyzer.spaceSource = source; analyzer.spaceResult = null; analyzer.spaceIndex = 0; analyzer.spaceFound = 0; resetAnalyzerContours();
+    const stride = source.length * 3;
+    analyzer.spaceLimit = Math.max(1, Math.min(analyzer.maxStates,
+      Math.floor(MAX_RAM_GB_USER * GB_BYTES / (stride * 2 + source.length * 8 + 160)), Math.floor(0x7fffffff / stride)));
+    analyzerSpaceStatus('spaceProgress', '0', '0', '0.00');
+    renderAnalyzerSpace(); updateAnalyzerButtons();
+    try {
+      const result = await runAnalyzerSearch(source, generation, 'space');
+      if (generation !== analyzer.generation || !result) return;
+      analyzer.spaceResult = result; analyzer.spaceOwners = new Int32Array(result.count); analyzer.spaceTableVersion++;
+      analyzerSpaceStatus(result.capped ? 'spaceCapped' : 'spaceDone', fmtNum(result.count), fmtSolverTime(result.ms / 1000));
+      renderAnalyzerSpace();
+    } catch (err) {
+      if (generation !== analyzer.generation) return;
+      analyzerSpaceStatus('spaceError', err.message || String(err));
+    } finally {
+      if (generation === analyzer.generation) {
+        analyzer.running = false; analyzer.job = null; releaseAnalyzerWorker();
+        updateAnalyzerButtons(); updateAnalyzerSpaceControls();
+      }
+    }
+  }
+  document.getElementById('anaStates').addEventListener('click', () => handleAnalyzerCommand('anaStates', () => startAnalyzerSpace()));
+  document.getElementById('anaSpaceStop').addEventListener('click', () => stopAnalyzer());
+  document.getElementById('anaSpaceFirst').addEventListener('click', () => stepAnalyzerSpace(0));
+  document.getElementById('anaSpacePrev').addEventListener('click', () => stepAnalyzerSpace(analyzer.spaceIndex - 1));
+  document.getElementById('anaSpaceNext').addEventListener('click', () => stepAnalyzerSpace(analyzer.spaceIndex + 1));
+  document.getElementById('anaSpaceLast').addEventListener('click', () => stepAnalyzerSpace(analyzerSpaceViewCount() - 1));
+  document.getElementById('anaSpaceSlider').addEventListener('input', e => stepAnalyzerSpace(Number(e.target.value)));
+
+
+  function resetAnalyzerContours() {
+    analyzer.fullBestCfg = null; analyzer.fullBestSteps = -1; analyzer.fullBestKey = null;
+    analyzer.spaceContours = []; analyzer.spaceOwners = null; analyzer.spaceIndexMap = null;
+    analyzer.spaceRemaining = null; analyzer.spaceAssigned = 0; analyzer.spaceView = 'all';
+    analyzer.spaceTableVersion++; analyzer.spaceTableRendered = -1; analyzer.spaceTableResult = null;
+    analyzer.spaceTableView = null; analyzer.spaceTableBusy = null;
+  }
+  // An anchor list preserves tile boundaries and ignores permutations of identical instances.
+  function analyzerStateKey(positions, offset, stride, cols) {
+    const groups = [];
+    for (let i = 0; i < stride; i += 3) {
+      const type = positions[offset + i];
+      if (!groups[type]) groups[type] = [];
+      groups[type].push(positions[offset + i + 2] * cols + positions[offset + i + 1]);
+    }
+    let key = '';
+    for (let type = 1; type < groups.length; type++) {
+      const anchors = groups[type]; if (!anchors) continue;
+      key += String.fromCharCode(512 + type);
+      anchors.sort((a, b) => a - b);
+      for (const anchor of anchors) key += String.fromCharCode(32 + anchor);
+    }
+    return key;
+  }
+  function analyzerSpaceViewCount() {
+    if (!analyzer.spaceResult) return 0;
+    if (analyzer.spaceView === 'all') return analyzer.spaceResult.count;
+    if (analyzer.spaceView === 'remaining') return analyzer.spaceResult.count - analyzer.spaceAssigned;
+    const contour = analyzer.spaceContours.find(c => c.id === analyzer.spaceView);
+    return contour ? contour.indices.length : 0;
+  }
+  function analyzerSpaceNodeIndex() {
+    if (!analyzerSpaceViewCount()) return -1;
+    if (analyzer.spaceView === 'all') return analyzer.spaceIndex;
+    if (analyzer.spaceView === 'remaining') { ensureAnalyzerRemaining(); return analyzer.spaceRemaining ? analyzer.spaceRemaining[analyzer.spaceIndex] : analyzer.spaceIndex; }
+    const contour = analyzer.spaceContours.find(c => c.id === analyzer.spaceView);
+    return contour ? contour.indices[analyzer.spaceIndex] : -1;
+  }
+  function analyzerSpaceViewName() {
+    return analyzer.spaceView === 'all' ? t('spaceButton') : analyzer.spaceView === 'remaining'
+      ? t('contourRemaining') : t('contourName', analyzer.spaceView);
+  }
+  function selectAnalyzerContour(view) {
+    if (analyzer.running || analyzer.fullActive || !analyzer.spaceResult) return;
+    if (view !== 'all' && view !== 'remaining' && !analyzer.spaceContours.some(c => c.id === view)) return;
+    analyzer.spaceView = view; analyzer.spaceIndex = 0; renderAnalyzerSpace();
+  }
+  function renderAnalyzerContours(force = false) {
+    if (analyzer.fullActive && !force) return;
+    const viewport = captureAnalyzerViewport();
+    const panel = document.getElementById('anaContoursPanel');
+    const tableTop = panel.scrollTop || 0, tableLeft = panel.scrollLeft || 0;
+    try {
+      const result = analyzer.spaceResult, busy = analyzer.running || analyzer.fullActive;
+      updateAnalyzerSortHeaders();
+      if (analyzer.spaceTableRendered === analyzer.spaceTableVersion && analyzer.spaceTableView === analyzer.spaceView
+        && analyzer.spaceTableBusy === busy && analyzer.spaceTableResult === result
+        && analyzer.spaceTableLabel === t('spaceButton')) return;
+      analyzer.spaceTableRendered = analyzer.spaceTableVersion; analyzer.spaceTableView = analyzer.spaceView;
+      analyzer.spaceTableBusy = busy; analyzer.spaceTableResult = result; analyzer.spaceTableLabel = t('spaceButton');
+      const body = document.getElementById('anaContoursBody'); body.textContent = '';
+      if (!result) {
+        const row = document.createElement('tr'), cell = document.createElement('td');
+        cell.colSpan = 4; cell.className = 'analyzer-contour-empty'; cell.textContent = t('contourTableEmpty');
+        row.appendChild(cell); body.appendChild(row); return;
+      }
+      const rows = [{ view: 'all', name: t('spaceButton'), count: result.count, status: t(result.capped ? 'contourPartialSet' : 'contourFullSet') }];
+      for (const contour of sortedAnalyzerContours()) rows.push({ view: contour.id, name: t('contourName', contour.id),
+        count: contour.indices.length, maxSteps: contour.maxSteps, status: t(contour.complete ? 'contourComplete' : 'contourPartial') });
+      rows.push({ view: 'remaining', name: t('contourRemaining'), count: result.count - analyzer.spaceAssigned, status: t('contourUnassigned') });
+      for (const item of rows) {
+        const row = document.createElement('tr');
+        row.className = analyzer.spaceView === item.view ? 'selected' : '';
+        const name = document.createElement('td'), button = document.createElement('button');
+        button.type = 'button'; button.textContent = item.name; button.disabled = busy;
+        button.setAttribute('aria-pressed', String(analyzer.spaceView === item.view));
+        button.addEventListener('click', () => selectAnalyzerContour(item.view)); name.appendChild(button); row.appendChild(name);
+        const count = document.createElement('td'); count.textContent = fmtNum(item.count); count.className = 'analyzer-contour-count'; row.appendChild(count);
+        const distance = document.createElement('td'); distance.className = 'analyzer-contour-count'; distance.title = t('contourDistanceHint');
+        distance.textContent = item.maxSteps == null ? '—' : (item.count === 1 ? '' : '≥ ') + fmtNum(item.maxSteps); row.appendChild(distance);
+        const status = document.createElement('td'); status.textContent = item.status; row.appendChild(status); body.appendChild(row);
+      }
+    } finally { panel.scrollTop = tableTop; panel.scrollLeft = tableLeft; restoreAnalyzerViewport(viewport); }
+  }
+  async function dissectAnalyzerSpace(internal = false) {
+    if (analyzer.running || (analyzer.fullActive && !internal) || !analyzer.spaceResult || !analyzer.result) return;
+    const space = analyzer.spaceResult, tree = analyzer.result;
+    if (space.stride !== tree.stride) { analyzerSpaceStatus('contourMismatch'); return; }
+    const generation = ++analyzer.generation;
+    analyzer.running = true; analyzer.job = 'dissect'; analyzer.best = null;
+    analyzerSpaceStatus('contourProgress', '0', fmtNum(space.count + tree.nodes)); updateAnalyzerButtons();
+    let lastYield = performance.now();
+    try {
+      let indexMap = analyzer.spaceIndexMap;
+      if (!indexMap) {
+        indexMap = new Map();
+        for (let i = 0; i < space.count; i++) {
+          indexMap.set(analyzerStateKey(space.positions, i * space.stride, space.stride, analyzer.cols), i);
+          if ((i & 511) === 0 && performance.now() - lastYield > 35) {
+            analyzerSpaceStatus('contourProgress', fmtNum(i + 1), fmtNum(space.count + tree.nodes));
+            await new Promise(resolve => setTimeout(resolve, 0));
+            if (generation !== analyzer.generation) return;
+            lastYield = performance.now();
+            if (isMemoryHigh()) throw new Error(t('contourMemory'));
+          }
+        }
+      }
+      const indices = [], pending = new Set();
+      let overlap = 0, missing = 0, existingContour = 0, mixedOwners = false;
+      for (let i = 0; i < tree.nodes; i++) {
+        const key = analyzerStateKey(tree.positions, i * tree.stride, tree.stride, analyzer.cols);
+        const index = indexMap.get(key);
+        if (index === undefined) missing++;
+        else if (analyzer.spaceOwners[index]) { overlap++; if (!existingContour) existingContour = analyzer.spaceOwners[index]; else if (existingContour !== analyzer.spaceOwners[index]) mixedOwners = true; }
+        else if (!pending.has(index)) { indices.push(index); pending.add(index); }
+        if ((i & 511) === 0 && performance.now() - lastYield > 35) {
+          analyzerSpaceStatus('contourProgress', fmtNum(space.count + i + 1), fmtNum(space.count + tree.nodes));
+          await new Promise(resolve => setTimeout(resolve, 0));
+          if (generation !== analyzer.generation) return;
+          lastYield = performance.now();
+          if (isMemoryHigh()) throw new Error(t('contourMemory'));
+        }
+      }
+      if (generation !== analyzer.generation) return;
+      if (!indices.length) {
+        analyzer.spaceIndexMap = indexMap;
+        if (existingContour) updateAnalyzerContourDistance(tree, indexMap, existingContour, !mixedOwners && !missing && overlap === tree.nodes);
+        analyzer.spaceView = existingContour || 'remaining'; analyzer.spaceIndex = 0;
+        analyzerSpaceStatus('contourNoNew', fmtNum(overlap), fmtNum(missing)); renderAnalyzerSpace(); return;
+      }
+      const remainingCount = space.count - analyzer.spaceAssigned - indices.length;
+      let remaining = null;
+      if (!analyzer.fullActive) {
+        remaining = new Uint32Array(remainingCount);
+      let next = 0;
+      for (let i = 0; i < space.count; i++) {
+        if (!analyzer.spaceOwners[i] && !pending.has(i)) remaining[next++] = i;
+        if ((i & 2047) === 0 && performance.now() - lastYield > 35) {
+          await new Promise(resolve => setTimeout(resolve, 0));
+          if (generation !== analyzer.generation) return;
+          lastYield = performance.now();
+        }
+      }
+      }
+      if (generation !== analyzer.generation) return;
+      // Commit ownership only after all asynchronous work, so Stop leaves no half-created contour.
+      const id = analyzer.spaceContours.length + 1;
+      for (const index of indices) analyzer.spaceOwners[index] = id;
+      const complete = !space.capped && !tree.capped && !overlap && !missing;
+      const maxSteps = analyzerTreeDistance(tree, indexMap, index => pending.has(index));
+      analyzer.spaceContours.push({ id, indices: new Uint32Array(indices), complete, maxSteps,
+        autoMeasured: !!(complete && (indices.length === 1 || tree.autoSwept)) });
+      analyzer.spaceAssigned += indices.length; analyzer.spaceRemaining = remaining; analyzer.spaceIndexMap = indexMap;
+      analyzer.spaceTableVersion++; analyzer.spaceView = id; analyzer.spaceIndex = 0;
+      if (complete) analyzerSpaceStatus('contourAdded', id, fmtNum(indices.length), fmtNum(remainingCount));
+      else analyzerSpaceStatus('contourAddedPartial', id, fmtNum(indices.length), fmtNum(overlap), fmtNum(missing));
+      renderAnalyzerSpace();
+    } catch (err) {
+      if (generation === analyzer.generation) analyzerSpaceStatus('contourError', err.message || String(err));
+    } finally {
+      if (generation === analyzer.generation) {
+        analyzer.running = false; analyzer.job = null; updateAnalyzerButtons();
+      }
+    }
+  }
+  function chooseAnalyzerSpaceState(internal = false, nodeIndex = null) {
+    if (analyzer.running || (analyzer.fullActive && !internal)) return;
+    const index = nodeIndex === null ? analyzerSpaceNodeIndex() : nodeIndex; if (index < 0) return;
+    const cfg = analyzerConfigAt(analyzer.spaceResult, index);
+    analyzer.source = cloneCfg(cfg); analyzer.result = null; analyzer.index = 0;
+    analyzer.route = []; analyzer.routeResult = null; analyzer.sourceStep = 0; analyzer.targetStep = 0;
+    analyzerStatus('contourChosen', analyzerSpaceViewName());
+    renderAnalyzer();
+    if (!internal && !analyzer.fullActive && anaSourceEl.scrollIntoView) anaSourceEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+  document.getElementById('anaDissect').addEventListener('click', () => handleAnalyzerCommand('anaDissect', () => dissectAnalyzerSpace()));
+  document.getElementById('anaSpaceChoose').addEventListener('click', () => chooseAnalyzerSpaceState());
+
+
+  function ensureAnalyzerRemaining() {
+    if (!analyzer.spaceResult || !analyzer.spaceAssigned || analyzer.spaceRemaining) return;
+    const count = analyzer.spaceResult.count - analyzer.spaceAssigned;
+    const remaining = new Uint32Array(count);
+    let next = 0;
+    for (let i = 0; i < analyzer.spaceResult.count; i++) if (!analyzer.spaceOwners[i]) remaining[next++] = i;
+    analyzer.spaceRemaining = remaining;
+  }
+  function analyzerTreeDistance(tree, indexMap, contains) {
+    if (!tree || !tree.nodes || !tree.selection.length) return null;
+    const far = tree.selection[0];
+    if (far >= tree.nodes) return null;
+    const rootIndex = indexMap.get(analyzerStateKey(tree.positions, 0, tree.stride, analyzer.cols));
+    const farIndex = indexMap.get(analyzerStateKey(tree.positions, far * tree.stride, tree.stride, analyzer.cols));
+    return rootIndex !== undefined && farIndex !== undefined && contains(rootIndex) && contains(farIndex) ? tree.depth : null;
+  }
+  function updateAnalyzerContourDistance(tree, indexMap, contourId, entireTree) {
+    const contour = analyzer.spaceContours.find(c => c.id === contourId); if (!contour) return;
+    const distance = analyzerTreeDistance(tree, indexMap, index => analyzer.spaceOwners[index] === contourId);
+    if (distance === null) return;
+    const improved = contour.maxSteps == null || distance > contour.maxSteps;
+    if (improved) contour.maxSteps = distance;
+    const measured = entireTree && tree.autoSwept && !tree.capped && tree.nodes === contour.indices.length;
+    if (measured) contour.autoMeasured = true;
+    if (improved || measured) analyzer.spaceTableVersion++;
+  }
+  function analyzerFullStatus(key, ...args) {
+    analyzer.fullStatusKey = key; analyzer.fullStatusArgs = args;
+    if (analyzer.fullActive && !['fullDone', 'fullInterrupted'].includes(key) && performance.now() - analyzer.fullStatusPaint < 3000) return;
+    analyzer.fullStatusPaint = performance.now();
+    const el = document.getElementById('anaFullStatus');
+    const text = key ? t(key, ...args) : '';
+    const viewport = captureAnalyzerViewport();
+    el.hidden = !key; if (el.textContent !== text) el.textContent = text;
+    restoreAnalyzerViewport(viewport);
+  }
+  function analyzerFullMaximum() {
+    let maximum = 0;
+    for (const contour of analyzer.spaceContours) if (contour.maxSteps != null) maximum = Math.max(maximum, contour.maxSteps);
+    return maximum;
+  }
+  function analyzerConfigKey(cfg) {
+    const types = new Map(Object.entries(analyzer.templates).map(([type, piece]) => [solverPieceKey(piece), Number(type)]));
+    const flat = [];
+    for (const piece of cfg) flat.push(types.get(solverPieceKey(piece)), piece.x, piece.y);
+    return analyzerStateKey(flat, 0, flat.length, analyzer.cols);
+  }
+  async function findAnalyzerSpaceIndex(cfg, current) {
+    const space = analyzer.spaceResult, wanted = analyzerConfigKey(cfg);
+    if (analyzer.spaceIndexMap) return analyzer.spaceIndexMap.get(wanted) ?? -1;
+    const map = new Map(); let lastYield = performance.now();
+    for (let i = 0; i < space.count; i++) {
+      map.set(analyzerStateKey(space.positions, i * space.stride, space.stride, analyzer.cols), i);
+      if (performance.now() - lastYield > 30) {
+        await new Promise(resolve => setTimeout(resolve, 0));
+        if (!current()) return -1;
+        lastYield = performance.now();
+      }
+    }
+    analyzer.spaceIndexMap = map;
+    return map.get(wanted) ?? -1;
+  }
+  function rememberAnalyzerFullBest(tree) {
+    if (!tree || !tree.selection.length || tree.depth <= analyzer.fullBestSteps) return;
+    analyzer.fullBestSteps = tree.depth;
+    analyzer.fullBestCfg = analyzerConfigAt(tree, tree.selection[0]);
+    analyzer.fullBestKey = analyzerConfigKey(analyzer.fullBestCfg);
+  }
+  function selectAnalyzerFullBest() {
+    if (!analyzer.fullBestCfg || !analyzer.spaceIndexMap) return;
+    const index = analyzer.spaceIndexMap.get(analyzer.fullBestKey);
+    if (index === undefined) return;
+    analyzer.spaceView = 'all'; analyzer.spaceIndex = index;
+  }
+
+  function saveAnalyzerFullUpper() {
+    const fields = ['source', 'result', 'index', 'pairView', 'nearIndex', 'filterOpen', 'filterBase', 'filterMatches',
+      'filterPairs', 'filterIndex', 'filterWindow', 'filterMode', 'statusKey', 'statusArgs', 'sourceStep', 'targetStep'];
+    const snapshot = {};
+    for (const field of fields) snapshot[field] = analyzer[field];
+    snapshot.source = cloneCfg(analyzer.source);
+    analyzer.fullUpperSnapshot = snapshot;
+  }
+  function restoreAnalyzerFullUpper() {
+    const snapshot = analyzer.fullUpperSnapshot; if (!snapshot) return;
+    for (const field of Object.keys(snapshot)) analyzer[field] = snapshot[field];
+    if (analyzer.pairView) analyzer.pairView.pending = false;
+    analyzer.routeResult = null; analyzer.routeIndex = -1; analyzer.route = [];
+    syncAnalyzerRoute();
+    analyzer.sourceStep = snapshot.sourceStep; analyzer.targetStep = snapshot.targetStep;
+    analyzer.fullUpperSnapshot = null;
+  }
+  async function startAnalyzerFull() {
+    if (analyzer.running || analyzer.fullActive) return;
+    const initialSource = cloneCfg(analyzerDisplayedPair().source || analyzer.source);
+    saveAnalyzerFullUpper();
+    cancelAnalyzerPairSearch();
+    const generation = ++analyzer.fullGeneration;
+    analyzer.fullInitialSource = initialSource;
+    analyzer.fullActive = true; analyzer.fullCurrentNodes = 0; analyzer.fullStatusPaint = -Infinity;
+    if (!analyzer.spaceResult || analyzer.spaceResult.capped) { analyzer.fullBestCfg = null; analyzer.fullBestSteps = -1; analyzer.fullBestKey = null; }
+    const current = () => analyzer.fullActive && analyzer.fullGeneration === generation;
+    let lastYield = performance.now();
+    const progress = () => refreshAnalyzerFullStatus();
+    const analyze = async (index, view) => {
+      if (!current()) return false;
+      analyzer.spaceView = view; analyzer.spaceIndex = view === 'all' ? index : 0;
+      chooseAnalyzerSpaceState(true, index);
+      progress();
+      await startAnalyzerSearch(true, true);
+      if (!current()) return false;
+      if (!analyzer.result || analyzer.result.capped || !analyzer.result.autoSwept) throw new Error(t('fullNeedCompleteTree'));
+      rememberAnalyzerFullBest(analyzer.result);
+      await dissectAnalyzerSpace(true);
+      if (current() && (analyzer.spaceStatusKey === 'contourError' || analyzer.spaceStatusKey === 'contourMismatch')) throw new Error(t('fullDissectFailed'));
+      return current();
+    };
+    try {
+      analyzerFullStatus('fullPreparing'); updateAnalyzerButtons();
+      renderAnalyzerSpace(true);
+      analyzer.fullPaintTimer = setInterval(() => {
+        if (current()) renderAnalyzerSpace(true);
+      }, 9000);
+      analyzer.fullStatusTimer = setInterval(() => {
+        if (!current()) return;
+        refreshAnalyzerFullStatus();
+        document.getElementById('anaSpaceStatus').textContent = t(analyzer.spaceStatusKey, ...analyzer.spaceStatusArgs);
+      }, 3000);
+      if (!analyzer.spaceResult || analyzer.spaceResult.capped) await startAnalyzerSpace(true);
+      if (!current()) return;
+      if (!analyzer.spaceResult || analyzer.spaceResult.capped) throw new Error(t('fullNeedCompleteSpace'));
+      const initialIndex = await findAnalyzerSpaceIndex(initialSource, current);
+      if (!current()) return;
+      if (initialIndex >= 0 && !await analyze(initialIndex, analyzer.spaceOwners[initialIndex] || 'all')) return;
+      // Refresh distance estimates for previously extracted complete contours without changing their membership.
+      const toMeasure = analyzer.spaceContours.filter(c => c.complete && !c.autoMeasured && c.indices.length > 1).slice();
+      for (const contour of toMeasure) {
+        if (!await analyze(contour.indices[0], contour.id)) return;
+        if (performance.now() - lastYield > 40) { await new Promise(resolve => setTimeout(resolve, 0)); lastYield = performance.now(); }
+      }
+      let nextIndex = 0;
+      while (current() && analyzer.spaceAssigned < analyzer.spaceResult.count) {
+        while (nextIndex < analyzer.spaceResult.count && analyzer.spaceOwners[nextIndex]) nextIndex++;
+        if (nextIndex >= analyzer.spaceResult.count) throw new Error(t('fullNoProgress'));
+        const previous = analyzer.spaceAssigned;
+        if (!await analyze(nextIndex, 'all')) return;
+        if (analyzer.spaceAssigned <= previous) throw new Error(t('fullNoProgress'));
+        progress();
+        if (performance.now() - lastYield > 40) { await new Promise(resolve => setTimeout(resolve, 0)); lastYield = performance.now(); }
+      }
+      if (!current()) return;
+      refreshAnalyzerFullStatus(true);
+    } catch (err) {
+      if (current()) analyzerFullStatus('fullInterrupted', err.message || String(err), fmtNum(analyzer.spaceAssigned),
+        fmtNum(analyzer.spaceResult ? analyzer.spaceResult.count : 0));
+    } finally {
+      if (analyzer.fullGeneration === generation) {
+        clearAnalyzerFullPaintTimer();
+        analyzer.fullActive = false; restoreAnalyzerFullUpper(); selectAnalyzerFullBest(); updateAnalyzerButtons(); renderAnalyzer();
+      }
+    }
+  }
+  document.getElementById('anaFull').addEventListener('click', () => handleAnalyzerCommand('anaFull', () => startAnalyzerFull()));
+
+
+  function captureAnalyzerViewport() {
+    return typeof window === 'undefined' ? null : { x: window.scrollX || 0, y: window.scrollY || 0 };
+  }
+  function restoreAnalyzerViewport(viewport) {
+    if (!viewport) return;
+    // Flush the layout before compensating synchronous scroll anchoring.
+    void analyzerViewEl.offsetHeight;
+    if (window.scrollX !== viewport.x || window.scrollY !== viewport.y)
+      window.scrollTo({ left: viewport.x, top: viewport.y, behavior: 'auto' });
+  }
+  function resetAnalyzerSelections() {
+    cancelAnalyzerPairSearch(); analyzer.pairCache.clear(); analyzer.pairCacheBase = null;
+    analyzer.nearIndex = 0; analyzer.pairView = null;
+    analyzer.filterBase = null; analyzer.filterMatches = null; analyzer.filterPairs = null; analyzer.filterIndex = 0; analyzer.filterOpen = false;
+  }
+  function updateAnalyzerSelectionControls(busy) {
+    const result = analyzer.result;
+    if (analyzer.filterBase && analyzer.filterBase !== result) {
+      analyzer.filterBase = null; analyzer.filterMatches = null; analyzer.filterPairs = null; analyzer.filterIndex = 0;
+    }
+    updateAnalyzerCommand(document.getElementById('anaFilter'), analyzer.filterOpen ? 'anaCloseFilter' : 'anaFilter', analyzer.filterOpen ? '✕' : '⚑', 'hint-btn', busy);
+    if (!busy) document.getElementById('anaFilter').disabled = !result && !analyzer.filterOpen;
+    document.getElementById('anaFilterPanel').hidden = !analyzer.filterOpen;
+    const sliders = document.getElementById('anaSliders');
+    sliders.inert = analyzer.filterOpen;
+    sliders.parentElement.classList.toggle('filter-open', analyzer.filterOpen);
+    document.getElementById('anaFilter').setAttribute('aria-expanded', String(analyzer.filterOpen));
+    document.getElementById('anaFilter').setAttribute('aria-controls', 'anaFilterPanel');
+    for (const [id, key] of [['anaSearch', 'anaSearchTip'], ['anaAuto', 'anaAutoTip'], ['anaSwap', 'anaSwapTip'],
+      ['anaFilter', analyzer.filterOpen ? 'anaCloseFilterTip' : 'anaFilterTip']]) {
+      const button = document.getElementById(id);
+      button.setAttribute('data-ruseng-title', key); button.title = t(key);
+    }
+    const select = document.getElementById('anaSymmetry'); select.disabled = busy;
+    if (select.options) for (const option of select.options)
+      option.disabled = ['diagonal', 'main', 'anti', 'rotate90', 'rotate270'].includes(option.value) && analyzer.cols !== analyzer.rows;
+    const nearCount = result ? Math.min(1000, result.nodes) : 0;
+    analyzer.nearIndex = Math.min(analyzer.nearIndex, Math.max(0, nearCount - 1));
+    updateAnalyzerPicker('Near', analyzer.nearIndex, nearCount, busy);
+    document.getElementById('anaNearInfo').textContent = nearCount
+      ? t('anaNearLabel', analyzer.nearIndex < 0 ? '—' : fmtNum(analyzer.nearIndex + 1), fmtNum(nearCount),
+        fmtNum(currentAnalyzerPairView() ? analyzer.pairView.source + 1 : analyzer.nearIndex + 1)) : '0 / 0';
+    const matches = analyzer.filterMatches, pairs = analyzer.filterPairs, count = pairs ? pairs.length / 2 : 0;
+    document.getElementById('anaPairsGallery').disabled = busy || !count;
+    document.getElementById('anaSourceGallery').disabled = busy || analyzer.route.length < 2;
+    document.getElementById('anaTargetGallery').disabled = busy || !result;
+    updateAnalyzerPicker('Pair', Math.max(0, analyzer.filterIndex), count, busy);
+    document.getElementById('anaFilterInfo').textContent = matches
+      ? t('anaFilterFound', fmtNum(matches.length), fmtNum(result.nodes), fmtNum(count), (result.capped ? t('anaFilterPartial') : '') + t('anaFilterWindow', fmtNum(analyzer.filterWindow))) : '';
+    const distance = analyzerDisplayedPair().distance;
+    document.getElementById('anaFilterDistance').textContent = count && analyzer.filterIndex >= 0
+      ? distance === null ? t((currentAnalyzerPairView() && analyzer.pairView.pending) ? 'anaPairMeasuring' : 'anaPairUnknown')
+        : distance < 0 && analyzer.groupShift ? t('anaReverseDistance') : t('anaDistance', fmtNum(Math.abs(distance))) : '';
+    document.getElementById('anaPairInfo').textContent = count && analyzer.filterIndex >= 0
+      ? t('anaPairLabel', fmtNum(analyzer.filterIndex + 1), fmtNum(count), fmtNum(pairs[analyzer.filterIndex * 2] + 1),
+        fmtNum(pairs[analyzer.filterIndex * 2 + 1] + 1)) : '';
+  }
+  function updateAnalyzerPicker(prefix, index, count, busy) {
+    const slider = document.getElementById('ana' + prefix + 'Slider');
+    slider.max = String(Math.max(0, count - 1)); slider.value = String(Math.max(0, index));
+    slider.disabled = busy || count <= 1;
+    for (const suffix of ['First', 'Prev']) document.getElementById('ana' + prefix + suffix).disabled = busy || count === 0 || index <= 0;
+    for (const suffix of ['Next', 'Last']) document.getElementById('ana' + prefix + suffix).disabled = busy || count === 0 || index >= count - 1;
+  }
+  function analyzerSymmetryTransforms(mode) {
+    const cols = analyzer.cols, rows = analyzer.rows;
+    const transforms = {
+      vertical: { map: (x, y) => [cols - 1 - x, y] },
+      horizontal: { map: (x, y) => [x, rows - 1 - y] },
+      main: { map: (x, y) => [y, x], square: true, swapAxes: true },
+      anti: { map: (x, y) => [cols - 1 - y, rows - 1 - x], square: true, swapAxes: true },
+      rotate180: { map: (x, y) => [cols - 1 - x, rows - 1 - y] },
+      rotate90: { map: (x, y) => [rows - 1 - y, x], square: true, swapAxes: true },
+      rotate270: { map: (x, y) => [y, cols - 1 - x], square: true, swapAxes: true }
+    };
+    const modes = { any: Object.keys(transforms), both: ['vertical', 'horizontal'],
+      diagonal: ['main', 'anti'], rotation: ['rotate180', 'rotate90', 'rotate270'] };
+    return (modes[mode] || [mode]).map(key => transforms[key]).filter(item => item && (!item.square || cols === rows));
+  }
+  // Compare complete transformed tiles. Reflections/rotations change cell geometry,
+  // but never merge adjacent tiles or confuse a fixed obstacle with a free cell.
+  function analyzerSymmetryKey(result, nodeIndex, transform = null) {
+    const pieces = [], offset = nodeIndex * result.stride;
+    for (let i = 0; i < result.stride; i += 3) {
+      const template = analyzer.templates[result.positions[offset + i]], shape = SHAPES[template.shape];
+      const x = result.positions[offset + i + 1], y = result.positions[offset + i + 2];
+      const cells = shape.cells.map(([dx, dy]) => {
+        const [tx, ty] = transform ? transform.map(x + dx, y + dy) : [x + dx, y + dy];
+        return ty * analyzer.cols + tx;
+      }).sort((a, b) => a - b);
+      const movement = transform && transform.swapAxes
+        ? (template.dmove === 'h' ? 'v' : template.dmove === 'v' ? 'h' : template.dmove || '') : template.dmove || '';
+      pieces.push(JSON.stringify([template.color || '', template.label || '', template.dir || '',
+        !!template.round, !!shape.fixed, !!shape.hole, movement, cells]));
+    }
+    return JSON.stringify(pieces.sort());
+  }
+  async function filterAnalyzerSymmetry() {
+    if (analyzer.running || analyzer.fullActive || !analyzer.result) return;
+    cancelAnalyzerPairSearch();
+    analyzer.filterOpen = true;
+    const base = analyzer.result, generation = ++analyzer.generation;
+    let mode = document.getElementById('anaSymmetry').value || 'any';
+    if (analyzer.cols !== analyzer.rows && ['diagonal', 'main', 'anti', 'rotate90', 'rotate270'].includes(mode)) {
+      mode = 'any'; document.getElementById('anaSymmetry').value = mode;
+    }
+    analyzer.filterMode = mode; analyzer.running = true; analyzer.job = 'filter'; updateAnalyzerButtons();
+    const found = new Set(), pairs = [], matched = new Set();
+    const transforms = analyzerSymmetryTransforms(mode);
+    let lastYield = performance.now();
+    try {
+      for (const windowSize of [5000, 15000]) {
+        analyzer.filterWindow = Math.min(windowSize, base.nodes);
+        const lookup = new Map(), endStart = Math.max(0, base.nodes - windowSize);
+        for (let i = endStart; i < base.nodes; i++) {
+          if (generation !== analyzer.generation) return;
+          const key = analyzerSymmetryKey(base, i), indices = lookup.get(key);
+          if (indices) indices.push(i); else lookup.set(key, [i]);
+          if (performance.now() - lastYield > 30) {
+            analyzerStatus('anaFilterIndexing', fmtNum(i - endStart + 1), fmtNum(base.nodes - endStart));
+            await new Promise(resolve => setTimeout(resolve, 0)); lastYield = performance.now();
+          }
+        }
+        scanWindow: for (let i = 0; i < Math.min(windowSize, base.nodes); i++) {
+          if (generation !== analyzer.generation) return;
+          const keys = transforms.map(transform => analyzerSymmetryKey(base, i, transform));
+          const candidates = mode === 'both' ? (keys.length === 2 && keys[0] === keys[1] ? keys.slice(0, 1) : []) : keys;
+          for (const key of candidates) for (const j of lookup.get(key) || []) {
+            const directed = mode === 'rotate90' || mode === 'rotate270';
+            const source = directed ? i : Math.min(i, j), target = directed ? j : Math.max(i, j), pairKey = source + ':' + target;
+            if (found.has(pairKey)) continue;
+            found.add(pairKey); matched.add(source); matched.add(target); pairs.push([source, target]);
+            if (pairs.length >= 1000) break scanWindow;
+          }
+          if (performance.now() - lastYield > 30) {
+            analyzerStatus('anaFilterProgress', fmtNum(i + 1), fmtNum(Math.min(windowSize, base.nodes)), fmtNum(pairs.length));
+            await new Promise(resolve => setTimeout(resolve, 0)); lastYield = performance.now();
+          }
+        }
+        if (pairs.length || base.nodes <= windowSize) break;
+      }
+      if (generation !== analyzer.generation) return;
+      pairs.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
+      analyzer.filterBase = base;
+      analyzer.filterMatches = new Uint32Array(Array.from(matched).sort((a, b) => a - b));
+      const flat = new Uint32Array(pairs.length * 2);
+      pairs.forEach((pair, i) => { flat[i * 2] = pair[0]; flat[i * 2 + 1] = pair[1]; });
+      analyzer.filterPairs = flat; analyzer.filterIndex = 0;
+      if (!pairs.length) analyzer.pairView = null;
+      analyzerStatus('anaFilterFound', fmtNum(matched.size), fmtNum(base.nodes), fmtNum(pairs.length),
+        (base.capped ? t('anaFilterPartial') : '') + t('anaFilterWindow', fmtNum(analyzer.filterWindow)));
+    } catch (err) {
+      if (generation === analyzer.generation) analyzerStatus('anaError', err.message || String(err));
+    } finally {
+      if (generation === analyzer.generation) { analyzer.running = false; analyzer.job = null; renderAnalyzer(); }
+    }
+    if (generation === analyzer.generation && analyzer.filterPairs && analyzer.filterPairs.length) await stepAnalyzerPair(0);
+  }
+  function cancelAnalyzerPairSearch() {
+    analyzer.pairGeneration++;
+    if (analyzer.pairWorker) analyzer.pairWorker.terminate();
+    if (analyzer.pairUrl) URL.revokeObjectURL(analyzer.pairUrl);
+    analyzer.pairWorker = null; analyzer.pairUrl = null;
+    if (analyzer.pairResolve) { const resolve = analyzer.pairResolve; analyzer.pairResolve = null; resolve(null); }
+    if (analyzer.pairView) analyzer.pairView.pending = false;
+  }
+  async function runAnalyzerPairSearch(view, token) {
+    const source = analyzerConfigAt(view.base, view.source), target = analyzerConfigAt(view.base, view.target);
+    const valid = () => token === analyzer.pairGeneration && view.base === analyzer.result && analyzer.pairView === view;
+    if (typeof Worker !== 'undefined' && typeof Blob !== 'undefined' && typeof URL !== 'undefined') {
+      try {
+        analyzer.pairUrl = URL.createObjectURL(new Blob([buildAnalyzerWorkerSource()], { type: 'application/javascript' }));
+        const worker = new Worker(analyzer.pairUrl); analyzer.pairWorker = worker;
+        return await new Promise((resolve, reject) => {
+          analyzer.pairResolve = resolve;
+          worker.onmessage = event => {
+            if (!valid()) return;
+            if (event.data.type === 'result') { analyzer.pairResolve = null; resolve(event.data.result); }
+            else if (event.data.type === 'error') { analyzer.pairResolve = null; reject(new Error(event.data.message)); }
+          };
+          worker.onerror = event => { if (!valid()) return; analyzer.pairResolve = null; reject(new Error(event.message || 'Worker error')); };
+          worker.postMessage({ kind: 'pair', source, goalPieces: target, cols: analyzer.cols, rows: analyzer.rows,
+            shapes: SHAPES, moveMode: analyzer.moveMode, groupShift: analyzer.groupShift, maxStates: analyzer.maxStates });
+        });
+      } catch (error) {
+        if (!valid()) return null;
+        if (analyzer.pairWorker) analyzer.pairWorker.terminate();
+        if (analyzer.pairUrl) URL.revokeObjectURL(analyzer.pairUrl);
+        analyzer.pairWorker = null; analyzer.pairUrl = null; analyzer.pairResolve = null;
+      }
+    }
+    return exploreAnalyzer(source, analyzer.maxStates, () => !valid(), () => {}, target);
+  }
+  function compactAnalyzerPairPath(result) {
+    const path = [];
+    for (let node = result.goalNode; node >= 0; node = result.parents[node]) path.push(node);
+    path.reverse();
+    const positions = new Uint8Array(path.length * result.stride), parents = new Int32Array(path.length);
+    path.forEach((node, index) => {
+      positions.set(result.positions.subarray(node * result.stride, (node + 1) * result.stride), index * result.stride);
+      parents[index] = index - 1;
+    });
+    return { positions, parents, stride: result.stride, nodes: path.length, goalNode: path.length - 1 };
+  }
+  async function selectAnalyzerPair(source, target) {
+    if (analyzer.running || analyzer.fullActive || !analyzer.result) return;
+    cancelAnalyzerPairSearch();
+    const base = analyzer.result, token = analyzer.pairGeneration;
+    if (analyzer.pairCacheBase !== base) { analyzer.pairCache.clear(); analyzer.pairCacheBase = base; }
+    const cacheKey = source + ':' + target;
+    const view = { base, source, target, tree: null, goalNode: -1, pending: false };
+    analyzer.pairView = view; analyzer.routeResult = null; analyzer.routeIndex = -1;
+    analyzer.route = []; analyzer.sourceStep = 0; analyzer.targetStep = 0;
+    if (source === 0) { view.tree = base; view.goalNode = target; syncAnalyzerRoute(); analyzerStatus('anaPairReady', fmtNum(analyzer.route.length - 1)); renderAnalyzer(); return; }
+    if (analyzer.pairCache.has(cacheKey)) {
+      view.tree = analyzer.pairCache.get(cacheKey); view.goalNode = view.tree.goalNode;
+      analyzerStatus('anaPairReady', fmtNum(view.tree.nodes - 1)); renderAnalyzer(); return;
+    }
+    view.pending = true; analyzerStatus('anaPairMeasuring'); renderAnalyzer();
+    // Commit the selected boards before starting the distance computation.
+    await new Promise(resolve => setTimeout(resolve, 0));
+    if (token !== analyzer.pairGeneration || analyzer.pairView !== view) return;
+    try {
+      const result = await runAnalyzerPairSearch(view, token);
+      if (token !== analyzer.pairGeneration || analyzer.pairView !== view || base !== analyzer.result || !result) return;
+      if (result.goalNode >= 0) {
+        view.tree = compactAnalyzerPairPath(result); view.goalNode = view.tree.goalNode;
+        if (analyzer.pairCache.size >= 64) analyzer.pairCache.delete(analyzer.pairCache.keys().next().value);
+        analyzer.pairCache.set(cacheKey, view.tree);
+        syncAnalyzerRoute(); analyzerStatus('anaPairReady', fmtNum(analyzer.route.length - 1));
+      } else analyzerStatus(result.capped ? 'anaPairUnknown' : 'anaPairNoPath');
+    } catch (error) {
+      if (token === analyzer.pairGeneration) analyzerStatus('anaError', error.message || String(error));
+    } finally {
+      if (token === analyzer.pairGeneration) {
+        if (analyzer.pairWorker) analyzer.pairWorker.terminate();
+        if (analyzer.pairUrl) URL.revokeObjectURL(analyzer.pairUrl);
+        analyzer.pairWorker = null; analyzer.pairUrl = null; analyzer.pairResolve = null;
+        view.pending = false; renderAnalyzer();
+      }
+    }
+  }
+  function stepAnalyzerNear(index) {
+    if (analyzer.running || analyzer.fullActive || !analyzer.result) return;
+    analyzer.nearIndex = Math.max(0, Math.min(Math.min(1000, analyzer.result.nodes) - 1, index));
+    analyzer.filterIndex = -1;
+    return selectAnalyzerPair(analyzer.nearIndex, analyzer.result.selection[analyzer.index]);
+  }
+  function stepAnalyzerPair(index) {
+    const pairs = analyzer.filterPairs;
+    if (analyzer.running || analyzer.fullActive || !pairs || !pairs.length || analyzer.filterBase !== analyzer.result) return;
+    analyzer.filterIndex = Math.max(0, Math.min(pairs.length / 2 - 1, index));
+    const source = pairs[analyzer.filterIndex * 2], target = pairs[analyzer.filterIndex * 2 + 1];
+    analyzer.nearIndex = source < 1000 ? source : -1;
+    return selectAnalyzerPair(source, target);
+  }
+  document.getElementById('anaFilter').addEventListener('click', toggleAnalyzerFilter);
+  document.getElementById('anaSymmetry').addEventListener('change', filterAnalyzerSymmetry);
+  for (const prefix of ['Near', 'Pair']) {
+    const step = prefix === 'Near' ? stepAnalyzerNear : stepAnalyzerPair;
+    const current = () => prefix === 'Near' ? analyzer.nearIndex : analyzer.filterIndex;
+    const count = () => prefix === 'Near' ? Math.min(1000, analyzer.result ? analyzer.result.nodes : 0)
+      : (analyzer.filterPairs ? analyzer.filterPairs.length / 2 : 0);
+    for (const [suffix, position] of [['First', () => 0], ['Prev', () => current() - 1],
+      ['Next', () => current() + 1], ['Last', () => count() - 1]])
+      document.getElementById('ana' + prefix + suffix).addEventListener('click', () => step(position()));
+    document.getElementById('ana' + prefix + 'Slider').addEventListener('input', e => step(Number(e.target.value)));
+  }
+
+  function toggleAnalyzerFilter() {
+    if (analyzer.filterOpen) {
+      if ((analyzer.running && !['filter', 'pair'].includes(analyzer.job)) || analyzer.fullActive) return;
+      if (analyzer.running) stopAnalyzer(false);
+      cancelAnalyzerPairSearch();
+      analyzer.filterOpen = false; analyzer.pairView = null; analyzer.nearIndex = 0; analyzer.filterIndex = -1;
+      analyzer.routeResult = null; analyzer.routeIndex = -1; analyzer.route = [];
+      renderAnalyzer(); return;
+    }
+    if (analyzer.running || analyzer.fullActive || !analyzer.result) return;
+    analyzer.filterOpen = true;
+    if (analyzer.filterBase === analyzer.result && analyzer.filterPairs) {
+      renderAnalyzer();
+      if (analyzer.filterPairs.length) return stepAnalyzerPair(Math.max(0, analyzer.filterIndex));
+    } else return filterAnalyzerSymmetry();
+  }
+  function activeAnalyzerCommand() {
+    if (analyzer.fullActive) return 'anaFull';
+    if (!analyzer.running) return null;
+    if (analyzer.job === 'search') return analyzer.auto ? 'anaAuto' : 'anaSearch';
+    if (analyzer.job === 'space') return 'anaStates';
+    if (analyzer.job === 'dissect') return 'anaDissect';
+    if (analyzer.job === 'filter' || analyzer.job === 'pair') return 'anaFilter';
+    return null;
+  }
+  function handleAnalyzerCommand(id, start) {
+    if (analyzer.running || analyzer.fullActive) {
+      if (activeAnalyzerCommand() === id) stopAnalyzer();
+      return;
+    }
+    if (id !== 'anaFilter') cancelAnalyzerPairSearch();
+    start();
+  }
+  function updateAnalyzerCommand(button, labelKey, icon, idleClass, busy) {
+    const stopping = busy && activeAnalyzerCommand() === button.id;
+    button.disabled = busy && !stopping;
+    const closeFilter = button.id === 'anaFilter' && analyzer.filterOpen;
+    const key = stopping ? (closeFilter ? 'anaCloseFilter' : 'stop') : labelKey, label = t(key);
+    const signature = (stopping ? 'stop' : idleClass) + '|' + label;
+    if (button._analyzerCommandSignature === signature) return;
+    button._analyzerCommandSignature = signature;
+    button.className = stopping ? 'stop' : idleClass;
+    button.title = label; button.textContent = '';
+    const glyph = document.createElement('span'); glyph.className = 'btn-ico'; glyph.textContent = stopping ? (closeFilter ? '✕' : '■') : icon;
+    const text = document.createElement('span'); text.className = 'btn-lbl'; text.setAttribute('data-ruseng', key); text.textContent = label;
+    button.appendChild(glyph); button.appendChild(text);
+  }
+  function toggleAnalyzerContourSort(mode) {
+    if (analyzer.spaceSort === mode) analyzer.spaceSortDescending = !analyzer.spaceSortDescending;
+    else { analyzer.spaceSort = mode; analyzer.spaceSortDescending = true; }
+    analyzer.spaceTableVersion++; renderAnalyzerContours(true);
+  }
+  function updateAnalyzerSortHeaders() {
+    for (const mode of ['steps', 'states']) {
+      const selected = analyzer.spaceSort === mode;
+      const suffix = mode === 'steps' ? 'Steps' : 'States';
+      document.getElementById('anaSort' + suffix + 'Header').setAttribute('aria-sort', selected
+        ? (analyzer.spaceSortDescending ? 'descending' : 'ascending') : 'none');
+      document.getElementById('anaSort' + suffix + 'Arrow').textContent = selected ? (analyzer.spaceSortDescending ? '↓' : '↑') : '↕';
+    }
+  }
+  function sortedAnalyzerContours() {
+    const mode = analyzer.spaceSort, direction = analyzer.spaceSortDescending ? -1 : 1;
+    return analyzer.spaceContours.slice().sort((a, b) => {
+      const av = mode === 'steps' ? a.maxSteps : a.indices.length;
+      const bv = mode === 'steps' ? b.maxSteps : b.indices.length;
+      if (av == null && bv != null) return 1;
+      if (bv == null && av != null) return -1;
+      if (av != null && bv != null && av !== bv) return direction * (av - bv);
+      const secondary = mode === 'steps' ? b.indices.length - a.indices.length : (b.maxSteps ?? -1) - (a.maxSteps ?? -1);
+      return secondary || a.id - b.id;
+    });
+  }
+  function analyzerFullRecords() {
+    let largest = null, best = null;
+    for (const contour of analyzer.spaceContours) {
+      if (!largest || contour.indices.length > largest.indices.length
+        || (contour.indices.length === largest.indices.length && (contour.maxSteps ?? -1) > (largest.maxSteps ?? -1))) largest = contour;
+      if (contour.maxSteps != null && (!best || contour.maxSteps > best.maxSteps
+        || (contour.maxSteps === best.maxSteps && contour.indices.length > best.indices.length))) best = contour;
+    }
+    return { largest, best };
+  }
+  function refreshAnalyzerFullStatus(done = false) {
+    if (!analyzer.spaceResult || (!analyzer.fullActive && !done)) return;
+    if (!done && performance.now() - analyzer.fullStatusPaint < 3000) return;
+    const total = analyzer.spaceResult.count, assigned = analyzer.spaceAssigned;
+    const records = analyzerFullRecords();
+    const largest = records.largest ? t('fullBestContour', records.largest.id, fmtNum(records.largest.indices.length)) : t('fullNoBest');
+    const best = records.best ? t('fullBestDistance', records.best.id, fmtNum(records.best.maxSteps)) : t('fullNoBest');
+    const percent = total ? Math.round(assigned / total * 1000) / 10 : 100;
+    analyzerFullStatus(done ? 'fullDone' : 'fullProgress', fmtNum(assigned), fmtNum(total), fmtNum(percent),
+      analyzer.spaceContours.length, fmtNum(analyzer.fullCurrentNodes), largest, best);
+  }
+  const analyzerMini = { open: false, mode: null, base: null, page: 0, sourcePage: 0, targetPage: 0, pageSize: 24,
+    selectedSource: null, selectedTarget: null, selectedSourceOffset: null, selectedTargetOffset: null,
+    analysisBase: null, pathRoute: [], sourceNodes: [], targetNodes: [], sourceScroll: 0, targetScroll: 0, paintToken: 0, worker: null, url: null, resolve: null, distanceBase: null,
+    distances: new Map(), queue: null, overflow: '', appInert: false, focus: null, viewport: null };
+  function stopAnalyzerMiniDistances() {
+    analyzerMini.paintToken++;
+    if (analyzerMini.worker) analyzerMini.worker.terminate();
+    if (analyzerMini.url) URL.revokeObjectURL(analyzerMini.url);
+    analyzerMini.worker = null; analyzerMini.url = null;
+    if (analyzerMini.resolve) { const resolve = analyzerMini.resolve; analyzerMini.resolve = null; resolve(null); }
+  }
+  function closeAnalyzerMini() {
+    if (!analyzerMini.open) return;
+    stopAnalyzerMiniDistances(); analyzerMini.open = false;
+    document.getElementById('anaMiniGallery').hidden = true;
+    document.getElementById('anaMiniContent').textContent = '';
+    document.body.style.overflow = analyzerMini.overflow; appEl.inert = analyzerMini.appInert;
+    restoreAnalyzerViewport(analyzerMini.viewport);
+    if (analyzerMini.focus && analyzerMini.focus.focus) analyzerMini.focus.focus();
+  }
+  function openAnalyzerMini(mode) {
+    if (analyzer.running || analyzer.fullActive || !analyzer.result) return;
+    if (mode === 'pairs' && (!analyzer.filterPairs || !analyzer.filterPairs.length || analyzer.filterBase !== analyzer.result)) return;
+    syncAnalyzerRoute();
+    if (mode === 'path' && analyzer.route.length < 2) return;
+    analyzerMini.mode = mode; analyzerMini.analysisBase = analyzer.result;
+    analyzerMini.base = mode === 'path' ? analyzer.routeResult : analyzer.result;
+    analyzerMini.selectedSource = null; analyzerMini.selectedTarget = null;
+    analyzerMini.selectedSourceOffset = null; analyzerMini.selectedTargetOffset = null;
+    analyzerMini.sourceScroll = 0; analyzerMini.targetScroll = 0;
+    if (mode === 'path') {
+      analyzerMini.pathRoute = analyzer.route.slice();
+      const half = Math.floor(analyzerMini.pathRoute.length / 2);
+      analyzerMini.sourceNodes = analyzerMini.pathRoute.slice(0, half);
+      analyzerMini.targetNodes = analyzerMini.pathRoute.slice(-half).reverse();
+    } else {
+      analyzerMini.sourceNodes = Array.from({ length: Math.min(1000, analyzer.result.nodes) }, (_, i) => i);
+      analyzerMini.targetNodes = Array.from(analyzer.result.selection);
+    }
+    analyzerMini.page = 0; analyzerMini.sourcePage = 0; analyzerMini.targetPage = 0;
+    if (analyzerMini.distanceBase !== analyzer.result) { analyzerMini.distances.clear(); analyzerMini.distanceBase = analyzer.result; }
+    analyzerMini.open = true; analyzerMini.viewport = captureAnalyzerViewport();
+    analyzerMini.focus = document.activeElement;
+    analyzerMini.overflow = document.body.style.overflow; analyzerMini.appInert = appEl.inert;
+    document.body.style.overflow = 'hidden'; appEl.inert = true;
+    document.getElementById('anaMiniGallery').hidden = false;
+    document.getElementById('anaMiniGallery').classList.toggle('mini-split', mode !== 'pairs');
+    document.getElementById('anaMiniTitle').textContent = t(mode === 'pairs' ? 'anaMiniPairs' : mode === 'path' ? 'anaMiniPath' : 'anaMiniStates');
+    document.getElementById('anaMiniHint').textContent = t(mode === 'pairs' ? 'anaMiniPairHint' : 'anaMiniChooseSource');
+    renderAnalyzerMini();
+    const back = document.getElementById('anaMiniBack'); if (back.focus) back.focus();
+  }
+  function analyzerMiniPager(count, page, change, reverse = false) {
+    const row = document.createElement('div'); row.className = 'analyzer-mini-pager';
+    const pages = Math.max(1, Math.ceil(count / analyzerMini.pageSize));
+    const prev = document.createElement('button'); prev.type = 'button'; prev.textContent = '‹'; prev.title = t('prevStepTitle'); prev.disabled = reverse ? page >= pages - 1 : page <= 0;
+    prev.addEventListener('click', () => change(reverse ? Math.min(pages - 1, page + 1) : Math.max(0, page - 1)));
+    const label = document.createElement('span'); label.textContent = t('anaMiniPage', reverse ? pages - page : page + 1, pages);
+    const next = document.createElement('button'); next.type = 'button'; next.textContent = '›'; next.title = t('nextStepTitle'); next.disabled = reverse ? page <= 0 : page >= pages - 1;
+    next.addEventListener('click', () => change(reverse ? Math.max(0, page - 1) : Math.min(pages - 1, page + 1)));
+    row.setAttribute('data-inverted', String(reverse));
+    row.appendChild(prev); row.appendChild(label); row.appendChild(next); return row;
+  }
+  function analyzerMiniPreview(node) {
+    const cfg = analyzerConfigAt(analyzerMini.base, node);
+    return buildMiniPreviewFromParsed(analyzer.cols, analyzer.rows, cfg, getHoleSetFromPieces(cfg), analyzer.rushHour);
+  }
+  function renderAnalyzerMini(resetSide = null) {
+    stopAnalyzerMiniDistances();
+    if (!analyzerMini.open || analyzerMini.analysisBase !== analyzer.result) { closeAnalyzerMini(); return; }
+    const content = document.getElementById('anaMiniContent');
+    for (const grid of content.querySelectorAll('[data-mini-scroll]')) {
+      const side = grid.getAttribute('data-mini-scroll'); analyzerMini[side + 'Scroll'] = grid.scrollTop || 0;
+    }
+    if (resetSide) analyzerMini[resetSide + 'Scroll'] = 0;
+    content.textContent = '';
+    document.getElementById('anaMiniGallery').scrollTop = 0;
+    if (analyzerMini.mode === 'pairs') {
+      const count = analyzer.filterPairs.length / 2;
+      content.appendChild(analyzerMiniPager(count, analyzerMini.page, page => { analyzerMini.page = page; renderAnalyzerMini(); }));
+      const grid = document.createElement('div'); grid.className = 'analyzer-mini-grid'; content.appendChild(grid);
+      const jobs = [], first = analyzerMini.page * analyzerMini.pageSize;
+      for (let index = first; index < Math.min(count, first + analyzerMini.pageSize); index++) {
+        const source = analyzer.filterPairs[index * 2], target = analyzer.filterPairs[index * 2 + 1];
+        const card = document.createElement('button'); card.type = 'button'; card.className = 'analyzer-mini-card';
+        card.setAttribute('aria-label', t('anaMiniPair', index + 1));
+        const previews = document.createElement('div'); previews.className = 'analyzer-mini-pair';
+        previews.appendChild(analyzerMiniPreview(source)); previews.appendChild(analyzerMiniPreview(target)); card.appendChild(previews);
+        const label = document.createElement('span'); label.className = 'analyzer-mini-caption'; label.textContent = t('anaMiniPair', index + 1); card.appendChild(label);
+        const moves = document.createElement('span'); moves.className = 'analyzer-mini-moves'; moves.textContent = t('anaMiniMoves', '…'); card.appendChild(moves);
+        card.addEventListener('click', () => {
+          if (analyzerMini.analysisBase !== analyzer.result) return;
+          closeAnalyzerMini(); stepAnalyzerPair(index);
+        });
+        grid.appendChild(card); jobs.push({ source, target, moves });
+      }
+      content.appendChild(analyzerMiniPager(count, analyzerMini.page, page => { analyzerMini.page = page; renderAnalyzerMini(); }));
+      analyzerMini.queue = fillAnalyzerMiniDistances(jobs, analyzerMini.paintToken);
+    } else {
+      const halves = document.createElement('div'); halves.className = 'analyzer-mini-halves'; content.appendChild(halves);
+      for (const side of ['source', 'target']) {
+        const section = document.createElement('section'); halves.appendChild(section);
+        const title = document.createElement('h3'); title.className = 'analyzer-rules';
+        const nodes = side === 'source' ? analyzerMini.sourceNodes : analyzerMini.targetNodes;
+        title.textContent = t(side === 'source' ? 'anaMiniSources' : 'anaMiniTargets') + ' · ' + fmtNum(nodes.length); section.appendChild(title);
+        const pageField = side === 'source' ? 'sourcePage' : 'targetPage', page = analyzerMini[pageField];
+        const changePage = value => { analyzerMini[pageField] = value; renderAnalyzerMini(side); };
+        section.appendChild(analyzerMiniPager(nodes.length, page, changePage, side === 'target'));
+        const grid = document.createElement('div'); grid.className = 'analyzer-mini-grid'; grid.setAttribute('data-mini-scroll', side); section.appendChild(grid);
+        const first = page * analyzerMini.pageSize;
+        for (let index = first; index < Math.min(nodes.length, first + analyzerMini.pageSize); index++) {
+          const node = nodes[index], selected = analyzerMini[side === 'source' ? 'selectedSource' : 'selectedTarget'] === node;
+          const card = document.createElement('button'); card.type = 'button'; card.className = 'analyzer-mini-card';
+          card.setAttribute('data-mini-side', side); card.setAttribute('data-mini-node', String(node));
+          card.setAttribute('aria-pressed', String(selected)); card.classList.toggle('selected', selected);
+          card.appendChild(analyzerMiniPreview(node));
+          const caption = document.createElement('span'); caption.className = 'analyzer-mini-caption'; caption.textContent = analyzerMini.mode === 'path' ? t('anaMiniPathStep', side === 'source' ? index : analyzerMini.pathRoute.length - 1 - index) : '#' + fmtNum(node + 1); card.appendChild(caption);
+          card.addEventListener('click', () => {
+            if (analyzerMini.analysisBase !== analyzer.result) return;
+            analyzerMini[side === 'source' ? 'selectedSource' : 'selectedTarget'] = node;
+            analyzerMini[side === 'source' ? 'selectedSourceOffset' : 'selectedTargetOffset'] = index;
+            for (const button of content.querySelectorAll('[data-mini-side]')) {
+              const buttonSide = button.getAttribute('data-mini-side');
+              const chosen = analyzerMini[buttonSide === 'source' ? 'selectedSource' : 'selectedTarget'];
+              const active = chosen !== null && Number(button.getAttribute('data-mini-node')) === chosen;
+              button.classList.toggle('selected', active); button.setAttribute('aria-pressed', String(active));
+            }
+            if (analyzerMini.selectedSource !== null && analyzerMini.selectedTarget !== null) {
+              const mode = analyzerMini.mode, source = analyzerMini.selectedSource, target = analyzerMini.selectedTarget;
+              const sourceOffset = analyzerMini.selectedSourceOffset, targetOffset = analyzerMini.selectedTargetOffset;
+              closeAnalyzerMini();
+              if (mode === 'path') { analyzer.sourceStep = sourceOffset; analyzer.targetStep = targetOffset; renderAnalyzer(); }
+              else {
+                analyzer.nearIndex = source; analyzer.index = targetOffset; analyzer.filterIndex = -1;
+                selectAnalyzerPair(source, target);
+              }
+            } else document.getElementById('anaMiniHint').textContent = t(analyzerMini.selectedSource === null ? 'anaMiniChooseSourceOnly' : 'anaMiniChooseTarget');
+          });
+          grid.appendChild(card);
+        }
+        section.appendChild(analyzerMiniPager(nodes.length, page, changePage, side === 'target'));
+        grid.scrollTop = analyzerMini[side + 'Scroll'];
+      }
+    }
+  }
+  function knownAnalyzerMiniDistance(source, target) {
+    const key = source + ':' + target;
+    if (analyzerMini.distances.has(key)) return analyzerMini.distances.get(key);
+    if (source === target) return 0;
+    if (source === 0) { let distance = 0; for (let n = target; analyzerMini.base.parents[n] >= 0; n = analyzerMini.base.parents[n]) distance++; return distance; }
+    if (analyzer.pairCacheBase === analyzerMini.base && analyzer.pairCache.has(key)) return analyzer.pairCache.get(key).nodes - 1;
+    return undefined;
+  }
+  async function analyzerMiniDistance(source, target, token) {
+    const valid = () => analyzerMini.open && analyzerMini.paintToken === token && analyzerMini.analysisBase === analyzer.result;
+    if (!valid()) return null;
+    const start = analyzerConfigAt(analyzerMini.base, source), goal = analyzerConfigAt(analyzerMini.base, target);
+    if (typeof Worker !== 'undefined' && typeof Blob !== 'undefined' && typeof URL !== 'undefined') {
+      try {
+        if (!analyzerMini.worker) {
+          analyzerMini.url = URL.createObjectURL(new Blob([buildAnalyzerWorkerSource()], { type: 'application/javascript' }));
+          analyzerMini.worker = new Worker(analyzerMini.url);
+        }
+        const worker = analyzerMini.worker;
+        const reply = await new Promise(resolve => {
+          analyzerMini.resolve = resolve;
+          worker.onmessage = event => {
+            if (!valid()) return;
+            if (event.data.type === 'distance' || event.data.type === 'error') { analyzerMini.resolve = null; resolve(event.data.type === 'error' ? null : event.data); }
+          };
+          worker.onerror = () => { if (valid()) { analyzerMini.resolve = null; resolve(null); } };
+          worker.postMessage({ kind: 'distance', source: start, goalPieces: goal, cols: analyzer.cols, rows: analyzer.rows,
+            shapes: SHAPES, moveMode: analyzer.moveMode, groupShift: analyzer.groupShift, maxStates: analyzer.maxStates });
+        });
+        if (!valid()) return null;
+        if (reply) return reply;
+      } catch (error) { if (!valid()) return null; }
+      if (analyzerMini.worker) analyzerMini.worker.terminate();
+      if (analyzerMini.url) URL.revokeObjectURL(analyzerMini.url);
+      analyzerMini.worker = null; analyzerMini.url = null; analyzerMini.resolve = null;
+    }
+    const result = await exploreAnalyzer(start, analyzer.maxStates, () => !valid(), () => {}, goal);
+    if (!result || !valid()) return null;
+    const path = result.goalNode >= 0 ? compactAnalyzerPairPath(result) : null;
+    return { distance: path ? path.nodes - 1 : null, path };
+  }
+  async function fillAnalyzerMiniDistances(jobs, token) {
+    for (const job of jobs) {
+      if (!analyzerMini.open || token !== analyzerMini.paintToken) return;
+      let distance = knownAnalyzerMiniDistance(job.source, job.target);
+      if (distance === undefined) {
+        await new Promise(resolve => setTimeout(resolve, 0));
+        const reply = await analyzerMiniDistance(job.source, job.target, token);
+        if (!analyzerMini.open || token !== analyzerMini.paintToken) return;
+        distance = reply ? reply.distance : null;
+        if (reply && reply.path) {
+          if (analyzer.pairCacheBase !== analyzerMini.base) { analyzer.pairCache.clear(); analyzer.pairCacheBase = analyzerMini.base; }
+          if (analyzer.pairCache.size >= 64) analyzer.pairCache.delete(analyzer.pairCache.keys().next().value);
+          analyzer.pairCache.set(job.source + ':' + job.target, reply.path);
+        }
+      }
+      if (distance !== null && distance !== undefined) analyzerMini.distances.set(job.source + ':' + job.target, distance);
+      job.moves.textContent = t('anaMiniMoves', distance === null || distance === undefined ? '—' : fmtNum(distance));
+    }
+  }
+  document.getElementById('anaMiniBack').addEventListener('click', closeAnalyzerMini);
+  document.getElementById('anaPairsGallery').addEventListener('click', () => openAnalyzerMini('pairs'));
+  document.getElementById('anaSourceGallery').addEventListener('click', () => openAnalyzerMini('path'));
+  document.getElementById('anaTargetGallery').addEventListener('click', () => openAnalyzerMini('states'));
+
+  document.getElementById('anaSortSteps').addEventListener('click', () => toggleAnalyzerContourSort('steps'));
+  document.getElementById('anaSortStates').addEventListener('click', () => toggleAnalyzerContourSort('states'));
+
+
   applyStaticTranslations();
   updatePlayPauseBtn();
   updateSolveBtn();
   applyBoardSize();
-  buildLevelSelect();
   loadSavedOrFirstLevel();
+  prepareLevelListAfterFirstPaint();
   requestAnimationFrame(updateBackBtnPosition);
 })();
 </script>
