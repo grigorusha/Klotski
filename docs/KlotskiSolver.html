@@ -825,7 +825,7 @@
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.18)</span></div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.19)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -1136,7 +1136,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '2.18';
+  const APP_VERSION = '2.19';
   const LANG_KEY = 'ryzhiy-osel-lang-v1';
   const LAST_LEVEL_KEY = 'ryzhiy-osel-last-level-v1';
   function safeGetItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
@@ -7712,6 +7712,18 @@
     container.appendChild(preview);
   }
   function updateAnalyzerButtons() {
+    if (analyzer.fullActive) {
+      // Full analysis uses temporary trees. Keep the displayed upper board
+      // controls and their counters tied to the user's original analysis.
+      const ids = ['anaSearch', 'anaAuto', 'anaSwap', 'anaApply', 'anaRun', 'anaFilter', 'anaSymmetry',
+        'anaSourceGallery', 'anaTargetGallery', 'anaPairsGallery', 'anaPrev', 'anaNext', 'anaFarFirst', 'anaFarLast', 'anaFarSlider'];
+      for (const prefix of ['Source', 'Target', 'Near', 'Pair'])
+        for (const suffix of ['First', 'Prev', 'Slider', 'Next', 'Last']) ids.push('ana' + prefix + suffix);
+      for (const id of ids) document.getElementById(id).disabled = true;
+      anaStopBtn.hidden = true; document.getElementById('anaStopRow').hidden = true;
+      updateAnalyzerSpaceControls();
+      return;
+    }
     syncAnalyzerRoute();
     const busy = analyzer.running || analyzer.fullActive;
     const result = analyzer.result;
