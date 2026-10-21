@@ -41,6 +41,10 @@ window.BOARD_DESCRIPTIONS = [
         Description: 'Sliding Puzzles from Nob Yoshigahara: <a target="_blank" href="https://puzzleworld.org/SlidingBlockPuzzles/modern.htm">puzzleworld.org</a>' 
     },
     { 
+        Group: 'Grabarchuk', 
+        Description: 'Sliding Puzzles from Peter and Sergey Grabarchuk: <a target="_blank" href="https://www.grabarchukpuzzles.com/slidingtiles/ios/index.htm">www.grabarchukpuzzles.com</a></br>The levels are taken from a collection by an author from the forum: <a target="_blank" href="http://twistypuzzles.ru/forum/index.php/topic,334.msg11805.html#msg11805">twistypuzzles.ru</a>' 
+    },
+    { 
         Group: 'Rush Hour', 
         Description: 'Rush Hour 6*6 Puzzles from Michael Fogleman: <a target="_blank" href="https://www.michaelfogleman.com/rush/">www.michaelfogleman.com</a><br>Original Rush Hour: <a target="_blank" href="https://en.wikipedia.org/wiki/Rush_Hour_(puzzle)">wikipedia.org</a>' 
     },
@@ -49,8 +53,20 @@ window.BOARD_DESCRIPTIONS = [
         Description: 'Sliding Puzzles from mobile game Klotski (alcamasoft developer): <a target="_blank" href="https://alcamasoft.com/">alcamasoft.com</a>' 
     },
     { 
-        Group: 'CBRICKS V', 
-        Description: 'Sliding Puzzles from windows game Bricks: <a target="_blank" href="https://www.bricks-game.de/indexuk.html">www.bricks-game.de</a>' 
+        Group: 'Custom Bricks', 
+        Description: 'Sliding Puzzles from windows game Bricks: <a target="_blank" href="https://www.bricks-game.de/indexuk.html">www.bricks-game.de</a><br>Forum Bricks community: <a target="_blank" href="http://www.bricks-game.de/forum/phpBB3">www.bricks-game.de/forum</a>' 
+    },
+    { 
+        Group: 'Klotski Addon', 
+        Description: 'Various modifications of the original Klotski levels created by participants Bricks community: <a target="_blank" href="http://www.bricks-game.de/forum/phpBB3">www.bricks-game.de/forum</a>' 
+    },
+    { 
+        Group: 'Klotski Original', 
+        Description: 'An original game released by Microsoft for Windows 3.1: <a target="_blank" href="https://archive.org/details/win3_KLOTSKI">archive.org</a><br>Clone for Linux Gnome Klotski: <a target="_blank" href="https://github.com/GNOME/gnome-klotski">github.com/GNOME</a>' 
+    },
+    { 
+        Group: 'Classic puzzles 4x5', 
+        Description: 'Classic wooden puzzles that were popular in the 20th century: <a target="_blank" href="https://en.wikipedia.org/wiki/Klotski">wikipedia.org</a>' 
     },
     { 
         Group: 'Neil Bickford', 
