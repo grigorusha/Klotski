@@ -836,7 +836,7 @@
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.37)</span></div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.38)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -1148,7 +1148,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '2.37';
+  const APP_VERSION = '2.38';
   const LANG_KEY = 'ryzhiy-osel-lang-v1';
   const LAST_LEVEL_KEY = 'ryzhiy-osel-last-level-v1';
   function safeGetItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
@@ -2369,9 +2369,10 @@
     return { d, mirror: true };
   }
 
-  function buildContourPath(cellList, cellW, cellH) {
+  function buildContourPath(cellList, cellW, cellH, inset) {
     cellW = (cellW == null) ? 1 : cellW;
     cellH = (cellH == null) ? 1 : cellH;
+    inset = Math.max(0, Math.min(0.24, Number(inset) || 0));
     if (!cellList || cellList.length === 0) return '';
     const cellSet = new Set(cellList.map(([x, y]) => x + ',' + y));
     if (cellSet.size === 0) return '';
@@ -2396,11 +2397,11 @@
       if (outs.length === 0) continue;
       if (outs.length === 1) { nextEdge[i] = outs[0]; continue; }
       const din = e.dir;
-      let best = outs[0], bestCross = +Infinity;
+      let best = outs[0], bestCross = -Infinity;
       for (const j of outs) {
         const dout = edges[j].dir;
         const cross = din[0] * dout[1] - din[1] * dout[0];
-        if (cross < bestCross) { bestCross = cross; best = j; }
+        if (cross > bestCross) { bestCross = cross; best = j; }
       }
       nextEdge[i] = best;
     }
@@ -2416,12 +2417,12 @@
         cur = nextEdge[cur];
       }
       if (loop.length === 0) continue;
-      d += contourLoopToPath(loop, edges, cellW, cellH);
+      d += contourLoopToPath(loop, edges, cellW, cellH, inset);
     }
     return d;
   }
 
-  function contourLoopToPath(loop, edges, cellW, cellH) {
+  function contourLoopToPath(loop, edges, cellW, cellH, inset) {
     const n = loop.length;
     if (n === 0) return '';
     const inPts = [], outPts = [], curves = [];
@@ -2429,10 +2430,15 @@
       const e = edges[loop[i]], en = edges[loop[(i + 1) % n]];
       const din = e.dir, dout = en.dir;
       const cross = din[0] * dout[1] - din[1] * dout[0];
-      const Bx = e.to[0] * cellW, By = e.to[1] * cellH;
+      // Intersect the two edge offsets on the occupied side. Applying the
+      // offset at every boundary also protects concave corners and holes.
+      const nx = cross === 0 ? -din[1] : -din[1] - dout[1];
+      const ny = cross === 0 ? din[0] : din[0] + dout[0];
+      const Bx = (e.to[0] + nx * inset) * cellW;
+      const By = (e.to[1] + ny * inset) * cellH;
       if (cross === 0) { inPts.push([Bx, By]); outPts.push([Bx, By]); curves.push(''); }
       else {
-        const r = (cross > 0) ? R : (R * 0.6);
+        const r = cross > 0 ? R : Math.min(R * 0.6, inset * 2);
         const rx = r * cellW, ry = r * cellH;
         const sx = Bx - din[0] * rx, sy = By - din[1] * ry;
         const ex = Bx + dout[0] * rx, ey = By + dout[1] * ry;
@@ -2459,15 +2465,14 @@
     return buildContourPath(boardCellsFromHoleSet(cols, rows, holeSet), cellW, cellH);
   }
   function buildCustomShapePath(cellList) {
-    return buildContourPath(cellList, 1, 1);
+    return buildContourPath(cellList, 1, 1, 0.08);
   }
 
   function shapePathD(shapeKey) {
     if (RECT_SHAPES.has(shapeKey)) { const shape = SHAPES[shapeKey]; return { d: roundedRectPath(shape.w, shape.h, R), mirror: false }; }
     if (shapeKey === 'blk') return { d: roundedRectPath(1, 1, R), mirror: false };
     if (shapeKey === 'hole') return { d: '', mirror: false };
-    if (L_SHAPES.has(shapeKey)) return { d: lShapeBasePath(), mirror: false, rotation: L_ROTATION[shapeKey] };
-    if (DIAG_SHAPES.has(shapeKey)) return diagonalPathD(shapeKey);
+    if (L_SHAPES.has(shapeKey) || DIAG_SHAPES.has(shapeKey)) return { d: buildCustomShapePath(SHAPES[shapeKey].cells), mirror: false };
     return { d: '', mirror: false };
   }
 
@@ -2767,16 +2772,17 @@
     const slot = { x: rect.x + (rect.w - lines[row].length * cell) / 2 + col * cell,
       y: rect.y + (rect.h - lines.length * cell) / 2 + row * cell, w: cell, h: cell };
     if (!dmove) return pieceDiagonalOverlay(dir, slot, shape);
-    const pos = f => `calc(4px + (100% - 8px) * ${f})`;
-    const size = f => `calc((100% - 8px) * ${f})`;
+    const padding = shape.custom || shape.cells.length < shape.w * shape.h ? 0 : 4;
+    const pos = f => `calc(${padding}px + (100% - ${padding * 2}px) * ${f})`;
+    const size = f => `calc((100% - ${padding * 2}px) * ${f})`;
     return `<svg viewBox="0 0 1 1" preserveAspectRatio="xMidYMid meet" aria-hidden="true" style="position:absolute;left:${pos(slot.x / shape.w)};top:${pos(slot.y / shape.h)};width:${size(cell / shape.w)};height:${size(cell / shape.h)};pointer-events:none">${pieceBiArrowMarkup(dmove, 0.5, 0.5, 1, 1, colorId)}</svg>`;
   }
 
   function pieceDiagonalOverlay(decor, rect, shape) {
-    // This root SVG keeps an equal scale on both axes, independently of the
-    // stretched tile SVG. Each piece/preview/drag ghost has 4px padding.
-    const pos = fraction => `calc(4px + (100% - 8px) * ${fraction})`;
-    const size = fraction => `calc((100% - 8px) * ${fraction})`;
+    // Keep an equal scale on both axes and share the body's cell coordinates.
+    const padding = shape.custom || shape.cells.length < shape.w * shape.h ? 0 : 4;
+    const pos = fraction => `calc(${padding}px + (100% - ${padding * 2}px) * ${fraction})`;
+    const size = fraction => `calc((100% - ${padding * 2}px) * ${fraction})`;
     const side = Math.min(rect.w, rect.h);
     return `<svg class="piece-diagonal-symbol" viewBox="0 0 ${side} ${side}" preserveAspectRatio="xMidYMid meet" aria-hidden="true" style="position:absolute;left:${pos(rect.x / shape.w)};top:${pos(rect.y / shape.h)};width:${size(rect.w / shape.w)};height:${size(rect.h / shape.h)};pointer-events:none">${DIR_IDS.includes(decor) ? pieceArrowMarkup(decor, side / 2, side / 2, side, side) : pieceDecorMarkup(decor, side / 2, side / 2, side, side)}</svg>`;
   }
@@ -2787,6 +2793,7 @@
     if (!shape) return '';
     const color = COLORS_MAP[colorId] || COLORS_MAP.blue;
     const isRound = !!round && shape.w === shape.h;
+    const cellContour = !isRound && (shape.custom || L_SHAPES.has(shapeKey) || DIAG_SHAPES.has(shapeKey));
     let inner = '';
     if (isRound) {
       const cx = shape.w / 2, cy = shape.h / 2, r = shape.w / 2;
@@ -2839,7 +2846,8 @@
         }
       }
     }
-    return `<svg viewBox="0 0 ${shape.w} ${shape.h}" preserveAspectRatio="none">${inner}${arrowContent}</svg>${diagonalOverlay}`;
+    const svgStyle = cellContour ? ' style="position:absolute;inset:0;width:100%;height:100%"' : '';
+    return `<svg viewBox="0 0 ${shape.w} ${shape.h}" preserveAspectRatio="none"${svgStyle}>${inner}${arrowContent}</svg>${diagonalOverlay}`;
   }
 
   function cellsKeyOf(shapeKey, x, y) { return SHAPES[shapeKey].cells.map(([dx, dy]) => (x + dx) + ',' + (y + dy)).sort().join('|'); }
