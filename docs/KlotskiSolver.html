@@ -359,6 +359,12 @@
   .palette-tiles-area { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
   .palette-tiles-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: flex-start; min-height: 40px; }
   .palette-tiles-row--action { align-items: flex-start; }
+  .palette-group-btn .new-tile-btn__lbl { white-space: normal; text-align: center; line-height: 1.1; overflow: visible; text-overflow: clip; }
+  .palette-groups { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .palette-area-group { border: 1px solid rgba(255,255,255,.16); border-radius: 8px; overflow: hidden; }
+  .palette-area-group summary { padding: 7px 10px; background: rgba(255,255,255,.06); color: var(--gold); font-size: 12px; font-weight: 600; cursor: pointer; user-select: none; }
+  .palette-area-group[open] summary { border-bottom: 1px solid rgba(255,255,255,.12); }
+  .palette-area-group .palette-tiles-row { padding: 8px; }
   .palette-item { position: relative; cursor: grab; touch-action: none; transition: transform .1s, filter .15s; filter: drop-shadow(0 2px 3px rgba(0,0,0,.4)); padding: 4px; align-self: center; }
   .palette-item:hover { transform: scale(1.08); filter: drop-shadow(0 3px 6px rgba(0,0,0,.55)) brightness(1.12); }
   .palette-item:active { transform: scale(.96); cursor: grabbing; }
@@ -396,6 +402,7 @@
   .palette-label-btn.active { background: linear-gradient(180deg, #d98a2b, #a05e10); border-color: var(--gold); color: #fff; transform: scale(1.08); }
   .palette-label-btn.palette-label-clear { color: #ffb8b8; border-color: rgba(255,120,120,.35); }
   .palette-label-btn.palette-label-clear:hover { background: linear-gradient(180deg, #d84a4a, #8e1f1f); color: #fff; }
+  .palette-label-btn.palette-label-clear-all { width: 26px; }
   .palette-count { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px; font-size: 10px; font-weight: 800; line-height: 16px; text-align: center; border-radius: 8px; background: var(--gold); color: #1a1209; box-shadow: 0 1px 3px rgba(0,0,0,.5); pointer-events: none; font-variant-numeric: tabular-nums; }
   .palette-count.empty { display: none; }
   .palette-action-btn {
@@ -516,6 +523,9 @@
   .color-palette { display: flex; flex-direction: column; gap: 8px; padding: 10px 10px 8px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
   .color-palette__row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; }
   .color-palette__row + .color-palette__row { padding-top: 6px; border-top: 1px solid rgba(255,255,255,.10); }
+  .color-palette__row--icons { gap: 4px; }
+  .palette-arrow-gap { flex: 0 0 5px; height: 1px; }
+  .color-palette__row--icons .color-palette-sep { margin: 0 2px; min-height: 26px; }
   .color-palette__row--chars { gap: 3px; flex-wrap: nowrap; }
   .color-swatch { width: 30px; height: 30px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: transform .1s, border-color .15s; box-shadow: inset 0 2px 0 rgba(255,255,255,.25), inset 0 -3px 6px rgba(0,0,0,.3); }
   .color-swatch:hover { transform: scale(1.1); }
@@ -523,6 +533,7 @@
   .color-palette-sep { align-self: stretch; width: 1px; min-height: 30px; margin: 0 4px; background: rgba(255,255,255,.28); border-radius: 1px; }
   .color-palette__row--chars .color-palette-sep { min-height: 18px; margin: 0 2px; }
   .color-swatch.dir-swatch {
+    width: 26px; height: 26px; flex: 0 0 26px; box-sizing: border-box;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -538,7 +549,7 @@
     background: linear-gradient(180deg, #d98a2b, #a05e10);
     color: #fff;
   }
-  .color-swatch.dir-swatch svg { width: 20px; height: 20px; display: block; }
+  .color-swatch.dir-swatch svg { width: 18px; height: 18px; display: block; }
   .editor-subhint { flex-basis: 100%; margin: 6px 0 0; font-size: 11px; line-height: 1.35; text-align: center; color: var(--sub); letter-spacing: .02em; }
   .gallery-view { display: flex; flex-direction: column; gap: 16px; }
   .gallery-summary { padding: 10px 14px; border-radius: 10px; background: rgba(90,200,110,.15); border: 1px solid rgba(120,220,140,.32); color: #000; font-size: 12.5px; font-weight: 500; text-align: center; letter-spacing: .01em; }
@@ -825,7 +836,7 @@
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.19)</span></div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.37)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -944,8 +955,9 @@
       </div>
       <div class="io-group">
         <button class="io-btn" id="copyLevelBtn"><span class="btn-ico">📋</span><span class="btn-lbl" data-ruseng="copy">Скопировать</span></button>
-        <button class="io-btn" id="pasteLevelBtn"><span class="btn-ico">📥</span><span class="btn-lbl" data-ruseng="paste">Вставить</span></button>
+        <button class="io-btn" id="pasteLevelBtn" title="Ctrl+V"><span class="btn-ico">📥</span><span class="btn-lbl" data-ruseng="paste">Вставить</span></button>
         <button class="io-btn" id="copyAllLevelsBtn"><span class="btn-ico">📦</span><span class="btn-lbl" data-ruseng="copyAllJs">Копировать все</span></button>
+        <button class="io-btn" id="pasteGroupBtn"><span class="btn-ico">📥</span><span class="btn-lbl" data-ruseng="pasteGroup">Вставить группу</span></button>
         <button class="io-btn danger" id="deleteEditBtn" hidden><span class="btn-ico">✕</span><span class="btn-lbl" data-ruseng="deleteBtn">Удалить</span></button>
       </div>
       <div class="level-text-wrap">
@@ -1136,7 +1148,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '2.19';
+  const APP_VERSION = '2.37';
   const LANG_KEY = 'ryzhiy-osel-lang-v1';
   const LAST_LEVEL_KEY = 'ryzhiy-osel-last-level-v1';
   function safeGetItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
@@ -1327,6 +1339,9 @@
       newTileLabel: 'Новая плитка',
       showExtras: 'Показать',
       hideExtras: 'Скрыть',
+      paletteExpandAll: 'Развернуть все', paletteCollapseAll: 'Свернуть все',
+      paletteAreaGroup: 'Площадь %1 — плиток: %2',
+      tileUpdated: 'Форма плитки обновлена. Заменено на досках: %1; оставлено на прежнем месте без изменения: %2.',
       tileEditorHint: 'Клик по клетке — поставить/убрать. Ведите мышью для рисования. Все клетки должны соприкасаться углами или сторонами.',
       accept: 'Принять', cancel: 'Отмена', run: 'Запустить',
       setTarget: 'Задайте цель',
@@ -1336,12 +1351,14 @@
       groupMovesRequiredLabel: 'только с\nгрупп. сдвигом',
       authorDropdownTitle: 'Выбрать автора',
       groupDropdownTitle: 'Выбрать группу',
-      copy: 'Скопировать', paste: 'Вставить', copyAllJs: 'Копировать все', deleteBtn: 'Удалить',
+      copy: 'Скопировать', paste: 'Вставить', copyAllJs: 'Копировать все',
+      pasteGroup: 'Вставить группу', pasteGroupHint: 'Вставьте группу уровней (Ctrl+V) — уровни сохранятся автоматически. Esc — отмена.', groupImported: 'Сохранено уровней: %1. Последний открыт в редакторе.', groupEmpty: 'В буфере нет уровней для импорта', groupSyntax: 'Неподдерживаемый формат группы: ожидаются строки или массив строк text', groupLevelError: 'Уровень %1: %2', groupStorageError: 'Не удалось сохранить группу в локальном хранилище: %1', deleteBtn: 'Удалить',
       pasteHint: 'Вставьте текст уровня (Ctrl+V) — загрузится автоматически. Esc — отмена.',
       pastePlaceholder: 'Ctrl+V…',
       wonTitle: 'Победа!', wonText: 'Цель достигнута.',
       movesLabel: 'Ходов:', timeLabel: 'Время:', playAgain: 'Играть снова',
       colorHint: 'Задайте цвета, стрелки, полоски, фигуры и надписи плиток',
+      nextSymbolRegionTitle: 'Разместить символ в следующей подходящей области',
       arrowUpTitle: 'Стрелка вверх', arrowDownTitle: 'Стрелка вниз',
       arrowLeftTitle: 'Стрелка влево', arrowRightTitle: 'Стрелка вправо',
       decorLineVTitle: 'Полоска вертикальная',
@@ -1350,6 +1367,12 @@
       decorLineD2Title: 'Полоска диагональ /',
       decorCircleTitle: 'Кольцо',
       decorTriangleTitle: 'Треугольник',
+      decorDiamondTitle: 'Ромб',
+      decorTriangleDownTitle: 'Перевёрнутый треугольник',
+      arrowUpLeftTitle: 'Стрелка влево вверх',
+      arrowDownLeftTitle: 'Стрелка влево вниз',
+      arrowDownRightTitle: 'Стрелка вправо вниз',
+      arrowUpRightTitle: 'Стрелка вправо вверх',
       decorSquareTitle: 'Квадрат',
       decorStarTitle: 'Звезда',
       decorSmileyTitle: 'Смайлик',
@@ -1361,7 +1384,8 @@
       dmoveVTitle: 'Движение плитки только по Вертикали',
       dmoveHTitle: 'Движение плитки только по Горизонтали',
       labelRowTitle: 'Надпись:',
-      labelClearTitle: 'Очистить надпись',
+      labelClearTitle: 'Удалить значок и надпись с выбранной плитки',
+      clearAllSymbolsTitle: 'Удалить все значки и надписи со всех плиток обеих досок',
       labelNewlineTitle: 'Новая строка',
       labelSpaceTitle: 'Пробел',
       prevLevelTitle: 'Предыдущий уровень', nextLevelTitle: 'Следующий уровень',
@@ -1625,6 +1649,9 @@
       newTileLabel: 'New tile',
       showExtras: 'Show',
       hideExtras: 'Hide',
+      paletteExpandAll: 'Expand all', paletteCollapseAll: 'Collapse all',
+      paletteAreaGroup: 'Area %1 — pieces: %2',
+      tileUpdated: 'Piece shape updated. Replaced on boards: %1; left unchanged in place: %2.',
       tileEditorHint: 'Click a cell to toggle. Drag to paint. All cells must touch by sides or corners.',
       accept: 'Accept', cancel: 'Cancel', run: 'Run',
       setTarget: 'Set target',
@@ -1634,12 +1661,14 @@
       groupMovesRequiredLabel: 'group shift\nonly',
       authorDropdownTitle: 'Choose author',
       groupDropdownTitle: 'Choose group',
-      copy: 'Copy', paste: 'Paste', copyAllJs: 'Copy all', deleteBtn: 'Delete',
+      copy: 'Copy', paste: 'Paste', copyAllJs: 'Copy all',
+      pasteGroup: 'Paste group', pasteGroupHint: 'Paste multiple levels (Ctrl+V) to save them automatically. Esc — cancel.', groupImported: 'Levels saved: %1. The last is open in the editor.', groupEmpty: 'No levels to import', groupSyntax: 'Unsupported group format: text must be a string or an array of strings', groupLevelError: 'Level %1: %2', groupStorageError: 'Could not save the group to local storage: %1', deleteBtn: 'Delete',
       pasteHint: 'Paste level text (Ctrl+V) — will load automatically. Esc — cancel.',
       pastePlaceholder: 'Ctrl+V…',
       wonTitle: 'Victory!', wonText: 'Goal reached.',
       movesLabel: 'Moves:', timeLabel: 'Time:', playAgain: 'Play again',
       colorHint: 'Set piece colors, arrows, stripes, shapes and labels',
+      nextSymbolRegionTitle: 'Place the symbol in the next suitable area',
       arrowUpTitle: 'Arrow up', arrowDownTitle: 'Arrow down',
       arrowLeftTitle: 'Arrow left', arrowRightTitle: 'Arrow right',
       decorLineVTitle: 'Vertical stripe',
@@ -1648,6 +1677,12 @@
       decorLineD2Title: 'Diagonal stripe /',
       decorCircleTitle: 'Ring',
       decorTriangleTitle: 'Triangle',
+      decorDiamondTitle: 'Diamond',
+      decorTriangleDownTitle: 'Inverted triangle',
+      arrowUpLeftTitle: 'Arrow up left',
+      arrowDownLeftTitle: 'Arrow down left',
+      arrowDownRightTitle: 'Arrow down right',
+      arrowUpRightTitle: 'Arrow up right',
       decorSquareTitle: 'Square',
       decorStarTitle: 'Star',
       decorSmileyTitle: 'Smiley',
@@ -1658,7 +1693,8 @@
       roundTileTitle: 'Round tile (for square tiles only)',
       dmoveVTitle: 'Tile moves only vertically', dmoveHTitle: 'Tile moves only horizontally',
       labelRowTitle: 'Label:',
-      labelClearTitle: 'Clear label',
+      labelClearTitle: 'Remove the icon and label from the selected piece',
+      clearAllSymbolsTitle: 'Remove all icons and labels from every piece on both boards',
       labelNewlineTitle: 'New line',
       labelSpaceTitle: 'Space',
       prevLevelTitle: 'Previous level', nextLevelTitle: 'Next level',
@@ -1803,16 +1839,16 @@
   try { const gs = safeGetItem(GALLERY_GROUP_SORT_KEY); if (gs === 'default' || gs === 'name' || gs === 'size') gallerySortMode = gs; } catch (e) {}
 
   const R  = 0.14, RJ = 0.18, INNER = 0.035;
-  const DIR_IDS = ['up', 'right', 'down', 'left'];
-  const DIR_ORDER = ['', 'up', 'right', 'down', 'left'];
-  const DIR_ID_TO_EN = { up: 'Up', down: 'Down', left: 'Left', right: 'Right' };
-  const DIR_EN_TO_ID = { up: 'up', down: 'down', left: 'left', right: 'right' };
-  const DIR_ROT = { up: 0, right: 90, down: 180, left: 270 };
+  const DIR_IDS = ['up', 'right', 'down', 'left', 'upRight', 'downRight', 'downLeft', 'upLeft'];
+  const DIR_ORDER = ['', ...DIR_IDS];
+  const DIR_ID_TO_EN = { up: 'Up', down: 'Down', left: 'Left', right: 'Right', upRight: 'UpRight', downRight: 'DownRight', downLeft: 'DownLeft', upLeft: 'UpLeft' };
+  const DIR_EN_TO_ID = { up: 'up', down: 'down', left: 'left', right: 'right', upright: 'upRight', downright: 'downRight', downleft: 'downLeft', upleft: 'upLeft' };
+  const DIR_ROT = { up: 0, right: 90, down: 180, left: 270, upRight: 45, downRight: 135, downLeft: 225, upLeft: 315 };
 
   const DECOR_ID_TO_EN = {
     lineV: 'LineV', lineH: 'LineH',
     lineD1: 'LineD1', lineD2: 'LineD2',
-    circle: 'Ring', triangle: 'Triangle', square: 'Square', star: 'Star',
+    circle: 'Ring', triangle: 'Triangle', triangleDown: 'TriangleDown', square: 'Square', diamond: 'Diamond', star: 'Star',
     smiley: 'Smiley', sad: 'SadSmiley', heart: 'Heart',
     fire: 'Fire', car: 'Car'
   };
@@ -1820,14 +1856,14 @@
     linev: 'lineV', lineh: 'lineH',
     lined1: 'lineD1', lined2: 'lineD2',
     line1: 'lineD1', line2: 'lineD2',
-    ring: 'circle', triangle: 'triangle', square: 'square', star: 'star',
+    ring: 'circle', triangle: 'triangle', triangledown: 'triangleDown', square: 'square', diamond: 'diamond', star: 'star',
     smiley: 'smiley', smile: 'smiley', sadsmiley: 'sad', sad: 'sad', frown: 'sad',
     heart: 'heart',
     fire: 'fire', flame: 'fire', car: 'car'
   };
-  const DECOR_ORDER = ['', 'up', 'right', 'down', 'left',
+  const DECOR_ORDER = ['', ...DIR_IDS,
                        'lineV', 'lineH', 'lineD1', 'lineD2',
-                       'circle', 'triangle', 'square', 'star', 'smiley', 'sad', 'heart', 'fire', 'car'];
+                       'circle', 'triangle', 'triangleDown', 'square', 'diamond', 'star', 'smiley', 'sad', 'heart', 'fire', 'car'];
   const LIGHT_TILE_COLORS = new Set(['yellow', 'lime', 'beige', 'white']);
   const LIGHT_MARKER_COLORS = new Set(['yellow', 'beige', 'white']);
 
@@ -1848,6 +1884,12 @@
 
   function dirTooltip(id) {
     switch (id) {
+      case 'upRight': return t('arrowUpRightTitle');
+      case 'downRight': return t('arrowDownRightTitle');
+      case 'downLeft': return t('arrowDownLeftTitle');
+      case 'upLeft': return t('arrowUpLeftTitle');
+      case 'triangleDown': return t('decorTriangleDownTitle');
+      case 'diamond': return t('decorDiamondTitle');
       case 'up': return t('arrowUpTitle');
       case 'down': return t('arrowDownTitle');
       case 'left': return t('arrowLeftTitle');
@@ -2126,7 +2168,15 @@
   };
   const BLOCK_LETTER = 'X';
   const HOLE_LETTER  = '.';
-  const LETTER_POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(ch => ch !== BLOCK_LETTER).concat('0123456789'.split(''));
+  // Preserve the original first 35 identifiers; extend without case folding.
+  const LETTER_POOL = Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789αβγδεζηθικλμνξοπρστυφχψωςΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩabcdefghijklmnopqrstuvwxyz')
+    .filter(ch => ch !== BLOCK_LETTER);
+  // A 20×20 board can contain 400 individual pieces. Use single Unicode letters
+  // for the remaining identifiers, rather than introducing multi-cell tokens.
+  for (let code = 0x0100; LETTER_POOL.length < MAX_SIZE * MAX_SIZE && code <= 0x024F; code++) {
+    const ch = String.fromCodePoint(code);
+    if (/^\p{L}$/u.test(ch) && !LETTER_POOL.includes(ch)) LETTER_POOL.push(ch);
+  }
 
   const DEFAULT_START = [
     { shape: 'sq', x: 1, y: 0, color: 'red' },
@@ -2421,60 +2471,69 @@
     return { d: '', mirror: false };
   }
 
-  function largestInscribedRect(shape, preferAxis) {
-    if (!shape || !shape.cells || shape.cells.length === 0) return { x: 0, y: 0, w: 1, h: 1, area: 1 };
+  const symbolRectCache = new WeakMap();
+  function maximalSymbolRects(shape) {
+    if (!shape || !shape.cells || !shape.cells.length) return [{ x: 0, y: 0, w: 1, h: 1, area: 1 }];
+    if (symbolRectCache.has(shape)) return symbolRectCache.get(shape);
     const cellSet = new Set(shape.cells.map(([x, y]) => x + ',' + y));
-    let best = null, bestScore = null;
+    const filled = (x1, y1, x2, y2) => {
+      for (let y = y1; y <= y2; y++) for (let x = x1; x <= x2; x++)
+        if (!cellSet.has(x + ',' + y)) return false;
+      return true;
+    };
+    const rects = [];
     for (let y1 = 0; y1 < shape.h; y1++) for (let y2 = y1; y2 < shape.h; y2++)
       for (let x1 = 0; x1 < shape.w; x1++) for (let x2 = x1; x2 < shape.w; x2++) {
-        let allIn = true;
-        for (let y = y1; y <= y2 && allIn; y++) for (let x = x1; x <= x2; x++) if (!cellSet.has(x + ',' + y)) { allIn = false; break; }
-        if (allIn) {
-          const w = x2 - x1 + 1, h = y2 - y1 + 1, area = w * h;
-          let score;
-          if (preferAxis === 'v') score = [h, w, area];
-          else if (preferAxis === 'h') score = [w, h, area];
-          else score = [area, h, w];
-          const better = !best || score[0] > bestScore[0] || (score[0] === bestScore[0] && score[1] > bestScore[1]) || (score[0] === bestScore[0] && score[1] === bestScore[1] && score[2] > bestScore[2]);
-          if (better) { best = { x: x1, y: y1, w, h, area }; bestScore = score; }
-        }
+        if (!filled(x1, y1, x2, y2)) continue;
+        if ((x1 > 0 && filled(x1 - 1, y1, x1 - 1, y2)) ||
+            (x2 + 1 < shape.w && filled(x2 + 1, y1, x2 + 1, y2)) ||
+            (y1 > 0 && filled(x1, y1 - 1, x2, y1 - 1)) ||
+            (y2 + 1 < shape.h && filled(x1, y2 + 1, x2, y2 + 1))) continue;
+        const w = x2 - x1 + 1, h = y2 - y1 + 1;
+        rects.push({ x: x1, y: y1, w, h, area: w * h });
       }
-    return best || { x: 0, y: 0, w: 1, h: 1, area: 1 };
+    symbolRectCache.set(shape, rects);
+    return rects;
   }
-
-  function bestRectForLabel(shape, labelStr) {
-    if (!shape || !shape.cells || shape.cells.length === 0) return { x: 0, y: 0, w: 1, h: 1, area: 1 };
-    const lines = String(labelStr || '').split('\n');
-    const lineCount = Math.max(1, lines.length);
-    const maxLineLen = Math.max(1, ...lines.map(l => l.replace(/ /g, '').length));
-    const cellSet = new Set(shape.cells.map(([x, y]) => x + ',' + y));
-    let best = null, bestFs = -1, bestArea = -1;
-    for (let y1 = 0; y1 < shape.h; y1++) for (let y2 = y1; y2 < shape.h; y2++)
-      for (let x1 = 0; x1 < shape.w; x1++) for (let x2 = x1; x2 < shape.w; x2++) {
-        let allIn = true;
-        for (let y = y1; y <= y2 && allIn; y++) for (let x = x1; x <= x2; x++) if (!cellSet.has(x + ',' + y)) { allIn = false; break; }
-        if (allIn) {
-          const w = x2 - x1 + 1, h = y2 - y1 + 1;
-          const fs = Math.min(h * 0.72 / lineCount, w * 0.78 / maxLineLen);
-          const area = w * h;
-          if (fs > bestFs + 1e-9 || (Math.abs(fs - bestFs) < 1e-9 && area > bestArea)) {
-            bestFs = fs; bestArea = area; best = { x: x1, y: y1, w, h, area };
-          }
-        }
-      }
-    return best || { x: 0, y: 0, w: 1, h: 1, area: 1 };
+  function suitableSymbolRects(shape, preferAxis, labelStr) {
+    const lines = labelStr === undefined ? null : String(labelStr || '').split('\n');
+    const lineCount = lines ? Math.max(1, lines.length) : 1;
+    const lineWidth = lines ? Math.max(1, ...lines.map(line => line.replace(/ /g, '').length)) : 1;
+    const score = rect => lines ? [Math.min(rect.h * 0.72 / lineCount, rect.w * 0.78 / lineWidth), rect.area] :
+      preferAxis === 'v' ? [rect.h, rect.w, rect.area] :
+      preferAxis === 'h' ? [rect.w, rect.h, rect.area] : [rect.area, rect.h, rect.w];
+    return maximalSymbolRects(shape).slice().sort((a, b) => {
+      const sa = score(a), sb = score(b);
+      for (let i = 0; i < sa.length; i++) if (Math.abs(sb[i] - sa[i]) > 1e-9) return sb[i] - sa[i];
+      return 0;
+    });
+  }
+  function symbolRegionIndex(region, count) {
+    return count ? Math.max(0, Math.trunc(Number(region) || 0)) % count : 0;
+  }
+  function largestInscribedRect(shape, preferAxis, region) {
+    const rects = suitableSymbolRects(shape, preferAxis);
+    return rects[symbolRegionIndex(region, rects.length)] || { x: 0, y: 0, w: 1, h: 1, area: 1 };
+  }
+  function bestRectForLabel(shape, labelStr, region) {
+    const rects = suitableSymbolRects(shape, null, labelStr);
+    return rects[symbolRegionIndex(region, rects.length)] || { x: 0, y: 0, w: 1, h: 1, area: 1 };
   }
 
   function pieceArrowMarkup(dir, cx, cy, rectW, rectH) {
     const isVertical = (dir === 'up' || dir === 'down');
     let length, width;
-    if (isVertical) { length = rectH * 0.7; width = Math.min(0.5, rectW * 0.7); }
-    else { length = rectW * 0.7; width = Math.min(0.5, rectH * 0.7); }
+    if (isVertical) { length = rectH * 0.8; width = Math.min(0.5, rectW * 0.7); }
+    else { length = rectW * 0.8; width = Math.min(0.5, rectH * 0.7); }
     if (length <= 0.05 || width <= 0.05) return '';
-    const half = length / 2, hw = width / 2;
-    const headH = Math.min(width * 0.8, length * 0.5);
+    const crossSize = isVertical ? rectW : rectH;
+    const headWidth = crossSize * 0.25 * 1.5;
+    const sw = headWidth * 0.07;
+    const stemW = headWidth / 2.5;
+    // Keep overall length fixed while increasing the head height by 25%.
+    const headH = length * 0.3 / 1.3 * 1.25;
+    const half = length / 2, hw = headWidth / 2;
     const headBaseY = -half + headH, tailY = half;
-    const stemW = Math.max(width * 0.36, 0.04);
     const d = 'M 0 ' + (-half).toFixed(4) + ' L ' + hw.toFixed(4) + ' ' + headBaseY.toFixed(4) +
               ' L ' + (stemW / 2).toFixed(4) + ' ' + headBaseY.toFixed(4) +
               ' L ' + (stemW / 2).toFixed(4) + ' ' + tailY.toFixed(4) +
@@ -2482,7 +2541,6 @@
               ' L ' + (-stemW / 2).toFixed(4) + ' ' + headBaseY.toFixed(4) +
               ' L ' + (-hw).toFixed(4) + ' ' + headBaseY.toFixed(4) + ' Z';
     const rot = DIR_ROT[dir] || 0;
-    const sw = Math.max(0.018, width * 0.07);
     return '<g transform="translate(' + cx.toFixed(4) + ' ' + cy.toFixed(4) + ') rotate(' + rot + ')">' +
            '<path d="' + d + '" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="' + sw.toFixed(4) + '" stroke-linejoin="round"/></g>';
   }
@@ -2521,17 +2579,25 @@
     if (!decor) return '';
     const minDim = Math.min(rectW, rectH);
     if (minDim < 0.1) return '';
-    const sw = 0.06, lw = 0.18, bw = lw + 0.07, shf = 0.30;
+    const sw = 0.06, shf = 0.30;
+    // Line symbols use twice their previous thickness, independently of arrows.
+    const lineCrossSize = decor === 'lineV' ? rectW : decor === 'lineH' ? rectH : minDim;
+    const arrowWidth = lineCrossSize * 0.25;
+    const arrowOutline = arrowWidth * 0.07;
+    const lw = (arrowWidth / 2.5 - arrowOutline) * 2;
+    const bw = (arrowWidth / 2.5 + arrowOutline) * 2;
     if (decor === 'lineV') { const halfLen = rectH * shf; return `<line x1="${cx}" y1="${(cy - halfLen).toFixed(4)}" x2="${cx}" y2="${(cy + halfLen).toFixed(4)}" stroke="rgba(0,0,0,0.72)" stroke-width="${bw}" stroke-linecap="round"/><line x1="${cx}" y1="${(cy - halfLen).toFixed(4)}" x2="${cx}" y2="${(cy + halfLen).toFixed(4)}" stroke="#ffffff" stroke-width="${lw}" stroke-linecap="round"/>`; }
     if (decor === 'lineH') { const halfLen = rectW * shf; return `<line x1="${(cx - halfLen).toFixed(4)}" y1="${cy}" x2="${(cx + halfLen).toFixed(4)}" y2="${cy}" stroke="rgba(0,0,0,0.72)" stroke-width="${bw}" stroke-linecap="round"/><line x1="${(cx - halfLen).toFixed(4)}" y1="${cy}" x2="${(cx + halfLen).toFixed(4)}" y2="${cy}" stroke="#ffffff" stroke-width="${lw}" stroke-linecap="round"/>`; }
     if (decor === 'lineD1' || decor === 'lineD2') {
-      const dx = rectW * shf, dy = rectH * shf;
+      const dx = minDim * shf, dy = minDim * shf;
       let x1, y1, x2, y2;
       if (decor === 'lineD1') { x1 = cx - dx; y1 = cy - dy; x2 = cx + dx; y2 = cy + dy; }
       else { x1 = cx - dx; y1 = cy + dy; x2 = cx + dx; y2 = cy - dy; }
       return `<line x1="${x1.toFixed(4)}" y1="${y1.toFixed(4)}" x2="${x2.toFixed(4)}" y2="${y2.toFixed(4)}" stroke="rgba(0,0,0,0.72)" stroke-width="${bw}" stroke-linecap="round"/><line x1="${x1.toFixed(4)}" y1="${y1.toFixed(4)}" x2="${x2.toFixed(4)}" y2="${y2.toFixed(4)}" stroke="#ffffff" stroke-width="${lw}" stroke-linecap="round"/>`;
     }
     if (decor === 'circle') { const r = minDim * 0.30; return `<circle cx="${cx.toFixed(4)}" cy="${cy.toFixed(4)}" r="${r.toFixed(4)}" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw}"/>`; }
+    if (decor === 'triangleDown') return `<g transform="rotate(180 ${cx} ${cy})">${pieceDecorMarkup('triangle', cx, cy, rectW, rectH)}</g>`;
+    if (decor === 'diamond') { const r = minDim * 0.38; return `<path d="M ${cx} ${cy-r} L ${cx+r} ${cy} L ${cx} ${cy+r} L ${cx-r} ${cy} Z" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw}" stroke-linejoin="round"/>`; }
     if (decor === 'triangle') {
       const R = minDim * 0.42;
       const r23 = R * Math.sqrt(3) / 2;
@@ -2654,6 +2720,8 @@
     else if (decor === 'lineD2') inner = `<line x1="0.8" y1="0.2" x2="0.2" y2="0.8" stroke="${c}" stroke-width="0.14" stroke-linecap="round"/>`;
     else if (decor === 'circle') inner = `<circle cx="0.5" cy="0.5" r="0.32" fill="none" stroke="${c}" stroke-width="0.12"/>`;
     else if (decor === 'triangle') inner = `<path d="M 0.5 0.12 L 0.88 0.78 L 0.12 0.78 Z" fill="none" stroke="${c}" stroke-width="0.12" stroke-linejoin="round"/>`;
+    else if (decor === 'triangleDown') inner = `<path d="M 0.12 0.22 L 0.88 0.22 L 0.5 0.88 Z" fill="none" stroke="${c}" stroke-width="0.12" stroke-linejoin="round"/>`;
+    else if (decor === 'diamond') inner = `<path d="M 0.5 0.1 L 0.9 0.5 L 0.5 0.9 L 0.1 0.5 Z" fill="none" stroke="${c}" stroke-width="0.12" stroke-linejoin="round"/>`;
     else if (decor === 'square') inner = `<rect x="0.2" y="0.2" width="0.6" height="0.6" rx="0.06" fill="none" stroke="${c}" stroke-width="0.12"/>`;
     else if (decor === 'star') {
       let d = '';
@@ -2683,7 +2751,36 @@
     return `<svg viewBox="0 0 1 1" aria-hidden="true">${inner}</svg>`;
   }
 
-  function shapeSVGInner(shapeKey, colorId, dir, dmove, label, round, hideDirArrows) {
+  const ICON_LABEL_MARKER = '\uFFFC';
+  function isIconLabel(label) { return /^[ \n\uFFFC]*$/.test(label || ''); }
+  function iconLayoutLabel(label) {
+    return String(label || '').includes(ICON_LABEL_MARKER) ? String(label) : String(label || '') + ICON_LABEL_MARKER;
+  }
+  function pieceIconLabelOverlay(shape, dir, dmove, label, colorId, hideDirArrows, region) {
+    if (hideDirArrows && (dmove || DIR_IDS.includes(dir))) return '';
+    const lines = iconLayoutLabel(label).split('\n');
+    const width = Math.max(1, ...lines.map(line => line.length));
+    const rect = bestRectForLabel(shape, lines.map(line => 'X'.repeat(line.length)).join('\n'), region);
+    const cell = Math.min(rect.w / width, rect.h / lines.length);
+    const row = lines.findIndex(line => line.includes(ICON_LABEL_MARKER));
+    const col = lines[row].indexOf(ICON_LABEL_MARKER);
+    const slot = { x: rect.x + (rect.w - lines[row].length * cell) / 2 + col * cell,
+      y: rect.y + (rect.h - lines.length * cell) / 2 + row * cell, w: cell, h: cell };
+    if (!dmove) return pieceDiagonalOverlay(dir, slot, shape);
+    const pos = f => `calc(4px + (100% - 8px) * ${f})`;
+    const size = f => `calc((100% - 8px) * ${f})`;
+    return `<svg viewBox="0 0 1 1" preserveAspectRatio="xMidYMid meet" aria-hidden="true" style="position:absolute;left:${pos(slot.x / shape.w)};top:${pos(slot.y / shape.h)};width:${size(cell / shape.w)};height:${size(cell / shape.h)};pointer-events:none">${pieceBiArrowMarkup(dmove, 0.5, 0.5, 1, 1, colorId)}</svg>`;
+  }
+
+  function pieceDiagonalOverlay(decor, rect, shape) {
+    // This root SVG keeps an equal scale on both axes, independently of the
+    // stretched tile SVG. Each piece/preview/drag ghost has 4px padding.
+    const pos = fraction => `calc(4px + (100% - 8px) * ${fraction})`;
+    const size = fraction => `calc((100% - 8px) * ${fraction})`;
+    const side = Math.min(rect.w, rect.h);
+    return `<svg class="piece-diagonal-symbol" viewBox="0 0 ${side} ${side}" preserveAspectRatio="xMidYMid meet" aria-hidden="true" style="position:absolute;left:${pos(rect.x / shape.w)};top:${pos(rect.y / shape.h)};width:${size(rect.w / shape.w)};height:${size(rect.h / shape.h)};pointer-events:none">${DIR_IDS.includes(decor) ? pieceArrowMarkup(decor, side / 2, side / 2, side, side) : pieceDecorMarkup(decor, side / 2, side / 2, side, side)}</svg>`;
+  }
+  function shapeSVGInner(shapeKey, colorId, dir, dmove, label, round, hideDirArrows, region) {
     if (shapeKey === 'hole') return '';
     if (shapeKey === 'blk') colorId = 'blk';
     const shape = SHAPES[shapeKey];
@@ -2714,31 +2811,35 @@
       if (mirror) { const cx = shape.w / 2; inner = `<g transform="translate(${2 * cx}, 0) scale(-1, 1)">${inner}</g>`; }
     }
 
-    let arrowContent = '';
+    let arrowContent = '', diagonalOverlay = '';
     if (shapeKey !== 'blk') {
-      if (label) {
-        const rect = bestRectForLabel(shape, label);
+      if (label && (dir || dmove) && isIconLabel(label)) {
+        diagonalOverlay = pieceIconLabelOverlay(shape, dir, dmove, label, colorId, hideDirArrows, region);
+      } else if (label) {
+        const rect = bestRectForLabel(shape, label, region);
         arrowContent = pieceLabelMarkup(label, rect.x + rect.w / 2, rect.y + rect.h / 2, rect.w, rect.h);
       } else {
-        const isArrowDir = (dir === 'up' || dir === 'down' || dir === 'left' || dir === 'right');
+        const isArrowDir = DIR_IDS.includes(dir);
         const isDecorDir = !!(dir && !isArrowDir);
         let preferAxis = null;
         if (dmove === 'v') preferAxis = 'v';
         else if (dmove === 'h') preferAxis = 'h';
         else if (dir === 'up' || dir === 'down') preferAxis = 'v';
         else if (dir === 'left' || dir === 'right') preferAxis = 'h';
-        const rect = largestInscribedRect(shape, preferAxis);
+        const rect = largestInscribedRect(shape, preferAxis, region);
         const acx = rect.x + rect.w / 2, acy = rect.y + rect.h / 2;
         if (isDecorDir) {
-          arrowContent = pieceDecorMarkup(dir, acx, acy, rect.w, rect.h);
+          if (dir === 'lineD1' || dir === 'lineD2') diagonalOverlay = pieceDiagonalOverlay(dir, rect, shape);
+          else arrowContent = pieceDecorMarkup(dir, acx, acy, rect.w, rect.h);
         } else if (dmove && !hideDirArrows) {
           arrowContent = pieceBiArrowMarkup(dmove, acx, acy, rect.w, rect.h, colorId);
         } else if (dir && !hideDirArrows) {
-          arrowContent = pieceArrowMarkup(dir, acx, acy, rect.w, rect.h);
+          if (DIR_ROT[dir] % 90) diagonalOverlay = pieceDiagonalOverlay(dir, rect, shape);
+          else arrowContent = pieceArrowMarkup(dir, acx, acy, rect.w, rect.h);
         }
       }
     }
-    return `<svg viewBox="0 0 ${shape.w} ${shape.h}" preserveAspectRatio="none">${inner}${arrowContent}</svg>`;
+    return `<svg viewBox="0 0 ${shape.w} ${shape.h}" preserveAspectRatio="none">${inner}${arrowContent}</svg>${diagonalOverlay}`;
   }
 
   function cellsKeyOf(shapeKey, x, y) { return SHAPES[shapeKey].cells.map(([dx, dy]) => (x + dx) + ',' + (y + dy)).sort().join('|'); }
@@ -2756,7 +2857,7 @@
     }
     return false;
   }
-  function typeColorKey(p) { return p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '') + '|' + (p.round ? '1' : ''); }
+  function typeColorKey(p) { return p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '') + '|' + (p.round ? '1' : '') + '|' + (p.region || 0); }
   function countByTypeColor(list, key) { let n = 0; for (const p of list) if (typeColorKey(p) === key) n++; return n; }
 
   function fmtTime(sec) {
@@ -2910,7 +3011,7 @@
   }
 
   function solverPieceKey(p) {
-    return p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '') + '|' + (p.round ? '1' : '');
+    return p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '') + '|' + (p.round ? '1' : '') + '|' + (p.region || 0);
   }
 
   function buildSolverState(startPieces, targetPieces) {
@@ -3328,8 +3429,8 @@
     if (solverPending) { const p = solverPending; solverPending = null; p.resolve(null); }
   }
   async function solveOnMainThread(onProgress) {
-    const startPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round, x: p.x, y: p.y }));
-    const targetPieces = game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round, x: p.x, y: p.y }));
+    const startPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
+    const targetPieces = game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
     const state = buildSolverState(startPieces, targetPieces);
     const stopCheck = () => game.stopRequested;
     const maxNodes = MAX_NODES;
@@ -3344,8 +3445,8 @@
     solverWorker = worker;
     worker.onmessage = handleSolverMessage;
     worker.onerror = handleSolverError;
-    const startPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round, x: p.x, y: p.y }));
-    const targetPieces = game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round, x: p.x, y: p.y }));
+    const startPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
+    const targetPieces = game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
     return new Promise((resolve, reject) => {
       solverPending = { resolve, reject, onProgress };
       try { worker.postMessage({ type: 'solve', COLS, ROWS, SHAPES, MOVE_MODE, GROUP_SHIFT, startPieces, targetPieces }); }
@@ -3459,7 +3560,7 @@
   let currentLevelIndex = 0;
   let appMode = 'game';
 
-  function cloneCfg(cfg) { return cfg.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round })); }
+  function cloneCfg(cfg) { return cfg.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round })); }
 
   function deriveRushHourDmove(shapeKey) {
     const sh = SHAPES[shapeKey];
@@ -3470,7 +3571,7 @@
   }
   function applyRushHourToCfg(cfg) {
     return cfg.map(p => {
-      const copy = { shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, label: p.label, round: p.round };
+      const copy = { shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, label: p.label, region: p.region, round: p.round };
       copy.dmove = deriveRushHourDmove(p.shape);
       return copy;
     });
@@ -3585,7 +3686,7 @@
     game.startCfg = cloneCfg(cfgStart);
     game.targetCfg = cloneCfg(cfgTarget);
     game.nextId = 1;
-    game.pieces = cfgStart.map(p => ({ id: 'p' + (game.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }));
+    game.pieces = cfgStart.map(p => ({ id: 'p' + (game.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
     game.history = []; game.redoStack = []; game.moves = 0; game.won = false;
     game.selectedId = null; game.startTime = null;
     game.step = (typeof step === 'number' && step > 0) ? step : 0;
@@ -3614,7 +3715,7 @@
       el.id = 'piece-' + p.id;
       el.style.width = (shape.w / COLS * 100) + '%';
       el.style.height = (shape.h / ROWS * 100) + '%';
-      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, game.rushHour);
+      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, game.rushHour, p.region);
       if (!isFixed) attachGamePieceEvents(el, p);
       boardInnerEl.appendChild(el);
     }
@@ -3638,7 +3739,7 @@
       const el = document.createElement('div'); el.className = 'mini-piece';
       el.style.left = (p.x / COLS * 100) + '%'; el.style.top = (p.y / ROWS * 100) + '%';
       el.style.width = (shape.w / COLS * 100) + '%'; el.style.height = (shape.h / ROWS * 100) + '%';
-      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, game.rushHour);
+      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, game.rushHour, p.region);
       miniBoardEl.appendChild(el);
     }
     if (game.startCfg) for (const p of game.startCfg) {
@@ -3646,7 +3747,7 @@
       const el = document.createElement('div'); el.className = 'mini-piece';
       el.style.left = (p.x / COLS * 100) + '%'; el.style.top = (p.y / ROWS * 100) + '%';
       el.style.width = (shape.w / COLS * 100) + '%'; el.style.height = (shape.h / ROWS * 100) + '%';
-      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, game.rushHour);
+      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, game.rushHour, p.region);
       miniBoardEl.appendChild(el);
     }
     applyMiniBoardMask(miniBoardEl, COLS, ROWS, holesSet);
@@ -3781,7 +3882,7 @@
     if (game.won) return;
     const allMatch = game.targetCfg.every(tgt => {
       const tKey = cellsKeyOf(tgt.shape, tgt.x, tgt.y);
-      return game.pieces.some(p => p.color === tgt.color && (p.dir || '') === (tgt.dir || '') && (p.dmove || '') === (tgt.dmove || '') && (p.label || '') === (tgt.label || '') && (!!p.round === !!tgt.round) && pieceCellsKey(p) === tKey);
+      return game.pieces.some(p => p.color === tgt.color && (p.dir || '') === (tgt.dir || '') && (p.dmove || '') === (tgt.dmove || '') && (p.label || '') === (tgt.label || '') && (!!p.round === !!tgt.round) && ((p.region || 0) === (tgt.region || 0)) && pieceCellsKey(p) === tKey);
     });
     if (!allMatch) return;
     if (game.session.pieceId) commitSession();
@@ -4184,13 +4285,13 @@
   function buildPlaybackStates(path) {
     playback.typeMap = new Map();
     let nextType = 1;
-    const allPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }))
-      .concat(game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round })));
+    const allPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }))
+      .concat(game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round })));
     for (const p of allPieces) {
       const key = solverPieceKey(p);
       if (!playback.typeMap.has(key)) playback.typeMap.set(key, nextType++);
     }
-    const working = game.pieces.map(p => ({ id: p.id, shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round, x: p.x, y: p.y }));
+    const working = game.pieces.map(p => ({ id: p.id, shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
     const states = [working.map(p => ({ id: p.id, x: p.x, y: p.y }))];
     for (const move of path) {
       const piece = working.find(p => p.x === move.fromX && p.y === move.fromY && playback.typeMap.get(solverPieceKey(p)) === move.type);
@@ -4220,7 +4321,7 @@
     if (stepIdx === playback.path.length && playback.path.length > 0) {
       const allMatch = game.targetCfg.every(tgt => {
         const tKey = cellsKeyOf(tgt.shape, tgt.x, tgt.y);
-        return game.pieces.some(p => p.color === tgt.color && (p.dir || '') === (tgt.dir || '') && (p.dmove || '') === (tgt.dmove || '') && (p.label || '') === (tgt.label || '') && (!!p.round === !!tgt.round) && pieceCellsKey(p) === tKey);
+        return game.pieces.some(p => p.color === tgt.color && (p.dir || '') === (tgt.dir || '') && (p.dmove || '') === (tgt.dmove || '') && (p.label || '') === (tgt.label || '') && (!!p.round === !!tgt.round) && ((p.region || 0) === (tgt.region || 0)) && pieceCellsKey(p) === tKey);
       });
       if (allMatch) {
         stopGameTimer(); game.won = true;
@@ -4333,8 +4434,8 @@
     if (playback.typeMap) return;
     playback.typeMap = new Map();
     let nextType = 1;
-    const allPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }))
-      .concat(game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round })));
+    const allPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }))
+      .concat(game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round })));
     for (const p of allPieces) {
       const key = solverPieceKey(p);
       if (!playback.typeMap.has(key)) playback.typeMap.set(key, nextType++);
@@ -4408,6 +4509,7 @@
   window.addEventListener('keydown', e => {
     const tgt = e.target;
     const inInput = tgt && (['INPUT','TEXTAREA','SELECT'].indexOf((tgt.tagName||'').toUpperCase()) >= 0 || tgt.isContentEditable);
+    if (appMode === 'editor' && inInput) return;
 
     if (e.key === 'Escape') {
       if (contextMenuEl) { hideLevelContextMenu(); e.preventDefault(); return; }
@@ -4453,7 +4555,7 @@
     }
     if (appMode === 'editor') {
       if (e.key === 'F2') { e.preventDefault(); clearBoards(); return; }
-      if (e.key === 'Insert') { e.preventDefault(); if (!tileEditActive) openTileEditor(); return; }
+      if ((e.key === 'Insert' || e.key === 'Ins') && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) { e.preventDefault(); if (!tileEditActive) openTileEditor(); return; }
       if (e.key === 'F4') { e.preventDefault(); if (!tileEditActive) copyBoardsToNew(); return; }
       if (e.key === 'F8') {
         e.preventDefault();
@@ -4490,6 +4592,8 @@
     sourceLevelRef: { type: 'new' },
     knifeMode: false,
     knifeWasOn: false,
+    paletteShapeReplacements: new Map(),
+    collapsedPaletteAreas: new Set(),
     visibleCustomShapes: null,
     showAllCustom: false,
     dirty: false
@@ -4624,7 +4728,7 @@
     if (overlapsAny(list, newShapeKey, piece.x, piece.y, piece.id)) return false;
     const oldColor = piece.color;
     if (boardName === 'target') {
-      const newKey = typeColorKey({ shape: newShapeKey, color: oldColor, dir: piece.dir, dmove: piece.dmove, label: piece.label, round: piece.round });
+      const newKey = typeColorKey({ shape: newShapeKey, color: oldColor, dir: piece.dir, dmove: piece.dmove, label: piece.label, region: piece.region, round: piece.round });
       const onStart = countByTypeColor(editor.startPieces, newKey);
       const onTarget = countByTypeColor(editor.targetPieces, newKey);
       if (onTarget > onStart) return false;
@@ -4641,7 +4745,7 @@
     const spot = findPlacementSpot(editor.startPieces, piece.shape, piece.x, piece.y);
     if (!spot) return false;
     const id = 'e' + (editor.nextId++);
-    editor.startPieces.push({ id, shape: piece.shape, x: spot.x, y: spot.y, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label, round: piece.round });
+    editor.startPieces.push({ id, shape: piece.shape, x: spot.x, y: spot.y, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label, region: piece.region, round: piece.round });
     editor.selectedId = id; editor.selectedBoard = 'start';
     editor.activeColor = piece.color; editor.activeDir = piece.dir || null; editor.activeDmove = piece.dmove || null; editor.activeLabel = piece.label || ''; editor.activeRound = !!piece.round;
     editor.dirty = true;
@@ -4658,7 +4762,7 @@
     const spot = findPlacementSpot(editor.targetPieces, piece.shape, piece.x, piece.y);
     if (!spot) return false;
     const id = 'e' + (editor.nextId++);
-    editor.targetPieces.push({ id, shape: piece.shape, x: spot.x, y: spot.y, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label, round: piece.round });
+    editor.targetPieces.push({ id, shape: piece.shape, x: spot.x, y: spot.y, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label, region: piece.region, round: piece.round });
     editor.selectedId = id; editor.selectedBoard = 'target';
     editor.activeColor = piece.color; editor.activeDir = piece.dir || null; editor.activeDmove = piece.dmove || null; editor.activeLabel = piece.label || ''; editor.activeRound = !!piece.round;
     editor.dirty = true;
@@ -4670,7 +4774,7 @@
     editor.targetPieces = nonBlockTargets;
     for (const p of editor.startPieces) {
       if (p.shape === 'blk' || p.shape === 'hole') continue;
-      editor.targetPieces.push({ id: 'e' + (editor.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round });
+      editor.targetPieces.push({ id: 'e' + (editor.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round });
     }
     editor.selectedId = null; editor.selectedBoard = null;
     editor.dirty = true;
@@ -4735,192 +4839,160 @@
     });
     return item;
   }
+  function applyEditorAppearance(clearSymbolRegion) {
+    if (editor.selectedId) {
+      const list = editor.selectedBoard === 'start' ? editor.startPieces : editor.targetPieces;
+      const p = list.find(q => q.id === editor.selectedId);
+      if (p && p.shape !== 'blk' && p.shape !== 'hole') {
+        const previous = { dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round };
+        const next = { dir: editor.activeDir || undefined, dmove: editor.activeDmove || undefined,
+          label: editor.activeLabel || undefined, round: editor.activeRound || undefined,
+          region: clearSymbolRegion ? undefined : p.region };
+        if (editor.selectedBoard === 'target') {
+          Object.assign(p, next);
+          const key = typeColorKey(p);
+          if (countByTypeColor(editor.targetPieces, key) > countByTypeColor(editor.startPieces, key)) {
+            Object.assign(p, previous);
+            editor.activeDir = p.dir || null; editor.activeDmove = p.dmove || null;
+            editor.activeLabel = p.label || ''; editor.activeRound = !!p.round;
+          } else editor.dirty = true;
+        } else {
+          const targetMatch = prepareSyncTarget(p);
+          Object.assign(p, next);
+          if (targetMatch) Object.assign(targetMatch, next);
+          enforceTargetInvariant();
+          editor.dirty = true;
+        }
+      }
+    }
+    renderEditor();
+  }
+  function selectEditorIcon(dir, dmove) {
+    const selected = dir ? editor.activeDir === dir : editor.activeDmove === dmove;
+    let label = editor.activeLabel || '';
+    if (selected) label = label.replace(/\uFFFC/g, '');
+    else label = isIconLabel(label) ? iconLayoutLabel(label) : '';
+    // A bare icon keeps the legacy representation (dir/dmove with no label).
+    if (label === ICON_LABEL_MARKER) label = '';
+    editor.activeDir = selected ? null : (dir || null);
+    editor.activeDmove = selected ? null : (dmove || null);
+    editor.activeLabel = label;
+    if (!selected) editor.activeRound = false;
+    applyEditorAppearance();
+  }
   function makeDmoveButton(axis) {
     const btn = document.createElement('div');
     btn.className = 'palette-dmove-btn' + (editor.activeDmove === axis ? ' active' : '');
-    btn.dataset.dmove = axis;
-    btn.title = dmoveTooltip(axis);
+    btn.dataset.dmove = axis; btn.title = dmoveTooltip(axis);
     btn.innerHTML = biArrowGlyphSvg(axis);
-    btn.addEventListener('click', () => {
-      const newVal = (editor.activeDmove === axis) ? null : axis;
-      editor.activeDmove = newVal;
-      if (newVal) { editor.activeDir = null; editor.activeLabel = ''; editor.activeRound = false; }
-      if (editor.selectedId) {
-        const list = editor.selectedBoard === 'start' ? editor.startPieces : editor.targetPieces;
-        const p = list.find(q => q.id === editor.selectedId);
-        if (p && p.shape !== 'blk' && p.shape !== 'hole') {
-          if (editor.selectedBoard === 'target') {
-            const prevDmove = p.dmove || null, prevDir = p.dir || null, prevLabel = p.label || null, prevRound = p.round;
-            p.dmove = newVal || undefined;
-            if (newVal) { p.dir = undefined; p.label = undefined; p.round = undefined; }
-            const key = typeColorKey(p);
-            const onStart = countByTypeColor(editor.startPieces, key);
-            const onTarget = countByTypeColor(editor.targetPieces, key);
-            if (onTarget > onStart) { p.dmove = prevDmove || undefined; p.dir = prevDir || undefined; p.label = prevLabel || undefined; p.round = prevRound; }
-            else editor.dirty = true;
-          } else {
-            const targetMatch = prepareSyncTarget(p);
-            p.dmove = newVal || undefined;
-            if (newVal) { p.dir = undefined; p.label = undefined; p.round = undefined; }
-            if (targetMatch) { targetMatch.dmove = newVal || undefined; if (newVal) { targetMatch.dir = undefined; targetMatch.label = undefined; targetMatch.round = undefined; } }
-            enforceTargetInvariant();
-            editor.dirty = true;
-          }
-        }
-        renderEditor();
-      } else buildPalette();
-    });
+    btn.addEventListener('click', () => selectEditorIcon(null, axis));
     return btn;
+  }
+  function appendEditorLabel(ch) {
+    const spacing = ch === ' ' || ch === '\n';
+    let label = editor.activeLabel || '';
+    if (spacing && (editor.activeDir || editor.activeDmove) && isIconLabel(label)) {
+      label = iconLayoutLabel(label);
+    } else if (!spacing) {
+      // Text and icons are mutually exclusive; retain only existing whitespace.
+      label = label.replace(/\uFFFC/g, '');
+      editor.activeDir = null; editor.activeDmove = null; editor.activeRound = false;
+    }
+    if (label.endsWith(ch)) label = label.slice(0, -ch.length);
+    else label += ch;
+    editor.activeLabel = label === ICON_LABEL_MARKER ? '' : label;
+    applyEditorAppearance();
   }
   function makeLabelButton(ch) {
     const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'palette-label-btn';
-    btn.textContent = (ch === ' ') ? '\u2423' : ch;
-    btn.title = (ch === ' ') ? t('labelSpaceTitle') : ch;
-    btn.dataset.char = ch;
-    if ((editor.activeLabel || '').indexOf(ch) >= 0) btn.classList.add('active');
-    btn.addEventListener('click', e => {
-      e.preventDefault();
-      let lbl = editor.activeLabel || '';
-      if (lbl.length > 0 && lbl.charAt(lbl.length - 1) === ch) lbl = lbl.slice(0, -1);
-      else lbl = lbl + ch;
-      editor.activeLabel = lbl;
-      editor.activeDir = null; editor.activeDmove = null; editor.activeRound = false;
-      if (editor.selectedId) {
-        const list = editor.selectedBoard === 'start' ? editor.startPieces : editor.targetPieces;
-        const p = list.find(q => q.id === editor.selectedId);
-        if (p && p.shape !== 'blk' && p.shape !== 'hole') {
-          if (editor.selectedBoard === 'target') {
-            const prevLabel = p.label, prevDir = p.dir, prevDmove = p.dmove, prevRound = p.round;
-            p.label = lbl || undefined; p.dir = undefined; p.dmove = undefined; p.round = undefined;
-            const key = typeColorKey(p);
-            const onStart = countByTypeColor(editor.startPieces, key);
-            const onTarget = countByTypeColor(editor.targetPieces, key);
-            if (onTarget > onStart) { p.label = prevLabel; p.dir = prevDir; p.dmove = prevDmove; p.round = prevRound; }
-            else editor.dirty = true;
-          } else {
-            const targetMatch = prepareSyncTarget(p);
-            p.label = lbl || undefined; p.dir = undefined; p.dmove = undefined; p.round = undefined;
-            if (targetMatch) { targetMatch.label = lbl || undefined; targetMatch.dir = undefined; targetMatch.dmove = undefined; targetMatch.round = undefined; }
-            enforceTargetInvariant();
-            editor.dirty = true;
-          }
-        }
-      }
-      renderEditor();
-    });
+    btn.type = 'button'; btn.className = 'palette-label-btn';
+    btn.textContent = ch === ' ' ? '\u2423' : ch;
+    btn.title = ch === ' ' ? t('labelSpaceTitle') : ch; btn.dataset.char = ch;
+    if ((editor.activeLabel || '').includes(ch)) btn.classList.add('active');
+    btn.addEventListener('click', e => { e.preventDefault(); appendEditorLabel(ch); });
     return btn;
   }
   function makeNewlineButton() {
     const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'palette-label-btn palette-label-clear';
-    btn.textContent = '\\';
-    btn.title = t('labelNewlineTitle');
-    btn.dataset.char = '\n';
-    btn.addEventListener('click', e => {
-      e.preventDefault();
-      let lbl = editor.activeLabel || '';
-      if (lbl.length > 0 && lbl.charAt(lbl.length - 1) === '\n') lbl = lbl.slice(0, -1);
-      else lbl = lbl + '\n';
-      editor.activeLabel = lbl;
-      editor.activeDir = null; editor.activeDmove = null; editor.activeRound = false;
-      if (editor.selectedId) {
-        const list = editor.selectedBoard === 'start' ? editor.startPieces : editor.targetPieces;
-        const p = list.find(q => q.id === editor.selectedId);
-        if (p && p.shape !== 'blk' && p.shape !== 'hole') {
-          if (editor.selectedBoard === 'target') {
-            const prevLabel = p.label;
-            p.label = lbl || undefined;
-            const key = typeColorKey(p);
-            const onStart = countByTypeColor(editor.startPieces, key);
-            const onTarget = countByTypeColor(editor.targetPieces, key);
-            if (onTarget > onStart) p.label = prevLabel;
-            else editor.dirty = true;
-          } else {
-            const targetMatch = prepareSyncTarget(p);
-            p.label = lbl || undefined;
-            if (targetMatch) targetMatch.label = lbl || undefined;
-            enforceTargetInvariant();
-            editor.dirty = true;
-          }
-        }
+    btn.type = 'button'; btn.className = 'palette-label-btn palette-label-clear';
+    btn.textContent = '\\'; btn.title = t('labelNewlineTitle'); btn.dataset.char = '\n';
+    btn.addEventListener('click', e => { e.preventDefault(); appendEditorLabel('\n'); });
+    return btn;
+  }
+  function nextSymbolRegion() {
+    const list = editor.selectedBoard === 'start' ? editor.startPieces : editor.targetPieces;
+    const p = list.find(piece => piece.id === editor.selectedId);
+    if (!p || p.shape === 'blk' || p.shape === 'hole' || !(p.dir || p.dmove || (p.label || '').trim())) return;
+    const count = maximalSymbolRects(SHAPES[p.shape]).length;
+    if (count < 2) return;
+    const previous = p.region;
+    const targetMatch = editor.selectedBoard === 'start' ? prepareSyncTarget(p) : null;
+    p.region = (symbolRegionIndex(p.region, count) + 1) % count || undefined;
+    if (editor.selectedBoard === 'target') {
+      const key = typeColorKey(p);
+      if (countByTypeColor(editor.targetPieces, key) > countByTypeColor(editor.startPieces, key)) {
+        p.region = previous;
+        return;
       }
-      renderEditor();
-    });
+    } else {
+      if (targetMatch) targetMatch.region = p.region;
+      enforceTargetInvariant();
+    }
+    editor.dirty = true;
+    renderEditor();
+  }
+  function makeNextSymbolRegionButton() {
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'palette-label-btn palette-label-clear';
+    btn.textContent = '→'; btn.title = t('nextSymbolRegionTitle');
+    btn.dataset.action = 'nextSymbolRegion';
+    const list = editor.selectedBoard === 'start' ? editor.startPieces : editor.targetPieces;
+    const p = list.find(piece => piece.id === editor.selectedId);
+    btn.disabled = !p || p.shape === 'blk' || p.shape === 'hole' ||
+      !(p.dir || p.dmove || (p.label || '').trim()) || maximalSymbolRects(SHAPES[p.shape]).length < 2;
+    btn.addEventListener('click', e => { e.preventDefault(); nextSymbolRegion(); });
     return btn;
   }
   function makeLabelClearButton() {
     const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'palette-label-btn palette-label-clear';
-    btn.title = t('labelClearTitle');
-    btn.textContent = '✕';
+    btn.type = 'button'; btn.className = 'palette-label-btn palette-label-clear';
+    btn.title = t('labelClearTitle'); btn.textContent = '✕';
     btn.addEventListener('click', e => {
-      e.preventDefault();
-      editor.activeLabel = '';
-      if (editor.selectedId) {
-        const list = editor.selectedBoard === 'start' ? editor.startPieces : editor.targetPieces;
-        const p = list.find(q => q.id === editor.selectedId);
-        if (p && p.shape !== 'blk' && p.shape !== 'hole') {
-          if (editor.selectedBoard === 'target') {
-            const prevLabel = p.label;
-            p.label = undefined;
-            const key = typeColorKey(p);
-            const onStart = countByTypeColor(editor.startPieces, key);
-            const onTarget = countByTypeColor(editor.targetPieces, key);
-            if (onTarget > onStart) p.label = prevLabel;
-            else editor.dirty = true;
-          } else {
-            const targetMatch = prepareSyncTarget(p);
-            p.label = undefined;
-            if (targetMatch) targetMatch.label = undefined;
-            enforceTargetInvariant();
-            editor.dirty = true;
-          }
-        }
-      }
-      renderEditor();
+      e.preventDefault(); editor.activeLabel = ''; editor.activeDir = null; applyEditorAppearance(true);
     });
     return btn;
   }
+  function clearAllEditorSymbols() {
+    let changed = false;
+    for (const list of [editor.startPieces, editor.targetPieces]) {
+      for (const p of list) {
+        if (p.shape === 'blk' || p.shape === 'hole') continue;
+        if (p.dir || p.label || p.region) changed = true;
+        delete p.dir;
+        delete p.label;
+        delete p.region;
+      }
+    }
+    editor.activeDir = null;
+    editor.activeLabel = '';
+    if (changed) editor.dirty = true;
+    renderEditor();
+  }
+  function makeClearAllSymbolsButton() {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'palette-label-btn palette-label-clear palette-label-clear-all';
+    btn.textContent = '✕✕'; btn.title = t('clearAllSymbolsTitle');
+    btn.dataset.action = 'clearAllSymbols';
+    btn.addEventListener('click', e => { e.preventDefault(); clearAllEditorSymbols(); });
+    return btn;
+  }
   function makeDirDecorButton(id) {
-    const isArrow = (id === 'up' || id === 'down' || id === 'left' || id === 'right');
     const sw = document.createElement('div');
     sw.className = 'color-swatch dir-swatch' + (editor.activeDir === id ? ' active' : '');
-    sw.title = dirTooltip(id);
-    sw.dataset.dir = id;
-    sw.innerHTML = isArrow ? arrowGlyphSvg(id) : decorGlyphSvg(id);
-    sw.addEventListener('click', () => {
-      const newVal = (editor.activeDir === id) ? null : id;
-      editor.activeDir = newVal;
-      if (newVal) { editor.activeDmove = null; editor.activeLabel = ''; editor.activeRound = false; }
-      if (editor.selectedId) {
-        const list = editor.selectedBoard === 'start' ? editor.startPieces : editor.targetPieces;
-        const p = list.find(q => q.id === editor.selectedId);
-        if (p && p.shape !== 'blk' && p.shape !== 'hole') {
-          if (editor.selectedBoard === 'target') {
-            const prevDir = p.dir || null, prevDmove = p.dmove || null, prevLabel = p.label || null, prevRound = p.round;
-            p.dir = newVal || undefined;
-            if (newVal) { p.dmove = undefined; p.label = undefined; p.round = undefined; }
-            const key = typeColorKey(p);
-            const onStart = countByTypeColor(editor.startPieces, key);
-            const onTarget = countByTypeColor(editor.targetPieces, key);
-            if (onTarget > onStart) { p.dir = prevDir || undefined; p.dmove = prevDmove || undefined; p.label = prevLabel || undefined; p.round = prevRound; }
-            else editor.dirty = true;
-          } else {
-            const targetMatch = prepareSyncTarget(p);
-            p.dir = newVal || undefined;
-            if (newVal) { p.dmove = undefined; p.label = undefined; p.round = undefined; }
-            if (targetMatch) { targetMatch.dir = newVal || undefined; if (newVal) { targetMatch.dmove = undefined; targetMatch.label = undefined; targetMatch.round = undefined; } }
-            enforceTargetInvariant();
-            editor.dirty = true;
-          }
-        }
-        renderEditor();
-      } else buildColorPalette();
-    });
+    sw.title = dirTooltip(id); sw.dataset.dir = id;
+    sw.innerHTML = DIR_IDS.includes(id) ? arrowGlyphSvg(id) : decorGlyphSvg(id);
+    sw.addEventListener('click', () => selectEditorIcon(id, null));
     return sw;
   }
   function makeRoundButton() {
@@ -5031,16 +5103,84 @@
     return result;
   }
 
+  function appendPaletteGroupActions(actionsCol, keys) {
+    const areas = [...new Set(keys.filter(key => SHAPES[key]).map(key => SHAPES[key].w * SHAPES[key].h))];
+    for (const expand of [true, false]) {
+      const btn = document.createElement('button'); btn.type = 'button';
+      const label = t(expand ? 'paletteExpandAll' : 'paletteCollapseAll');
+      btn.className = 'palette-action-btn palette-show-btn palette-group-btn';
+      btn.title = label;
+      btn.innerHTML = '<svg class="new-tile-btn__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 12h10' + (expand ? ' M12 7v10' : '') + '"/></svg>' +
+        '<span class="new-tile-btn__lbl">' + label + '</span>';
+      btn.dataset.action = expand ? 'expandPaletteGroups' : 'collapsePaletteGroups';
+      btn.disabled = !areas.length;
+      btn.addEventListener('click', () => {
+        if (expand) editor.collapsedPaletteAreas.clear();
+        else for (const area of areas) editor.collapsedPaletteAreas.add(area);
+        buildPalette();
+      });
+      actionsCol.appendChild(btn);
+    }
+  }
+  function buildGroupedPalette(keys) {
+    const groups = new Map();
+    for (const key of keys) {
+      const shape = SHAPES[key];
+      if (!shape) continue;
+      const area = shape.w * shape.h;
+      if (!groups.has(area)) groups.set(area, []);
+      groups.get(area).push(key);
+    }
+    const areas = [...groups.keys()].sort((a, b) => a - b);
+    const container = document.createElement('div'); container.className = 'palette-groups';
+    for (const area of areas) {
+      const details = document.createElement('details');
+      details.className = 'palette-area-group'; details.dataset.area = String(area);
+      details.open = !editor.collapsedPaletteAreas.has(area);
+      const summary = document.createElement('summary');
+      summary.textContent = t('paletteAreaGroup', area, groups.get(area).length);
+      summary.title = [...new Set(groups.get(area).map(key => SHAPES[key].w + '×' + SHAPES[key].h))].join(', ');
+      details.appendChild(summary);
+      let populated = false;
+      const populate = () => {
+        if (populated) return;
+        populated = true;
+        const row = document.createElement('div'); row.className = 'palette-tiles-row';
+        for (const key of computeSortedPaletteKeys(groups.get(area))) {
+          const item = makePaletteItem(key); if (item) row.appendChild(item);
+        }
+        details.appendChild(row);
+      };
+      if (details.open) populate();
+      details.addEventListener('toggle', () => {
+        if (!details.isConnected) return;
+        if (details.open) { editor.collapsedPaletteAreas.delete(area); populate(); }
+        else editor.collapsedPaletteAreas.add(area);
+      });
+      container.appendChild(details);
+    }
+    return container;
+  }
   function buildPalette() {
     paletteEl.innerHTML = '';
 
+    const replacements = editor.paletteShapeReplacements;
+    const resolveKey = key => {
+      const seen = new Set();
+      while (replacements.has(key) && !seen.has(key) && SHAPES[replacements.get(key)]) {
+        seen.add(key); key = replacements.get(key);
+      }
+      return key;
+    };
+    const builtinKeys = [...new Set(['s1', 'v2', 'h2', 'sq', 'L1', 'L2', 'L3', 'L4', 'd1', 'd2'].map(resolveKey))];
+    const builtinSet = new Set(builtinKeys);
     const visibleCustom = customShapes.filter(cs => {
+      if (replacements.has(cs.key) || builtinSet.has(cs.key)) return false;
       if (editor.showAllCustom) return true;
       if (editor.visibleCustomShapes instanceof Set) return editor.visibleCustomShapes.has(cs.key);
       return true;
     });
 
-    const builtinKeys = ['s1', 'v2', 'h2', 'sq', 'L1', 'L2', 'L3', 'L4', 'd1', 'd2'];
     const sortedBuiltins = computeSortedPaletteKeys(builtinKeys);
 
     const row1 = document.createElement('div');
@@ -5096,11 +5236,12 @@
         actionsCol.appendChild(delTileBtn);
       }
 
-      row2.appendChild(actionsCol);
-
       const visibleCustomKeys = visibleCustom.map(cs => cs.key);
-      const sortedCustom = computeSortedPaletteKeys(visibleCustomKeys);
-      for (const cKey of sortedCustom) {
+      if (editor.showAllCustom) appendPaletteGroupActions(actionsCol, visibleCustomKeys);
+      row2.appendChild(actionsCol);
+      const sortedCustom = editor.showAllCustom ? visibleCustomKeys : computeSortedPaletteKeys(visibleCustomKeys);
+      if (editor.showAllCustom) row2.appendChild(buildGroupedPalette(sortedCustom));
+      else for (const cKey of sortedCustom) {
         const item = makePaletteItem(cKey);
         if (item) row2.appendChild(item);
       }
@@ -5154,17 +5295,20 @@
       });
       row1.appendChild(sw);
     }
+    const sepRound = document.createElement('div'); sepRound.className = 'color-palette-sep'; row1.appendChild(sepRound);
+    row1.appendChild(makeRoundButton());
     colorPaletteEl.appendChild(row1);
 
     const row2 = document.createElement('div');
-    row2.className = 'color-palette__row';
-    for (const id of DIR_IDS) row2.appendChild(makeDirDecorButton(id));
+    row2.className = 'color-palette__row color-palette__row--icons';
+    for (const id of DIR_IDS) {
+      if (id === 'upRight') { const gap = document.createElement('div'); gap.className = 'palette-arrow-gap'; row2.appendChild(gap); }
+      row2.appendChild(makeDirDecorButton(id));
+    }
     const sep1 = document.createElement('div'); sep1.className = 'color-palette-sep'; row2.appendChild(sep1);
     for (const id of ['lineV', 'lineH', 'lineD1', 'lineD2']) row2.appendChild(makeDirDecorButton(id));
     const sep2 = document.createElement('div'); sep2.className = 'color-palette-sep'; row2.appendChild(sep2);
-    for (const id of ['circle', 'triangle', 'square', 'star', 'smiley', 'sad', 'heart', 'fire', 'car']) row2.appendChild(makeDirDecorButton(id));
-    const sepRound = document.createElement('div'); sepRound.className = 'color-palette-sep'; row2.appendChild(sepRound);
-    row2.appendChild(makeRoundButton());
+    for (const id of ['circle', 'triangle', 'triangleDown', 'square', 'diamond', 'star', 'smiley', 'sad', 'heart', 'fire', 'car']) row2.appendChild(makeDirDecorButton(id));
     colorPaletteEl.appendChild(row2);
 
     const row3 = document.createElement('div');
@@ -5180,11 +5324,14 @@
     row4.className = 'color-palette__row color-palette__row--chars';
     for (const ch of '1234567890') row4.appendChild(makeLabelButton(ch));
     const sepA = document.createElement('div'); sepA.className = 'color-palette-sep'; row4.appendChild(sepA);
-    for (const ch of '*+#@') row4.appendChild(makeLabelButton(ch));
+    for (const ch of '*+#@?') row4.appendChild(makeLabelButton(ch));
     const sepB = document.createElement('div'); sepB.className = 'color-palette-sep'; row4.appendChild(sepB);
     row4.appendChild(makeLabelButton(' '));
     row4.appendChild(makeNewlineButton());
+    row4.appendChild(makeNextSymbolRegionButton());
     row4.appendChild(makeLabelClearButton());
+    const sepClearAll = document.createElement('div'); sepClearAll.className = 'color-palette-sep'; row4.appendChild(sepClearAll);
+    row4.appendChild(makeClearAllSymbolsButton());
     colorPaletteEl.appendChild(row4);
 
     const hint = document.createElement('p');
@@ -5205,7 +5352,7 @@
       el.style.top = (p.y / ROWS * 100) + '%';
       el.style.width = (shape.w / COLS * 100) + '%';
       el.style.height = (shape.h / ROWS * 100) + '%';
-      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, editor.rushHour);
+      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, editor.rushHour, p.region);
       if (isLockedOnTarget) { innerEl.appendChild(el); continue; }
       el.addEventListener('pointerdown', e => {
         if (e.button !== 0) return;
@@ -5345,9 +5492,9 @@
     ghost.className = 'drag-ghost';
     ghost.style.width = (shape.w * cellW) + 'px';
     ghost.style.height = (shape.h * cellH) + 'px';
-    ghost.innerHTML = shapeSVGInner(piece.shape, piece.color, piece.dir, piece.dmove, piece.label, piece.round, editor.rushHour);
+    ghost.innerHTML = shapeSVGInner(piece.shape, piece.color, piece.dir, piece.dmove, piece.label, piece.round, editor.rushHour, piece.region);
     document.body.appendChild(ghost);
-    editor.drag = { kind: 'piece', shapeKey: piece.shape, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label, round: piece.round, pieceId: piece.id, sourceBoard: boardName, offsetX: pointerCellX - piece.x, offsetY: pointerCellY - piece.y, ghost, startX: ev.clientX, startY: ev.clientY, moved: false, cellW, cellH };
+    editor.drag = { kind: 'piece', shapeKey: piece.shape, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label, region: piece.region, round: piece.round, pieceId: piece.id, sourceBoard: boardName, offsetX: pointerCellX - piece.x, offsetY: pointerCellY - piece.y, ghost, startX: ev.clientX, startY: ev.clientY, moved: false, cellW, cellH };
     const origEl = innerEl.querySelector(`.e-piece[data-id="${piece.id}"]`);
     if (origEl) origEl.classList.add('dragging');
     moveGhost(ev.clientX, ev.clientY);
@@ -5378,7 +5525,7 @@
       if (d.ghost) d.ghost.classList.toggle('delete-hover', canDel && over);
     }
     const newTileBtn = document.getElementById('newTileBtn');
-    if (newTileBtn && d.kind === 'palette') {
+    if (newTileBtn && d.shapeKey !== 'blk' && d.shapeKey !== 'hole') {
       const over = isOverNewTileBtn(ev.clientX, ev.clientY);
       newTileBtn.classList.toggle('drop-target', over);
       if (d.ghost) d.ghost.classList.toggle('new-tile-hover', over);
@@ -5404,7 +5551,8 @@
     const newTileBtnEl = document.getElementById('newTileBtn');
     if (newTileBtnEl) newTileBtnEl.classList.remove('drop-target');
     if (!d.moved) { renderEditor(); restoreKnifeIfNeeded(); return; }
-    if (d.kind === 'palette' && isOverNewTileBtn(ev.clientX, ev.clientY)) {
+    if (d.shapeKey !== 'blk' && d.shapeKey !== 'hole' && isOverNewTileBtn(ev.clientX, ev.clientY)) {
+      if (d.kind === 'piece') renderEditor();
       openTileEditorWithShape(d.shapeKey);
       return;
     }
@@ -5435,7 +5583,7 @@
       if (d.kind === 'palette') {
         if (!overlapsAny(dstList, d.shapeKey, newX, newY, null)) {
           const id = 'e' + (editor.nextId++);
-          dstList.push({ id, shape: d.shapeKey, x: newX, y: newY, color: d.color, dir: d.dir || undefined, dmove: d.dmove || undefined, label: d.label || undefined, round: d.round || undefined });
+          dstList.push({ id, shape: d.shapeKey, x: newX, y: newY, color: d.color, dir: d.dir || undefined, dmove: d.dmove || undefined, label: d.label || undefined, region: d.region || undefined, round: d.round || undefined });
           editor.selectedId = id; editor.selectedBoard = boardName;
           editor.dirty = true;
         }
@@ -5445,12 +5593,12 @@
           if (piece && !overlapsAny(dstList, d.shapeKey, newX, newY, piece.id)) { piece.x = newX; piece.y = newY; editor.dirty = true; }
         } else {
           if (d.sourceBoard === 'start' && boardName === 'target') {
-            const key = typeColorKey({ shape: d.shapeKey, color: d.color, dir: d.dir, dmove: d.dmove, label: d.label, round: d.round });
+            const key = typeColorKey({ shape: d.shapeKey, color: d.color, dir: d.dir, dmove: d.dmove, label: d.label, region: d.region, round: d.round });
             const onStart = countByTypeColor(editor.startPieces, key);
             const onTarget = countByTypeColor(editor.targetPieces, key);
             if (onTarget < onStart && !overlapsAny(dstList, d.shapeKey, newX, newY, null)) {
               const id = 'e' + (editor.nextId++);
-              dstList.push({ id, shape: d.shapeKey, x: newX, y: newY, color: d.color, dir: d.dir || undefined, dmove: d.dmove || undefined, label: d.label || undefined, round: d.round || undefined });
+              dstList.push({ id, shape: d.shapeKey, x: newX, y: newY, color: d.color, dir: d.dir || undefined, dmove: d.dmove || undefined, label: d.label || undefined, region: d.region || undefined, round: d.round || undefined });
               editor.selectedId = id; editor.selectedBoard = boardName;
               editor.dirty = true;
             }
@@ -5542,6 +5690,7 @@
   window.addEventListener('pointercancel', e => { if (knifeSession) endKnifeSession(e); });
 
   let tileEditActive = false;
+  let tileEditSourceShapeKey = null;
   let tileCells = new Set();
   let tilePaintMode = null;
   let tilePaintPointerId = null;
@@ -5594,6 +5743,7 @@
     return { x, y, key: x + ',' + y };
   }
   function openTileEditor() {
+    tileEditSourceShapeKey = null;
     tileEditActive = true;
     tileCells = new Set();
     tilePaintMode = null; tilePaintPointerId = null;
@@ -5606,6 +5756,7 @@
   function openTileEditorWithShape(shapeKey) {
     const shape = SHAPES[shapeKey];
     if (!shape || !shape.cells || shape.cells.length === 0) return;
+    tileEditSourceShapeKey = shapeKey;
     tileEditActive = true;
     tileCells = new Set();
     tilePaintMode = null; tilePaintPointerId = null;
@@ -5622,35 +5773,92 @@
     renderTileBoard();
   }
   function cancelTileEditor() {
+    tileEditSourceShapeKey = null;
     tileEditActive = false;
     tileCells = new Set();
     tilePaintMode = null; tilePaintPointerId = null;
     tileEditorEl.hidden = true;
     editorBoardsEl.hidden = false;
   }
+  function replaceEditedShapeOnBoards(sourceKey, replacementKey) {
+    const lists = [editor.startPieces, editor.targetPieces];
+    const proposals = new Set(lists.flat().filter(p => p.shape === sourceKey));
+    const total = proposals.size;
+    // Test all replacements together, then keep blocked pieces in their original
+    // places. Recheck because restoring an old shape may block another candidate.
+    let removed;
+    do {
+      removed = false;
+      for (const list of lists) {
+        const staged = list.map(p => proposals.has(p) ? { ...p, shape: replacementKey } : p);
+        for (const p of list) {
+          if (proposals.has(p) && overlapsAny(staged, replacementKey, p.x, p.y, p.id)) {
+            proposals.delete(p); removed = true;
+            break; // Rebuild the staged board before rejecting another candidate.
+          }
+        }
+      }
+      // Keep enough tiles of each appearance on the start board to match both
+      // the replaced and unchanged goal tiles; never delete a blocked goal tile.
+      const groups = new Map();
+      for (let side = 0; side < lists.length; side++) for (const p of lists[side]) {
+        if (p.shape !== sourceKey) continue;
+        const key = typeColorKey(p);
+        if (!groups.has(key)) groups.set(key, [[], []]);
+        groups.get(key)[side].push(p);
+      }
+      for (const [starts, targets] of groups.values()) {
+        const newStarts = starts.filter(p => proposals.has(p));
+        const newTargets = targets.filter(p => proposals.has(p));
+        const allowedStarts = Math.max(0, Math.min(newStarts.length, starts.length - targets.length + newTargets.length));
+        for (const p of newStarts.slice(allowedStarts)) { proposals.delete(p); removed = true; }
+        for (const p of newTargets.slice(allowedStarts)) { proposals.delete(p); removed = true; }
+      }
+    } while (removed);
+    for (const p of proposals) p.shape = replacementKey;
+    if (proposals.size) editor.dirty = true;
+    return { replaced: proposals.size, unchanged: total - proposals.size };
+  }
   function acceptTileEditor() {
     if (tileCells.size === 0) { showToast(t('tileEmpty'), true); return; }
     const rawCells = [...tileCells].map(k => k.split(',').map(Number));
     if (!isConnectedShape(rawCells)) { showToast(t('tileBroken'), true); return; }
     const norm = normalizeCells(rawCells);
-    const existingKey = findShapeKeyByCells(norm.w, norm.h, norm.cells);
+    const sourceKey = tileEditSourceShapeKey;
+    let key = findShapeKeyByCells(norm.w, norm.h, norm.cells);
     const visible = ensureVisibleCustomShapesSet();
-    if (existingKey) {
-      if (isCustomShapeKey(existingKey)) visible.add(existingKey);
+    if (!sourceKey && key) {
+      if (isCustomShapeKey(key)) visible.add(key);
       showToast(t('tileExists'), true);
       cancelTileEditor();
       buildPalette(); refreshPaletteCounts();
       return;
     }
-    const key = nextCustomKey();
-    const shape = { w: norm.w, h: norm.h, cells: norm.cells, custom: true };
-    SHAPES[key] = shape;
-    customShapes.push({ key, shape });
+    if (sourceKey && sourceKey === key) { cancelTileEditor(); buildPalette(); renderEditor(); return; }
+    const sourceIndex = customShapes.findIndex(cs => cs.key === sourceKey);
+    if (!key) {
+      key = nextCustomKey();
+      const shape = { w: norm.w, h: norm.h, cells: norm.cells, custom: true };
+      SHAPES[key] = shape;
+      if (sourceIndex >= 0) customShapes.splice(sourceIndex, 1, { key, shape });
+      else customShapes.push({ key, shape });
+    } else if (sourceIndex >= 0) customShapes.splice(sourceIndex, 1);
+    if (isCustomShapeKey(key) && !customShapes.some(cs => cs.key === key)) customShapes.push({ key, shape: SHAPES[key] });
+    // Old shape definitions stay immutable for unchanged pieces and other levels.
+    if (isCustomShapeKey(key)) visible.add(key);
+    if (editor.showAllCustom) editor.collapsedPaletteAreas.delete(SHAPES[key].w * SHAPES[key].h);
+    let result = null;
+    if (sourceKey) {
+      result = replaceEditedShapeOnBoards(sourceKey, key);
+      editor.paletteShapeReplacements.delete(key);
+      editor.paletteShapeReplacements.set(sourceKey, key);
+      visible.delete(sourceKey);
+    }
     saveCustomShapes();
-    visible.add(key);
     cancelTileEditor();
-    buildPalette(); refreshPaletteCounts();
-    showToast(t('tileAdded'));
+    buildPalette(); renderEditor();
+    showToast(result ? t('tileUpdated', result.replaced, result.unchanged) : t('tileAdded'));
+    restoreKnifeIfNeeded();
   }
   tileBoardInnerEl.addEventListener('pointerdown', e => {
     if (!tileEditActive) return;
@@ -5688,8 +5896,8 @@
     cancelBatch();
     if (game.session.pieceId) commitSession();
     editor.savedCols = COLS; editor.savedRows = ROWS;
-    editor.startPieces = game.startCfg.map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }));
-    editor.targetPieces = game.targetCfg.filter(p => p.shape !== 'blk' && p.shape !== 'hole').map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }));
+    editor.startPieces = game.startCfg.map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
+    editor.targetPieces = game.targetCfg.filter(p => p.shape !== 'blk' && p.shape !== 'hole').map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
     editor.selectedId = null; editor.selectedBoard = null;
     editor.activeColor = 'blue'; editor.activeDir = null; editor.activeDmove = null; editor.activeLabel = ''; editor.activeRound = false;
     editor.lastClick = { id: null, time: 0 };
@@ -5736,6 +5944,7 @@
     } else if (refType === 'preset' && currentLevelIndex >= 0 && currentLevelIndex < PRESET_LEVELS.length) {
       try {
         const parsed = parseLevel(PRESET_LEVELS[currentLevelIndex].text);
+        step = parsed.step || 0;
         rushHour = !!parsed.rushHour;
         groupMoves = !!parsed.groupMoves;
       } catch (e) {}
@@ -5749,6 +5958,8 @@
     levelStepInput.value = editor.levelStep > 0 ? String(editor.levelStep) : '';
     if (levelGroupMovesInput) levelGroupMovesInput.checked = !!editor.groupMoves;
     if (levelRushHourInput) levelRushHourInput.checked = !!editor.rushHour;
+    editor.paletteShapeReplacements = new Map();
+    editor.collapsedPaletteAreas = new Set();
     editor.visibleCustomShapes = computeVisibleCustomShapesFromLevel();
     closeManualPaste();
     updateDeleteBtnVisibility();
@@ -5853,7 +6064,6 @@
     const typedAuthor = (levelAuthorInput.value || '').trim();
     const typedGroup = (levelGroupInput.value || '').trim();
     { const s = (levelStepInput.value || '').trim(); const n = parseInt(s, 10); editor.levelStep = (!isNaN(n) && n > 0) ? n : 0; }
-    if (editor.dirty) { editor.levelStep = 0; }
     if (levelGroupMovesInput) editor.groupMoves = !!levelGroupMovesInput.checked;
     if (levelRushHourInput) editor.rushHour = !!levelRushHourInput.checked;
     const ref = editor.sourceLevelRef || { type: 'new' };
@@ -5879,8 +6089,8 @@
     currentLevelIndex = saveIdx;
     levelSelectEl.value = String(saveIdx);
     safeSetItem(LEVEL_KEY, String(saveIdx));
-    const startCfg = editor.startPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }));
-    const targetCfg = editor.targetPieces.filter(p => p.shape !== 'hole').map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }));
+    const startCfg = editor.startPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
+    const targetCfg = editor.targetPieces.filter(p => p.shape !== 'hole').map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
     game.groupMoves = !!editor.groupMoves;
     if (game.groupMoves) {
       GROUP_SHIFT = true;
@@ -5961,6 +6171,8 @@
     editor.rushHour = false;
     editor.activeLabel = '';
     editor.activeRound = false;
+    editor.paletteShapeReplacements = new Map();
+    editor.collapsedPaletteAreas = new Set();
     editor.visibleCustomShapes = new Set();
     editor.showAllCustom = false;
     editor.dirty = false;
@@ -5978,6 +6190,13 @@
     if (tgt) {
       const tag = (tgt.tagName || '').toUpperCase();
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tgt.isContentEditable) return;
+    }
+    if (e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey &&
+        (e.code === 'KeyV' || String(e.key).toLowerCase() === 'v')) {
+      // Keep the native paste event: it supplies clipboard text even in local
+      // HTML files without Clipboard API access or an additional permission.
+      if (!e.repeat) openManualPaste();
+      return;
     }
     if (e.key === 'Delete' || e.key === 'Del') {
       if (!editor.selectedId) return;
@@ -6022,11 +6241,13 @@
     return String(label == null ? '' : label)
       .replace(/\\/g, '\\b')
       .replace(/\n/g, '\\n')
+      .replace(/\uFFFC/g, '\\i')
       .replace(/ /g, '\\s');
   }
   function unescapeLabelFromText(s) {
     return String(s == null ? '' : s)
       .replace(/\\n/g, '\n')
+      .replace(/\\i/g, '\uFFFC')
       .replace(/\\s/g, ' ')
       .replace(/\\b/g, '\\');
   }
@@ -6072,7 +6293,7 @@
     const startLettersByKey = new Map();
     for (const p of allPieces) {
       if (p.shape === 'blk' || p.shape === 'hole') continue;
-      const key = p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '') + '|' + (p.round ? '1' : '');
+      const key = p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '') + '|' + (p.round ? '1' : '') + '|' + (p.region || 0);
       if (!startLettersByKey.has(key)) startLettersByKey.set(key, []);
       startLettersByKey.get(key).push({ letter: pieceLetter.get(p.id), used: false });
     }
@@ -6081,7 +6302,7 @@
       let L = null;
       if (tgt.shape === 'blk') L = BLOCK_LETTER;
       else {
-        const list = startLettersByKey.get(tgt.shape + '|' + tgt.color + '|' + (tgt.dir || '') + '|' + (tgt.dmove || '') + '|' + (tgt.label || '') + '|' + (tgt.round ? '1' : ''));
+        const list = startLettersByKey.get(tgt.shape + '|' + tgt.color + '|' + (tgt.dir || '') + '|' + (tgt.dmove || '') + '|' + (tgt.label || '') + '|' + (tgt.round ? '1' : '') + '|' + (tgt.region || 0));
         if (list) for (const entry of list) if (!entry.used) { entry.used = true; L = entry.letter; break; }
       }
       if (!L) continue;
@@ -6103,7 +6324,7 @@
         const derived = deriveRushHourDmove(p.shape);
         effDmove = derived || '';
       }
-      const key = p.color + '|' + (p.dir || '') + '|' + effDmove + '|' + (p.label || '') + '|' + (p.round ? '1' : '');
+      const key = p.color + '|' + (p.dir || '') + '|' + effDmove + '|' + (p.label || '') + '|' + (p.round ? '1' : '') + '|' + (p.region || 0);
       if (!colorDirToLetters.has(key)) colorDirToLetters.set(key, []);
       colorDirToLetters.get(key).push(L);
     }
@@ -6121,7 +6342,7 @@
     });
     for (const [key, letters] of sortedEntries) {
       const parts = key.split('|');
-      const colorId = parts[0], dir = parts[1], dmove = parts[2], label = parts[3], round = parts[4] === '1';
+      const colorId = parts[0], dir = parts[1], dmove = parts[2], label = parts[3], round = parts[4] === '1', region = Number(parts[5]) || 0;
       if (!letters.length) continue;
       letters.sort();
       const name = COLOR_ID_TO_EN[colorId] || colorId;
@@ -6134,6 +6355,7 @@
       if (dmove === 'v') line += ',Vertical';
       else if (dmove === 'h') line += ',Horizontal';
       if (round) line += ',Circle';
+      if (region) line += ',Region:' + region;
       if (label) line += ',' + escapeLabelForText(label);
       lines.push(line);
     }
@@ -6173,6 +6395,106 @@
     let mm;
     while ((mm = re.exec(inner)) !== null) parts.push(unescapeJsString(mm[1] !== undefined ? mm[1] : mm[2]));
     return parts.length > 0 ? parts.join('\n') : s;
+  }
+
+  function readGroupString(source, offset) {
+    const quote = source[offset];
+    if (quote !== "'" && quote !== '"') throw new Error(t('groupSyntax'));
+    let raw = '';
+    for (let i = offset + 1; i < source.length; i++) {
+      if (source[i] === quote) return { value: unescapeJsString(raw), end: i + 1 };
+      if (source[i] === '\\' && i + 1 < source.length) { raw += source[i] + source[++i]; }
+      else raw += source[i];
+    }
+    throw new Error(t('groupSyntax'));
+  }
+  function skipGroupSpace(source, offset) {
+    let i = offset;
+    while (i < source.length) {
+      if (/\s/.test(source[i])) { i++; continue; }
+      if (source.slice(i, i + 2) === '//') {
+        const end = source.indexOf('\n', i + 2); i = end < 0 ? source.length : end + 1; continue;
+      }
+      if (source.slice(i, i + 2) === '/*') {
+        const end = source.indexOf('*/', i + 2);
+        if (end < 0) throw new Error(t('groupSyntax'));
+        i = end + 2; continue;
+      }
+      break;
+    }
+    return i;
+  }
+  function extractGroupLevelTexts(input) {
+    const source = String(input || '').replace(/^\uFEFF/, '');
+    const texts = [];
+    const properties = /(?:\btext|["']text["'])\s*:/g;
+    let match;
+    while ((match = properties.exec(source)) !== null) {
+      let i = skipGroupSpace(source, properties.lastIndex), text;
+      if (source[i] === '[') {
+        const parts = []; i++;
+        while (true) {
+          i = skipGroupSpace(source, i);
+          if (source[i] === ']') { i++; break; }
+          const part = readGroupString(source, i); parts.push(part.value);
+          i = skipGroupSpace(source, part.end);
+          if (source[i] === ',') { i++; continue; }
+          if (source[i] !== ']') throw new Error(t('groupSyntax'));
+        }
+        let separator = '\n';
+        i = skipGroupSpace(source, i);
+        const join = source.slice(i).match(/^\.join\s*\(/);
+        if (join) {
+          i = skipGroupSpace(source, i + join[0].length);
+          const value = readGroupString(source, i); separator = value.value;
+          i = skipGroupSpace(source, value.end);
+          if (source[i] !== ')') throw new Error(t('groupSyntax'));
+          i++;
+        }
+        text = parts.join(separator);
+      } else {
+        const value = readGroupString(source, i); text = value.value; i = value.end;
+      }
+      texts.push(text); properties.lastIndex = i;
+    }
+    if (texts.length) return texts;
+    // Plain level texts may be pasted one after another without JS wrappers.
+    let headers = [...source.matchAll(/^[ \t]*Klotski[ \t]*:/gim)];
+    if (!headers.length) headers = [...source.matchAll(/^[ \t]*Name[ \t]*:/gim)];
+    if (headers.length > 1) return headers.map((header, index) =>
+      source.slice(header.index, index + 1 < headers.length ? headers[index + 1].index : source.length).trim());
+    return source.trim() ? [source.trim()] : [];
+  }
+  function tryLoadLevelGroup(input) {
+    const priorShapes = new Set(Object.keys(SHAPES)), priorCustom = customShapes.slice();
+    const additions = [];
+    try {
+      const texts = extractGroupLevelTexts(input);
+      if (!texts.length) throw new Error(t('groupEmpty'));
+      for (let i = 0; i < texts.length; i++) {
+        let level;
+        try { level = parseLevel(texts[i]); }
+        catch (error) { throw new Error(t('groupLevelError', i + 1, error.message)); }
+        additions.push({ name: level.name, nameEng: level.nameEng, author: level.author || t('defaultAuthor'),
+          group: level.group || level.author || t('defaultAuthor'), text: texts[i] });
+      }
+      // Commit the complete batch once. Storage failures must not masquerade as success.
+      try { localStorage.setItem(USER_LEVELS_KEY, JSON.stringify(userLevels.concat(additions))); }
+      catch (error) { throw new Error(t('groupStorageError', error.message)); }
+    } catch (error) {
+      for (const key of Object.keys(SHAPES)) if (!priorShapes.has(key)) delete SHAPES[key];
+      customShapes.length = 0; for (const shape of priorCustom) customShapes.push(shape);
+      saveCustomShapes();
+      showToast(t('solverError', error.message), true);
+      return false;
+    }
+    for (const level of additions) userLevels.push(level);
+    cleanupEditorDrag(); cancelTileEditor(); closeManualPaste(); closeAllDropdowns();
+    buildLevelSelect();
+    selectLevel(PRESET_LEVELS.length + userLevels.length - 1);
+    openEditor();
+    showToast(t('groupImported', additions.length));
+    return true;
   }
 
   const levelStepCache = new Map();
@@ -6405,7 +6727,11 @@
       if (mode === 'board' || mode === 'goal') {
         if (/^goal\s*:?\s*$/i.test(low)) { mode = 'goal'; continue; }
         if (/^tile\s*:?\s*$/i.test(low)) { mode = 'tile'; continue; }
-        if (/^[A-Za-z0-9_.]+$/.test(trim) && trim.length === boardWidth) { if (mode === 'board') boardLines.push(trim.toUpperCase()); else goalLines.push(trim.toUpperCase()); continue; }
+        const cells = Array.from(trim);
+        if (/^[\p{L}\p{N}_.]+$/u.test(trim) && cells.length === boardWidth) {
+          if (mode === 'board') boardLines.push(cells); else goalLines.push(cells);
+          continue;
+        }
         if (trim.includes('-')) { mode = 'tile'; tileLines.push(trim); continue; }
         continue;
       }
@@ -6414,29 +6740,30 @@
     if (cols === 0 || rows === 0) throw new Error(t('parserNoBoard'));
     if (boardLines.length !== rows) throw new Error(t('parserExpectedStartRows', rows, boardLines.length));
     if (goalLines.length !== rows) throw new Error(t('parserExpectedGoalRows', rows, goalLines.length));
-    const letterToColor = {}, letterToDir = {}, letterToDmove = {}, letterToLabel = {}, letterToRound = {};
+    const letterToColor = {}, letterToDir = {}, letterToDmove = {}, letterToLabel = {}, letterToRound = {}, letterToRegion = {};
     for (const line of tileLines) {
       const dashIdx = line.lastIndexOf('-');
       if (dashIdx < 1) continue;
       const lettersPart = line.substring(0, dashIdx).trim();
       const colorPartRaw = line.substring(dashIdx + 1).trim();
-      const letters = lettersPart.split(/[,\s]+/).filter(Boolean).map(s => s.toUpperCase());
+      const letters = lettersPart.split(/[,\s]+/).filter(Boolean);
       const colorParts = colorPartRaw.split(',').map(s => s.trim()).filter(Boolean);
       if (!colorParts.length) continue;
       const colorId = COLOR_EN_TO_ID[colorParts[0].toLowerCase()];
       if (!colorId) continue;
-      let dir = null, dmove = null, label = null, round = false;
+      let dir = null, dmove = null, label = null, round = false, region = 0;
       for (let ci = 1; ci < colorParts.length; ci++) {
         const raw = colorParts[ci];
         const p1 = raw.toLowerCase();
-        if (p1 === 'circle') round = true;
+        if (/^region:\d+$/.test(p1)) region = Math.min(Number(p1.slice(7)), 1000000);
+        else if (p1 === 'circle') round = true;
         else if (p1 === 'vertical') dmove = 'v';
         else if (p1 === 'horizontal') dmove = 'h';
         else if (DIR_EN_TO_ID[p1]) dir = DIR_EN_TO_ID[p1];
         else if (DECOR_EN_TO_ID[p1]) dir = DECOR_EN_TO_ID[p1];
         else label = unescapeLabelFromText(raw);
       }
-      for (const L of letters) { letterToColor[L] = colorId; letterToDir[L] = dir; letterToDmove[L] = dmove; letterToLabel[L] = label; letterToRound[L] = round; }
+      for (const L of letters) { letterToColor[L] = colorId; letterToDir[L] = dir; letterToDmove[L] = dmove; letterToLabel[L] = label; letterToRound[L] = round; letterToRegion[L] = region; }
     }
     const startPieces = [];
     for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) if (boardLines[y][x] === '.') startPieces.push({ shape: 'hole', color: 'blk', x, y });
@@ -6459,7 +6786,8 @@
       if (rushHour) dmove = deriveRushHourDmove(matched.shapeKey);
       const label = letterToLabel[L] || undefined;
       const round = letterToRound[L] || undefined;
-      startPieces.push({ shape: matched.shapeKey, color, dir, dmove, label, round, x: matched.x, y: matched.y });
+      const region = letterToRegion[L] || undefined;
+      startPieces.push({ shape: matched.shapeKey, color, dir, dmove, label, round, region, x: matched.x, y: matched.y });
       letterShape[L] = matched.shapeKey;
     }
     const goalCellsByLetter = {};
@@ -6470,7 +6798,7 @@
       goalCellsByLetter[ch].push([x, y]);
     }
     const startPieceCounts = {};
-    for (const p of startPieces) { const k = p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '') + '|' + (p.round ? '1' : ''); startPieceCounts[k] = (startPieceCounts[k] || 0) + 1; }
+    for (const p of startPieces) { const k = p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '') + '|' + (p.round ? '1' : '') + '|' + (p.region || 0); startPieceCounts[k] = (startPieceCounts[k] || 0) + 1; }
     const targetPieces = [];
     for (const L of Object.keys(goalCellsByLetter)) {
       const cells = goalCellsByLetter[L];
@@ -6480,11 +6808,12 @@
       let dmove = letterToDmove[L] || undefined;
       const label = letterToLabel[L] || undefined;
       const round = letterToRound[L] || undefined;
+      const region = letterToRegion[L] || undefined;
       const startShape = letterShape[L];
       if (startShape && startShape !== 'blk') {
         if (rushHour) dmove = deriveRushHourDmove(startShape);
         const shapeDef = SHAPES[startShape];
-        const startKey = startShape + '|' + color + '|' + (dir || '') + '|' + (dmove || '') + '|' + (label || '') + '|' + (round ? '1' : '');
+        const startKey = startShape + '|' + color + '|' + (dir || '') + '|' + (dmove || '') + '|' + (label || '') + '|' + (round ? '1' : '') + '|' + (region || 0);
         const maxCount = startPieceCounts[startKey] || 0;
         if (maxCount > 0) {
           const goalSet = new Set(cells.map(([x, y]) => x + ',' + y));
@@ -6501,7 +6830,7 @@
               if (!goalSet.has(k) || used.has(k)) { ok = false; break; }
               placement.push(k);
             }
-            if (ok) { for (const k of placement) used.add(k); targetPieces.push({ shape: startShape, color, dir, dmove, label, round, x: cx, y: cy }); placed++; }
+            if (ok) { for (const k of placement) used.add(k); targetPieces.push({ shape: startShape, color, dir, dmove, label, round, region, x: cx, y: cy }); placed++; }
           }
           if (placed > 0) continue;
         }
@@ -6509,15 +6838,15 @@
       const matched = ensureShapeFromCells(cells);
       if (matched.isNew) lastParseHadNewShapes = true;
       if (rushHour) dmove = deriveRushHourDmove(matched.shapeKey);
-      targetPieces.push({ shape: matched.shapeKey, color, dir, dmove, label, round, x: matched.x, y: matched.y });
+      targetPieces.push({ shape: matched.shapeKey, color, dir, dmove, label, round, region, x: matched.x, y: matched.y });
     }
     if (!group) group = author;
     return { cols, rows, startPieces, targetPieces, name, nameEng, author, group, step, groupMoves, rushHour };
   }
   function applyParsedLevel(level) {
     COLS = level.cols; ROWS = level.rows; CELLS = COLS * ROWS;
-    editor.startPieces = level.startPieces.map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round, x: p.x, y: p.y }));
-    editor.targetPieces = level.targetPieces.map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round, x: p.x, y: p.y }));
+    editor.startPieces = level.startPieces.map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
+    editor.targetPieces = level.targetPieces.map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
     editor.selectedId = null; editor.selectedBoard = null;
     editor.levelName = level.name || t('defaultLevelName');
     editor.levelNameEng = level.nameEng || '';
@@ -6532,6 +6861,8 @@
     levelStepInput.value = editor.levelStep > 0 ? String(editor.levelStep) : '';
     if (levelGroupMovesInput) levelGroupMovesInput.checked = !!editor.groupMoves;
     if (levelRushHourInput) levelRushHourInput.checked = !!editor.rushHour;
+    editor.paletteShapeReplacements = new Map();
+    editor.collapsedPaletteAreas = new Set();
     editor.visibleCustomShapes = computeVisibleCustomShapesFromLevel();
     buildPalette();
     renderEditor();
@@ -6681,29 +7012,39 @@
   document.getElementById('copyAllLevelsBtn').addEventListener('click', copyAllVisibleLevels);
 
   let manualPasteGlobalHandler = null;
+  let manualPasteMode = 'level';
+  function submitPastedLevelText(text) {
+    return manualPasteMode === 'group' ? tryLoadLevelGroup(text) : tryLoadLevelText(text);
+  }
   function looksLikeLevelText(text) {
     if (!text) return false;
     if (/(klotski|board|goal|tile|groupmoves|rushhour|group)\s*:/i.test(text)) return true;
     if (/text\s*:\s*\[/i.test(text)) return true;
     return false;
   }
-  function openManualPaste() {
+  function openManualPaste(mode = 'level') {
+    manualPasteMode = mode;
+    const hint = manualPasteEl.querySelector('.manual-paste__hint');
+    const hintKey = mode === 'group' ? 'pasteGroupHint' : 'pasteHint';
+    hint.setAttribute('data-ruseng', hintKey); hint.textContent = t(hintKey);
     manualPasteEl.hidden = false; manualPasteArea.value = '';
     try { manualPasteArea.focus(); } catch (e) {}
     if (!manualPasteGlobalHandler) {
       manualPasteGlobalHandler = ev => {
         if (appMode !== 'editor') return;
         if (manualPasteEl.hidden) return;
+        const target = ev.target;
+        if (target && target !== manualPasteArea && (['INPUT', 'TEXTAREA', 'SELECT'].includes((target.tagName || '').toUpperCase()) || target.isContentEditable)) return;
         const cd = ev.clipboardData;
         const text = cd ? (cd.getData('text/plain') || cd.getData('text') || '') : '';
-        if (text && looksLikeLevelText(text)) { ev.preventDefault(); tryLoadLevelText(text); }
+        if (text && looksLikeLevelText(text)) { ev.preventDefault(); submitPastedLevelText(text); }
       };
       document.addEventListener('paste', manualPasteGlobalHandler, true);
     }
   }
   function closeManualPaste() {
     if (manualPasteEl.hidden) return;
-    manualPasteEl.hidden = true; manualPasteArea.value = '';
+    manualPasteEl.hidden = true; manualPasteArea.value = ''; manualPasteMode = 'level';
     if (manualPasteGlobalHandler) { document.removeEventListener('paste', manualPasteGlobalHandler, true); manualPasteGlobalHandler = null; }
   }
   function tryLoadLevelText(input) {
@@ -6721,14 +7062,15 @@
     } catch (err) { showToast(t('solverError', err.message), true); console.error(err); return false; }
   }
   manualPasteArea.addEventListener('paste', e => {
+    if (e.defaultPrevented) return;
     const cd = e.clipboardData;
     const text = cd ? (cd.getData('text/plain') || cd.getData('text') || '') : '';
-    if (text && looksLikeLevelText(text)) { e.preventDefault(); tryLoadLevelText(text); }
+    if (text && looksLikeLevelText(text)) { e.preventDefault(); submitPastedLevelText(text); }
   });
-  manualPasteArea.addEventListener('input', () => { const text = manualPasteArea.value; if (text && looksLikeLevelText(text)) tryLoadLevelText(text); });
+  manualPasteArea.addEventListener('input', () => { const text = manualPasteArea.value; if (text && looksLikeLevelText(text)) submitPastedLevelText(text); });
   manualPasteArea.addEventListener('keydown', e => {
     if (e.key === 'Escape') { e.preventDefault(); closeManualPaste(); return; }
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); const text = manualPasteArea.value; if (text && text.trim()) tryLoadLevelText(text); }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); const text = manualPasteArea.value; if (text && text.trim()) submitPastedLevelText(text); }
   });
   document.getElementById('pasteLevelBtn').addEventListener('click', async () => {
     let text = null, got = false;
@@ -6737,6 +7079,14 @@
     if (got && text && text.trim()) { if (tryLoadLevelText(text)) return; }
     openManualPaste();
     showToast(t('pasteCtrlV'));
+  });
+  document.getElementById('pasteGroupBtn').addEventListener('click', async () => {
+    let text = '';
+    try { if (navigator.clipboard && navigator.clipboard.readText) text = await navigator.clipboard.readText(); }
+    catch (error) { /* Native Ctrl+V remains available for local HTML files. */ }
+    if (text && text.trim() && tryLoadLevelGroup(text)) return;
+    openManualPaste('group');
+    if (text) manualPasteArea.value = text;
   });
   document.getElementById('deleteEditBtn').addEventListener('click', deleteEditorLevel);
 
@@ -6772,8 +7122,8 @@
     // "Лимит ОЗУ" is the primary setting: recompute the state limit for
     // the new board size. This is also done in startGame (which runs next).
     applyGroupMovesFromLevel(level);
-    const startCfg = level.startPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }));
-    const targetCfg = level.targetPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, round: p.round }));
+    const startCfg = level.startPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
+    const targetCfg = level.targetPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
     startGame(startCfg, targetCfg, level.step || 0, !!level.rushHour);
   }
   function selectLevel(idx, save) {
@@ -6921,7 +7271,7 @@
       piece.style.top = (p.y / rows * 100) + '%';
       piece.style.width = (shape.w / cols * 100) + '%';
       piece.style.height = (shape.h / rows * 100) + '%';
-      piece.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, !!hideDirArrows);
+      piece.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, !!hideDirArrows, p.region);
       el.appendChild(piece);
     }
     if (markerTargets && markerTargets.length) appendTargetMarkers(el, cols, rows, markerTargets);
@@ -8625,7 +8975,7 @@ self.onmessage = async function (e) {
       }).sort((a, b) => a - b);
       const movement = transform && transform.swapAxes
         ? (template.dmove === 'h' ? 'v' : template.dmove === 'v' ? 'h' : template.dmove || '') : template.dmove || '';
-      pieces.push(JSON.stringify([template.color || '', template.label || '', template.dir || '',
+      pieces.push(JSON.stringify([template.color || '', template.label || '', template.dir || '', template.region || 0,
         !!template.round, !!shape.fixed, !!shape.hole, movement, cells]));
     }
     return JSON.stringify(pieces.sort());
