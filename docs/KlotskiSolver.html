@@ -177,7 +177,7 @@
   @keyframes hintDotPulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.12);opacity:.95} }
   .hint-arrow { position: absolute; pointer-events: none; z-index: 30; transform-origin: 0 50%; }
   .hint-arrow svg { display: block; overflow: visible; }
-  /* Marker dots on cells where a single target piece must be placed. */
+  /* Marker dots for target pieces and groups; the outline scales with each dot. */
   .target-marker {
     position: absolute;
     width: calc(100% / var(--board-cols) * var(--marker-size-factor, 0.28));
@@ -187,10 +187,19 @@
     box-sizing: border-box;
     pointer-events: none;
     z-index: 25;
-    border: 2px solid #fff;
+    --marker-outline: #fff;
+    border: 0;
+  }
+  .target-marker__outline {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
   }
   .target-marker.target-marker--light {
-    border-color: #8a8a8a;
+    --marker-outline: #8a8a8a;
   }
   .mini-piece { padding: 2px; cursor: default; z-index: 2; }
   .e-piece { cursor: grab; }
@@ -341,6 +350,11 @@
   .level-meta__author-btn:active { transform: translateY(1px); }
   .level-meta__checkbox-label { display: inline-flex; align-items: center; gap: 6px; height: 22px; font-size: 12px; font-weight: 600; color: var(--sub); cursor: pointer; white-space: nowrap; }
   .level-meta__checkbox-label input { width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--gold); }
+  #levelGroupMovesInput { appearance: none; -webkit-appearance: none; display: inline-grid; place-content: center; flex: 0 0 16px; border: 1px solid rgba(255,255,255,.5); border-radius: 3px; background: rgba(0,0,0,.3); color: var(--gold); }
+  #levelGroupMovesInput::before { content: ''; font: 700 14px/1 sans-serif; }
+  #levelGroupMovesInput[data-state="yes"]::before { content: '✓'; }
+  #levelGroupMovesInput[data-state="no"]::before { content: '✕'; color: #ff8585; }
+  #levelGroupMovesInput:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   .level-meta__checkbox-text { white-space: pre-line; line-height: 1.15; font-size: 11px; }
   .io-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: center; }
   .io-btn { flex: 0 0 auto; min-width: 0; height: 34px; padding: 0 12px; font-size: 12px; font-weight: 600; border-radius: 8px; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); color: #f0f4fa; cursor: pointer; border: 1px solid rgba(255,255,255,.15); display: inline-flex; align-items: center; justify-content: center; gap: 6px; line-height: 1; }
@@ -836,7 +850,7 @@
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.38)</span></div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.44)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -948,8 +962,7 @@
           </label>
           <label class="level-meta__checkbox-label" for="levelGroupMovesInput">
             <input type="checkbox" id="levelGroupMovesInput">
-            <span class="level-meta__checkbox-text" data-ruseng="groupMovesRequiredLabel">только с
-групп. сдвигом</span>
+            <span class="level-meta__checkbox-text" data-ruseng="groupMovesRequiredLabel">групповой сдвиг</span>
           </label>
         </div>
       </div>
@@ -1148,7 +1161,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '2.38';
+  const APP_VERSION = '2.44';
   const LANG_KEY = 'ryzhiy-osel-lang-v1';
   const LAST_LEVEL_KEY = 'ryzhiy-osel-last-level-v1';
   function safeGetItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
@@ -1348,7 +1361,13 @@
       setTargetTip: 'Перетащите хотя бы одну плитку на целевую доску',
       levelNameLabel: 'Название:', levelNameEngLabel: 'Название (EN):', levelAuthorLabel: 'Автор:', levelGroupLabel: 'Группа:', levelStepLabel: 'Ходов (оптимум):',
       levelGroupMovesLabel: 'Групповой сдвиг:',
-      groupMovesRequiredLabel: 'только с\nгрупп. сдвигом',
+      groupMovesRequiredLabel: 'групповой сдвиг',
+      groupMovesYesTip: 'Включён (GroupMoves: yes)',
+      groupMovesNoTip: 'Заблокирован (GroupMoves: no)',
+      groupMovesAutoTip: 'Не задан — в игре можно переключать',
+      galleryDupStarted: 'Поиск дубликатов уровней…',
+      galleryDupDone: 'Поиск завершён: дубликатов — %1, совпавших пар — %2.',
+      galleryDupSkipped: ' Не удалось проверить уровней: %1.',
       authorDropdownTitle: 'Выбрать автора',
       groupDropdownTitle: 'Выбрать группу',
       copy: 'Скопировать', paste: 'Вставить', copyAllJs: 'Копировать все',
@@ -1658,7 +1677,13 @@
       setTargetTip: 'Drag at least one piece to the target board',
       levelNameLabel: 'Name:', levelNameEngLabel: 'Name (EN):', levelAuthorLabel: 'Author:', levelGroupLabel: 'Group:', levelStepLabel: 'Moves (optimum):',
       levelGroupMovesLabel: 'Group moves:',
-      groupMovesRequiredLabel: 'group shift\nonly',
+      groupMovesRequiredLabel: 'group shift',
+      groupMovesYesTip: 'Enabled (GroupMoves: yes)',
+      groupMovesNoTip: 'Blocked (GroupMoves: no)',
+      groupMovesAutoTip: 'Unspecified — can be toggled in the game',
+      galleryDupStarted: 'Searching for duplicate levels…',
+      galleryDupDone: 'Search complete: duplicate levels — %1, matching pairs — %2.',
+      galleryDupSkipped: ' Levels that could not be checked: %1.',
       authorDropdownTitle: 'Choose author',
       groupDropdownTitle: 'Choose group',
       copy: 'Copy', paste: 'Paste', copyAllJs: 'Copy all',
@@ -2288,12 +2313,13 @@
       const key = normalizeForCompare(u.text);
       const matched = presetByKey.get(key);
       if (matched) {
+        const userGM = getGroupMovesFromText(u.text), presetGM = getGroupMovesFromText(matched.text);
+        if (userGM !== presetGM && (userGM === false || presetGM === false)) { kept.push(u); continue; }
         const userStep = getStepFromText(u.text), presetStep = getStepFromText(matched.text);
         if (userStep > 0 && presetStep === 0) {
           updateLevelStepText(matched, userStep);
           savePresetRecordForLevel(matched, userStep);
         }
-        const userGM = getGroupMovesFromText(u.text), presetGM = getGroupMovesFromText(matched.text);
         if (userGM === true && presetGM !== true) {
           if (!/^groupmoves\s*:/im.test(matched.text)) {
             matched.text = matched.text.replace(/^(step\s*:[^\n]*\n)/im, '$1GroupMoves: yes\n');
@@ -3761,31 +3787,53 @@
     applyMiniBoardMask(miniBoardEl, COLS, ROWS, holesSet);
   }
 
-  function appendTargetMarkers(container, cols, rows, targetPieces) {
+  function getTargetMarkerPieces(startPieces, targetPieces) {
+    const isMovable = p => {
+      const shape = SHAPES[p.shape];
+      return !!shape && !shape.fixed && !shape.hole;
+    };
+    const targets = (targetPieces || []).filter(isMovable);
+    if (!targets.length) return [];
+    const start = (startPieces || []).filter(isMovable);
+    const isPlain = p => !(p.dir || p.dmove || p.label);
+    const isBidirectional = p => !p.dir && (p.dmove === 'h' || p.dmove === 'v') && isIconLabel(p.label);
+    const isSingleGroup = pieces => pieces.every(isPlain) || pieces.every(isBidirectional);
+    const color = targets[0].color;
+    // A board consisting of one color/modifier group has no distinct target group.
+    if (start.length && start.every(p => p.color === color) && isSingleGroup(start)) return [];
+    if (targets.length === 1) return targets;
+    if (targets.some(p => p.color !== color)) return [];
+    const sameColorOnStart = start.filter(p => p.color === color);
+    // All bidirectional modifiers form one group regardless of their axes.
+    // Mixing plain tiles, other symbols or one-way arrows still prevents dots.
+    if (!isSingleGroup(sameColorOnStart.concat(targets))) return [];
+    return sameColorOnStart.length === targets.length ? targets : [];
+  }
+  function appendTargetMarkers(container, cols, rows, targetPieces, startPieces) {
     if (!container) return;
-    const movable = (targetPieces || []).filter(p => {
-      const sh = SHAPES[p.shape];
-      return !!sh && !sh.fixed && !sh.hole;
-    });
-    if (movable.length !== 1) return;
-    const tgt = movable[0];
-    const shape = SHAPES[tgt.shape];
-    if (!shape) return;
-    const color = COLORS_MAP[tgt.color] || COLORS_MAP.blue;
+    const targets = getTargetMarkerPieces(startPieces, targetPieces);
+    if (!targets.length) return;
+    const targetColor = targets[0].color;
+    const color = COLORS_MAP[targetColor] || COLORS_MAP.blue;
     const grad = `linear-gradient(150deg, ${color.from}, ${color.to})`;
-    const isLightTarget = LIGHT_MARKER_COLORS.has(tgt.color);
+    const isLightTarget = LIGHT_MARKER_COLORS.has(targetColor);
     const totalCells = cols * rows;
     const extra = Math.max(0, totalCells - 20);
     const factor = Math.min(0.40, 0.28 + extra * 0.0015);
     container.style.setProperty('--marker-size-factor', factor.toFixed(4));
-    for (const [dx, dy] of shape.cells) {
-      const cx = tgt.x + dx, cy = tgt.y + dy;
+    const markedCells = new Set();
+    for (const target of targets) for (const [dx, dy] of SHAPES[target.shape].cells) {
+      const cx = target.x + dx, cy = target.y + dy;
       if (cx < 0 || cx >= cols || cy < 0 || cy >= rows) continue;
+      const key = cy * cols + cx;
+      if (markedCells.has(key)) continue;
+      markedCells.add(key);
       const el = document.createElement('div');
       el.className = 'target-marker' + (isLightTarget ? ' target-marker--light' : '');
       el.style.left = ((cx + 0.5) / cols * 100) + '%';
       el.style.top = ((cy + 0.5) / rows * 100) + '%';
       el.style.background = grad;
+      el.innerHTML = '<svg class="target-marker__outline" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="var(--marker-outline)" stroke-width="8"/></svg>';
       container.appendChild(el);
     }
   }
@@ -3793,7 +3841,7 @@
     if (!boardInnerEl) return;
     boardInnerEl.querySelectorAll('.target-marker').forEach(el => el.remove());
     if (!game || !game.targetCfg) return;
-    appendTargetMarkers(boardInnerEl, COLS, ROWS, game.targetCfg);
+    appendTargetMarkers(boardInnerEl, COLS, ROWS, game.targetCfg, game.startCfg);
   }
 
   function canMovePiece(p, dx, dy) {
@@ -4575,6 +4623,7 @@
       return;
     }
     if (appMode === 'gallery') {
+      if (e.key === 'F4') { e.preventDefault(); if (!e.repeat) findGalleryDuplicates(); return; }
       if (e.key === 'F8' && IS_RUSSIAN_SYSTEM) { e.preventDefault(); startBatchSolve(); return; }
       return;
     }
@@ -4595,7 +4644,7 @@
     lastClick: { id: null, time: 0 },
     savedCols: 4, savedRows: 5,
     levelName: '', levelNameEng: '', levelAuthor: '', levelGroup: '', levelStep: 0,
-    groupMoves: false,
+    groupMoves: null,
     rushHour: false,
     sourceLevelRef: { type: 'new' },
     knifeMode: false,
@@ -5407,6 +5456,7 @@
   }
   function renderEditor() {
     cleanupEditorDrag();
+    updateEditorGroupMovesInput();
     syncBlocksWithStart();
     applyBoardSize();
     renderEditorBoard(startBoardInnerEl, editor.startPieces, 'start');
@@ -5547,6 +5597,20 @@
     if (startBoardEl) startBoardEl.style.cursor = 'crosshair';
     if (targetBoardEl) targetBoardEl.style.cursor = 'crosshair';
   }
+  function prepareEditorPlacement(pieces, shapeKey, x, y, excludeId) {
+    // An X-block fills a cut-out cell. Remove the hole only after checking
+    // the whole placement, so an invalid drop leaves the board unchanged.
+    const fillsHole = shapeKey === 'blk';
+    const obstacles = fillsHole ? pieces.filter(p => p.shape !== 'hole') : pieces;
+    if (overlapsAny(obstacles, shapeKey, x, y, excludeId)) return false;
+    if (fillsHole) {
+      for (let i = pieces.length - 1; i >= 0; i--) {
+        const p = pieces[i];
+        if (p.shape === 'hole' && p.x === x && p.y === y) pieces.splice(i, 1);
+      }
+    }
+    return true;
+  }
   function onEditorPointerUp(ev) {
     const d = editor.drag; if (!d) return;
     editor.drag = null;
@@ -5589,7 +5653,7 @@
       newY = Math.max(0, Math.min(ROWS - shape.h, newY));
       const dstList = boardName === 'start' ? editor.startPieces : editor.targetPieces;
       if (d.kind === 'palette') {
-        if (!overlapsAny(dstList, d.shapeKey, newX, newY, null)) {
+        if (prepareEditorPlacement(dstList, d.shapeKey, newX, newY, null)) {
           const id = 'e' + (editor.nextId++);
           dstList.push({ id, shape: d.shapeKey, x: newX, y: newY, color: d.color, dir: d.dir || undefined, dmove: d.dmove || undefined, label: d.label || undefined, region: d.region || undefined, round: d.round || undefined });
           editor.selectedId = id; editor.selectedBoard = boardName;
@@ -5598,7 +5662,7 @@
       } else {
         if (boardName === d.sourceBoard) {
           const piece = dstList.find(p => p.id === d.pieceId);
-          if (piece && !overlapsAny(dstList, d.shapeKey, newX, newY, piece.id)) { piece.x = newX; piece.y = newY; editor.dirty = true; }
+          if (piece && prepareEditorPlacement(dstList, d.shapeKey, newX, newY, piece.id)) { piece.x = newX; piece.y = newY; editor.dirty = true; }
         } else {
           if (d.sourceBoard === 'start' && boardName === 'target') {
             const key = typeColorKey({ shape: d.shapeKey, color: d.color, dir: d.dir, dmove: d.dmove, label: d.label, region: d.region, round: d.round });
@@ -5941,12 +6005,12 @@
     editor.levelNameEng = extractNameEng(srcText);
     editor.levelGroup = extractGroupFromText(srcText);
     if (!editor.levelGroup) editor.levelGroup = editor.levelAuthor || t('defaultAuthor');
-    let step = 0, groupMoves = false, rushHour = false;
+    let step = 0, groupMoves = null, rushHour = false;
     if (refType === 'user' && currentLevelIndex >= 0 && currentLevelIndex < all.length) {
       try {
         const parsed = parseLevel(all[currentLevelIndex].text);
         step = parsed.step || 0;
-        groupMoves = !!parsed.groupMoves;
+        groupMoves = parsed.groupMoves;
         rushHour = !!parsed.rushHour;
       } catch (e) {}
     } else if (refType === 'preset' && currentLevelIndex >= 0 && currentLevelIndex < PRESET_LEVELS.length) {
@@ -5954,7 +6018,7 @@
         const parsed = parseLevel(PRESET_LEVELS[currentLevelIndex].text);
         step = parsed.step || 0;
         rushHour = !!parsed.rushHour;
-        groupMoves = !!parsed.groupMoves;
+        groupMoves = parsed.groupMoves;
       } catch (e) {}
     }
     editor.levelStep = step;
@@ -5964,7 +6028,7 @@
     levelAuthorInput.value = editor.levelAuthor || '';
     levelGroupInput.value = editor.levelGroup || '';
     levelStepInput.value = editor.levelStep > 0 ? String(editor.levelStep) : '';
-    if (levelGroupMovesInput) levelGroupMovesInput.checked = !!editor.groupMoves;
+    updateEditorGroupMovesInput();
     if (levelRushHourInput) levelRushHourInput.checked = !!editor.rushHour;
     editor.paletteShapeReplacements = new Map();
     editor.collapsedPaletteAreas = new Set();
@@ -6072,7 +6136,6 @@
     const typedAuthor = (levelAuthorInput.value || '').trim();
     const typedGroup = (levelGroupInput.value || '').trim();
     { const s = (levelStepInput.value || '').trim(); const n = parseInt(s, 10); editor.levelStep = (!isNaN(n) && n > 0) ? n : 0; }
-    if (levelGroupMovesInput) editor.groupMoves = !!levelGroupMovesInput.checked;
     if (levelRushHourInput) editor.rushHour = !!levelRushHourInput.checked;
     const ref = editor.sourceLevelRef || { type: 'new' };
     let finalName, finalAuthor, finalGroup;
@@ -6099,14 +6162,7 @@
     safeSetItem(LEVEL_KEY, String(saveIdx));
     const startCfg = editor.startPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
     const targetCfg = editor.targetPieces.filter(p => p.shape !== 'hole').map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
-    game.groupMoves = !!editor.groupMoves;
-    if (game.groupMoves) {
-      GROUP_SHIFT = true;
-      if (groupShiftCheckEl) { groupShiftCheckEl.checked = true; groupShiftCheckEl.disabled = true; }
-    } else {
-      GROUP_SHIFT = false;
-      if (groupShiftCheckEl) { groupShiftCheckEl.checked = false; groupShiftCheckEl.disabled = false; }
-    }
+    applyGroupMovesFromLevel(editor);
     appEl.style.transition = 'none';
     setAppMode('game');
     void appEl.offsetWidth;
@@ -6175,7 +6231,7 @@
     editor.sourceLevelRef = { type: 'new' };
     editor.levelName = ''; editor.levelNameEng = ''; editor.levelAuthor = ''; editor.levelGroup = '';
     editor.levelStep = 0;
-    editor.groupMoves = false;
+    editor.groupMoves = null;
     editor.rushHour = false;
     editor.activeLabel = '';
     editor.activeRound = false;
@@ -6186,7 +6242,7 @@
     editor.dirty = false;
     levelNameInput.value = ''; levelAuthorInput.value = ''; levelGroupInput.value = '';
     levelStepInput.value = '';
-    if (levelGroupMovesInput) levelGroupMovesInput.checked = false;
+    updateEditorGroupMovesInput();
     if (levelRushHourInput) levelRushHourInput.checked = false;
     updateDeleteBtnVisibility();
     renderEditor();
@@ -6230,7 +6286,7 @@
     }
     return null;
   }
-  function ensureShapeFromCells(cells) {
+  function ensureShapeFromCells(cells, persist = true) {
     const matched = matchShapeFromCells(cells);
     if (matched) return { ...matched, isNew: false };
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
@@ -6241,7 +6297,7 @@
     const shape = { w, h, cells: norm, custom: true };
     SHAPES[key] = shape;
     customShapes.push({ key, shape });
-    saveCustomShapes();
+    if (persist) saveCustomShapes();
     return { shapeKey: key, x: minX, y: minY, isNew: true };
   }
 
@@ -6268,7 +6324,8 @@
     lines.push('Group: ' + (editor.levelGroup || editor.levelAuthor || ''));
     lines.push('Step: ' + ((editor.levelStep && editor.levelStep > 0) ? editor.levelStep : ''));
     if (editor.rushHour) lines.push('RushHour: yes');
-    if (editor.groupMoves) lines.push('GroupMoves: yes');
+    if (editor.groupMoves === true) lines.push('GroupMoves: yes');
+    else if (editor.groupMoves === false) lines.push('GroupMoves: no');
     lines.push('Board: ' + COLS + 'x' + ROWS);
     const allPieces = editor.startPieces.slice();
     allPieces.sort((a, b) => (a.y - b.y) || (a.x - b.x));
@@ -6694,14 +6751,14 @@
   }
 
   let lastParseHadNewShapes = false;
-  function parseLevel(text) {
+  function parseLevel(text, persistShapes = true) {
     lastParseHadNewShapes = false;
     const rawLines = String(text).split(/\r?\n/);
     const lines = [];
     for (const l of rawLines) { const t2 = l.trim(); if (!t2) continue; if (t2.startsWith('#')) continue; lines.push(t2); }
     if (lines.length === 0) throw new Error(t('parserEmpty'));
     let name = 'Level', nameEng = '', author = '', group = '', step = 0, cols = 0, rows = 0, boardWidth = 0;
-    let groupMoves = false, rushHour = false;
+    let groupMoves = null, rushHour = false;
     const boardLines = [], goalLines = [], tileLines = [];
     let mode = 'header';
     for (const line of lines) {
@@ -6712,7 +6769,7 @@
         else if (low.startsWith('author:')) author = trim.substring(trim.indexOf(':') + 1).trim();
         else if (low.startsWith('groupmoves:')) {
           const val = trim.substring(trim.indexOf(':') + 1).trim().toLowerCase();
-          groupMoves = (val === 'yes' || val === 'true' || val === '1');
+          groupMoves = /^(yes|true|1)$/.test(val) ? true : /^(no|false|0)$/.test(val) ? false : null;
         }
         else if (low.startsWith('rushhour:')) {
           const val = trim.substring(trim.indexOf(':') + 1).trim().toLowerCase();
@@ -6786,7 +6843,7 @@
     for (const L of Object.keys(cellsByLetter)) {
       const cells = cellsByLetter[L];
       if (L === BLOCK_LETTER) { for (const [x, y] of cells) startPieces.push({ shape: 'blk', color: 'blk', x, y }); letterShape[L] = 'blk'; continue; }
-      const matched = ensureShapeFromCells(cells);
+      const matched = ensureShapeFromCells(cells, persistShapes);
       if (matched.isNew) lastParseHadNewShapes = true;
       let color = letterToColor[L]; if (!color) color = 'gray';
       let dir = letterToDir[L] || undefined;
@@ -6843,7 +6900,7 @@
           if (placed > 0) continue;
         }
       }
-      const matched = ensureShapeFromCells(cells);
+      const matched = ensureShapeFromCells(cells, persistShapes);
       if (matched.isNew) lastParseHadNewShapes = true;
       if (rushHour) dmove = deriveRushHourDmove(matched.shapeKey);
       targetPieces.push({ shape: matched.shapeKey, color, dir, dmove, label, round, region, x: matched.x, y: matched.y });
@@ -6861,13 +6918,13 @@
     editor.levelAuthor = level.author || '';
     editor.levelGroup = level.group || editor.levelAuthor || t('defaultAuthor');
     editor.levelStep = (level.step && level.step > 0) ? level.step : 0;
-    editor.groupMoves = !!level.groupMoves;
+    editor.groupMoves = level.groupMoves === true ? true : level.groupMoves === false ? false : null;
     editor.rushHour = !!level.rushHour;
     levelNameInput.value = editor.levelName;
     levelAuthorInput.value = editor.levelAuthor;
     levelGroupInput.value = editor.levelGroup;
     levelStepInput.value = editor.levelStep > 0 ? String(editor.levelStep) : '';
-    if (levelGroupMovesInput) levelGroupMovesInput.checked = !!editor.groupMoves;
+    updateEditorGroupMovesInput();
     if (levelRushHourInput) levelRushHourInput.checked = !!editor.rushHour;
     editor.paletteShapeReplacements = new Map();
     editor.collapsedPaletteAreas = new Set();
@@ -6913,7 +6970,25 @@
   levelAuthorInput.addEventListener('input', () => { editor.levelAuthor = levelAuthorInput.value; syncLevelText(); });
   levelGroupInput.addEventListener('input', () => { editor.levelGroup = levelGroupInput.value; syncLevelText(); });
   levelStepInput.addEventListener('input', () => { const s = (levelStepInput.value || '').trim(); const n = parseInt(s, 10); editor.levelStep = (!isNaN(n) && n > 0) ? n : 0; syncLevelText(); });
-  if (levelGroupMovesInput) levelGroupMovesInput.addEventListener('change', () => { editor.groupMoves = !!levelGroupMovesInput.checked; syncLevelText(); });
+  function updateEditorGroupMovesInput() {
+    if (!levelGroupMovesInput) return;
+    const policy = editor.groupMoves;
+    levelGroupMovesInput.checked = policy === true;
+    levelGroupMovesInput.indeterminate = policy === false;
+    levelGroupMovesInput.dataset.state = policy === true ? 'yes' : policy === false ? 'no' : '';
+    levelGroupMovesInput.setAttribute('aria-checked', policy === false ? 'mixed' : String(policy === true));
+    const tip = t(policy === true ? 'groupMovesYesTip' : policy === false ? 'groupMovesNoTip' : 'groupMovesAutoTip');
+    levelGroupMovesInput.title = tip;
+    levelGroupMovesInput.setAttribute('aria-label', t('groupMovesRequiredLabel') + ': ' + tip);
+  }
+  function cycleEditorGroupMoves() {
+    editor.groupMoves = editor.groupMoves == null ? true : editor.groupMoves === true ? false : null;
+    updateEditorGroupMovesInput();
+    syncLevelText();
+  }
+  // Native checkbox activation handles both label clicks and the Space key.
+  // The model, rather than the browser's binary toggle, determines the next state.
+  if (levelGroupMovesInput) levelGroupMovesInput.addEventListener('click', cycleEditorGroupMoves);
   if (levelRushHourInput) levelRushHourInput.addEventListener('change', () => {
     editor.rushHour = !!levelRushHourInput.checked;
     syncLevelText();
@@ -7116,13 +7191,11 @@
     levelSelectEl.value = String(currentLevelIndex);
   }
   function applyGroupMovesFromLevel(level) {
-    game.groupMoves = !!level.groupMoves;
-    if (game.groupMoves) {
-      GROUP_SHIFT = true;
-      if (groupShiftCheckEl) { groupShiftCheckEl.checked = true; groupShiftCheckEl.disabled = true; }
-    } else {
-      GROUP_SHIFT = false;
-      if (groupShiftCheckEl) { groupShiftCheckEl.checked = false; groupShiftCheckEl.disabled = false; }
+    game.groupMoves = level.groupMoves === true;
+    GROUP_SHIFT = game.groupMoves;
+    if (groupShiftCheckEl) {
+      groupShiftCheckEl.checked = GROUP_SHIFT;
+      groupShiftCheckEl.disabled = level.groupMoves === true || level.groupMoves === false;
     }
   }
   function loadLevelToGame(level) {
@@ -7282,7 +7355,7 @@
       piece.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, !!hideDirArrows, p.region);
       el.appendChild(piece);
     }
-    if (markerTargets && markerTargets.length) appendTargetMarkers(el, cols, rows, markerTargets);
+    if (markerTargets && markerTargets.length) appendTargetMarkers(el, cols, rows, markerTargets, pieces);
     applyMiniBoardMask(el, cols, rows, holesSet);
     return el;
   }
@@ -7362,15 +7435,6 @@
     contextMenuEl = menu;
   }
 
-  function countMovableTargets(parsed) {
-    if (!parsed || !parsed.targetPieces) return 0;
-    let n = 0;
-    for (const p of parsed.targetPieces) {
-      const sh = SHAPES[p.shape];
-      if (sh && !sh.fixed && !sh.hole) n++;
-    }
-    return n;
-  }
   function createGalleryCard(item, displayNameOverride, noClickHandler) {
     const card = document.createElement('div');
     card.className = 'gallery-card';
@@ -7388,18 +7452,18 @@
     if (parsed) {
       const hideArrows = !!parsed.rushHour;
       const holesSet = getHoleSetFromPieces(parsed.startPieces);
-      const singleTarget = countMovableTargets(parsed) === 1;
+      const markersOnlyGoal = getTargetMarkerPieces(parsed.startPieces, parsed.targetPieces).length > 0;
       const cellStart = document.createElement('div');
       cellStart.className = 'gallery-preview-cell';
       const lblS = document.createElement('div');
       lblS.className = 'gallery-preview-label'; lblS.textContent = t('previewStart');
       const prevS = buildMiniPreviewFromParsed(
         parsed.cols, parsed.rows, parsed.startPieces, holesSet, hideArrows,
-        singleTarget ? parsed.targetPieces : null
+        markersOnlyGoal ? parsed.targetPieces : null
       );
       cellStart.appendChild(lblS); cellStart.appendChild(prevS);
       previewsWrap.appendChild(cellStart);
-      if (!singleTarget) {
+      if (!markersOnlyGoal) {
         const cellTarget = document.createElement('div');
         cellTarget.className = 'gallery-preview-cell';
         const lblT = document.createElement('div');
@@ -7510,6 +7574,70 @@
         collapsed.style.transform = '';
       }
     }, 500);
+  }
+
+  function galleryDuplicateSignature(text) {
+    const customCount = customShapes.length, priorParseFlag = lastParseHadNewShapes;
+    try {
+      const level = parseLevel(text, false);
+      const pieceKey = p => {
+        const shape = SHAPES[p.shape];
+        const cells = shape.cells.map(([x, y]) => [x, y]).sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+        // Geometry replaces shape names and letter identifiers. Keep piece
+        // boundaries, positions, colors and modifiers, but ignore metadata.
+        return JSON.stringify([p.x, p.y, cells, !!shape.fixed, !!shape.hole,
+          p.color, p.dir || '', p.dmove || '', p.label || '', !!p.round, p.region || 0]);
+      };
+      const start = level.startPieces.map(pieceKey).sort();
+      // Fixed cells are already defined by the start board, not by the goal.
+      const target = level.targetPieces.filter(p => !SHAPES[p.shape].fixed && !SHAPES[p.shape].hole).map(pieceKey).sort();
+      return JSON.stringify([level.cols, level.rows, start, target]);
+    } finally {
+      // Parsing for diagnostics must not add tiles to the user's palette/storage.
+      while (customShapes.length > customCount) delete SHAPES[customShapes.pop().key];
+      lastParseHadNewShapes = priorParseFlag;
+    }
+  }
+  let galleryDuplicateSearchRunning = false;
+  async function findGalleryDuplicates() {
+    if (galleryDuplicateSearchRunning) return;
+    galleryDuplicateSearchRunning = true;
+    const levels = allLevels().map((level, index) => ({ text: level.text, name: levelDisplayName(level), index: index + 1 }));
+    const groups = new Map(), pairs = [];
+    let duplicates = 0, skipped = 0;
+    showToast(t('galleryDupStarted'));
+    try {
+      await new Promise(resolve => setTimeout(resolve, 0));
+      let lastYield = performance.now();
+      for (const level of levels) {
+        try {
+          const key = galleryDuplicateSignature(level.text);
+          const matches = groups.get(key) || [];
+          if (matches.length) duplicates++;
+          for (const prior of matches) pairs.push({
+            [LANG === 'ru' ? 'Уровень 1' : 'Level 1']: prior.index + '. ' + prior.name,
+            [LANG === 'ru' ? 'Уровень 2' : 'Level 2']: level.index + '. ' + level.name
+          });
+          matches.push(level); groups.set(key, matches);
+        } catch (error) {
+          skipped++;
+          console.warn('[Klotski] ' + level.index + '. ' + level.name, error);
+        }
+        if (performance.now() - lastYield > 25) {
+          await new Promise(resolve => setTimeout(resolve, 0));
+          lastYield = performance.now();
+        }
+      }
+      const message = t('galleryDupDone', fmtNum(duplicates), fmtNum(pairs.length)) +
+        (skipped ? t('galleryDupSkipped', fmtNum(skipped)) : '');
+      if (pairs.length) console.table(pairs);
+      console.info('[Klotski] ' + message);
+      showToast(message);
+      return { duplicates, pairs: pairs.length, skipped };
+    } catch (error) {
+      console.error('[Klotski]', error);
+      showToast(t('solverError', error.message), true);
+    } finally { galleryDuplicateSearchRunning = false; }
   }
 
   function buildGallery() {
@@ -7854,7 +7982,7 @@
   })();
 
   /* Analyzer: breadth-first exploration, shared movement rules with the solver. */
-  async function exploreAnalyzer(startPieces, maxStates, stopCheck, onProgress, goalPieces = null) {
+  async function exploreAnalyzer(startPieces, maxStates, stopCheck, onProgress, goalPieces = null, groupShift = GROUP_SHIFT) {
     const state = buildSolverState(startPieces, []);
     const { typeIndex, freeCellLookup, FREE_CELLS, startFlat, NUM_TYPES } = state;
     const keyOf = makeKeyFn(NUM_TYPES);
@@ -7883,7 +8011,7 @@
           if (!info || info.fixed) continue;
           const px = pieces[pi * 3 + 1], py = pieces[pi * 3 + 2];
           erasePieceFromBoard(board, pieces, pi, typeIndex, freeCellLookup);
-          const moves = generateMovesForPiece(board, px, py, type, info, freeCellLookup, pieces, pi, typeIndex, GROUP_SHIFT);
+          const moves = generateMovesForPiece(board, px, py, type, info, freeCellLookup, pieces, pi, typeIndex, groupShift);
           placePieceOnBoard(board, pieces, pi, typeIndex, freeCellLookup);
           for (const move of moves) {
             const nextBoard = board.slice(), nextPieces = pieces.slice();
@@ -8136,7 +8264,7 @@
     stopAnalyzer(false);
     analyzer.cols = COLS; analyzer.rows = ROWS;
     analyzer.moveMode = MOVE_MODE;
-    analyzer.groupShift = !!(editor.groupMoves || GROUP_SHIFT);
+    analyzer.groupShift = editor.groupMoves === false ? false : !!(editor.groupMoves || GROUP_SHIFT);
     analyzer.rushHour = !!editor.rushHour;
     analyzer.source = analyzer.rushHour ? applyRushHourToCfg(editor.startPieces) : cloneCfg(editor.startPieces);
     let state;
@@ -8197,8 +8325,8 @@
       const pair = analyzerDisplayedPair(), target = pair.target;
       editor.startPieces = pair.source.map(p => ({ ...p, id: 'e' + editor.nextId++ }));
       editor.targetPieces = target.map(p => ({ ...p, id: 'e' + editor.nextId++ }));
-      editor.groupMoves = analyzer.groupShift;
-      if (levelGroupMovesInput) levelGroupMovesInput.checked = editor.groupMoves;
+      editor.groupMoves = editor.groupMoves === false ? false : analyzer.groupShift ? true : null;
+      updateEditorGroupMovesInput();
       editor.selectedId = null; editor.selectedBoard = null;
       editor.dirty = true;
     }
@@ -8223,7 +8351,7 @@ self.onmessage = async function (e) {
     const progress = (nodes, depth, ms) => self.postMessage({ type: 'progress', nodes, depth, ms });
     const result = msg.kind === 'space'
       ? await enumerateAnalyzerSpace(msg.source, msg.maxStates, () => false, progress)
-      : await exploreAnalyzer(msg.source, msg.maxStates, () => false, progress, msg.goalPieces || null);
+      : await exploreAnalyzer(msg.source, msg.maxStates, () => false, progress, msg.goalPieces || null, msg.groupShift);
     if (msg.kind === 'distance') {
       const path = result.goalNode >= 0 ? compactAnalyzerPairPath(result) : null;
       self.postMessage({ type: 'distance', distance: path ? path.nodes - 1 : null, path },
@@ -8248,7 +8376,7 @@ self.onmessage = async function (e) {
       }
     };
     if (kind === 'search' && analyzer.fullActive) return exploreAnalyzer(source, analyzer.maxStates,
-      () => analyzer.generation !== generation, progress);
+      () => analyzer.generation !== generation, progress, null, analyzer.groupShift);
     let worker = null;
     if (typeof Worker !== 'undefined' && typeof Blob !== 'undefined' && typeof URL !== 'undefined') {
       try {
@@ -8258,7 +8386,7 @@ self.onmessage = async function (e) {
     }
     const limit = kind === 'space' ? analyzer.spaceLimit : analyzer.maxStates;
     if (!worker) return (kind === 'space' ? enumerateAnalyzerSpace : exploreAnalyzer)(source, limit,
-      () => analyzer.generation !== generation, progress);
+      () => analyzer.generation !== generation, progress, null, analyzer.groupShift);
     analyzer.worker = worker;
     return new Promise((resolve, reject) => {
       analyzer.pending = { resolve, reject };
@@ -9082,7 +9210,7 @@ self.onmessage = async function (e) {
         analyzer.pairWorker = null; analyzer.pairUrl = null; analyzer.pairResolve = null;
       }
     }
-    return exploreAnalyzer(source, analyzer.maxStates, () => !valid(), () => {}, target);
+    return exploreAnalyzer(source, analyzer.maxStates, () => !valid(), () => {}, target, analyzer.groupShift);
   }
   function compactAnalyzerPairPath(result) {
     const path = [];
@@ -9435,7 +9563,7 @@ self.onmessage = async function (e) {
       if (analyzerMini.url) URL.revokeObjectURL(analyzerMini.url);
       analyzerMini.worker = null; analyzerMini.url = null; analyzerMini.resolve = null;
     }
-    const result = await exploreAnalyzer(start, analyzer.maxStates, () => !valid(), () => {}, goal);
+    const result = await exploreAnalyzer(start, analyzer.maxStates, () => !valid(), () => {}, goal, analyzer.groupShift);
     if (!result || !valid()) return null;
     const path = result.goalNode >= 0 ? compactAnalyzerPairPath(result) : null;
     return { distance: path ? path.nodes - 1 : null, path };
