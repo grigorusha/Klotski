@@ -850,7 +850,7 @@
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.44)</span></div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.45)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -1161,7 +1161,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '2.44';
+  const APP_VERSION = '2.45';
   const LANG_KEY = 'ryzhiy-osel-lang-v1';
   const LAST_LEVEL_KEY = 'ryzhiy-osel-last-level-v1';
   function safeGetItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
@@ -1366,7 +1366,7 @@
       groupMovesNoTip: 'Заблокирован (GroupMoves: no)',
       groupMovesAutoTip: 'Не задан — в игре можно переключать',
       galleryDupStarted: 'Поиск дубликатов уровней…',
-      galleryDupDone: 'Поиск завершён: дубликатов — %1, совпавших пар — %2.',
+      galleryDupDone: 'Поиск завершён: дубликатов уровней — %1.',
       galleryDupSkipped: ' Не удалось проверить уровней: %1.',
       authorDropdownTitle: 'Выбрать автора',
       groupDropdownTitle: 'Выбрать группу',
@@ -1682,7 +1682,7 @@
       groupMovesNoTip: 'Blocked (GroupMoves: no)',
       groupMovesAutoTip: 'Unspecified — can be toggled in the game',
       galleryDupStarted: 'Searching for duplicate levels…',
-      galleryDupDone: 'Search complete: duplicate levels — %1, matching pairs — %2.',
+      galleryDupDone: 'Search complete: duplicate levels — %1.',
       galleryDupSkipped: ' Levels that could not be checked: %1.',
       authorDropdownTitle: 'Choose author',
       groupDropdownTitle: 'Choose group',
@@ -7576,22 +7576,57 @@
     }, 500);
   }
 
+  function galleryDuplicateOrientation(dir, transform) {
+    if (!dir) return '';
+    const arrows = { up: [0,-1], right: [1,0], down: [0,1], left: [-1,0],
+      upRight: [1,-1], downRight: [1,1], downLeft: [-1,1], upLeft: [-1,-1] };
+    const lines = { lineH: [1,0], lineV: [0,1], lineD1: [1,1], lineD2: [1,-1] };
+    let vector = arrows[dir] || lines[dir];
+    if (dir === 'triangle') vector = [0,-1];
+    if (dir === 'triangleDown') vector = [0,1];
+    if (!vector) return dir;
+    const [a,b,c,d] = transform;
+    let x = a * vector[0] + b * vector[1], y = c * vector[0] + d * vector[1];
+    if (lines[dir] && (x < 0 || (x === 0 && y < 0))) { x = -x; y = -y; }
+    const kind = arrows[dir] ? 'arrow' : lines[dir] ? 'line' : 'triangle';
+    return kind + ':' + x + ',' + y;
+  }
+  function galleryDuplicateBoardKey(level, transform) {
+    const [a,b,c,d] = transform;
+    const cols = Math.abs(a) * level.cols + Math.abs(b) * level.rows;
+    const rows = Math.abs(c) * level.cols + Math.abs(d) * level.rows;
+    const offsetX = (a < 0 ? level.cols - 1 : 0) + (b < 0 ? level.rows - 1 : 0);
+    const offsetY = (c < 0 ? level.cols - 1 : 0) + (d < 0 ? level.rows - 1 : 0);
+    const pieceKey = p => {
+      const shape = SHAPES[p.shape];
+      const cells = shape.cells.map(([dx, dy]) => {
+        const x = p.x + dx, y = p.y + dy;
+        return [a*x + b*y + offsetX, c*x + d*y + offsetY];
+      }).sort((p, q) => p[1] - q[1] || p[0] - q[0]);
+      let dmove = p.dmove || '';
+      if (b !== 0 && (dmove === 'h' || dmove === 'v')) dmove = dmove === 'h' ? 'v' : 'h';
+      return JSON.stringify([cells, !!shape.fixed, !!shape.hole, p.color,
+        galleryDuplicateOrientation(p.dir, transform), dmove, p.label || '', !!p.round, p.region || 0]);
+    };
+    const start = level.startPieces.map(pieceKey).sort();
+    // Fixed cells are already defined by the start board, not by the goal.
+    const target = level.targetPieces.filter(p => !SHAPES[p.shape].fixed && !SHAPES[p.shape].hole).map(pieceKey).sort();
+    return JSON.stringify([cols, rows, start, target]);
+  }
   function galleryDuplicateSignature(text) {
     const customCount = customShapes.length, priorParseFlag = lastParseHadNewShapes;
     try {
       const level = parseLevel(text, false);
-      const pieceKey = p => {
-        const shape = SHAPES[p.shape];
-        const cells = shape.cells.map(([x, y]) => [x, y]).sort((a, b) => a[1] - b[1] || a[0] - b[0]);
-        // Geometry replaces shape names and letter identifiers. Keep piece
-        // boundaries, positions, colors and modifiers, but ignore metadata.
-        return JSON.stringify([p.x, p.y, cells, !!shape.fixed, !!shape.hole,
-          p.color, p.dir || '', p.dmove || '', p.label || '', !!p.round, p.region || 0]);
-      };
-      const start = level.startPieces.map(pieceKey).sort();
-      // Fixed cells are already defined by the start board, not by the goal.
-      const target = level.targetPieces.filter(p => !SHAPES[p.shape].fixed && !SHAPES[p.shape].hole).map(pieceKey).sort();
-      return JSON.stringify([level.cols, level.rows, start, target]);
+      // The eight orientations include rotations and all mirror reflections.
+      // One transform always applies to both boards and every tile together.
+      const transforms = [[1,0,0,1], [0,-1,1,0], [-1,0,0,-1], [0,1,-1,0],
+        [-1,0,0,1], [1,0,0,-1], [0,1,1,0], [0,-1,-1,0]];
+      let canonical = null;
+      for (const transform of transforms) {
+        const key = galleryDuplicateBoardKey(level, transform);
+        if (canonical === null || key < canonical) canonical = key;
+      }
+      return canonical;
     } finally {
       // Parsing for diagnostics must not add tiles to the user's palette/storage.
       while (customShapes.length > customCount) delete SHAPES[customShapes.pop().key];
@@ -7628,7 +7663,7 @@
           lastYield = performance.now();
         }
       }
-      const message = t('galleryDupDone', fmtNum(duplicates), fmtNum(pairs.length)) +
+      const message = t('galleryDupDone', fmtNum(duplicates)) +
         (skipped ? t('galleryDupSkipped', fmtNum(skipped)) : '');
       if (pairs.length) console.table(pairs);
       console.info('[Klotski] ' + message);

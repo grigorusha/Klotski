@@ -57,6 +57,10 @@ window.BOARD_DESCRIPTIONS = [
         Description: 'Sliding Puzzles from windows game Bricks: <a target="_blank" href="https://www.bricks-game.de/indexuk.html">www.bricks-game.de</a><br>Forum Bricks community: <a target="_blank" href="http://www.bricks-game.de/forum/phpBB3">www.bricks-game.de/forum</a>' 
     },
     { 
+        Group: 'Parking place', 
+        Description: 'Rush Hour Puzzles from windows game Bricks: <a target="_blank" href="https://www.bricks-game.de/indexuk.html">www.bricks-game.de</a><br>Forum Bricks community: <a target="_blank" href="http://www.bricks-game.de/forum/phpBB3">www.bricks-game.de/forum</a>' 
+    },
+    { 
         Group: 'Klotski Addon', 
         Description: 'Various modifications of the original Klotski levels created by participants Bricks community: <a target="_blank" href="http://www.bricks-game.de/forum/phpBB3">www.bricks-game.de/forum</a>' 
     },
