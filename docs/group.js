@@ -25,6 +25,14 @@ window.BOARD_DESCRIPTIONS = [
         Description: 'Puzzles from Vladimir Krasnoukhov and Irina Novichkova : <a target="_blank" href="https://planetagolovolomok.ru/products/category/plastikovye-golovolomki">planetagolovolomok.ru</a>' 
     },
     { 
+        Group: 'Diniar Namdarian', 
+        Description: 'Puzzles from Diniar Namdarian : <a target="_blank" href="https://robspuzzlepage.com/sliding.htm">robspuzzlepage.com</a>' 
+    },
+    { 
+        Group: 'Vlaidmir Yaroslavskiy', 
+        Description: 'Puzzles from Vlaidmir Yaroslavskiy' 
+    },
+    { 
         Group: 'PuzzleBeast Block', 
         Description: 'Sliding Puzzles from James W. Stephens. Move red part to left corner : <a target="_blank" href="https://www.puzzlebeast.com/slidingblock/index.html">www.puzzlebeast.com</a>' 
     },

@@ -263,6 +263,7 @@
   .settings-input--states { flex: 1 1 0; min-width: 0; }
   .settings-checkbox-label { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--sub); cursor: pointer; white-space: nowrap; flex: 0 0 auto; }
   .settings-checkbox { width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--gold); }
+  #groupShiftCheck:disabled + span { opacity: .45; cursor: default; }
   .settings-hint { font-size: 10.5px; line-height: 1.4; color: var(--sub); letter-spacing: .01em; }
   .lang-toggle { display: inline-flex; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,.15); flex: 0 0 auto; }
   .lang-toggle button { min-width: 46px; height: 26px; padding: 0 12px; font: inherit; font-size: 11.5px; font-weight: 700; color: #f0f4fa; letter-spacing: .06em; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: none; cursor: pointer; line-height: 1; transition: background .15s, color .15s; }
@@ -373,6 +374,9 @@
   .palette-tiles-area { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
   .palette-tiles-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: flex-start; min-height: 40px; }
   .palette-tiles-row--action { align-items: flex-start; }
+  .palette-tiles-row--custom { display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: start; }
+  .palette-custom-frame { min-width: 0; max-height: clamp(220px, 50vh, 480px); overflow-y: auto; overflow-x: hidden; overscroll-behavior-y: contain; scrollbar-gutter: stable; padding: 6px; border: 1px solid rgba(255,255,255,.20); border-radius: 8px; background: rgba(0,0,0,.08); }
+  .palette-custom-items { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
   .palette-group-btn .new-tile-btn__lbl { white-space: normal; text-align: center; line-height: 1.1; overflow: visible; text-overflow: clip; }
   .palette-groups { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
   .palette-area-group { border: 1px solid rgba(255,255,255,.16); border-radius: 8px; overflow: hidden; }
@@ -531,7 +535,11 @@
   .tile-editor__actions button:hover { filter: brightness(1.1); }
   .tile-editor__actions button:active { transform: translateY(1px); }
   .tile-editor__actions button.primary { background: linear-gradient(180deg, #3cb85a, #1e7a34); border-color: rgba(140,230,150,.55); color: #fff; }
+  .tile-editor__actions .new-tile-btn__svg { width: 18px; height: 18px; flex: 0 0 18px; }
   .tile-cell { position: absolute; padding: 4px; box-sizing: border-box; z-index: 2; }
+  .tile-background-piece { position: absolute; padding: 4px; z-index: 1; opacity: .65; filter: grayscale(.05); }
+  .tile-background-piece, .tile-background-piece * { pointer-events: none !important; }
+  .tile-background-piece svg { display: block; width: 100%; height: 100%; overflow: visible; }
   .tile-cell::before { content: ''; position: absolute; inset: 4px; border-radius: 6px; background: linear-gradient(180deg, #7dd3e8, #1f7a9e); box-shadow: inset 0 0 0 1.5px #b8ecf5, 0 2px 4px rgba(0,0,0,.35); }
   #tileBoardInner { touch-action: none; cursor: crosshair; }
   .color-palette { display: flex; flex-direction: column; gap: 8px; padding: 10px 10px 8px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
@@ -592,6 +600,9 @@
   .gallery-group__description a:hover { text-decoration: underline; }
   .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
   .gallery-card { display: flex; flex-direction: column; gap: 4px; padding: 8px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); cursor: pointer; transition: transform .12s, background .15s, border-color .15s; user-select: none; }
+  .gallery-card > .gallery-previews { height: auto; flex-shrink: 0; }
+  .gallery-card .mini-board { flex-shrink: 0; }
+  .gallery-card.pending-preview .gallery-previews { background: rgba(255,255,255,.025); border-radius: 6px; }
   .gallery-card:hover { transform: translateY(-2px); background: rgba(255,255,255,.1); border-color: rgba(255,209,102,.35); }
   .gallery-card:active { transform: translateY(0); }
   .gallery-card .mini-board { width: 100%; border-radius: 8px; box-shadow: inset 0 0 0 2px #707070, inset 0 0 15px rgba(0,0,0,.18); }
@@ -605,6 +616,8 @@
   .gallery-empty { padding: 24px; text-align: center; color: var(--sub); font-size: 13px; }
   .gallery-previews { display: flex; gap: 6px; width: 100%; justify-content: center; align-items: flex-start; }
   .gallery-preview-cell { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .gallery-previews.gallery-previews--vertical { flex-direction: column; align-items: stretch; gap: 8px; }
+  .gallery-previews--vertical > .gallery-preview-cell { flex: none; width: 100%; }
   .gallery-preview-label { font-size: 9px; font-weight: 700; color: var(--sub); letter-spacing: .06em; text-transform: uppercase; }
   .gallery-stack { position: relative; min-width: 0; }
   .gallery-stack__collapsed { position: relative; cursor: pointer; z-index: 2; }
@@ -787,6 +800,7 @@
     <div class="solver-status" id="solverStatus"></div>
 
     <div class="controls" id="normalControlsRow">
+      <button id="scrambleBtn"><span class="btn-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block"><path d="M 3 6 H 6 C 11 6 13 18 18 18 H 21 M 17 14 L 21 18 L 17 22 M 3 18 H 6 C 8 18 9.5 16 11 13 M 13 9 C 14.5 7 16 6 18 6 H 21 M 17 2 L 21 6 L 17 10"/></svg></span><span class="btn-lbl" data-ruseng="scramble">Перемешать</span></button>
       <button id="undoBtn"><span class="btn-ico">↶</span><span class="btn-lbl" data-ruseng="undo">Назад</span></button>
       <button id="redoBtn"><span class="btn-ico">↷</span><span class="btn-lbl" data-ruseng="redo">Вперёд</span></button>
       <button id="resetBtn"><span class="btn-ico">↻</span><span class="btn-lbl" data-ruseng="reset">Заново</span></button>
@@ -850,7 +864,7 @@
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.45)</span></div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.68)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -918,6 +932,7 @@
         <div class="editor-hint" data-ruseng="tileEditorHint">Клик по клетке — поставить/убрать. Ведите мышью для рисования. Все клетки должны соприкасаться углами или сторонами.</div>
       </div>
       <div class="tile-editor__actions">
+        <button id="tileShadowsBtn" type="button" aria-pressed="true">Скрыть тени</button>
         <button class="primary" id="tileAcceptBtn" type="button"><span class="btn-ico">✓</span><span class="btn-lbl" data-ruseng="accept">Принять</span></button>
         <button id="tileCancelBtn" type="button"><span class="btn-ico">✕</span><span class="btn-lbl" data-ruseng="cancel">Отмена</span></button>
       </div>
@@ -1161,7 +1176,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '2.45';
+  const APP_VERSION = '2.68';
   const LANG_KEY = 'ryzhiy-osel-lang-v1';
   const LAST_LEVEL_KEY = 'ryzhiy-osel-last-level-v1';
   function safeGetItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
@@ -1318,6 +1333,10 @@
       back: 'Назад', puzzle: 'Головоломка:', gallery: 'Галерея',
       moves: 'Ходы', time: 'Время',
       undo: 'Назад', redo: 'Вперёд', reset: 'Заново',
+      scramble: 'Перемешать',
+      scrambleBusy: 'Перемешивание…',
+      scrambleDone: 'Перемешано: %1 легальных ходов.',
+      scrambleBlocked: 'Нет доступных ходов для перемешивания.',
       hint: 'Подсказка', solve: 'Решить', stop: 'Стоп',
       editorBtn: 'Редактор',
       dragHint: 'Перетаскивайте плитки мышью или пальцем',
@@ -1355,6 +1374,13 @@
       paletteExpandAll: 'Развернуть все', paletteCollapseAll: 'Свернуть все',
       paletteAreaGroup: 'Площадь %1 — плиток: %2',
       tileUpdated: 'Форма плитки обновлена. Заменено на досках: %1; оставлено на прежнем месте без изменения: %2.',
+      tileEditNoRoom: 'Изменённая плитка не помещается на доске: граница, отверстие или другая плитка. Исправьте форму либо отмените редактирование и освободите место.',
+      tileEditSourceMissing: 'Исходная плитка больше не найдена на доске. Отмените редактирование и выберите плитку заново.',
+      tileEditShapeNoRoom: 'Эта форма не помещается на исходной доске с учётом отверстий. Сначала увеличьте доску или измените её контур.',
+      tileShowShadows: 'Показать тени',
+      tileHideShadows: 'Скрыть тени',
+      tileAddedOnBoard: 'Плитка добавлена в панель и размещена на доске.',
+      tileAddedPanelOnly: 'Плитка сохранена в панели. На доске не размещена: занятое место или ограничение целевой доски.',
       tileEditorHint: 'Клик по клетке — поставить/убрать. Ведите мышью для рисования. Все клетки должны соприкасаться углами или сторонами.',
       accept: 'Принять', cancel: 'Отмена', run: 'Запустить',
       setTarget: 'Задайте цель',
@@ -1398,6 +1424,7 @@
       decorSadSmileyTitle: 'Грустный смайлик',
       decorHeartTitle: 'Сердечко',
       decorFireTitle: 'Огонёк',
+      decorClockTitle: 'Циферблат часов',
       decorCarTitle: 'Машинка',
       roundTileTitle: 'Круглая плитка (для квадратных плиток)',
       dmoveVTitle: 'Движение плитки только по Вертикали',
@@ -1470,6 +1497,7 @@
       maxStatesHintFull: 'Лимит ОЗУ %1 ГБ ≈ до %2 состояний (память на состояние зависит от размера доски).',
       maxStatesHintLimited: 'Солвер переберёт до %1 состояний (задано %2, ограничено доступной памятью). Расчётная память: ~%3.',
       gallerySummary: 'Встроенных уровней %1, моих %2, не решено: %3',
+      galleryTotal: 'Всего %1',
       gallerySummaryNoUser: 'Встроенных уровней %1, не решено: %2',
       tocTitle: 'Оглавление',
       galleryNoLevels: 'Уровни не найдены',
@@ -1634,6 +1662,10 @@
       back: 'Back', puzzle: 'Puzzle:', gallery: 'Gallery',
       moves: 'Moves', time: 'Time',
       undo: 'Undo', redo: 'Redo', reset: 'Reset',
+      scramble: 'Scramble',
+      scrambleBusy: 'Scrambling…',
+      scrambleDone: 'Scrambled: %1 legal moves.',
+      scrambleBlocked: 'No legal moves available for scrambling.',
       hint: 'Hint', solve: 'Solve', stop: 'Stop',
       editorBtn: 'Editor',
       dragHint: 'Drag pieces with mouse or finger',
@@ -1671,6 +1703,13 @@
       paletteExpandAll: 'Expand all', paletteCollapseAll: 'Collapse all',
       paletteAreaGroup: 'Area %1 — pieces: %2',
       tileUpdated: 'Piece shape updated. Replaced on boards: %1; left unchanged in place: %2.',
+      tileEditNoRoom: 'The edited piece does not fit: board boundary, hole or another piece. Adjust its shape, or cancel editing and free some space.',
+      tileEditSourceMissing: 'The original piece is no longer on the board. Cancel editing and select it again.',
+      tileEditShapeNoRoom: 'This shape does not fit the original board with its holes. Enlarge the board or change its outline first.',
+      tileShowShadows: 'Show shadows',
+      tileHideShadows: 'Hide shadows',
+      tileAddedOnBoard: 'Piece added to the palette and placed on the board.',
+      tileAddedPanelOnly: 'Piece saved in the palette. Not placed: occupied space or a goal-board restriction.',
       tileEditorHint: 'Click a cell to toggle. Drag to paint. All cells must touch by sides or corners.',
       accept: 'Accept', cancel: 'Cancel', run: 'Run',
       setTarget: 'Set target',
@@ -1714,6 +1753,7 @@
       decorSadSmileyTitle: 'Sad smiley',
       decorHeartTitle: 'Heart',
       decorFireTitle: 'Flame',
+      decorClockTitle: 'Clock face',
       decorCarTitle: 'Car',
       roundTileTitle: 'Round tile (for square tiles only)',
       dmoveVTitle: 'Tile moves only vertically', dmoveHTitle: 'Tile moves only horizontally',
@@ -1785,6 +1825,7 @@
       maxStatesHintFull: 'RAM limit %1 GB ≈ up to %2 states (memory per state depends on board size).',
       maxStatesHintLimited: 'Solver will explore up to %1 states (requested %2, limited by available memory). Estimated memory: ~%3.',
       gallerySummary: 'Built-in: %1, mine: %2, unsolved: %3',
+      galleryTotal: 'Total %1',
       gallerySummaryNoUser: 'Built-in: %1, unsolved: %2',
       tocTitle: 'Contents',
       galleryNoLevels: 'No levels found',
@@ -1875,7 +1916,7 @@
     lineD1: 'LineD1', lineD2: 'LineD2',
     circle: 'Ring', triangle: 'Triangle', triangleDown: 'TriangleDown', square: 'Square', diamond: 'Diamond', star: 'Star',
     smiley: 'Smiley', sad: 'SadSmiley', heart: 'Heart',
-    fire: 'Fire', car: 'Car'
+    fire: 'Fire', clock: 'Clock', car: 'Car'
   };
   const DECOR_EN_TO_ID = {
     linev: 'lineV', lineh: 'lineH',
@@ -1884,11 +1925,11 @@
     ring: 'circle', triangle: 'triangle', triangledown: 'triangleDown', square: 'square', diamond: 'diamond', star: 'star',
     smiley: 'smiley', smile: 'smiley', sadsmiley: 'sad', sad: 'sad', frown: 'sad',
     heart: 'heart',
-    fire: 'fire', flame: 'fire', car: 'car'
+    fire: 'fire', flame: 'fire', clock: 'clock', car: 'car'
   };
   const DECOR_ORDER = ['', ...DIR_IDS,
                        'lineV', 'lineH', 'lineD1', 'lineD2',
-                       'circle', 'triangle', 'triangleDown', 'square', 'diamond', 'star', 'smiley', 'sad', 'heart', 'fire', 'car'];
+                       'circle', 'triangle', 'triangleDown', 'square', 'diamond', 'star', 'smiley', 'sad', 'heart', 'fire', 'clock', 'car'];
   const LIGHT_TILE_COLORS = new Set(['yellow', 'lime', 'beige', 'white']);
   const LIGHT_MARKER_COLORS = new Set(['yellow', 'beige', 'white']);
 
@@ -1931,6 +1972,7 @@
       case 'sad': return t('decorSadSmileyTitle');
       case 'heart': return t('decorHeartTitle');
       case 'fire': return t('decorFireTitle');
+      case 'clock': return t('decorClockTitle');
       case 'car': return t('decorCarTitle');
       default: return id;
     }
@@ -2155,7 +2197,7 @@
   const PAL_CELL = 20;
 
   const COLORS = [
-    { id: 'yellow', name: 'Жёлтый', from: '#fff8d0', to: '#e8c860', border: '#fffff0' },
+    { id: 'yellow', name: 'Жёлтый', from: '#f3d667', to: '#d4a82e', border: '#fff0ab' },
     { id: 'orange', name: 'Оранжевый', from: '#ffb066', to: '#c45e0e', border: '#ffd9a8' },
     { id: 'red', name: 'Красный', from: '#ff7070', to: '#b3123a', border: '#ffd166' },
     { id: 'lime', name: 'Лаймовый', from: '#b8e986', to: '#5a8f1a', border: '#dff5b8' },
@@ -2395,7 +2437,7 @@
     return { d, mirror: true };
   }
 
-  function buildContourPath(cellList, cellW, cellH, inset) {
+  function buildContourPath(cellList, cellW, cellH, inset, connectDiagonals = false) {
     cellW = (cellW == null) ? 1 : cellW;
     cellH = (cellH == null) ? 1 : cellH;
     inset = Math.max(0, Math.min(0.24, Number(inset) || 0));
@@ -2416,6 +2458,7 @@
       if (!startsAt.has(k)) startsAt.set(k, []);
       startsAt.get(k).push(i);
     }
+    const junctions = connectDiagonals ? new Set([...startsAt].filter(([, outs]) => outs.length > 1).map(([key]) => key)) : null;
     const nextEdge = new Array(edges.length).fill(-1);
     for (let i = 0; i < edges.length; i++) {
       const e = edges[i];
@@ -2423,11 +2466,11 @@
       if (outs.length === 0) continue;
       if (outs.length === 1) { nextEdge[i] = outs[0]; continue; }
       const din = e.dir;
-      let best = outs[0], bestCross = -Infinity;
+      let best = outs[0], bestCross = connectDiagonals ? Infinity : -Infinity;
       for (const j of outs) {
         const dout = edges[j].dir;
         const cross = din[0] * dout[1] - din[1] * dout[0];
-        if (cross > bestCross) { bestCross = cross; best = j; }
+        if (connectDiagonals ? cross < bestCross : cross > bestCross) { bestCross = cross; best = j; }
       }
       nextEdge[i] = best;
     }
@@ -2443,12 +2486,12 @@
         cur = nextEdge[cur];
       }
       if (loop.length === 0) continue;
-      d += contourLoopToPath(loop, edges, cellW, cellH, inset);
+      d += contourLoopToPath(loop, edges, cellW, cellH, inset, junctions);
     }
     return d;
   }
 
-  function contourLoopToPath(loop, edges, cellW, cellH, inset) {
+  function contourLoopToPath(loop, edges, cellW, cellH, inset, junctions) {
     const n = loop.length;
     if (n === 0) return '';
     const inPts = [], outPts = [], curves = [];
@@ -2460,9 +2503,28 @@
       // offset at every boundary also protects concave corners and holes.
       const nx = cross === 0 ? -din[1] : -din[1] - dout[1];
       const ny = cross === 0 ? din[0] : din[0] + dout[0];
+      // Only diagonal contacts have a narrow neck across the shared corner.
+      // All ordinary edges and concave corners retain their inward offset.
+      const diagonalContact = junctions && junctions.has(e.to[0] + ',' + e.to[1]);
       const Bx = (e.to[0] + nx * inset) * cellW;
       const By = (e.to[1] + ny * inset) * cellH;
-      if (cross === 0) { inPts.push([Bx, By]); outPts.push([Bx, By]); curves.push(''); }
+      if (diagonalContact && cross < 0) {
+        // As in diagonalPathD: connect the two inset cell edges with a cubic
+        // curve whose controls remain on their respective occupied sides.
+        // A circular fillet at the empty corner crosses the opposite fillet.
+        const vx = e.to[0], vy = e.to[1], reach = inset + RJ;
+        const sx = (vx - din[1] * inset - din[0] * reach) * cellW;
+        const sy = (vy + din[0] * inset - din[1] * reach) * cellH;
+        const ex = (vx - dout[1] * inset + dout[0] * reach) * cellW;
+        const ey = (vy + dout[0] * inset + dout[1] * reach) * cellH;
+        const c1x = (vx - din[1] * inset - din[0] * inset) * cellW;
+        const c1y = (vy + din[0] * inset - din[1] * inset) * cellH;
+        const c2x = (vx - dout[1] * inset + dout[0] * inset) * cellW;
+        const c2y = (vy + dout[0] * inset + dout[1] * inset) * cellH;
+        inPts.push([sx, sy]); outPts.push([ex, ey]);
+        curves.push(`C ${c1x.toFixed(4)} ${c1y.toFixed(4)} ${c2x.toFixed(4)} ${c2y.toFixed(4)} ${ex.toFixed(4)} ${ey.toFixed(4)} `);
+      }
+      else if (cross === 0) { inPts.push([Bx, By]); outPts.push([Bx, By]); curves.push(''); }
       else {
         const r = cross > 0 ? R : Math.min(R * 0.6, inset * 2);
         const rx = r * cellW, ry = r * cellH;
@@ -2491,14 +2553,15 @@
     return buildContourPath(boardCellsFromHoleSet(cols, rows, holeSet), cellW, cellH);
   }
   function buildCustomShapePath(cellList) {
-    return buildContourPath(cellList, 1, 1, 0.08);
+    return buildContourPath(cellList, 1, 1, 0.08, true);
   }
 
   function shapePathD(shapeKey) {
     if (RECT_SHAPES.has(shapeKey)) { const shape = SHAPES[shapeKey]; return { d: roundedRectPath(shape.w, shape.h, R), mirror: false }; }
     if (shapeKey === 'blk') return { d: roundedRectPath(1, 1, R), mirror: false };
     if (shapeKey === 'hole') return { d: '', mirror: false };
-    if (L_SHAPES.has(shapeKey) || DIAG_SHAPES.has(shapeKey)) return { d: buildCustomShapePath(SHAPES[shapeKey].cells), mirror: false };
+    if (L_SHAPES.has(shapeKey)) return { d: buildCustomShapePath(SHAPES[shapeKey].cells), mirror: false };
+    if (DIAG_SHAPES.has(shapeKey)) return diagonalPathD(shapeKey);
     return { d: '', mirror: false };
   }
 
@@ -2606,6 +2669,11 @@
            '<path d="' + d + '" fill="' + fillCol + '" stroke="' + strokeCol + '" stroke-width="' + sw.toFixed(4) + '" stroke-linejoin="round" stroke-linecap="round"/></g></g>';
   }
 
+  function clockFaceMarkup(fill, outline, details, strokeWidth) {
+    return `<circle cx="0.5" cy="0.5" r="0.39" fill="${fill}" stroke="${outline}" stroke-width="${strokeWidth}"/>` +
+      `<path d="M 0.5 0.17 V 0.23 M 0.83 0.5 H 0.77 M 0.5 0.83 V 0.77 M 0.17 0.5 H 0.23 M 0.5 0.25 V 0.5 L 0.6732 0.4" fill="none" stroke="${details}" stroke-width="0.06" stroke-linecap="round" stroke-linejoin="round"/>` +
+      `<circle cx="0.5" cy="0.5" r="0.035" fill="${details}"/>`;
+  }
   function pieceDecorMarkup(decor, cx, cy, rectW, rectH) {
     if (!decor) return '';
     const minDim = Math.min(rectW, rectH);
@@ -2684,6 +2752,11 @@
       return `<g transform="translate(${cx.toFixed(4)} ${cy.toFixed(4)}) scale(${s.toFixed(4)}) translate(-0.5 -0.5)">` +
              `<path d="${FIRE_PATH_D}" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${swScaled}" stroke-linejoin="round"/></g>`;
     }
+    if (decor === 'clock') {
+      const s = minDim * 0.9;
+      return `<g transform="translate(${cx.toFixed(4)} ${cy.toFixed(4)}) scale(${s.toFixed(4)}) translate(-0.5 -0.5)">` +
+        clockFaceMarkup('#ffffff', 'rgba(0,0,0,0.72)', 'rgba(0,0,0,0.85)', (sw / s).toFixed(4)) + '</g>';
+    }
     if (decor === 'car') {
       const s = minDim * 0.9;
       const bodyD = 'M 0.1 0.68 L 0.1 0.52 L 0.22 0.48 L 0.32 0.48 L 0.42 0.32 L 0.62 0.32 L 0.72 0.48 L 0.9 0.48 L 0.9 0.68 Z';
@@ -2750,6 +2823,7 @@
     else if (decor === 'lineD1') inner = `<line x1="0.2" y1="0.2" x2="0.8" y2="0.8" stroke="${c}" stroke-width="0.14" stroke-linecap="round"/>`;
     else if (decor === 'lineD2') inner = `<line x1="0.8" y1="0.2" x2="0.2" y2="0.8" stroke="${c}" stroke-width="0.14" stroke-linecap="round"/>`;
     else if (decor === 'circle') inner = `<circle cx="0.5" cy="0.5" r="0.32" fill="none" stroke="${c}" stroke-width="0.12"/>`;
+    else if (decor === 'clock') inner = clockFaceMarkup('none', c, c, 0.08);
     else if (decor === 'triangle') inner = `<path d="M 0.5 0.12 L 0.88 0.78 L 0.12 0.78 Z" fill="none" stroke="${c}" stroke-width="0.12" stroke-linejoin="round"/>`;
     else if (decor === 'triangleDown') inner = `<path d="M 0.12 0.22 L 0.88 0.22 L 0.5 0.88 Z" fill="none" stroke="${c}" stroke-width="0.12" stroke-linejoin="round"/>`;
     else if (decor === 'diamond') inner = `<path d="M 0.5 0.1 L 0.9 0.5 L 0.5 0.9 L 0.1 0.5 Z" fill="none" stroke="${c}" stroke-width="0.12" stroke-linejoin="round"/>`;
@@ -2787,6 +2861,18 @@
   function iconLayoutLabel(label) {
     return String(label || '').includes(ICON_LABEL_MARKER) ? String(label) : String(label || '') + ICON_LABEL_MARKER;
   }
+  function positionedSymbolRect(shape, label, region, preferAxis) {
+    const base = largestInscribedRect(shape, preferAxis || null, region);
+    const lines = iconLayoutLabel(label).split('\n');
+    const width = Math.max(1, ...lines.map(line => line.length));
+    const cell = Math.min(base.w / width, base.h / lines.length);
+    const row = lines.findIndex(line => line.includes(ICON_LABEL_MARKER));
+    const col = lines[row].indexOf(ICON_LABEL_MARKER);
+    // Whitespace translates the native symbol rectangle without resizing it.
+    const dx = (col + 0.5 - lines[row].length / 2) * cell;
+    const dy = (row + 0.5 - lines.length / 2) * cell;
+    return { x: base.x + dx, y: base.y + dy, w: base.w, h: base.h };
+  }
   function pieceIconLabelOverlay(shape, dir, dmove, label, colorId, hideDirArrows, region) {
     if (hideDirArrows && (dmove || DIR_IDS.includes(dir))) return '';
     const lines = iconLayoutLabel(label).split('\n');
@@ -2819,7 +2905,7 @@
     if (!shape) return '';
     const color = COLORS_MAP[colorId] || COLORS_MAP.blue;
     const isRound = !!round && shape.w === shape.h;
-    const cellContour = !isRound && (shape.custom || L_SHAPES.has(shapeKey) || DIAG_SHAPES.has(shapeKey));
+    const cellContour = !isRound && (shape.custom || L_SHAPES.has(shapeKey));
     let inner = '';
     if (isRound) {
       const cx = shape.w / 2, cy = shape.h / 2, r = shape.w / 2;
@@ -2846,7 +2932,19 @@
 
     let arrowContent = '', diagonalOverlay = '';
     if (shapeKey !== 'blk') {
-      if (label && (dir || dmove) && isIconLabel(label)) {
+      if (label && !dmove && (DIR_IDS.includes(dir) || ['lineV', 'lineH', 'lineD1', 'lineD2'].includes(dir)) && isIconLabel(label)) {
+        const isArrow = DIR_IDS.includes(dir);
+        const preferAxis = dir === 'up' || dir === 'down' ? 'v' : dir === 'left' || dir === 'right' ? 'h' : null;
+        const rect = positionedSymbolRect(shape, label, region, preferAxis);
+        const cx = rect.x + rect.w / 2, cy = rect.y + rect.h / 2;
+        if (isArrow) {
+          if (!hideDirArrows) {
+            if (DIR_ROT[dir] % 90) diagonalOverlay = pieceDiagonalOverlay(dir, rect, shape);
+            else arrowContent = pieceArrowMarkup(dir, cx, cy, rect.w, rect.h);
+          }
+        } else if (dir === 'lineD1' || dir === 'lineD2') diagonalOverlay = pieceDiagonalOverlay(dir, rect, shape);
+        else arrowContent = pieceDecorMarkup(dir, cx, cy, rect.w, rect.h);
+      } else if (label && (dir || dmove) && isIconLabel(label)) {
         diagonalOverlay = pieceIconLabelOverlay(shape, dir, dmove, label, colorId, hideDirArrows, region);
       } else if (label) {
         const rect = bestRectForLabel(shape, label, region);
@@ -3500,6 +3598,7 @@
   const timeEl = document.getElementById('time');
   const overlayEl = document.getElementById('overlay');
   const undoBtn = document.getElementById('undoBtn');
+  const scrambleBtn = document.getElementById('scrambleBtn');
   const redoBtn = document.getElementById('redoBtn');
   const solveBtn = document.getElementById('solveBtn');
   const hintBtn = document.getElementById('hintBtn');
@@ -3566,6 +3665,7 @@
     pieces: [], history: [], redoStack: [],
     moves: 0, won: false, step: 0,
     groupMoves: false,
+    groupShiftLocked: false, scrambling: false, scrambled: false, scrambleId: 0,
     rushHour: false,
     selectedId: null,
     gesture: null, dragRaf: null,
@@ -3673,6 +3773,7 @@
     editorViewEl.hidden = !isEditor;
     analyzerViewEl.hidden = mode !== 'analyzer';
     galleryViewEl.hidden = !isGallery;
+    if (isGallery) scheduleGalleryPreviews();
     levelRowEl.hidden = !isGame;
     statsEl.hidden = !isGame;
     backBtn.hidden = isGame;
@@ -3700,6 +3801,7 @@
     applyMiniBoardMask(grid, COLS, ROWS, holeSet, true);
   }
   function startGame(startCfg, targetCfg, step, rushHour) {
+    game.scrambleId++; game.scrambling = false; game.scrambled = false;
     solveSessionId++;
     cancelSolverWorker();
     stopGameTimer();
@@ -3893,16 +3995,104 @@
     return { moved: false, group: null };
   }
   function snapshotState() { return game.pieces.map(p => ({ id: p.id, x: p.x, y: p.y })); }
+  function legalScrambleMoves(pieces, cols, rows, groupShift) {
+    const occupied = new Int32Array(cols * rows); occupied.fill(-1);
+    for (let i = 0; i < pieces.length; i++) {
+      const p = pieces[i], shape = SHAPES[p.shape];
+      if (shape) for (const [dx, dy] of shape.cells) occupied[(p.y + dy) * cols + p.x + dx] = i;
+    }
+    const moves = [], seen = new Set();
+    for (let root = 0; root < pieces.length; root++) {
+      if (!SHAPES[pieces[root].shape] || SHAPES[pieces[root].shape].fixed) continue;
+      for (const [dx, dy] of [[0,-1],[1,0],[0,1],[-1,0]]) {
+        const indices = [root], group = new Set(indices);
+        let legal = true;
+        for (let q = 0; q < indices.length && legal; q++) {
+          const p = pieces[indices[q]], shape = SHAPES[p.shape];
+          if (shape.fixed || (p.dmove === 'h' && dy !== 0) || (p.dmove === 'v' && dx !== 0) ||
+              p.x + dx < 0 || p.y + dy < 0 || p.x + dx + shape.w > cols || p.y + dy + shape.h > rows) { legal = false; break; }
+          for (const [cx, cy] of shape.cells) {
+            const other = occupied[(p.y + cy + dy) * cols + p.x + cx + dx];
+            if (other < 0 || group.has(other)) continue;
+            if (!groupShift) { legal = false; break; }
+            group.add(other); indices.push(other);
+          }
+        }
+        if (!legal) continue;
+        indices.sort((a, b) => a - b);
+        const key = indices.join(',') + ':' + dx + ',' + dy;
+        if (!seen.has(key)) {
+          seen.add(key);
+          moves.push({ indices, dx, dy, key, inverseKey: indices.join(',') + ':' + (-dx) + ',' + (-dy) });
+        }
+      }
+    }
+    return moves;
+  }
+  async function scramblePosition(pieces, cols, rows, groupShift, steps, stopCheck, random = Math.random) {
+    let lastInverse = '', done = 0, lastYield = performance.now();
+    while (done < steps) {
+      if (stopCheck()) return null;
+      const legal = legalScrambleMoves(pieces, cols, rows, groupShift);
+      if (!legal.length) break;
+      const forward = legal.filter(move => move.key !== lastInverse);
+      const choices = forward.length ? forward : legal;
+      const move = choices[Math.floor(random() * choices.length)];
+      for (const i of move.indices) { pieces[i].x += move.dx; pieces[i].y += move.dy; }
+      lastInverse = move.inverseKey;
+      done++;
+      if (performance.now() - lastYield > 25) {
+        await new Promise(resolve => setTimeout(resolve, 0));
+        lastYield = performance.now();
+      }
+    }
+    return { pieces, steps: done };
+  }
+  async function scrambleGame() {
+    if (appMode !== 'game' || game.scrambling || game.gesture || game.solving || batch.active || playback.active) return;
+    if (game.session.pieceId) commitSession();
+    const pieces = game.pieces.map(p => ({ ...p }));
+    const count = pieces.filter(p => SHAPES[p.shape] && !SHAPES[p.shape].fixed).length;
+    if (!count) { showToast(t('scrambleBlocked')); return; }
+    const id = ++game.scrambleId;
+    const valid = () => id === game.scrambleId && appMode === 'game';
+    game.scrambling = true;
+    clearHint(); updateUndoBtn(); updateSolveBtn();
+    showToast(t('scrambleBusy'));
+    try {
+      await new Promise(resolve => setTimeout(resolve, 0));
+      const result = await scramblePosition(pieces, COLS, ROWS, GROUP_SHIFT, count * 30, () => !valid());
+      if (!result || !valid()) return;
+      if (!result.steps) { showToast(t('scrambleBlocked')); return; }
+      game.history = [];
+      game.redoStack = [];
+      for (let i = 0; i < game.pieces.length; i++) {
+        game.pieces[i].x = result.pieces[i].x; game.pieces[i].y = result.pieces[i].y;
+      }
+      game.scrambled = true; game.won = false; game.moves = 0; game.selectedId = null;
+      resetSession(); stopGameTimer(); game.startTime = null; timeEl.textContent = '0:00';
+      overlayEl.classList.add('hidden'); solverStatus.textContent = '';
+      syncGamePieces(); updateMovesUI();
+      showToast(t('scrambleDone', fmtNum(result.steps)));
+    } catch (error) {
+      if (valid()) showToast(t('solverError', error.message), true);
+    } finally {
+      if (id === game.scrambleId) { game.scrambling = false; updateUndoBtn(); updateSolveBtn(); }
+    }
+  }
   function updateMovesUI() { movesEl.textContent = game.moves; }
   function updateUndoBtn() {
-    const busy = game.won || !!game.gesture || game.solving;
+    const busy = game.won || !!game.gesture || game.solving || game.scrambling;
+    scrambleBtn.disabled = !!game.gesture || game.solving || game.scrambling || batch.active || playback.active ||
+      !game.pieces.some(p => SHAPES[p.shape] && !SHAPES[p.shape].fixed);
+    groupShiftCheckEl.disabled = game.scrambling || game.groupShiftLocked;
     const sessionActive = !!game.session.pieceId;
     const sessionHasChanges = sessionActive && computeSessionCost() > 0;
     undoBtn.disabled = (game.history.length === 0 && !sessionHasChanges) || busy;
     redoBtn.disabled = game.redoStack.length === 0 || busy || sessionActive;
   }
   function undoGame() {
-    if (game.won || game.gesture || game.solving) return;
+    if (game.won || game.gesture || game.solving || game.scrambling) return;
     clearHint();
     if (game.session.pieceId) { const cost = computeSessionCost(); cancelSession(); syncGamePieces(); updateUndoBtn(); if (cost > 0) return; }
     if (!game.history.length) { updateUndoBtn(); return; }
@@ -3913,7 +4103,7 @@
     updateMovesUI(); syncGamePieces(); updateUndoBtn();
   }
   function redoGame() {
-    if (game.won || game.gesture || game.solving || game.session.pieceId) return;
+    if (game.won || game.gesture || game.solving || game.scrambling || game.session.pieceId) return;
     clearHint();
     if (!game.redoStack.length) return;
     const entry = game.redoStack.pop();
@@ -3955,7 +4145,7 @@
   }
   function stopGameTimer() { if (game.timerId) { clearInterval(game.timerId); game.timerId = null; } }
   function attachGamePieceEvents(el, piece) {
-    el.addEventListener('pointerdown', e => { if (game.won || game.solving) return; e.preventDefault(); startGameDrag(el, piece, e); });
+    el.addEventListener('pointerdown', e => { if (game.won || game.solving || game.scrambling) return; e.preventDefault(); startGameDrag(el, piece, e); });
     el.addEventListener('pointermove', e => { if (!game.gesture || game.gesture.el !== el) return; onGameDragMove(e); });
     el.addEventListener('pointerup', () => { if (!game.gesture || game.gesture.el !== el) return; releaseGameDrag(); });
     el.addEventListener('pointercancel', () => { if (!game.gesture || game.gesture.el !== el) return; releaseGameDrag(); });
@@ -4051,6 +4241,7 @@
     syncGamePieces(); updateUndoBtn(); checkWin();
   }
   function updateSolveBtn() {
+    solveBtn.disabled = game.scrambling;
     if (batch.active) {
       solveBtn.classList.remove('solve'); solveBtn.classList.add('stop');
       solveBtn.innerHTML = '<span class="btn-ico">■</span><span class="btn-lbl">' + t('stop') + '</span>';
@@ -4065,6 +4256,7 @@
       solveBtn.title = t('hotkeySolve');
     }
     hintBtn.disabled = game.solving || batch.active;
+    if (game.scrambling) hintBtn.disabled = true;
   }
   function stopSolving(message, isError) {
     solveSessionId++;
@@ -4160,10 +4352,10 @@
   }
 
   function startBatchSolve() {
-    const ordered = getGalleryOrderedItems();
-    if (ordered.length === 0) { showToast(t('batchNoLevels'), true); return; }
-    let startPos = ordered.findIndex(it => it.globalIdx === currentLevelIndex);
-    if (startPos < 0) startPos = 0;
+    const group = getGalleryGroups().find(g => g.items.some(it => it.globalIdx === currentLevelIndex));
+    if (!group) { showToast(t('batchNoLevels'), true); return; }
+    const ordered = group.items;
+    const startPos = ordered.findIndex(it => it.globalIdx === currentLevelIndex);
     const list = [];
     for (let i = startPos; i < ordered.length; i++) {
       const it = ordered[i];
@@ -4177,7 +4369,7 @@
     batch.skipRequested = false;
     batch.stats = { solved: 0, notFound: 0, oom: 0, error: 0 };
     console.log('[AutoSolve] ================ Batch start ================');
-    console.log('[AutoSolve] Queue: ' + list.length + ' unsolved levels');
+    console.log('[AutoSolve] Group: ' + group.group + '; queue: ' + list.length + ' unsolved levels');
     showToast(t('batchStarted', list.length));
     batchStep();
   }
@@ -4204,11 +4396,13 @@
     saveUserLevels();
   }
   function shouldSaveStep() {
+    if (game.scrambled) return false;
     if (MOVE_MODE !== 3) return false;
     if (!GROUP_SHIFT) return true;
     return !!game.groupMoves;
   }
   async function runSolver() {
+    if (game.scrambling) return;
     if (!game.targetCfg || game.targetCfg.length === 0) {
       if (batchMode) return;
       stopSolving(t('solverNoTarget'), true); return;
@@ -4287,6 +4481,7 @@
     animateSolution(result.path);
   }
   async function requestHint() {
+    if (game.scrambling) return;
     if (game.won || game.solving) return;
     clearHint();
     if (game.session.pieceId) commitSession();
@@ -4934,7 +5129,6 @@
     editor.activeDir = selected ? null : (dir || null);
     editor.activeDmove = selected ? null : (dmove || null);
     editor.activeLabel = label;
-    if (!selected) editor.activeRound = false;
     applyEditorAppearance();
   }
   function makeDmoveButton(axis) {
@@ -4953,10 +5147,9 @@
     } else if (!spacing) {
       // Text and icons are mutually exclusive; retain only existing whitespace.
       label = label.replace(/\uFFFC/g, '');
-      editor.activeDir = null; editor.activeDmove = null; editor.activeRound = false;
+      editor.activeDir = null; editor.activeDmove = null;
     }
-    if (label.endsWith(ch)) label = label.slice(0, -ch.length);
-    else label += ch;
+    label += ch;
     editor.activeLabel = label === ICON_LABEL_MARKER ? '' : label;
     applyEditorAppearance();
   }
@@ -4965,7 +5158,6 @@
     btn.type = 'button'; btn.className = 'palette-label-btn';
     btn.textContent = ch === ' ' ? '\u2423' : ch;
     btn.title = ch === ' ' ? t('labelSpaceTitle') : ch; btn.dataset.char = ch;
-    if ((editor.activeLabel || '').includes(ch)) btn.classList.add('active');
     btn.addEventListener('click', e => { e.preventDefault(); appendEditorLabel(ch); });
     return btn;
   }
@@ -5061,26 +5253,23 @@
     sw.addEventListener('click', () => {
       const newVal = !editor.activeRound;
       editor.activeRound = newVal;
-      if (newVal) { editor.activeDir = null; editor.activeDmove = null; editor.activeLabel = ''; }
       if (editor.selectedId) {
         const list = editor.selectedBoard === 'start' ? editor.startPieces : editor.targetPieces;
         const p = list.find(q => q.id === editor.selectedId);
         const shape = p && SHAPES[p.shape];
         if (p && shape && shape.w === shape.h && p.shape !== 'blk' && p.shape !== 'hole') {
           if (editor.selectedBoard === 'target') {
-            const prevRound = p.round, prevDir = p.dir, prevDmove = p.dmove, prevLabel = p.label;
+            const prevRound = p.round;
             p.round = newVal || undefined;
-            if (newVal) { p.dir = undefined; p.dmove = undefined; p.label = undefined; }
             const key = typeColorKey(p);
             const onStart = countByTypeColor(editor.startPieces, key);
             const onTarget = countByTypeColor(editor.targetPieces, key);
-            if (onTarget > onStart) { p.round = prevRound; p.dir = prevDir; p.dmove = prevDmove; p.label = prevLabel; }
+            if (onTarget > onStart) { p.round = prevRound; editor.activeRound = !!prevRound; }
             else editor.dirty = true;
           } else {
             const targetMatch = prepareSyncTarget(p);
             p.round = newVal || undefined;
-            if (newVal) { p.dir = undefined; p.dmove = undefined; p.label = undefined; }
-            if (targetMatch) { targetMatch.round = newVal || undefined; if (newVal) { targetMatch.dir = undefined; targetMatch.dmove = undefined; targetMatch.label = undefined; } }
+            if (targetMatch) targetMatch.round = newVal || undefined;
             enforceTargetInvariant();
             editor.dirty = true;
           }
@@ -5219,6 +5408,7 @@
     return container;
   }
   function buildPalette() {
+    const customScroll = (paletteEl.querySelector('.palette-custom-frame') || {}).scrollTop || 0;
     paletteEl.innerHTML = '';
 
     const replacements = editor.paletteShapeReplacements;
@@ -5269,7 +5459,7 @@
 
     if (customShapes.length > 0) {
       const row2 = document.createElement('div');
-      row2.className = 'palette-tiles-row palette-tiles-row--action';
+      row2.className = 'palette-tiles-row palette-tiles-row--action palette-tiles-row--custom';
 
       const actionsCol = document.createElement('div');
       actionsCol.className = 'palette-actions-col';
@@ -5296,13 +5486,21 @@
       const visibleCustomKeys = visibleCustom.map(cs => cs.key);
       if (editor.showAllCustom) appendPaletteGroupActions(actionsCol, visibleCustomKeys);
       row2.appendChild(actionsCol);
+      const customFrame = document.createElement('div');
+      customFrame.className = 'palette-custom-frame';
       const sortedCustom = editor.showAllCustom ? visibleCustomKeys : computeSortedPaletteKeys(visibleCustomKeys);
-      if (editor.showAllCustom) row2.appendChild(buildGroupedPalette(sortedCustom));
-      else for (const cKey of sortedCustom) {
-        const item = makePaletteItem(cKey);
-        if (item) row2.appendChild(item);
+      if (editor.showAllCustom) customFrame.appendChild(buildGroupedPalette(sortedCustom));
+      else {
+        const items = document.createElement('div'); items.className = 'palette-custom-items';
+        for (const cKey of sortedCustom) {
+          const item = makePaletteItem(cKey);
+          if (item) items.appendChild(item);
+        }
+        customFrame.appendChild(items);
       }
+      row2.appendChild(customFrame);
       paletteEl.appendChild(row2);
+      customFrame.scrollTop = customScroll;
     }
   }
   function autoPlaceOnStart(shapeKey) {
@@ -5365,7 +5563,7 @@
     const sep1 = document.createElement('div'); sep1.className = 'color-palette-sep'; row2.appendChild(sep1);
     for (const id of ['lineV', 'lineH', 'lineD1', 'lineD2']) row2.appendChild(makeDirDecorButton(id));
     const sep2 = document.createElement('div'); sep2.className = 'color-palette-sep'; row2.appendChild(sep2);
-    for (const id of ['circle', 'triangle', 'triangleDown', 'square', 'diamond', 'star', 'smiley', 'sad', 'heart', 'fire', 'car']) row2.appendChild(makeDirDecorButton(id));
+    for (const id of ['circle', 'triangle', 'triangleDown', 'square', 'diamond', 'star', 'smiley', 'sad', 'heart', 'fire', 'clock', 'car']) row2.appendChild(makeDirDecorButton(id));
     colorPaletteEl.appendChild(row2);
 
     const row3 = document.createElement('div');
@@ -5480,8 +5678,7 @@
     colorPaletteEl.querySelectorAll('.palette-label-btn').forEach(btn => {
       const ch = btn.dataset.char;
       if (!ch) return;
-      const active = (editor.activeLabel || '').indexOf(ch) >= 0;
-      btn.classList.toggle('active', active);
+      btn.classList.remove('active');
     });
     colorPaletteEl.querySelectorAll('.color-swatch.dir-swatch').forEach(btn => {
       if (btn.dataset.round) btn.classList.toggle('active', !!editor.activeRound);
@@ -5597,6 +5794,26 @@
     if (startBoardEl) startBoardEl.style.cursor = 'crosshair';
     if (targetBoardEl) targetBoardEl.style.cursor = 'crosshair';
   }
+  function findEditorDropPosition(pieces, shapeKey, x, y, excludeId) {
+    const shape = SHAPES[shapeKey];
+    if (!shape) return null;
+    const obstacles = shapeKey === 'blk' ? pieces.filter(p => p.shape !== 'hole') : pieces;
+    // Keep exact drops; search a local neighbourhood only when necessary.
+    // Half the tile span accommodates drops near any edge of a large tile.
+    const radius = Math.max(2, Math.ceil(Math.max(shape.w, shape.h) / 2));
+    const candidates = [];
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) {
+        const distance = dx * dx + dy * dy;
+        if (distance <= radius * radius) candidates.push({ x: x + dx, y: y + dy, distance });
+      }
+    }
+    candidates.sort((a, b) => a.distance - b.distance);
+    for (const candidate of candidates) {
+      if (!overlapsAny(obstacles, shapeKey, candidate.x, candidate.y, excludeId)) return candidate;
+    }
+    return null;
+  }
   function prepareEditorPlacement(pieces, shapeKey, x, y, excludeId) {
     // An X-block fills a cut-out cell. Remove the hole only after checking
     // the whole placement, so an invalid drop leaves the board unchanged.
@@ -5625,7 +5842,7 @@
     if (!d.moved) { renderEditor(); restoreKnifeIfNeeded(); return; }
     if (d.shapeKey !== 'blk' && d.shapeKey !== 'hole' && isOverNewTileBtn(ev.clientX, ev.clientY)) {
       if (d.kind === 'piece') renderEditor();
-      openTileEditorWithShape(d.shapeKey);
+      openTileEditorWithShape(d.shapeKey, d.kind === 'piece' ? { board: d.sourceBoard, pieceId: d.pieceId } : null);
       return;
     }
     if (isCustomShapeKey(d.shapeKey) && isOverDeleteBtn(ev.clientX, ev.clientY)) {
@@ -5652,6 +5869,10 @@
       newX = Math.max(0, Math.min(COLS - shape.w, newX));
       newY = Math.max(0, Math.min(ROWS - shape.h, newY));
       const dstList = boardName === 'start' ? editor.startPieces : editor.targetPieces;
+      const excludeId = d.kind === 'piece' && boardName === d.sourceBoard ? d.pieceId : null;
+      const placement = findEditorDropPosition(dstList, d.shapeKey, newX, newY, excludeId);
+      if (!placement) { renderEditor(); restoreKnifeIfNeeded(); return; }
+      newX = placement.x; newY = placement.y;
       if (d.kind === 'palette') {
         if (prepareEditorPlacement(dstList, d.shapeKey, newX, newY, null)) {
           const id = 'e' + (editor.nextId++);
@@ -5763,15 +5984,32 @@
 
   let tileEditActive = false;
   let tileEditSourceShapeKey = null;
+  let tileEditSourcePiece = null;
+  let tileEditBoard = 'start';
+  let tileEditShowBackground = true;
   let tileCells = new Set();
   let tilePaintMode = null;
   let tilePaintPointerId = null;
   function renderTileBoard() {
-    tileBoardInnerEl.querySelectorAll('.tile-cell, .tile-contour-svg').forEach(el => el.remove());
+    updateTileShadowsButton();
+    tileBoardInnerEl.querySelectorAll('.tile-cell, .tile-contour-svg, .tile-background-piece').forEach(el => el.remove());
+    const holes = getHoleSetFromPieces(editor.startPieces);
     const boardSvg = getOrCreateBoardSvg(tileBoardInnerEl, 'tile');
-    renderBoardContour(boardSvg, COLS, ROWS, null, 'tile');
+    renderBoardContour(boardSvg, COLS, ROWS, holes, 'tile');
     const grid = getOrCreateBoardGrid(tileBoardInnerEl);
-    applyMiniBoardMask(grid, COLS, ROWS, null, true);
+    applyMiniBoardMask(grid, COLS, ROWS, holes, true);
+    if (tileEditShowBackground) {
+      const pieces = tileEditBoard === 'target' ? editor.targetPieces : editor.startPieces;
+      for (const p of pieces) {
+        const shape = SHAPES[p.shape];
+        if (!shape || shape.hole || (tileEditSourcePiece && p.id === tileEditSourcePiece.pieceId)) continue;
+        const el = document.createElement('div'); el.className = 'tile-background-piece';
+        el.style.left = (p.x / COLS * 100) + '%'; el.style.top = (p.y / ROWS * 100) + '%';
+        el.style.width = (shape.w / COLS * 100) + '%'; el.style.height = (shape.h / ROWS * 100) + '%';
+        el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, editor.rushHour, p.region);
+        tileBoardInnerEl.appendChild(el);
+      }
+    }
     for (const key of tileCells) {
       const [x, y] = key.split(',').map(Number);
       const el = document.createElement('div');
@@ -5793,7 +6031,7 @@
         svg.setAttribute('preserveAspectRatio', 'none');
         svg.style.position = 'absolute'; svg.style.inset = '0';
         svg.style.width = '100%'; svg.style.height = '100%';
-        svg.style.pointerEvents = 'none'; svg.style.overflow = 'visible';
+        svg.style.pointerEvents = 'none'; svg.style.overflow = 'visible'; svg.style.zIndex = '3';
         const path = document.createElementNS(SVGNS, 'path');
         path.setAttribute('d', d);
         path.setAttribute('fill', 'rgba(255, 209, 102, 0.10)');
@@ -5806,39 +6044,74 @@
       }
     }
   }
+  function updateTileShadowsButton() {
+    const button = document.getElementById('tileShadowsBtn');
+    if (!button) return;
+    button.setAttribute('aria-pressed', String(tileEditShowBackground));
+    const labelKey = tileEditShowBackground ? 'tileHideShadows' : 'tileShowShadows';
+    button.innerHTML = eyeSvgMarkup() + '<span class="btn-lbl" data-ruseng="' + labelKey + '">' + t(labelKey) + '</span>';
+  }
+  function toggleTileShadows() {
+    if (!tileEditActive) return;
+    tileEditShowBackground = !tileEditShowBackground;
+    renderTileBoard();
+  }
   function tileCellFromEvent(e) {
     const rect = tileBoardInnerEl.getBoundingClientRect();
     if (rect.width <= 0 || rect.height <= 0) return null;
     const x = Math.floor((e.clientX - rect.left) / (rect.width / COLS));
     const y = Math.floor((e.clientY - rect.top) / (rect.height / ROWS));
     if (x < 0 || x >= COLS || y < 0 || y >= ROWS) return null;
+    if (getHoleSetFromPieces(editor.startPieces).has(y + ',' + x)) return null;
     return { x, y, key: x + ',' + y };
   }
   function openTileEditor() {
+    if (tileEditActive) return;
     tileEditSourceShapeKey = null;
+    tileEditSourcePiece = null;
+    tileEditBoard = editor.selectedBoard === 'target' ? 'target' : 'start';
+    tileEditShowBackground = true;
     tileEditActive = true;
     tileCells = new Set();
     tilePaintMode = null; tilePaintPointerId = null;
-    tileCells.add(Math.floor(COLS / 2) + ',' + Math.floor(ROWS / 2));
     editorBoardsEl.hidden = true;
     tileEditorEl.hidden = false;
     applyBoardSize();
     renderTileBoard();
   }
-  function openTileEditorWithShape(shapeKey) {
+  function openTileEditorWithShape(shapeKey, sourcePiece = null) {
     const shape = SHAPES[shapeKey];
     if (!shape || !shape.cells || shape.cells.length === 0) return;
+    const board = sourcePiece ? sourcePiece.board : (editor.selectedBoard === 'target' ? 'target' : 'start');
+    const list = board === 'target' ? editor.targetPieces : editor.startPieces;
+    const piece = sourcePiece && list.find(p => p.id === sourcePiece.pieceId);
+    let position = piece ? { x: piece.x, y: piece.y } : {
+      x: Math.max(0, Math.floor((COLS - shape.w) / 2)), y: Math.max(0, Math.floor((ROWS - shape.h) / 2))
+    };
+    const holes = editor.startPieces.filter(p => p.shape === 'hole');
+    if (!piece && overlapsAny(holes, shapeKey, position.x, position.y, null)) position = findPlacementSpot(holes, shapeKey, -1, -1);
+    if (!position) { showToast(t('tileEditShapeNoRoom'), true); return; }
     tileEditSourceShapeKey = shapeKey;
+    tileEditSourcePiece = sourcePiece ? { ...sourcePiece, shapeKey } : null;
+    tileEditBoard = board;
+    tileEditShowBackground = !!sourcePiece;
     tileEditActive = true;
     tileCells = new Set();
     tilePaintMode = null; tilePaintPointerId = null;
-    const cx = Math.max(0, Math.floor((COLS - shape.w) / 2));
-    const cy = Math.max(0, Math.floor((ROWS - shape.h) / 2));
+    const cx = position.x, cy = position.y;
+    if (tileEditSourcePiece) {
+      const list = sourcePiece.board === 'start' ? editor.startPieces : editor.targetPieces;
+      const piece = list.find(p => p.id === sourcePiece.pieceId);
+      if (piece) {
+        tileEditSourcePiece.piece = piece;
+        tileEditSourcePiece.originX = piece.x - cx;
+        tileEditSourcePiece.originY = piece.y - cy;
+      }
+    }
     for (const [dx, dy] of shape.cells) {
       const tx = cx + dx, ty = cy + dy;
       if (tx >= 0 && tx < COLS && ty >= 0 && ty < ROWS) tileCells.add(tx + ',' + ty);
     }
-    if (tileCells.size === 0) tileCells.add(Math.floor(COLS / 2) + ',' + Math.floor(ROWS / 2));
     editorBoardsEl.hidden = true;
     tileEditorEl.hidden = false;
     applyBoardSize();
@@ -5846,60 +6119,39 @@
   }
   function cancelTileEditor() {
     tileEditSourceShapeKey = null;
+    tileEditSourcePiece = null;
     tileEditActive = false;
     tileCells = new Set();
     tilePaintMode = null; tilePaintPointerId = null;
     tileEditorEl.hidden = true;
     editorBoardsEl.hidden = false;
   }
-  function replaceEditedShapeOnBoards(sourceKey, replacementKey) {
-    const lists = [editor.startPieces, editor.targetPieces];
-    const proposals = new Set(lists.flat().filter(p => p.shape === sourceKey));
-    const total = proposals.size;
-    // Test all replacements together, then keep blocked pieces in their original
-    // places. Recheck because restoring an old shape may block another candidate.
-    let removed;
-    do {
-      removed = false;
-      for (const list of lists) {
-        const staged = list.map(p => proposals.has(p) ? { ...p, shape: replacementKey } : p);
-        for (const p of list) {
-          if (proposals.has(p) && overlapsAny(staged, replacementKey, p.x, p.y, p.id)) {
-            proposals.delete(p); removed = true;
-            break; // Rebuild the staged board before rejecting another candidate.
-          }
-        }
-      }
-      // Keep enough tiles of each appearance on the start board to match both
-      // the replaced and unchanged goal tiles; never delete a blocked goal tile.
-      const groups = new Map();
-      for (let side = 0; side < lists.length; side++) for (const p of lists[side]) {
-        if (p.shape !== sourceKey) continue;
-        const key = typeColorKey(p);
-        if (!groups.has(key)) groups.set(key, [[], []]);
-        groups.get(key)[side].push(p);
-      }
-      for (const [starts, targets] of groups.values()) {
-        const newStarts = starts.filter(p => proposals.has(p));
-        const newTargets = targets.filter(p => proposals.has(p));
-        const allowedStarts = Math.max(0, Math.min(newStarts.length, starts.length - targets.length + newTargets.length));
-        for (const p of newStarts.slice(allowedStarts)) { proposals.delete(p); removed = true; }
-        for (const p of newTargets.slice(allowedStarts)) { proposals.delete(p); removed = true; }
-      }
-    } while (removed);
-    for (const p of proposals) p.shape = replacementKey;
-    if (proposals.size) editor.dirty = true;
-    return { replaced: proposals.size, unchanged: total - proposals.size };
+  function replaceEditedBoardPiece(source, replacementKey, minX, minY) {
+    const list = source.board === 'start' ? editor.startPieces : editor.targetPieces;
+    const piece = list.find(p => (p === source.piece || p.id === source.pieceId) && p.shape === source.shapeKey);
+    if (!piece) return { error: 'tileEditSourceMissing' };
+    const anchoredX = Number.isFinite(source.originX) ? source.originX + minX : piece.x;
+    const anchoredY = Number.isFinite(source.originY) ? source.originY + minY : piece.y;
+    const positions = [[anchoredX, anchoredY], [piece.x, piece.y]];
+    const position = positions.find(([x, y]) => !overlapsAny(list, replacementKey, x, y, piece.id));
+    if (!position) return { error: 'tileEditNoRoom' };
+    piece.shape = replacementKey;
+    piece.x = position[0]; piece.y = position[1];
+    editor.selectedId = piece.id; editor.selectedBoard = source.board;
+    editor.dirty = true;
+    return { replaced: 1, unchanged: 0 };
   }
   function acceptTileEditor() {
     if (tileCells.size === 0) { showToast(t('tileEmpty'), true); return; }
     const rawCells = [...tileCells].map(k => k.split(',').map(Number));
     if (!isConnectedShape(rawCells)) { showToast(t('tileBroken'), true); return; }
     const norm = normalizeCells(rawCells);
-    const sourceKey = tileEditSourceShapeKey;
+    const minX = Math.min(...rawCells.map(c => c[0])), minY = Math.min(...rawCells.map(c => c[1]));
+    const sourceKey = tileEditSourceShapeKey, sourcePiece = tileEditSourcePiece;
+    const placeNewOnBoard = !sourceKey && !sourcePiece && tileEditShowBackground;
     let key = findShapeKeyByCells(norm.w, norm.h, norm.cells);
     const visible = ensureVisibleCustomShapesSet();
-    if (!sourceKey && key) {
+    if (!sourceKey && key && !placeNewOnBoard) {
       if (isCustomShapeKey(key)) visible.add(key);
       showToast(t('tileExists'), true);
       cancelTileEditor();
@@ -5907,29 +6159,47 @@
       return;
     }
     if (sourceKey && sourceKey === key) { cancelTileEditor(); buildPalette(); renderEditor(); return; }
-    const sourceIndex = customShapes.findIndex(cs => cs.key === sourceKey);
-    if (!key) {
+    const isNew = !key;
+    if (isNew) {
       key = nextCustomKey();
       const shape = { w: norm.w, h: norm.h, cells: norm.cells, custom: true };
       SHAPES[key] = shape;
-      if (sourceIndex >= 0) customShapes.splice(sourceIndex, 1, { key, shape });
-      else customShapes.push({ key, shape });
-    } else if (sourceIndex >= 0) customShapes.splice(sourceIndex, 1);
+    }
+    let result = null;
+    if (sourcePiece) {
+      result = replaceEditedBoardPiece(sourcePiece, key, minX, minY);
+      if (result.error) {
+        if (isNew) delete SHAPES[key];
+        showToast(t(result.error), true);
+        return;
+      }
+    }
+    let placed = false;
+    if (placeNewOnBoard) {
+      const list = tileEditBoard === 'target' ? editor.targetPieces : editor.startPieces;
+      const piece = { shape: key, x: minX, y: minY, color: editor.activeColor,
+        dir: editor.activeDir || undefined, dmove: editor.activeDmove || undefined,
+        label: editor.activeLabel || undefined, round: editor.activeRound || undefined };
+      const type = typeColorKey(piece);
+      const targetAllowed = tileEditBoard !== 'target' || countByTypeColor(editor.targetPieces, type) < countByTypeColor(editor.startPieces, type);
+      const obstacles = tileEditBoard === 'target' ? list.concat(editor.startPieces.filter(p => p.shape === 'hole')) : list;
+      if (targetAllowed && !overlapsAny(obstacles, key, minX, minY, null)) {
+        piece.id = 'e' + (editor.nextId++);
+        list.push(piece);
+        editor.selectedId = piece.id; editor.selectedBoard = tileEditBoard;
+        editor.dirty = true;
+        placed = true;
+      }
+    }
     if (isCustomShapeKey(key) && !customShapes.some(cs => cs.key === key)) customShapes.push({ key, shape: SHAPES[key] });
     // Old shape definitions stay immutable for unchanged pieces and other levels.
     if (isCustomShapeKey(key)) visible.add(key);
     if (editor.showAllCustom) editor.collapsedPaletteAreas.delete(SHAPES[key].w * SHAPES[key].h);
-    let result = null;
-    if (sourceKey) {
-      result = replaceEditedShapeOnBoards(sourceKey, key);
-      editor.paletteShapeReplacements.delete(key);
-      editor.paletteShapeReplacements.set(sourceKey, key);
-      visible.delete(sourceKey);
-    }
     saveCustomShapes();
     cancelTileEditor();
     buildPalette(); renderEditor();
-    showToast(result ? t('tileUpdated', result.replaced, result.unchanged) : t('tileAdded'));
+    showToast(result ? t('tileUpdated', result.replaced, result.unchanged) :
+      placeNewOnBoard ? t(placed ? 'tileAddedOnBoard' : 'tileAddedPanelOnly') : t('tileAdded'));
     restoreKnifeIfNeeded();
   }
   tileBoardInnerEl.addEventListener('pointerdown', e => {
@@ -5962,6 +6232,7 @@
   window.addEventListener('pointercancel', () => { if (tilePaintMode) { tilePaintMode = null; tilePaintPointerId = null; } });
 
   document.getElementById('tileAcceptBtn').addEventListener('click', acceptTileEditor);
+  document.getElementById('tileShadowsBtn').addEventListener('click', toggleTileShadows);
   document.getElementById('tileCancelBtn').addEventListener('click', cancelTileEditor);
 
   function openEditor() {
@@ -6168,6 +6439,7 @@
     void appEl.offsetWidth;
     appEl.style.transition = '';
     startGame(startCfg, targetCfg, editor.levelStep, editor.rushHour);
+    saveLastLevelIdentity();
   }
   function deleteUserLevelAt(userIdx) {
     if (userIdx < 0 || userIdx >= userLevels.length) return { ok: false, wasCurrent: false };
@@ -7192,10 +7464,11 @@
   }
   function applyGroupMovesFromLevel(level) {
     game.groupMoves = level.groupMoves === true;
+    game.groupShiftLocked = level.groupMoves === true || level.groupMoves === false;
     GROUP_SHIFT = game.groupMoves;
     if (groupShiftCheckEl) {
       groupShiftCheckEl.checked = GROUP_SHIFT;
-      groupShiftCheckEl.disabled = level.groupMoves === true || level.groupMoves === false;
+      groupShiftCheckEl.disabled = game.groupShiftLocked;
     }
   }
   function loadLevelToGame(level) {
@@ -7217,7 +7490,7 @@
       loadLevelToGame(level);
       currentLevelIndex = idx;
       levelSelectEl.value = String(idx);
-      if (save !== false) safeSetItem(LEVEL_KEY, String(idx));
+      saveLastLevelIdentity();
     } catch (err) { console.error(err); showToast(t('solverError', err.message), true); }
   }
   function stepLevel(delta) {
@@ -7261,7 +7534,10 @@
   function saveLastLevelIdentity() {
     try {
       const id = getCurrentLevelIdentity();
-      if (id && id.name) safeSetItem(LAST_LEVEL_KEY, JSON.stringify(id));
+      if (id && id.name) {
+        safeSetItem(LAST_LEVEL_KEY, JSON.stringify(id));
+        safeSetItem(LEVEL_KEY, String(currentLevelIndex));
+      }
     } catch (e) {}
   }
   window.addEventListener('pagehide', saveLastLevelIdentity);
@@ -7307,6 +7583,7 @@
       showStartupLevelOption(all[idx], idx);
       loadLevelToGame(level);
       levelSelectEl.value = String(idx);
+      saveLastLevelIdentity();
     } catch (err) { console.error(err); startGame(DEFAULT_START, DEFAULT_TARGET, 0); }
   }
   levelSelectEl.addEventListener('change', e => { cancelBatch(); const idx = parseInt(e.target.value, 10); if (isNaN(idx)) return; selectLevel(idx); });
@@ -7435,55 +7712,161 @@
     contextMenuEl = menu;
   }
 
+  let galleryPreviewObserver = null;
+  let galleryPreviewFrame = 0;
+  let galleryBackgroundTimer = 0;
+  let galleryBackgroundCursor = 0;
+  let galleryBackgroundEdge = 0;
+  const galleryPreviewQueue = new Set();
+  const galleryPreviewCards = [];
+  function resetGalleryPreviews() {
+    if (galleryPreviewObserver) galleryPreviewObserver.disconnect();
+    if (galleryPreviewFrame) cancelAnimationFrame(galleryPreviewFrame);
+    clearTimeout(galleryBackgroundTimer);
+    galleryPreviewFrame = galleryBackgroundTimer = 0;
+    galleryBackgroundCursor = galleryBackgroundEdge = galleryBackgroundCenter = 0;
+    galleryPreviewQueue.clear();
+    galleryPreviewCards.length = 0;
+    galleryPreviewObserver = typeof IntersectionObserver === 'function' ? new IntersectionObserver(entries => {
+      let nearest = null, nearestDistance = Infinity;
+      for (const entry of entries) {
+        if (entry.isIntersecting && entry.target._renderPreview) {
+          galleryPreviewQueue.add(entry.target);
+          const distance = Math.abs(entry.boundingClientRect.top - window.innerHeight / 2);
+          if (distance < nearestDistance) { nearest = entry.target; nearestDistance = distance; }
+        } else galleryPreviewQueue.delete(entry.target);
+      }
+      if (nearest) focusGalleryBackground(nearest);
+      scheduleGalleryPreviews();
+    }, { rootMargin: '350px 0px' }) : null;
+  }
+  function focusGalleryBackground(card) {
+    const index = galleryPreviewCards.indexOf(card);
+    if (index >= 0 && index !== galleryBackgroundCenter) { galleryBackgroundCenter = index; galleryBackgroundCursor = 0; }
+  }
+  let galleryBackgroundCenter = 0;
+  function renderGalleryPreview(card) {
+    if (!card || !card.isConnected || !card._renderPreview) return;
+    card._renderPreview();
+    card._renderPreview = null;
+    card.classList.remove('pending-preview');
+    galleryPreviewQueue.delete(card);
+    if (galleryPreviewObserver) galleryPreviewObserver.unobserve(card);
+  }
+  function scheduleGalleryBackground() {
+    if (galleryBackgroundTimer || appMode !== 'gallery') return;
+    const count = galleryPreviewCards.length;
+    if (galleryBackgroundEdge >= Math.min(24, count) && galleryBackgroundCursor >= count * 2) return;
+    galleryBackgroundTimer = setTimeout(() => {
+      galleryBackgroundTimer = 0;
+      if (appMode !== 'gallery') return;
+      // Visible cards always take priority over speculative work.
+      if (galleryPreviewQueue.size) { scheduleGalleryPreviews(); scheduleGalleryBackground(); return; }
+      const deadline = performance.now() + 5;
+      let painted = 0, examined = 0;
+      while (examined++ < 64 && painted < 2 && performance.now() < deadline) {
+        let index;
+        if (galleryBackgroundEdge < Math.min(24, count)) {
+          const edge = galleryBackgroundEdge++;
+          index = edge % 2 === 0 ? Math.floor(edge / 2) : count - 1 - Math.floor(edge / 2);
+        } else {
+          if (galleryBackgroundCursor >= count * 2) break;
+          const offset = galleryBackgroundCursor++;
+          index = galleryBackgroundCenter + (offset % 2 === 0 ? -Math.floor(offset / 2) : Math.ceil(offset / 2));
+        }
+        const card = galleryPreviewCards[index];
+        // Closed version stacks are prepared only when expanded.
+        if (!card || !card._renderPreview || !card.isConnected || !card.getClientRects().length) continue;
+        renderGalleryPreview(card);
+        painted++;
+      }
+      scheduleGalleryBackground();
+    }, 40);
+  }
+  function scheduleGalleryPreviews() {
+    scheduleGalleryBackground();
+    if (galleryPreviewFrame || !galleryPreviewQueue.size) return;
+    galleryPreviewFrame = requestAnimationFrame(() => {
+      galleryPreviewFrame = 0;
+      if (appMode !== 'gallery') return;
+      const deadline = performance.now() + 8;
+      for (const card of galleryPreviewQueue) {
+        renderGalleryPreview(card);
+        galleryPreviewQueue.delete(card);
+        if (performance.now() >= deadline) break;
+      }
+      scheduleGalleryPreviews();
+    });
+  }
+  const galleryParsedLevels = new WeakMap();
+  function getGalleryParsedLevel(level) {
+    const cached = galleryParsedLevels.get(level);
+    if (cached && cached.text === level.text) return cached.parsed;
+    let parsed = null;
+    try { parsed = parseLevel(level.text); } catch (e) {}
+    galleryParsedLevels.set(level, { text: level.text, parsed });
+    return parsed;
+  }
   function createGalleryCard(item, displayNameOverride, noClickHandler) {
     const card = document.createElement('div');
     card.className = 'gallery-card';
     card.dataset.levelIndex = String(item.globalIdx);
     const dispName = (displayNameOverride != null) ? displayNameOverride : levelDisplayName(item.level);
     card.title = dispName;
-    let parsed = null;
-    try { parsed = parseLevel(item.level.text); } catch (e) { parsed = null; }
     const nameEl = document.createElement('div');
-    nameEl.className = 'gallery-card__name' + ((parsed && parsed.groupMoves) ? ' gallery-card__name--group' : '');
+    nameEl.className = 'gallery-card__name';
     nameEl.textContent = dispName;
     card.appendChild(nameEl);
     const previewsWrap = document.createElement('div');
     previewsWrap.className = 'gallery-previews';
+    card.appendChild(previewsWrap);
+    const stepEl = document.createElement('div');
+    stepEl.className = 'gallery-card__step';
+    const step = parseLevelStepSafe(item.level.text);
+    stepEl.textContent = step > 0 ? t('gallerySteps', step) : '\u00A0';
+    stepEl.classList.toggle('empty', !(step > 0));
+    card.appendChild(stepEl);
+    const parsed = getGalleryParsedLevel(item.level);
+    nameEl.classList.toggle('gallery-card__name--group', !!(parsed && parsed.groupMoves));
+    const previewJobs = [];
     if (parsed) {
-      const hideArrows = !!parsed.rushHour;
-      const holesSet = getHoleSetFromPieces(parsed.startPieces);
       const markersOnlyGoal = getTargetMarkerPieces(parsed.startPieces, parsed.targetPieces).length > 0;
-      const cellStart = document.createElement('div');
-      cellStart.className = 'gallery-preview-cell';
-      const lblS = document.createElement('div');
-      lblS.className = 'gallery-preview-label'; lblS.textContent = t('previewStart');
-      const prevS = buildMiniPreviewFromParsed(
-        parsed.cols, parsed.rows, parsed.startPieces, holesSet, hideArrows,
-        markersOnlyGoal ? parsed.targetPieces : null
-      );
-      cellStart.appendChild(lblS); cellStart.appendChild(prevS);
-      previewsWrap.appendChild(cellStart);
-      if (!markersOnlyGoal) {
-        const cellTarget = document.createElement('div');
-        cellTarget.className = 'gallery-preview-cell';
-        const lblT = document.createElement('div');
-        lblT.className = 'gallery-preview-label'; lblT.textContent = t('previewTarget');
-        const prevT = buildMiniPreviewFromParsed(parsed.cols, parsed.rows, parsed.targetPieces, holesSet, hideArrows);
-        cellTarget.appendChild(lblT); cellTarget.appendChild(prevT);
-        previewsWrap.appendChild(cellTarget);
-      }
+      previewsWrap.classList.toggle('gallery-previews--vertical', !markersOnlyGoal && parsed.cols >= parsed.rows * 1.5);
+      // Reserve the final board geometry immediately. Only SVG contents are lazy.
+      // Background rendering must never change the height of gallery rows.
+      const addBoard = (pieces, label, markerTargets) => {
+        const cell = document.createElement('div');
+        cell.className = 'gallery-preview-cell';
+        if (label) {
+          const labelEl = document.createElement('div');
+          labelEl.className = 'gallery-preview-label'; labelEl.textContent = label;
+          cell.appendChild(labelEl);
+        }
+        const placeholder = document.createElement('div');
+        placeholder.className = 'mini-board';
+        placeholder.style.setProperty('--board-cols', parsed.cols);
+        placeholder.style.setProperty('--board-rows', parsed.rows);
+        cell.appendChild(placeholder);
+        previewsWrap.appendChild(cell);
+        previewJobs.push(() => {
+          const full = buildMiniPreviewFromParsed(parsed.cols, parsed.rows, pieces,
+            getHoleSetFromPieces(parsed.startPieces), !!parsed.rushHour, markerTargets);
+          placeholder.replaceWith(full);
+        });
+      };
+      addBoard(parsed.startPieces, markersOnlyGoal ? null : t('previewStart'), markersOnlyGoal ? parsed.targetPieces : null);
+      if (!markersOnlyGoal) addBoard(parsed.targetPieces, t('previewTarget'), null);
     } else {
       const brokenWrap = document.createElement('div');
       brokenWrap.className = 'mini-board gallery-card__broken';
       brokenWrap.textContent = '?';
       previewsWrap.appendChild(brokenWrap);
     }
-    card.appendChild(previewsWrap);
-    const stepEl = document.createElement('div');
-    stepEl.className = 'gallery-card__step';
-    if (parsed && parsed.step && parsed.step > 0) stepEl.textContent = t('gallerySteps', parsed.step);
-    else { stepEl.textContent = '\u00A0'; stepEl.classList.add('empty'); }
-    card.appendChild(stepEl);
+    card.classList.add('pending-preview');
+    card._renderPreview = () => { for (const render of previewJobs) render(); };
+    galleryPreviewCards.push(card);
+    if (galleryPreviewObserver) galleryPreviewObserver.observe(card);
+    else { galleryPreviewQueue.add(card); scheduleGalleryPreviews(); }
     const idx = item.globalIdx;
     const isUser = item.isUser;
     const userIdx = item.userIdx;
@@ -7676,6 +8059,7 @@
   }
 
   function buildGallery() {
+    resetGalleryPreviews();
     galleryViewEl.innerHTML = '';
     hideLevelContextMenu();
 
@@ -7737,7 +8121,7 @@
     const totalUser = userLevels.length;
     let totalUnsolved = 0;
     for (const g of groups) totalUnsolved += countUnsolvedItems(g.items);
-    if (totalUser > 0) summaryEl.textContent = t('gallerySummary', totalPreset, totalUser, totalUnsolved);
+    if (totalUser > 0) summaryEl.textContent = t('gallerySummary', totalPreset, totalUser, totalUnsolved) + ' · ' + t('galleryTotal', totalPreset + totalUser);
     else summaryEl.textContent = t('gallerySummaryNoUser', totalPreset, totalUnsolved);
     galleryViewEl.appendChild(summaryEl);
     if (groups.length === 0) {
@@ -7882,11 +8266,17 @@
     appEl.style.transition = 'none'; setAppMode('gallery'); void appEl.offsetWidth; appEl.style.transition = '';
     requestAnimationFrame(() => {
       const card = galleryViewEl.querySelector('.gallery-card[data-level-index="' + currentLevelIndex + '"]');
-      if (card) { try { card.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) { card.scrollIntoView(); } }
+      if (card) {
+        focusGalleryBackground(card);
+        renderGalleryPreview(card);
+        try { card.scrollIntoView({ block: 'center', behavior: 'auto' }); } catch (e) { card.scrollIntoView(); }
+      }
+      scheduleGalleryPreviews();
     });
   }
   galleryBtn.addEventListener('click', openGallery);
   undoBtn.addEventListener('click', undoGame);
+  scrambleBtn.addEventListener('click', scrambleGame);
   redoBtn.addEventListener('click', redoGame);
   document.getElementById('resetBtn').addEventListener('click', () => { cancelBatch(); if (game.session.pieceId) commitSession(); startGame(game.startCfg, game.targetCfg, game.step, game.rushHour); });
   document.getElementById('againBtn').addEventListener('click', () => { cancelBatch(); resetSession(); startGame(game.startCfg, game.targetCfg, game.step, game.rushHour); });
