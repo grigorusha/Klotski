@@ -340,7 +340,14 @@
   .level-meta__field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
   .level-meta__field--groupmoves { justify-content: flex-end; }
   .level-meta__field--step { max-width: 100px; }
-  .level-meta__field--step .level-meta__input { max-width: 88px; }
+  .level-step-control { position: relative; width: 100px; max-width: 100%; }
+  .level-step-control .level-meta__input { padding-right: 30px; -moz-appearance: textfield; appearance: textfield; }
+  .level-step-control .level-meta__input::-webkit-inner-spin-button,
+  .level-step-control .level-meta__input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  .level-step-save { position: absolute; top: 1px; right: 1px; bottom: 1px; width: 26px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 0; border-left: 1px solid rgba(255,255,255,.15); border-radius: 0 7px 7px 0; background: transparent; color: var(--green); cursor: pointer; }
+  .level-step-save:hover { background: rgba(255,255,255,.12); }
+  .level-step-save:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+  .level-step-save svg { width: 17px; height: 17px; pointer-events: none; }
   .level-meta__label { font-size: 11px; font-weight: 600; color: var(--sub); letter-spacing: .02em; }
   .level-meta__input { height: 32px; padding: 0 10px; font: inherit; font-size: 12.5px; color: var(--ink); background: rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; outline: none; user-select: text; -webkit-user-select: text; min-width: 0; width: 100%; }
   .level-meta__input:focus { border-color: rgba(255,209,102,.7); box-shadow: 0 0 0 2px rgba(255,209,102,.15); }
@@ -351,10 +358,10 @@
   .level-meta__author-btn:active { transform: translateY(1px); }
   .level-meta__checkbox-label { display: inline-flex; align-items: center; gap: 6px; height: 22px; font-size: 12px; font-weight: 600; color: var(--sub); cursor: pointer; white-space: nowrap; }
   .level-meta__checkbox-label input { width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--gold); }
-  #levelGroupMovesInput { appearance: none; -webkit-appearance: none; display: inline-grid; place-content: center; flex: 0 0 16px; border: 1px solid rgba(255,255,255,.5); border-radius: 3px; background: rgba(0,0,0,.3); color: var(--gold); }
+  #levelGroupMovesInput { appearance: none; -webkit-appearance: none; display: inline-grid; place-content: center; flex: 0 0 16px; border: 1px solid rgba(255,255,255,.5); border-radius: 3px; background: #fff; color: #167b32; }
   #levelGroupMovesInput::before { content: ''; font: 700 14px/1 sans-serif; }
   #levelGroupMovesInput[data-state="yes"]::before { content: '✓'; }
-  #levelGroupMovesInput[data-state="no"]::before { content: '✕'; color: #ff8585; }
+  #levelGroupMovesInput[data-state="no"]::before { content: '✕'; color: #b52b2b; }
   #levelGroupMovesInput:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   .level-meta__checkbox-text { white-space: pre-line; line-height: 1.15; font-size: 11px; }
   .io-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: center; }
@@ -599,11 +606,14 @@
   .gallery-group__description a { color: #9ecbff; text-decoration: none; }
   .gallery-group__description a:hover { text-decoration: underline; }
   .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
-  .gallery-card { display: flex; flex-direction: column; gap: 4px; padding: 8px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); cursor: pointer; transition: transform .12s, background .15s, border-color .15s; user-select: none; }
+  .gallery-card { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 8px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); cursor: pointer; transition: transform .12s, background .15s, border-color .15s; user-select: none; }
   .gallery-card > .gallery-previews { height: auto; flex-shrink: 0; }
   .gallery-card .mini-board { flex-shrink: 0; }
   .gallery-card.pending-preview .gallery-previews { background: rgba(255,255,255,.025); border-radius: 6px; }
   .gallery-card:hover { transform: translateY(-2px); background: rgba(255,255,255,.1); border-color: rgba(255,209,102,.35); }
+  /* Keep the original bottom edge hittable while the card lifts by 2px.
+     Only extend an already hovered card, so the extra strip cannot start hover. */
+  .gallery-card:hover::after { content: ""; position: absolute; left: -1px; right: -1px; bottom: -3px; height: 3px; pointer-events: auto; }
   .gallery-card:active { transform: translateY(0); }
   .gallery-card .mini-board { width: 100%; border-radius: 8px; box-shadow: inset 0 0 0 2px #707070, inset 0 0 15px rgba(0,0,0,.18); }
   .gallery-card__name { font-size: 12px; font-weight: 600; color: var(--ink); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 2px 2px 6px; }
@@ -753,6 +763,14 @@
   .about-block__authors-label { margin-bottom: 6px; }
   .about-block__authors-list { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 18px; padding-left: 8px; }
   @media (max-width: 520px) { .about-block__authors-list { grid-template-columns: 1fr; } }
+  .controls .solve-choice { display:flex; flex:1; min-width:0; }
+  .controls .solve-choice #solveBtn { border-radius:11px 0 0 11px; }
+  #solverMethod { width:53px; color:#f0f4fa; background:#343434; border:1px solid #666; border-radius:0 11px 11px 0; cursor:pointer; }
+  .solve-choice #solveBtn.solve, .solve-choice #solveBtn.solve + #solverMethod { background:linear-gradient(180deg,#3cb85a,#1e7a34); border-color:rgba(140,230,150,.5); color:#fff; }
+  .solve-choice #solveBtn.stop, .solve-choice #solveBtn.stop + #solverMethod { background:linear-gradient(180deg,#d84a4a,#8e1f1f); border-color:rgba(255,140,140,.5); color:#fff; }
+  .solve-choice:hover #solveBtn.solve:not(:disabled), .solve-choice:hover #solveBtn.solve:not(:disabled) + #solverMethod { background:linear-gradient(180deg,#4ecb6c,#268a3e); }
+  .solve-choice:hover #solveBtn.stop:not(:disabled), .solve-choice:hover #solveBtn.stop:not(:disabled) + #solverMethod { background:linear-gradient(180deg,#e66060,#a02a2a); }
+  #solverMethod option { background:#2e2e2e; color:#f0f4fa; }
 </style>
 </head>
 <body>
@@ -819,7 +837,7 @@
 
     <div class="controls">
       <button id="hintBtn" class="hint-btn" data-ruseng-title="hotkeyHint" title="Подсказка (F4)"><span class="btn-ico">💡</span><span class="btn-lbl" data-ruseng="hint">Подсказка</span></button>
-      <button id="solveBtn" class="solve" data-ruseng-title="hotkeySolve" title="Решить (F8)"><span class="btn-ico">✦</span><span class="btn-lbl" data-ruseng="solve">Решить</span></button>
+<div class="solve-choice">      <button id="solveBtn" class="solve" data-ruseng-title="hotkeySolve" title="Решить (F8)"><span class="btn-ico">✦</span><span class="btn-lbl" data-ruseng="solve">Решить</span></button><select id="solverMethod" aria-label="Метод решения" title="BFS — кратчайший путь; A* — быстрый взвешенный поиск, без гарантии кратчайшего пути"><option value="bfs">BFS</option><option value="astar">A*</option></select></div>
       <button id="editBtn" data-ruseng-title="hotkeyEditor" title="Редактор (F9)"><span class="btn-ico">✎</span><span class="btn-lbl" data-ruseng="editorBtn">Редактор</span></button>
     </div>
 
@@ -856,15 +874,15 @@
       </div>
       <div class="settings-row settings-row--compact">
         <label class="settings-label" for="maxRamInput" data-ruseng="ramLimitLabel">Лимит ОЗУ, ГБ:</label>
-        <input type="text" id="maxRamInput" class="settings-input settings-input--ram" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="3.8">
-        <label class="settings-label" for="maxStatesInput" data-ruseng="stateLimitLabel">Лимит состояний:</label>
+        <input type="text" id="maxRamInput" class="settings-input settings-input--ram" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="3">
+        <label class="settings-label" for="maxStatesInput" data-ruseng="stateLimitLabel">Лимит анализатора:</label>
         <input type="text" id="maxStatesInput" class="settings-input settings-input--states" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="13 600 000">
       </div>
       <div class="settings-hint" id="maxStatesHint"></div>
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.68)</span></div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.85)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -966,10 +984,13 @@
             <button type="button" id="levelGroupDropdownBtn" class="level-meta__author-btn" data-ruseng-title="groupDropdownTitle" title="Выбрать группу">▾</button>
           </div>
         </div>
-        <label class="level-meta__field level-meta__field--step">
-          <span class="level-meta__label" data-ruseng="levelStepLabel">Ходов (оптимум):</span>
-          <input type="number" id="levelStepInput" class="level-meta__input" min="1" max="99999" step="1" placeholder="—" autocomplete="off">
-        </label>
+        <div class="level-meta__field level-meta__field--step">
+          <label class="level-meta__label" for="levelStepInput" data-ruseng="levelStepLabel">Ходов (оптимум):</label>
+          <div class="level-step-control">
+            <input type="number" id="levelStepInput" class="level-meta__input" min="1" max="99999" step="1" placeholder="—" autocomplete="off">
+            <button type="button" id="saveLevelStepBtn" class="level-step-save" data-ruseng-title="saveStepTitle" title="Сохранить число ходов в исходном уровне"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4 10-10"/></svg></button>
+          </div>
+        </div>
         <div class="level-meta__field level-meta__field--groupmoves">
           <label class="level-meta__checkbox-label" for="levelRushHourInput">
             <input type="checkbox" id="levelRushHourInput">
@@ -1176,7 +1197,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '2.68';
+  const APP_VERSION = '2.85';
   const LANG_KEY = 'ryzhiy-osel-lang-v1';
   const LAST_LEVEL_KEY = 'ryzhiy-osel-last-level-v1';
   function safeGetItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
@@ -1355,7 +1376,7 @@
       groupShiftToast: 'Групповой сдвиг: %1',
       rushHourLabel: 'Rush Hour',
       onLabel: 'вкл', offLabel: 'выкл',
-      stateLimitLabel: 'Лимит состояний:',
+      stateLimitLabel: 'Лимит анализатора:',
       ramLimitLabel: 'Лимит ОЗУ, ГБ:',
       languageLabel: 'Язык:',
       newBtn: 'Новая доска',
@@ -1481,7 +1502,7 @@
       levelSavedN: 'Уровень сохранён: %1 ходов',
       dragToDelete: 'Перетащите плитку на кнопку, чтобы удалить',
       dragToNewTile: 'Отпустите над кнопкой — откроется редактор плиток',
-      stateLimitSet: 'Лимит состояний: %1',
+      stateLimitSet: 'Лимит анализатора: %1',
       stateLimitMemory: ' (ограничен памятью)',
       deleteLevelConfirm: 'Удалить уровень "%1" из «Моих уровней»?',
       searchingPrefix: 'Поиск…', analyzingPrefix: 'Анализ…',
@@ -1493,8 +1514,9 @@
       solverZero: 'Решение: 0 ходов (уже собрано).',
       solverError: 'Ошибка: %1',
       solverOom: 'Превышен лимит состояний (%1). Поднимите «Лимит ОЗУ, ГБ» в настройках.',
-      solverOomProgress: 'Не хватило памяти. Пройдено позиций: %1. Расчётно израсходовано ОЗУ: ~%2 ГБ. Поднимите «Лимит ОЗУ, ГБ» в настройках (или уменьшите, если браузер сбрасывает вкладку).',
-      maxStatesHintFull: 'Лимит ОЗУ %1 ГБ ≈ до %2 состояний (память на состояние зависит от размера доски).',
+      solverOomProgress: 'Поиск остановлен: достигнут бюджет памяти или не удалось выделить память. Обработано позиций: %1. Оценка памяти процесса с поправкой на накладные расходы: ≈%2 ГиБ.',
+      maxStatesHintFull: 'Бюджет решателя: %1 ГБ; 28% оставлено для временных данных. Лимит состояний относится только к анализатору.',
+      ramUnlimited: 'Решатель: без лимита ОЗУ (0). Firefox не останавливается на прежнем пороге 10 ГБ. Лимит состояний относится только к анализатору.',
       maxStatesHintLimited: 'Солвер переберёт до %1 состояний (задано %2, ограничено доступной памятью). Расчётная память: ~%3.',
       gallerySummary: 'Встроенных уровней %1, моих %2, не решено: %3',
       galleryTotal: 'Всего %1',
@@ -1505,6 +1527,12 @@
       gallerySteps: 'Ходов: %1',
       myLevels: 'Мои уровни',
       ctxPlay: 'Играть', ctxEdit: 'Редактор', ctxDelete: 'Удалить', ctxConfirmDelete: 'Нажмите ещё раз',
+      recordSaving: 'Решение найдено. Сохраняю рекорд…',
+      recordSaveFailed: 'Решение найдено, но рекорд не удалось сохранить. Авторешение остановлено. Проверьте доступ к хранилищу браузера.',
+      batchRecordMode: 'Авторешение не запущено: для сохранения рекордов выберите режим «Весь путь».',
+      saveStep: 'Сохранить', saveStepTitle: 'Сохранить число ходов в исходном уровне',
+      saveStepNeedsLevel: 'Доска или правила изменены либо это новый уровень. Сохраните уровень кнопкой «Запустить».',
+      saveStepInvalid: 'Введите целое число ходов от 1 до 99999.',
       levelStepHint: 'Постарайтесь решить уровень за минимальное число ходов %1',
       defaultLevelName: 'Уровень', defaultAuthor: 'Пользователь',
       newLevelName: 'Новый уровень', copySuffix: ' (копия)',
@@ -1684,7 +1712,7 @@
       groupShiftToast: 'Group shift: %1',
       rushHourLabel: 'Rush Hour',
       onLabel: 'on', offLabel: 'off',
-      stateLimitLabel: 'State limit:',
+      stateLimitLabel: 'Analyzer limit:',
       ramLimitLabel: 'RAM limit, GB:',
       languageLabel: 'Language:',
       newBtn: 'New board',
@@ -1809,7 +1837,7 @@
       levelSavedN: 'Level saved: %1 moves',
       dragToDelete: 'Drag a tile to the button to delete it',
       dragToNewTile: 'Release over the button to open tile editor',
-      stateLimitSet: 'State limit: %1',
+      stateLimitSet: 'Analyzer limit: %1',
       stateLimitMemory: ' (limited by memory)',
       deleteLevelConfirm: 'Delete level "%1" from "My levels"?',
       searchingPrefix: 'Searching…', analyzingPrefix: 'Analyzing…',
@@ -1821,8 +1849,9 @@
       solverZero: 'Solution: 0 moves (already solved).',
       solverError: 'Error: %1',
       solverOom: 'State limit exceeded (%1). Increase "RAM limit, GB" in settings.',
-      solverOomProgress: 'Out of memory. Positions explored: %1. Estimated RAM used: ~%2 GB. Increase "RAM limit, GB" in settings (or decrease it if the browser unloads the tab).',
-      maxStatesHintFull: 'RAM limit %1 GB ≈ up to %2 states (memory per state depends on board size).',
+      solverOomProgress: 'Search stopped: memory budget reached or allocation failed. Positions explored: %1. Estimated process memory including overhead allowance: ≈%2 GiB.',
+      maxStatesHintFull: 'Solver budget: %1 GiB; 28% reserved for temporary data. The state limit applies only to the analyzer.',
+      ramUnlimited: 'Solver: no RAM limit (0). Firefox no longer stops at the old 10 GiB threshold. The state limit applies only to the analyzer.',
       maxStatesHintLimited: 'Solver will explore up to %1 states (requested %2, limited by available memory). Estimated memory: ~%3.',
       gallerySummary: 'Built-in: %1, mine: %2, unsolved: %3',
       galleryTotal: 'Total %1',
@@ -1833,6 +1862,12 @@
       gallerySteps: 'Moves: %1',
       myLevels: 'My levels',
       ctxPlay: 'Play', ctxEdit: 'Editor', ctxDelete: 'Delete', ctxConfirmDelete: 'Click again to confirm',
+      recordSaving: 'Solution found. Saving record…',
+      recordSaveFailed: 'Solution found, but the record could not be saved. Auto-solve stopped. Check browser storage access.',
+      batchRecordMode: 'Auto-solve not started: select Whole path mode to save records.',
+      saveStep: 'Save', saveStepTitle: 'Save the move count to the original level',
+      saveStepNeedsLevel: 'The board or rules changed, or this is a new level. Save the level using Run.',
+      saveStepInvalid: 'Enter a whole move count from 1 to 99999.',
       levelStepHint: 'Try to solve the level in the minimum number of moves: %1',
       defaultLevelName: 'Level', defaultAuthor: 'User',
       newLevelName: 'New level', copySuffix: ' (copy)',
@@ -1891,7 +1926,7 @@
   const USER_LEVELS_KEY        = 'ryzhiy-osel-user-levels-v1';
   const CUSTOM_SHAPES_KEY      = 'ryzhiy-osel-custom-shapes-v1';
   const MAX_STATES_KEY         = 'ryzhiy-osel-max-states-v1';
-  const MAX_RAM_KEY            = 'ryzhiy-osel-ram-gb-v1';
+  const MAX_RAM_KEY            = 'ryzhiy-osel-ram-gb-v280-' + (IS_FIREFOX ? 'firefox' : 'chromium');
   const GALLERY_SORT_KEY       = 'ryzhiy-osel-gallery-sort-v1';
   const GALLERY_GROUP_SORT_KEY = 'ryzhiy-osel-gallery-group-sort-v1';
   const PRESET_RECORDS_KEY     = 'ryzhiy-osel-preset-records-v1';
@@ -1983,12 +2018,9 @@
 
   const MAX_NODES_HARD_CAP = 1000000000;
   const GB_BYTES = 1073741824;
-  /* Browser-specific default RAM budgets:
-       Chrome  — ~4 GB cap per tab, so default 3.8 GB.
-       Firefox — can survive larger heaps, but may still reclaim the tab
-                 when the OS is under pressure; default 10 GB. */
-  const DEFAULT_RAM_GB_CHROME  = 3.8;
-  const DEFAULT_RAM_GB_FIREFOX = 10;
+  // Firefox: zero means no application RAM limit. Chrome: conservative 3 GiB budget.
+  const DEFAULT_RAM_GB_CHROME = 3;
+  const DEFAULT_RAM_GB_FIREFOX = 0;
   const DEFAULT_RAM_GB = IS_FIREFOX ? DEFAULT_RAM_GB_FIREFOX : DEFAULT_RAM_GB_CHROME;
 
   function fmtBytes(b) {
@@ -2006,18 +2038,15 @@
     return false;
   }
 
-  /* Per-state memory footprint in bytes. Depends on board size, because:
-       - the solver's state key is a string of length ~FREE_CELLS/2,
-         each character ~2 bytes in JS (UTF-16);
-       - every parent entry also holds a small object plus a reference
-         to the parent entry, plus a copy of the pieces array.
-     A rough empirical model: 200 bytes fixed + ~2 bytes per cell. */
+  // Legacy estimate for Analyzer settings only. The solver accounts for buffer
+  // allocations directly; it does not translate RAM into an explored-node cap.
   function bytesPerState(cells) {
     cells = (typeof cells === 'number' && cells > 0) ? cells : CELLS;
     return 200 + cells * 2;
   }
 
   function ramGbToStates(gb) {
+    if (Number(gb) === 0 && IS_FIREFOX) return MAX_NODES_HARD_CAP;
     const per = bytesPerState(CELLS);
     const v = Math.floor((Number(gb) || 0) * GB_BYTES / per);
     return Math.max(100000, Math.min(MAX_NODES_HARD_CAP, v));
@@ -2030,56 +2059,36 @@
   let MAX_NODES_USER = ramGbToStates(DEFAULT_RAM_GB);
   let MAX_NODES = MAX_NODES_USER;
 
+  function normalizedRamBudget(gb) {
+    if (!Number.isFinite(gb) || gb < 0 || (gb > 0 && gb < 0.03)) return DEFAULT_RAM_GB;
+    return IS_FIREFOX ? gb : Math.min(3, gb || 3);
+  }
   function loadMemorySettings() {
-    let gb = null;
-    try {
-      const rawGb = safeGetItem(MAX_RAM_KEY);
-      if (rawGb) {
-        const v = parseFloat(rawGb);
-        if (isFinite(v) && v > 0.03) gb = v;
-      }
-    } catch (e) {}
-    if (gb == null) {
-      // Backwards compat: earlier versions stored the state count only.
-      try {
-        const rawStates = safeGetItem(MAX_STATES_KEY);
-        if (rawStates) {
-          const n = parseInt(rawStates, 10);
-          if (isFinite(n) && n >= 100000) gb = Math.min(n, MAX_NODES_HARD_CAP) * bytesPerState(CELLS) / GB_BYTES;
-        }
-      } catch (e) {}
-    }
-    if (gb == null) gb = DEFAULT_RAM_GB;
-    // Clamp by current hard cap.
-    const maxGb = MAX_NODES_HARD_CAP * bytesPerState(CELLS) / GB_BYTES;
-    if (gb > maxGb) gb = maxGb;
-    MAX_RAM_GB_USER = gb;
-    MAX_NODES_USER = ramGbToStates(gb);
+    // Deliberately do not inherit v1 limits (10 GiB in Firefox / 3.8 GiB in Chrome).
+    const raw = safeGetItem(MAX_RAM_KEY);
+    MAX_RAM_GB_USER = normalizedRamBudget(raw == null ? DEFAULT_RAM_GB : Number(raw));
+    MAX_NODES_USER = ramGbToStates(MAX_RAM_GB_USER);
+    const storedStates = Number(safeGetItem(MAX_RAM_KEY + '-analyzer-states'));
+    if (storedStates >= 100000) MAX_NODES_USER = Math.min(storedStates, MAX_NODES_HARD_CAP);
     MAX_NODES = MAX_NODES_USER;
   }
-
   function saveRamSetting(gb) {
-    const maxGb = MAX_NODES_HARD_CAP * bytesPerState(CELLS) / GB_BYTES;
-    if (gb > maxGb) gb = maxGb;
-    if (!isFinite(gb) || gb < 0.03) gb = DEFAULT_RAM_GB;
-    MAX_RAM_GB_USER = gb;
-    MAX_NODES_USER = ramGbToStates(gb);
-    MAX_NODES = MAX_NODES_USER;
-    safeSetItem(MAX_RAM_KEY, String(gb));
+    MAX_RAM_GB_USER = normalizedRamBudget(gb);
+    MAX_NODES_USER = ramGbToStates(MAX_RAM_GB_USER); MAX_NODES = MAX_NODES_USER;
+    safeSetItem(MAX_RAM_KEY, String(MAX_RAM_GB_USER));
+    safeSetItem(MAX_RAM_KEY + '-analyzer-states', String(MAX_NODES_USER));
   }
   function saveStatesSetting(states) {
-    if (!isFinite(states) || states < 100000) states = ramGbToStates(DEFAULT_RAM_GB);
-    if (states > MAX_NODES_HARD_CAP) states = MAX_NODES_HARD_CAP;
-    MAX_NODES_USER = states;
-    MAX_NODES = states;
-    MAX_RAM_GB_USER = statesToRamGb(states);
-    safeSetItem(MAX_RAM_KEY, String(MAX_RAM_GB_USER));
+    if (!isFinite(states) || states < 100000) states = MAX_NODES_USER;
+    MAX_NODES_USER = Math.min(states, MAX_NODES_HARD_CAP); MAX_NODES = MAX_NODES_USER;
+    safeSetItem(MAX_RAM_KEY + '-analyzer-states', String(MAX_NODES_USER));
   }
   /* Called whenever CELLS changes (level switch / board resize) so the
      displayed "Лимит состояний" reflects the new board size while the
      user's RAM budget stays the same. */
   function recalcMemoryForBoard() {
-    MAX_NODES_USER = ramGbToStates(MAX_RAM_GB_USER);
+    const storedStates = Number(safeGetItem(MAX_RAM_KEY + '-analyzer-states'));
+    MAX_NODES_USER = storedStates >= 100000 ? Math.min(storedStates, MAX_NODES_HARD_CAP) : ramGbToStates(MAX_RAM_GB_USER);
     MAX_NODES = MAX_NODES_USER;
     if (typeof syncMemoryInputs === 'function') { try { syncMemoryInputs(); } catch (e) {} }
     if (typeof updateMaxStatesHint === 'function') { try { updateMaxStatesHint(); } catch (e) {} }
@@ -2304,25 +2313,123 @@
         && !/^group\s*:/i.test(l))
       .join('\n').toLowerCase();
   }
+  const PRESET_ENTRY_PREFIX = PRESET_RECORDS_KEY + ':entry:';
+  const presetRecordTimes = Object.create(null);
+  let recordDbPromise = null;
+  function writeStorageChecked(key, value) {
+    localStorage.setItem(key, value);
+    if (localStorage.getItem(key) !== value) throw new Error('Storage read-back verification failed');
+  }
   function loadPresetRecords() {
+    let records = {};
     try {
-      const raw = safeGetItem(PRESET_RECORDS_KEY);
-      if (!raw) return {};
-      const obj = JSON.parse(raw);
-      if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return {};
-      return obj;
-    } catch (e) { return {}; }
+      const obj = JSON.parse(localStorage.getItem(PRESET_RECORDS_KEY) || '{}');
+      if (obj && typeof obj === 'object' && !Array.isArray(obj)) records = obj;
+    } catch (e) { console.warn('[Records] Legacy records could not be read', e); }
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key || !key.startsWith(PRESET_ENTRY_PREFIX)) continue;
+        try {
+          const entry = JSON.parse(localStorage.getItem(key));
+          if (!entry || typeof entry.signature !== 'string' || !Number.isInteger(entry.steps) || entry.steps <= 0) continue;
+          records[entry.signature] = entry.steps;
+          presetRecordTimes[entry.signature] = Number(entry.updatedAt) || 0;
+        } catch (e) { console.warn('[Records] Invalid journal entry', e); }
+      }
+    } catch (e) { console.warn('[Records] Journal could not be read', e); }
+    return records;
   }
-  function savePresetRecords() {
-    try { safeSetItem(PRESET_RECORDS_KEY, JSON.stringify(presetRecords)); } catch (e) {}
+  function openRecordDatabase() {
+    if (recordDbPromise) return recordDbPromise;
+    recordDbPromise = new Promise(resolve => {
+      if (typeof indexedDB === 'undefined') { resolve(null); return; }
+      let settled = false;
+      const finish = db => { if (settled) { if (db) db.close(); return; } settled = true; clearTimeout(timer); resolve(db); };
+      const timer = setTimeout(() => finish(null), 5000);
+      try {
+        const request = indexedDB.open('klotski-records-v1', 1);
+        request.onupgradeneeded = () => {
+          const db = request.result;
+          if (!db.objectStoreNames.contains('records')) db.createObjectStore('records', { keyPath: 'signature' });
+        };
+        request.onsuccess = () => {
+          const db = request.result;
+          db.onversionchange = () => { db.close(); recordDbPromise = null; };
+          finish(db);
+        };
+        request.onerror = () => { console.warn('[Records] IndexedDB unavailable', request.error); finish(null); };
+        request.onblocked = () => finish(null);
+      } catch (e) { console.warn('[Records] IndexedDB unavailable', e); finish(null); }
+    });
+    return recordDbPromise;
   }
-  function savePresetRecordForLevel(level, steps) {
-    if (!level || !level.text) return;
-    if (!(typeof steps === 'number' && steps > 0)) return;
-    const sig = makeLevelSignature(level.text);
-    if (!sig) return;
-    presetRecords[sig] = steps;
-    savePresetRecords();
+  async function writeRecordDatabase(entry) {
+    const db = await openRecordDatabase();
+    if (!db) return false;
+    return new Promise(resolve => {
+      let tx, settled = false;
+      const finish = ok => { if (settled) return; settled = true; clearTimeout(timer); resolve(ok); };
+      const timer = setTimeout(() => { try { if (tx) tx.abort(); } catch (e) {} finish(false); }, 10000);
+      try {
+        // Older browsers may not support the durability option.
+        try { tx = db.transaction('records', 'readwrite', { durability: 'strict' }); }
+        catch (e) { tx = db.transaction('records', 'readwrite'); }
+        tx.oncomplete = () => finish(true);
+        tx.onabort = tx.onerror = () => { console.error('[Records] Transaction failed', tx.error); finish(false); };
+        tx.objectStore('records').put(entry);
+        // Success is acknowledged by transaction completion, never by put.onsuccess.
+      } catch (e) { console.error('[Records] Write failed', e); finish(false); }
+    });
+  }
+  async function savePresetRecordForLevel(level, steps) {
+    if (!level || !level.text || !Number.isInteger(steps) || steps <= 0) return false;
+    const signature = makeLevelSignature(level.text);
+    if (!signature) return false;
+    const entry = { signature, steps, updatedAt: Math.max(Date.now(), (presetRecordTimes[signature] || 0) + 1) };
+    let localOK = false;
+    try {
+      // Each solution is written independently, synchronously, before any await.
+      writeStorageChecked(PRESET_ENTRY_PREFIX + encodeURIComponent(signature), JSON.stringify(entry));
+      localOK = true;
+    } catch (e) { console.error('[Records] localStorage write failed', e); }
+    // Prevent a concurrent startup restore from overwriting this newer result.
+    presetRecordTimes[signature] = entry.updatedAt;
+    const databaseOK = await writeRecordDatabase(entry);
+    if (!localOK && !databaseOK) return false;
+    presetRecords[signature] = steps;
+    console.info('[Records] Saved', level.name || signature.split('\n')[0], steps, { localStorage: localOK, indexedDB: databaseOK });
+    return true;
+  }
+  async function restorePresetRecordBackup() {
+    const db = await openRecordDatabase();
+    if (!db) return false;
+    const entries = await new Promise(resolve => {
+      let tx, rows = [], settled = false;
+      const finish = value => { if (settled) return; settled = true; clearTimeout(timer); resolve(value); };
+      const timer = setTimeout(() => { try { if (tx) tx.abort(); } catch (e) {} finish([]); }, 10000);
+      try {
+        tx = db.transaction('records', 'readonly');
+        const request = tx.objectStore('records').getAll();
+        request.onsuccess = () => { rows = request.result || []; };
+        tx.oncomplete = () => finish(rows);
+        tx.onabort = tx.onerror = () => finish([]);
+      } catch (e) { finish([]); }
+    });
+    let changed = false;
+    for (const entry of entries) {
+      if (!entry || typeof entry.signature !== 'string' || !Number.isInteger(entry.steps) || entry.steps <= 0) continue;
+      if (!(entry.updatedAt > (presetRecordTimes[entry.signature] || 0))) continue;
+      presetRecords[entry.signature] = entry.steps;
+      presetRecordTimes[entry.signature] = entry.updatedAt;
+      try { writeStorageChecked(PRESET_ENTRY_PREFIX + encodeURIComponent(entry.signature), JSON.stringify(entry)); } catch (e) {}
+      changed = true;
+    }
+    if (changed) for (const level of PRESET_LEVELS) {
+      const steps = presetRecords[makeLevelSignature(level.text)];
+      if (Number.isInteger(steps) && steps > 0) updateLevelStepText(level, steps);
+    }
+    return changed;
   }
   let presetRecords = loadPresetRecords();
 
@@ -3280,186 +3387,209 @@
     for (let qj = 0; qj < NPieces; qj++) if (pieces[qj*3] === type && pieces[qj*3+1] === fromX && pieces[qj*3+2] === fromY) return qj;
     return -1;
   }
-  async function solveUnidirectional(state, stopCheck, onProgress, maxNodes, groupShift) {
-    const { typeIndex, freeCellLookup, FREE_CELLS, startFlat, targetPieces, typeMap, NUM_TYPES } = state;
-    const startBoard = makeSolverBoard(startFlat, typeIndex, freeCellLookup, FREE_CELLS);
-    const keyOf = makeKeyFn(NUM_TYPES);
-    const targets = [];
-    for (const p of targetPieces) {
-      const tt = typeMap.get(solverPieceKey(p));
-      const shape = SHAPES[p.shape]; if (!shape) continue;
-      const cells = [];
-      for (const [dx, dy] of shape.cells) { const fi = freeCellLookup[(p.y + dy) * COLS + (p.x + dx)]; if (fi >= 0) cells.push(fi); }
-      targets.push({ type: tt, cells });
+  // All retained search data lives in bounded-size typed-array blocks.
+  // Charges are conservative: replaced hash buffers stay charged until the search ends.
+  class SolverBudget {
+    constructor(gb) { this.limit = gb > 0 ? gb * 1073741824 * 0.72 : Infinity; this.bytes = 0; this.states = 0; }
+    alloc(Type, length) {
+      const bytes = length * Type.BYTES_PER_ELEMENT;
+      if (!Number.isSafeInteger(bytes) || this.bytes + bytes > this.limit) throw new Error('__OOM__');
+      try { const a = new Type(length); this.bytes += bytes; return a; }
+      catch (e) { throw new Error('__OOM__'); }
     }
-    const isGoal = (board) => {
-      for (const tgt of targets) for (const ci of tgt.cells) if (board[ci] !== tgt.type) return false;
+    stats() { return { states: this.states, allocatedBytes: this.bytes, storageLimit: Number.isFinite(this.limit) ? this.limit : 0 }; }
+  }
+  class SolverBytePool {
+    constructor(budget) { this.budget = budget; this.blocks = []; this.length = 0; this.blockSize = 65536; }
+    push(v) {
+      const block = Math.floor(this.length / this.blockSize), pos = this.length % this.blockSize;
+      if (!this.blocks[block]) this.blocks[block] = this.budget.alloc(Uint8Array, this.blockSize);
+      this.blocks[block][pos] = v; this.length++;
+    }
+    get(i) { return this.blocks[Math.floor(i / this.blockSize)][i % this.blockSize]; }
+    uint(v) { for (let i = 0; i < 4; i++) this.push((v >>> (i * 8)) & 255); }
+    readUint(i) { return (this.get(i) | this.get(i+1)<<8 | this.get(i+2)<<16 | this.get(i+3)<<24) >>> 0; }
+    save(move) {
+      const offset = this.length;
+      this.push(move.type); this.push(move.fromX); this.push(move.fromY);
+      this.uint(move.path.length); this.uint(move.shifted ? move.shifted.length : 0);
+      for (const d of move.path) this.push(d[0] === -1 ? 2 : d[0] === 1 ? 3 : d[1] === -1 ? 0 : 1);
+      if (move.shifted) for (const sh of move.shifted) { this.push(sh.type); this.push(sh.fromX); this.push(sh.fromY); }
+      return offset;
+    }
+    load(offset) {
+      let p = offset;
+      const type = this.get(p++), fromX = this.get(p++), fromY = this.get(p++);
+      const n = this.readUint(p); p += 4; const count = this.readUint(p); p += 4;
+      const path = []; for (let i = 0; i < n; i++) path.push(SOLVER_DIRS[this.get(p++)].slice());
+      let shifted;
+      if (count) { shifted = []; for (let i = 0; i < count; i++) shifted.push({type:this.get(p++),fromX:this.get(p++),fromY:this.get(p++)}); }
+      return {type,fromX,fromY,path,shifted};
+    }
+  }
+  class SolverStore {
+    constructor(state, budget, astar) {
+      this.budget = budget; this.astar = astar; this.nibble = state.NUM_TYPES <= 15;
+      this.keyLength = this.nibble ? Math.ceil(state.FREE_CELLS / 2) : state.FREE_CELLS;
+      this.pieceLength = state.startFlat.length; this.freeCells = state.FREE_CELLS;
+      this.blockSize = Math.max(1, Math.min(4096, Math.floor(262144 / Math.max(1, this.keyLength + this.pieceLength + 24))));
+      this.blocks = []; this.shards = new Array(256); this.size = 0; this.moves = new SolverBytePool(budget);
+    }
+    pack(board) {
+      const key = new Uint8Array(this.keyLength);
+      if (this.nibble) for (let i=0;i<board.length;i+=2) key[i>>1]=board[i]|((board[i+1]||0)<<4);
+      else key.set(board);
+      return key;
+    }
+    hash(key) { let h=2166136261; for (const v of key) h=Math.imul(h^v,16777619); h=Math.imul(h^(h>>>16),0x85ebca6b); return (h^(h>>>13))>>>0; }
+    equal(id,key) {
+      const b=this.blocks[Math.floor(id/this.blockSize)], start=(id%this.blockSize)*this.keyLength;
+      for(let i=0;i<key.length;i++) if(b.keys[start+i]!==key[i]) return false;
       return true;
-    };
-    const parents = new Map();
-    const startKey = keyOf(startBoard);
-    parents.set(startKey, null);
-    let frontier = [{ board: startBoard, pieces: startFlat.slice(), key: startKey }];
-    let depth = 0, nodesExplored = 0;
-    const t0 = performance.now();
-    let lastYield = t0;
-    while (frontier.length > 0) {
-      const nextFrontier = [];
-      for (const node of frontier) {
-        nodesExplored++;
-        const now = performance.now();
-        if (now - lastYield > 60) {
-          if (stopCheck && stopCheck()) return null;
-          if (onProgress) onProgress(nodesExplored, depth, now - t0);
-          await new Promise(r => setTimeout(r, 0));
-          lastYield = performance.now();
-          if (isMemoryHigh()) throw new Error('__OOM__');
-        }
-        if (isGoal(node.board)) {
-          const path = [];
-          let key = node.key;
-          while (true) { const entry = parents.get(key); if (!entry) break; path.push(entry.move); key = entry.parentKey; }
-          path.reverse();
-          return { path, nodes: nodesExplored, ms: performance.now() - t0 };
-        }
-        if (nodesExplored > maxNodes) throw new Error('__OOM__');
-        const board = node.board, pieces = node.pieces, nodeKey = node.key;
-        const NPieces = pieces.length / 3;
-        for (let pi = 0; pi < NPieces; pi++) {
-          const tt = pieces[pi*3], info = typeIndex[tt];
-          if (!info || info.fixed) continue;
-          const px = pieces[pi*3+1], py = pieces[pi*3+2];
-          for (const [dx, dy] of info.cells) { const fci = freeCellLookup[(py + dy) * COLS + (px + dx)]; if (fci >= 0) board[fci] = 0; }
-          const moves = generateMovesForPiece(board, px, py, tt, info, freeCellLookup, pieces, pi, typeIndex, groupShift);
-          for (const [dx, dy] of info.cells) { const fci = freeCellLookup[(py + dy) * COLS + (px + dx)]; if (fci >= 0) board[fci] = tt; }
-          for (const mv of moves) {
-            const nx = mv.nx, ny = mv.ny;
-            const newBoard = board.slice(), newPieces = pieces.slice();
-            for (const [dx, dy] of info.cells) { const fci = freeCellLookup[(py + dy) * COLS + (px + dx)]; if (fci >= 0) newBoard[fci] = 0; }
-            const shiftInfo = [];
-            if (mv.shifted) {
-              const stepDx = mv.path[0][0], stepDy = mv.path[0][1];
-              for (const sh of mv.shifted) {
-                const qj = findPieceIndexByTypeAndPos(pieces, sh.type, sh.fromX, sh.fromY);
-                if (qj < 0 || qj === pi) continue;
-                erasePieceFromBoard(newBoard, pieces, qj, typeIndex, freeCellLookup);
-                shiftInfo.push({ qj, nx: sh.fromX + stepDx, ny: sh.fromY + stepDy });
-              }
-            }
-            newPieces[pi*3+1] = nx; newPieces[pi*3+2] = ny;
-            placePieceOnBoard(newBoard, newPieces, pi, typeIndex, freeCellLookup);
-            for (const inf of shiftInfo) {
-              newPieces[inf.qj*3+1] = inf.nx; newPieces[inf.qj*3+2] = inf.ny;
-              placePieceOnBoard(newBoard, newPieces, inf.qj, typeIndex, freeCellLookup);
-            }
-            const newKey = keyOf(newBoard);
-            if (!parents.has(newKey)) {
-              parents.set(newKey, { parentKey: nodeKey, move: { type: tt, fromX: px, fromY: py, path: mv.path, shifted: mv.shifted } });
-              nextFrontier.push({ board: newBoard, pieces: newPieces, key: newKey });
-            }
-          }
-        }
+    }
+    find(key,hash) {
+      const sh=this.shards[hash>>>24]; if(!sh)return -1;
+      let pos=hash&(sh.ids.length-1);
+      while(sh.ids[pos]) { const id=sh.ids[pos]-1; if(sh.hashes[pos]===hash&&this.equal(id,key))return id; pos=(pos+1)&(sh.ids.length-1); }
+      return -1;
+    }
+    prepareShard(hash) {
+      const index=hash>>>24; let sh=this.shards[index];
+      if(!sh||sh.used+1>sh.ids.length*0.7) {
+        const cap=sh?sh.ids.length*2:256;
+        const ids=this.budget.alloc(Uint32Array,cap), hashes=this.budget.alloc(Uint32Array,cap);
+        if(sh) for(let i=0;i<sh.ids.length;i++) if(sh.ids[i]) {let p=sh.hashes[i]&(cap-1);while(ids[p])p=(p+1)&(cap-1);ids[p]=sh.ids[i];hashes[p]=sh.hashes[i];}
+        sh={ids,hashes,used:sh?sh.used:0}; this.shards[index]=sh;
       }
-      frontier = nextFrontier;
-      depth++;
+      return sh;
     }
-    return null;
-  }
-  function reconstructBidirectionalPath(meetKey, parentsF, parentsB) {
-    const forwardMoves = [];
-    let key = meetKey;
-    while (true) { const entry = parentsF.get(key); if (!entry) break; forwardMoves.push(entry.move); key = entry.parentKey; }
-    forwardMoves.reverse();
-    const backwardMoves = [];
-    key = meetKey;
-    while (true) {
-      const entry = parentsB.get(key);
-      if (!entry) break;
-      const m = entry.move, p = m.path, n = p.length;
-      let fx = m.fromX, fy = m.fromY;
-      for (let i = 0; i < n; i++) { fx += p[i][0]; fy += p[i][1]; }
-      const revPath = new Array(n);
-      for (let i = 0; i < n; i++) { const s = p[n - 1 - i]; revPath[i] = [-s[0], -s[1]]; }
-      const totalDx = fx - m.fromX, totalDy = fy - m.fromY;
-      const revShifted = m.shifted ? m.shifted.map(sh => ({ type: sh.type, fromX: sh.fromX + totalDx, fromY: sh.fromY + totalDy })) : undefined;
-      backwardMoves.push({ type: m.type, fromX: fx, fromY: fy, path: revPath, shifted: revShifted });
-      key = entry.parentKey;
-    }
-    return forwardMoves.concat(backwardMoves);
-  }
-  async function solveBidirectional(state, stopCheck, onProgress, maxNodes, groupShift) {
-    const { typeIndex, freeCellLookup, FREE_CELLS, startFlat, targetFlat, NUM_TYPES } = state;
-    const keyOf = makeKeyFn(NUM_TYPES);
-    const startBoard = makeSolverBoard(startFlat, typeIndex, freeCellLookup, FREE_CELLS);
-    const targetBoard = makeSolverBoard(targetFlat, typeIndex, freeCellLookup, FREE_CELLS);
-    const startKey = keyOf(startBoard), targetKey = keyOf(targetBoard);
-    if (startKey === targetKey) return { path: [], nodes: 0, ms: 0 };
-    const parentsF = new Map(), parentsB = new Map();
-    parentsF.set(startKey, null); parentsB.set(targetKey, null);
-    let frontierF = [{ board: startBoard, pieces: startFlat.slice(), key: startKey }];
-    let frontierB = [{ board: targetBoard, pieces: targetFlat.slice(), key: targetKey }];
-    const t0 = performance.now();
-    let lastYield = t0, nodesExplored = 0, depth = 0;
-    while (frontierF.length > 0 && frontierB.length > 0) {
-      const expandForward = frontierF.length <= frontierB.length;
-      const frontier = expandForward ? frontierF : frontierB;
-      const myParents = expandForward ? parentsF : parentsB;
-      const otherParents = expandForward ? parentsB : parentsF;
-      const nextFrontier = [];
-      for (const node of frontier) {
-        nodesExplored++;
-        const now = performance.now();
-        if (now - lastYield > 60) {
-          if (stopCheck && stopCheck()) return null;
-          if (onProgress) onProgress(nodesExplored, depth, now - t0);
-          await new Promise(r => setTimeout(r, 0));
-          lastYield = performance.now();
-          if (isMemoryHigh()) throw new Error('__OOM__');
-        }
-        if (nodesExplored > maxNodes) throw new Error('__OOM__');
-        const board = node.board, pieces = node.pieces, nodeKey = node.key;
-        const NPieces = pieces.length / 3;
-        for (let pi = 0; pi < NPieces; pi++) {
-          const tt = pieces[pi*3], info = typeIndex[tt];
-          if (!info || info.fixed) continue;
-          const px = pieces[pi*3+1], py = pieces[pi*3+2];
-          for (const [dx, dy] of info.cells) { const fci = freeCellLookup[(py + dy) * COLS + (px + dx)]; if (fci >= 0) board[fci] = 0; }
-          const moves = generateMovesForPiece(board, px, py, tt, info, freeCellLookup, pieces, pi, typeIndex, groupShift);
-          for (const [dx, dy] of info.cells) { const fci = freeCellLookup[(py + dy) * COLS + (px + dx)]; if (fci >= 0) board[fci] = tt; }
-          for (const mv of moves) {
-            const nx = mv.nx, ny = mv.ny;
-            const newBoard = board.slice(), newPieces = pieces.slice();
-            for (const [dx, dy] of info.cells) { const fci = freeCellLookup[(py + dy) * COLS + (px + dx)]; if (fci >= 0) newBoard[fci] = 0; }
-            const shiftInfo = [];
-            if (mv.shifted) {
-              const stepDx = mv.path[0][0], stepDy = mv.path[0][1];
-              for (const sh of mv.shifted) {
-                const qj = findPieceIndexByTypeAndPos(pieces, sh.type, sh.fromX, sh.fromY);
-                if (qj < 0 || qj === pi) continue;
-                erasePieceFromBoard(newBoard, pieces, qj, typeIndex, freeCellLookup);
-                shiftInfo.push({ qj, nx: sh.fromX + stepDx, ny: sh.fromY + stepDy });
-              }
-            }
-            newPieces[pi*3+1] = nx; newPieces[pi*3+2] = ny;
-            placePieceOnBoard(newBoard, newPieces, pi, typeIndex, freeCellLookup);
-            for (const inf of shiftInfo) {
-              newPieces[inf.qj*3+1] = inf.nx; newPieces[inf.qj*3+2] = inf.ny;
-              placePieceOnBoard(newBoard, newPieces, inf.qj, typeIndex, freeCellLookup);
-            }
-            const newKey = keyOf(newBoard);
-            if (!myParents.has(newKey)) {
-              myParents.set(newKey, { parentKey: nodeKey, move: { type: tt, fromX: px, fromY: py, path: mv.path, shifted: mv.shifted } });
-              if (otherParents.has(newKey)) return { path: reconstructBidirectionalPath(newKey, parentsF, parentsB), nodes: nodesExplored, ms: performance.now() - t0 };
-              nextFrontier.push({ board: newBoard, pieces: newPieces, key: newKey });
-            }
-          }
-        }
+    add(key,hash,pieces,parent,move,g,f) {
+      // IDs are exact uint32 values; never wrap and silently corrupt a path.
+      if(this.size>=4294967294)throw new Error('Search storage index capacity reached');
+      const sh=this.prepareShard(hash);
+      const id=this.size, bi=Math.floor(id/this.blockSize), pos=id%this.blockSize;
+      let b=this.blocks[bi];
+      if(!b) {
+        const n=this.blockSize, a=(T,len)=>this.budget.alloc(T,len);
+        b={keys:a(Uint8Array,n*this.keyLength),pieces:a(Uint8Array,n*this.pieceLength),parents:a(Uint32Array,n),offsets:a(Float64Array,n),costs:a(Uint32Array,n),scores:this.astar?a(Float64Array,n):null};
+        this.blocks[bi]=b;
       }
-      if (expandForward) frontierF = nextFrontier; else frontierB = nextFrontier;
-      depth++;
+      const offset=move?this.moves.save(move):0;
+      b.keys.set(key,pos*this.keyLength); b.pieces.set(pieces,pos*this.pieceLength);
+      b.parents[pos]=parent<0?4294967295:parent; b.offsets[pos]=offset; b.costs[pos]=g; if(b.scores)b.scores[pos]=f;
+      let slot=hash&(sh.ids.length-1);
+      while(sh.ids[slot]&&!(sh.hashes[slot]===hash&&this.equal(sh.ids[slot]-1,key)))slot=(slot+1)&(sh.ids.length-1);
+      if(!sh.ids[slot])sh.used++;
+      sh.ids[slot]=id+1;sh.hashes[slot]=hash;this.size++;this.budget.states++;
+      return id;
     }
-    return null;
+    cost(id) { return this.blocks[Math.floor(id/this.blockSize)].costs[id%this.blockSize]; }
+    score(id) { return this.blocks[Math.floor(id/this.blockSize)].scores[id%this.blockSize]; }
+    node(id) {
+      const b=this.blocks[Math.floor(id/this.blockSize)], pos=id%this.blockSize;
+      const pieces=b.pieces.slice(pos*this.pieceLength,(pos+1)*this.pieceLength),board=new Uint8Array(this.freeCells);
+      const start=pos*this.keyLength;
+      if(this.nibble)for(let i=0;i<board.length;i++)board[i]=(b.keys[start+(i>>1)]>>((i&1)*4))&15;
+      else board.set(b.keys.subarray(start,start+this.keyLength));
+      return {board,pieces};
+    }
+    path(id) {
+      const path=[];
+      while(id>=0) {
+        const b=this.blocks[Math.floor(id/this.blockSize)],pos=id%this.blockSize,parent=b.parents[pos];
+        if(parent===4294967295)break;
+        path.push(this.moves.load(b.offsets[pos]));id=parent;
+      }
+      return path.reverse();
+    }
   }
+  class SolverHeap {
+    constructor(store,budget) { this.store=store;this.budget=budget;this.blocks=[];this.length=0; }
+    get(i) { return this.blocks[Math.floor(i/16384)][i%16384]; }
+    set(i,v) {const b=Math.floor(i/16384);if(!this.blocks[b])this.blocks[b]=this.budget.alloc(Uint32Array,16384);this.blocks[b][i%16384]=v;}
+    push(id) {let i=this.length++;while(i>0){const p=Math.floor((i-1)/2),pid=this.get(p);if(this.store.score(pid)<=this.store.score(id))break;this.set(i,pid);i=p;}this.set(i,id);}
+    pop() {const first=this.get(0),last=this.get(--this.length);if(this.length){let i=0;while(i*2+1<this.length){let c=i*2+1;if(c+1<this.length&&this.store.score(this.get(c+1))<this.store.score(this.get(c)))c++;if(this.store.score(this.get(c))>=this.store.score(last))break;this.set(i,this.get(c));i=c;}this.set(i,last);}return first;}
+  }
+  function reverseSolverMoves(path) {
+    return path.slice().reverse().map(m=>{
+      let dx=0,dy=0;for(const d of m.path){dx+=d[0];dy+=d[1];}
+      return {type:m.type,fromX:m.fromX+dx,fromY:m.fromY+dy,path:m.path.slice().reverse().map(d=>[-d[0],-d[1]]),shifted:m.shifted?m.shifted.map(sh=>({type:sh.type,fromX:sh.fromX+dx,fromY:sh.fromY+dy})):undefined};
+    });
+  }
+  // The move generator and application order are shared with the original solver.
+  function* compactSuccessors(node,state,groupShift) {
+    const {typeIndex,freeCellLookup}=state, {board,pieces}=node;
+    for(let pi=0;pi<pieces.length/3;pi++) {
+      const tt=pieces[pi*3],info=typeIndex[tt];if(!info||info.fixed)continue;
+      const px=pieces[pi*3+1],py=pieces[pi*3+2];
+      erasePieceFromBoard(board,pieces,pi,typeIndex,freeCellLookup);
+      const moves=generateMovesForPiece(board,px,py,tt,info,freeCellLookup,pieces,pi,typeIndex,groupShift);
+      placePieceOnBoard(board,pieces,pi,typeIndex,freeCellLookup);
+      for(const mv of moves) {
+        const newBoard=board.slice(),newPieces=pieces.slice();
+        erasePieceFromBoard(newBoard,pieces,pi,typeIndex,freeCellLookup);
+        const shiftInfo=[];
+        if(mv.shifted)for(const sh of mv.shifted) {
+          const qj=findPieceIndexByTypeAndPos(pieces,sh.type,sh.fromX,sh.fromY);if(qj<0||qj===pi)continue;
+          erasePieceFromBoard(newBoard,pieces,qj,typeIndex,freeCellLookup);
+          shiftInfo.push({qj,nx:sh.fromX+mv.path[0][0],ny:sh.fromY+mv.path[0][1]});
+        }
+        newPieces[pi*3+1]=mv.nx;newPieces[pi*3+2]=mv.ny;
+        placePieceOnBoard(newBoard,newPieces,pi,typeIndex,freeCellLookup);
+        for(const inf of shiftInfo){newPieces[inf.qj*3+1]=inf.nx;newPieces[inf.qj*3+2]=inf.ny;placePieceOnBoard(newBoard,newPieces,inf.qj,typeIndex,freeCellLookup);}
+        yield {board:newBoard,pieces:newPieces,move:{type:tt,fromX:px,fromY:py,path:mv.path,shifted:mv.shifted}};
+      }
+    }
+  }
+  async function solveCompact(state,stopCheck,onProgress,groupShift,method) {
+    const astar=method==='astar',bidir=method==='bidir';
+    const budget=new SolverBudget(MAX_RAM_GB_USER);
+    const forward=new SolverStore(state,budget,astar),backward=bidir?new SolverStore(state,budget,false):null;
+    const startBoard=makeSolverBoard(state.startFlat,state.typeIndex,state.freeCellLookup,state.FREE_CELLS);
+    const key=forward.pack(startBoard);forward.add(key,forward.hash(key),state.startFlat,-1,null,0,0);
+    const targets=[];
+    for(const p of state.targetPieces){const shape=SHAPES[p.shape];if(!shape)continue;const cells=[];for(const [dx,dy] of shape.cells){const fi=state.freeCellLookup[(p.y+dy)*COLS+p.x+dx];if(fi>=0)cells.push(fi);}targets.push({type:state.typeMap.get(solverPieceKey(p)),cells});}
+    const goal=board=>targets.every(tgt=>tgt.cells.every(ci=>board[ci]===tgt.type));
+    const goals=astar?state.targetPieces.filter(p=>SHAPES[p.shape]&&!SHAPES[p.shape].fixed).map(p=>({type:state.typeMap.get(solverPieceKey(p)),x:p.x,y:p.y})):[];
+    function estimate(pieces) {
+      let sum=0;for(const target of goals){let best=Infinity;for(let i=0;i<pieces.length;i+=3)if(pieces[i]===target.type){const dx=Math.abs(pieces[i+1]-target.x),dy=Math.abs(pieces[i+2]-target.y);best=Math.min(best,MOVE_MODE===1?dx+dy:MOVE_MODE===2?Number(dx>0)+Number(dy>0):Number(dx+dy>0));}sum+=Number.isFinite(best)?best:0;}return sum;
+    }
+    let nodes=0,depth=0,lastYield=performance.now();const t0=lastYield;
+    const report=()=>{if(onProgress)onProgress(nodes,depth,performance.now()-t0,budget.stats());};
+    const result=path=>{report();return {path,nodes,ms:performance.now()-t0,...budget.stats()};};
+    try {
+      if(bidir){const targetBoard=makeSolverBoard(state.targetFlat,state.typeIndex,state.freeCellLookup,state.FREE_CELLS),k=backward.pack(targetBoard);if(forward.equal(0,k))return result([]);backward.add(k,backward.hash(k),state.targetFlat,-1,null,0,0);}
+      const heap=astar?new SolverHeap(forward,budget):null;if(heap)heap.push(0);
+      let frontF=0,endF=1,frontB=0,endB=1;
+      while(astar?heap.length>0:frontF<endF&&(!bidir||frontB<endB)) {
+        const expandForward=!bidir||(endF-frontF<=endB-frontB);
+        const store=expandForward?forward:backward,other=bidir?(expandForward?backward:forward):null;
+        const begin=astar?0:expandForward?frontF:frontB,end=astar?1:expandForward?endF:endB;
+        for(let cursor=begin;cursor<end;cursor++) {
+          if(stopCheck&&stopCheck())return null;
+          const id=astar?heap.pop():cursor,node=store.node(id);
+          if(astar){const k=store.pack(node.board);if(store.find(k,store.hash(k))!==id)continue;depth=store.cost(id);}
+          nodes++;
+          if(!bidir&&goal(node.board))return result(store.path(id));
+          for(const next of compactSuccessors(node,state,groupShift)) {
+            const k=store.pack(next.board),hash=store.hash(k),previous=store.find(k,hash),g=store.cost(id)+1;
+            if(previous<0||(astar&&g<store.cost(previous))) {
+              const nextId=store.add(k,hash,next.pieces,id,next.move,g,astar?g+2.5*estimate(next.pieces):0);
+              if(other){const meet=other.find(k,hash);if(meet>=0)return result(expandForward?store.path(nextId).concat(reverseSolverMoves(other.path(meet))):other.path(meet).concat(reverseSolverMoves(store.path(nextId))));}
+              if(heap)heap.push(nextId);
+            }
+            if(performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));lastYield=performance.now();if(stopCheck&&stopCheck())return null;}
+          }
+          if(performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));lastYield=performance.now();}
+        }
+        if(!astar){if(expandForward){frontF=endF;endF=forward.size;}else{frontB=endB;endB=backward.size;}depth++;}
+      }
+      report();return null;
+    } catch(e) {report();throw e;}
+  }
+  async function solveUnidirectional(state,stopCheck,onProgress,maxNodes,groupShift) {return solveCompact(state,stopCheck,onProgress,groupShift,'bfs');}
+  async function solveBidirectional(state,stopCheck,onProgress,maxNodes,groupShift) {return solveCompact(state,stopCheck,onProgress,groupShift,'bidir');}
+  async function solveAStar(state,stopCheck,onProgress,maxNodes,groupShift) {return solveCompact(state,stopCheck,onProgress,groupShift,'astar');}
 
   let solverWorker = null, solverPending = null, solverWorkerUrl = null;
   let solveSessionId = 0;
@@ -3471,6 +3601,7 @@
       "let MOVE_MODE = 2;",
       "let GROUP_SHIFT = false;",
       "const MAX_NODES = " + MAX_NODES + ";",
+      "const MAX_RAM_GB_USER = " + MAX_RAM_GB_USER + ";",
       "const SOLVER_DIRS = [[0,-1],[0,1],[-1,0],[1,0]];",
       "const KEY_CHARS = new Array(256);",
       "for (let i = 0; i < 256; i++) KEY_CHARS[i] = String.fromCharCode(32 + i);",
@@ -3491,8 +3622,16 @@
       erasePieceFromBoard.toString(),
       placePieceOnBoard.toString(),
       findPieceIndexByTypeAndPos.toString(),
+      SolverBudget.toString(),
+      SolverBytePool.toString(),
+      SolverStore.toString(),
+      SolverHeap.toString(),
+      reverseSolverMoves.toString(),
+      compactSuccessors.toString(),
+      solveCompact.toString(),
       solveUnidirectional.toString(),
-      reconstructBidirectionalPath.toString(),
+      solveAStar.toString(),
+
       solveBidirectional.toString(),
       "self.onmessage = async function (e) {",
       "  const msg = e.data;",
@@ -3505,9 +3644,10 @@
       "    const state = buildSolverState(msg.startPieces, msg.targetPieces);",
       "    const stopCheck = () => false;",
       "    const maxNodes = MAX_NODES;",
-      "    const onProgress = (nodes, depth, ms) => self.postMessage({ type: 'progress', nodes: nodes, depth: depth, ms: ms });",
+      "    const onProgress = (nodes, depth, ms, stats) => self.postMessage({ type: 'progress', nodes, depth, ms, stats });",
       "    let result;",
-      "    if (state.isFullTarget) result = await solveBidirectional(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);",
+      "    if (msg.method === 'astar') result = await solveAStar(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);",
+      "    else if (state.isFullTarget) result = await solveBidirectional(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);",
       "    else result = await solveUnidirectional(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);",
       "    if (!result) { self.postMessage({ type: 'none' }); return; }",
       "    self.postMessage({ type: 'result', path: result.path, nodes: result.nodes, ms: result.ms });",
@@ -3533,7 +3673,7 @@
   function handleSolverMessage(e) {
     const msg = e.data, pending = solverPending;
     if (!pending) return;
-    if (msg.type === 'progress') { if (pending.onProgress) { try { pending.onProgress(msg.nodes, msg.depth, msg.ms); } catch (err) {} } return; }
+    if (msg.type === 'progress') { if (pending.onProgress) { try { pending.onProgress(msg.nodes, msg.depth, msg.ms, msg.stats); } catch (err) {} } return; }
     solverPending = null;
     terminateSolverWorker();
     if (msg.type === 'result') pending.resolve({ path: msg.path, nodes: msg.nodes, ms: msg.ms });
@@ -3566,10 +3706,17 @@
     const state = buildSolverState(startPieces, targetPieces);
     const stopCheck = () => game.stopRequested;
     const maxNodes = MAX_NODES;
+    if (effectiveSolverMethod() === 'astar') return await solveAStar(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);
     if (state.isFullTarget) return await solveBidirectional(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);
     return await solveUnidirectional(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);
   }
   function solve(onProgress) {
+    lastSolverMemory = { states: 0, allocatedBytes: 0 };
+    const originalProgress = onProgress;
+    onProgress = (nodes, depth, ms, stats) => {
+      if (stats) lastSolverMemory = stats;
+      if (originalProgress) originalProgress(nodes, depth, ms, stats);
+    };
     if (typeof Worker === 'undefined' || typeof Blob === 'undefined' || typeof URL === 'undefined') return solveOnMainThread(onProgress);
     cancelSolverWorker();
     let worker;
@@ -3581,7 +3728,7 @@
     const targetPieces = game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
     return new Promise((resolve, reject) => {
       solverPending = { resolve, reject, onProgress };
-      try { worker.postMessage({ type: 'solve', COLS, ROWS, SHAPES, MOVE_MODE, GROUP_SHIFT, startPieces, targetPieces }); }
+      try { worker.postMessage({ type: 'solve', method: effectiveSolverMethod(), COLS, ROWS, SHAPES, MOVE_MODE, GROUP_SHIFT, startPieces, targetPieces }); }
       catch (err) { solverPending = null; terminateSolverWorker(); reject(err); }
     });
   }
@@ -3601,6 +3748,10 @@
   const scrambleBtn = document.getElementById('scrambleBtn');
   const redoBtn = document.getElementById('redoBtn');
   const solveBtn = document.getElementById('solveBtn');
+  const solverMethodEl = document.getElementById('solverMethod');
+  let solverMethod = safeGetItem('klotski-solver-method') === 'astar' ? 'astar' : 'bfs';
+  solverMethodEl.value=solverMethod;
+  solverMethodEl.addEventListener('change',()=>{solverMethod=solverMethodEl.value;safeSetItem('klotski-solver-method',solverMethod);});
   const hintBtn = document.getElementById('hintBtn');
   const solverStatus = document.getElementById('solverStatus');
   const levelTextEl = document.getElementById('levelText');
@@ -4240,7 +4391,12 @@
     }
     syncGamePieces(); updateUndoBtn(); checkWin();
   }
+  function effectiveSolverMethod() {
+    return (batch.active || batchMode) ? 'bfs' : solverMethod;
+  }
   function updateSolveBtn() {
+    solverMethodEl.value = effectiveSolverMethod();
+    solverMethodEl.disabled = game.solving || game.scrambling || batch.active;
     solveBtn.disabled = game.scrambling;
     if (batch.active) {
       solveBtn.classList.remove('solve'); solveBtn.classList.add('stop');
@@ -4268,8 +4424,24 @@
     if (message) { solverStatus.textContent = message; solverStatus.classList.toggle('error', !!isError); }
   }
   function oomMessage() { return t('solverOom', fmtNum(MAX_NODES)); }
+  let lastSolverMemory = { states: 0, allocatedBytes: 0 };
+  // Display-only calibration from observed process memory. This is an estimate,
+  // not a browser/OS measurement and must never change SolverBudget accounting.
+  function solverMemoryEstimate(stats = lastSolverMemory) {
+    const storage = Math.max(0, Number(stats.allocatedBytes) || 0);
+    const overhead = (IS_FIREFOX ? 400 : 600) * 1048576;
+    return { storage, overhead, total: storage + overhead };
+  }
+  function solverMemoryStatusHtml() {
+    const mem = solverMemoryEstimate();
+    const tooltip = LANG === 'ru'
+      ? 'Оценка памяти процесса: хранилище ' + (mem.storage / GB_BYTES).toFixed(2) + ' ГиБ + поправка ' + (mem.overhead / 1048576) + ' МиБ по наблюдениям. Это не измерение памяти браузером.'
+      : 'Estimated process memory: storage ' + (mem.storage / GB_BYTES).toFixed(2) + ' GiB + observed overhead allowance ' + (mem.overhead / 1048576) + ' MiB. Not a browser memory measurement.';
+    return ' · ' + (LANG === 'ru' ? 'В памяти: ' : 'Stored: ') + fmtNum(lastSolverMemory.states)
+      + ' · <span title="' + tooltip + '">≈' + (mem.total / GB_BYTES).toFixed(2) + ' GiB</span>';
+  }
   function oomMessageProgress(nodes) {
-    const memGB = (Math.max(0, nodes) * bytesPerState(CELLS)) / GB_BYTES;
+    const memGB = solverMemoryEstimate().total / GB_BYTES;
     return t('solverOomProgress', fmtNum(nodes), memGB.toFixed(2));
   }
 
@@ -4341,7 +4513,10 @@
     batchMode = true;
     try { await runSolver(); } catch (e) { console.error('[AutoSolve] runSolver error:', e); batch.stats.error++; }
     batchMode = false;
+    updateSolveBtn();
     logMemory('after');
+    // Allow the terminated Chrome worker to release a large backing store before the next search.
+    if (!IS_FIREFOX && lastSolverMemory.allocatedBytes > 268435456) await new Promise(r => setTimeout(r, 600));
     if (!batch.active) return;
     if (batch.skipRequested) {
       batch.skipRequested = false;
@@ -4352,6 +4527,7 @@
   }
 
   function startBatchSolve() {
+    if (MOVE_MODE !== 3) { showToast(t('batchRecordMode'), true); return; }
     const group = getGalleryGroups().find(g => g.items.some(it => it.globalIdx === currentLevelIndex));
     if (!group) { showToast(t('batchNoLevels'), true); return; }
     const ordered = group.items;
@@ -4396,6 +4572,7 @@
     saveUserLevels();
   }
   function shouldSaveStep() {
+    if (effectiveSolverMethod() === 'astar') return false;
     if (game.scrambled) return false;
     if (MOVE_MODE !== 3) return false;
     if (!GROUP_SHIFT) return true;
@@ -4418,11 +4595,12 @@
     await new Promise(r => setTimeout(r, 20));
     if (solveSessionId !== mySessionId) return;
     let lastNodes = 0, lastDepth = 0, lastMs = 0;
-    const onProgress = (nodes, depth, ms) => {
+    const onProgress = (nodes, depth, ms, stats) => {
       lastNodes = nodes; lastDepth = depth; lastMs = ms;
       if (solveSessionId !== mySessionId) return;
       if (!game.solving) return;
       solverStatus.innerHTML = t('searchingPrefix') + ' ' + t('statesWord') + ' <b>' + fmtNodes(nodes) + '</b> · ' + t('depthWord') + ' <b>' + depth + '</b> · ' + t('timeLabel') + ' <b>' + fmtSolverTime(ms / 1000) + '</b>';
+      solverStatus.innerHTML += solverMemoryStatusHtml();
     };
     let result = null;
     try { result = await solve(onProgress); }
@@ -4433,7 +4611,7 @@
       const isBrowserOom = !!(err && err.isBrowserOom) || /out of memory|allocation failed/i.test(errMsg);
       if (isOurOom || isBrowserOom) {
         if (batchMode) {
-          console.error('[AutoSolve] OOM on "' + lvlNameForLog + '" — positions: ' + lastNodes + ', depth: ' + lastDepth + ', estimated RAM: ' + ((lastNodes * bytesPerState(CELLS)) / GB_BYTES).toFixed(2) + ' GB, limit: ' + MAX_NODES);
+          console.error('[AutoSolve] OOM on "' + lvlNameForLog + '" — positions: ' + lastNodes + ', depth: ' + lastDepth + ', accounted storage: ' + (lastSolverMemory.allocatedBytes / GB_BYTES).toFixed(2) + ' GiB, RAM budget: ' + (MAX_RAM_GB_USER || 'unlimited'));
           batch.stats.oom++;
           game.solving = false; updateSolveBtn(); updateUndoBtn(); return;
         }
@@ -4454,24 +4632,38 @@
       }
       stopSolving(t('solverNotFound'), true); return;
     }
+    if (shouldSaveStep() && result.path.length > 0) {
+      const steps = result.path.length;
+      const level = allLevels()[currentLevelIndex];
+      let saved = false;
+      solverStatus.textContent = t('recordSaving');
+      try {
+        if (level && currentLevelIndex < PRESET_LEVELS.length) {
+          saved = await savePresetRecordForLevel(level, steps);
+          if (saved) updateLevelStepText(level, steps);
+        } else if (level) {
+          const previousText = level.text;
+          updateLevelStepText(level, steps);
+          try { writeStorageChecked(USER_LEVELS_KEY, JSON.stringify(userLevels)); saved = true; }
+          catch (error) { level.text = previousText; throw error; }
+        }
+      } catch (error) { console.error('[Records] Save failed', error); }
+      if (solveSessionId !== mySessionId) return;
+      if (!saved) {
+        batch.active = false;
+        game.solving = false; game.stopRequested = false;
+        solverStatus.textContent = t('recordSaveFailed'); solverStatus.classList.add('error');
+        updateSolveBtn(); updateUndoBtn(); showToast(t('recordSaveFailed'), true);
+        return;
+      }
+      game.step = steps; renderLevelHint();
+      if (!game.solving) return;
+      if (!batchMode) showToast(t('levelSavedN', steps));
+    }
     solverStatus.innerHTML = t('doneWord') + ' <b>' + result.path.length + '</b> ' + t('movesWord') + ' · ' + t('nodesWord') + ' <b>' + fmtNodes(result.nodes) + '</b> · ' + t('timeLabel') + ' <b>' + fmtSolverTime(result.ms / 1000) + '</b>';
     if (batchMode) {
       console.log('[AutoSolve] SOLVED "' + lvlNameForLog + '" — moves: ' + result.path.length + ', states: ' + result.nodes + ', time: ' + (result.ms / 1000).toFixed(2) + 's');
       batch.stats.solved++;
-    }
-    if (shouldSaveStep() && result.path.length > 0) {
-      const steps = result.path.length;
-      game.step = steps; renderLevelHint();
-      try {
-        if (currentLevelIndex >= PRESET_LEVELS.length) {
-          const userIdx = currentLevelIndex - PRESET_LEVELS.length;
-          if (userIdx >= 0 && userIdx < userLevels.length) { updateUserLevelStep(userIdx, steps); if (!batchMode) showToast(t('levelSavedN', steps)); }
-        } else if (currentLevelIndex >= 0 && currentLevelIndex < PRESET_LEVELS.length) {
-          updateLevelStepText(PRESET_LEVELS[currentLevelIndex], steps);
-          savePresetRecordForLevel(PRESET_LEVELS[currentLevelIndex], steps);
-          if (!batchMode) showToast(t('levelSavedN', steps));
-        }
-      } catch (e) { console.error(e); }
     }
     if (batchMode) {
       game.solving = false; game.stopRequested = false;
@@ -4492,11 +4684,12 @@
     await new Promise(r => setTimeout(r, 20));
     if (solveSessionId !== mySessionId) return;
     let lastNodes = 0;
-    const onProgress = (nodes, depth, ms) => {
+    const onProgress = (nodes, depth, ms, stats) => {
       lastNodes = nodes;
       if (solveSessionId !== mySessionId) return;
       if (!game.solving) return;
       solverStatus.innerHTML = t('analyzingPrefix') + ' ' + t('timeLabel') + ' <b>' + fmtSolverTime(ms / 1000) + '</b>';
+      solverStatus.innerHTML += solverMemoryStatusHtml();
     };
     let result = null;
     try { result = await solve(onProgress); }
@@ -6311,6 +6504,7 @@
     buildPalette(); renderEditor();
     updateApplyBtn();
     syncLevelText();
+    editor.stepSaveSource = { level: allLevels()[editor.sourceLevelRef.index], signature: editorStepBoardSignature() };
   }
   function cancelEditor() {
     cleanupEditorDrag(); closeManualPaste(); cancelTileEditor();
@@ -7241,6 +7435,46 @@
   });
   levelAuthorInput.addEventListener('input', () => { editor.levelAuthor = levelAuthorInput.value; syncLevelText(); });
   levelGroupInput.addEventListener('input', () => { editor.levelGroup = levelGroupInput.value; syncLevelText(); });
+  // Only metadata is written here. A count for an edited puzzle must never
+  // be attached to the unchanged source puzzle.
+  function editorStepBoardSignature() {
+    return serializeLevel().split(/\r?\n/)
+      .filter(line => !/^(klotski|nameeng|author|group|step)\s*:/i.test(line.trim()))
+      .join('\n');
+  }
+  async function saveEditorStep() {
+    const raw = (levelStepInput.value || '').trim(), steps = Number(raw);
+    if (!raw || !Number.isInteger(steps) || steps < 1 || steps > 99999) {
+      showToast(t('saveStepInvalid'), true); return false;
+    }
+    const ref = editor.sourceLevelRef || {}, snapshot = editor.stepSaveSource;
+    const level = allLevels()[ref.index];
+    if (!['preset', 'user'].includes(ref.type) || !level || !snapshot || snapshot.level !== level ||
+        editorStepBoardSignature() !== snapshot.signature) {
+      showToast(t('saveStepNeedsLevel'), true); return false;
+    }
+    let saved = false;
+    try {
+      if (ref.type === 'preset') {
+        saved = await savePresetRecordForLevel(level, steps);
+        if (saved) updateLevelStepText(level, steps);
+      } else {
+        const previousText = level.text;
+        updateLevelStepText(level, steps);
+        try { writeStorageChecked(USER_LEVELS_KEY, JSON.stringify(userLevels)); saved = true; }
+        catch (error) { level.text = previousText; throw error; }
+      }
+    } catch (error) { console.error('[Records] Manual save failed', error); }
+    if (!saved) { showToast(t('recordSaveFailed'), true); return false; }
+    if (editor.sourceLevelRef !== ref) return true;
+    editor.levelStep = steps;
+    if (currentLevelIndex === ref.index) { game.step = steps; renderLevelHint(); }
+    syncLevelText();
+    buildLevelSelect();
+    showToast(t('levelSavedN', steps));
+    return true;
+  }
+  document.getElementById('saveLevelStepBtn').addEventListener('click', saveEditorStep);
   levelStepInput.addEventListener('input', () => { const s = (levelStepInput.value || '').trim(); const n = parseInt(s, 10); editor.levelStep = (!isNaN(n) && n > 0) ? n : 0; syncLevelText(); });
   function updateEditorGroupMovesInput() {
     if (!levelGroupMovesInput) return;
@@ -7451,7 +7685,9 @@
     const groups = getGalleryGroups();
     for (const g of groups) {
       const optgroup = document.createElement('optgroup');
-      optgroup.label = g.title;
+      const groupTitle = Array.from(g.title);
+      optgroup.label = groupTitle.length > 50 ? groupTitle.slice(0, 49).join('') + '…' : g.title;
+      optgroup.title = g.title;
       for (const it of g.items) {
         const opt = document.createElement('option');
         opt.value = String(it.globalIdx);
@@ -8323,7 +8559,7 @@
     const states = MAX_NODES_USER;
     const ramGb = MAX_RAM_GB_USER;
     const gbStr = (ramGb >= 1) ? (Math.round(ramGb * 10) / 10).toString() : (Math.round(ramGb * 100) / 100).toString();
-    maxStatesHint.textContent = t('maxStatesHintFull', gbStr, fmtNum(states));
+    maxStatesHint.textContent = ramGb === 0 ? t('ramUnlimited') : t('maxStatesHintFull', gbStr, fmtNum(states));
   }
   function syncMemoryInputs() {
     if (maxStatesInput) maxStatesInput.value = fmtNum(MAX_NODES_USER);
@@ -8358,11 +8594,11 @@
     const applyRam = () => {
       const raw = (maxRamInput.value || '').replace(',', '.').replace(/[^\d.]/g, '');
       let gb = parseFloat(raw);
-      if (!isFinite(gb) || gb < 0.03) gb = MAX_RAM_GB_USER;
+      if (!isFinite(gb) || gb < 0 || (gb > 0 && gb < 0.03)) gb = MAX_RAM_GB_USER;
       saveRamSetting(gb);
       syncMemoryInputs();
       updateMaxStatesHint();
-      showToast(t('stateLimitSet', fmtNum(MAX_NODES_USER)));
+      showToast(MAX_RAM_GB_USER === 0 ? t('ramUnlimited') : t('maxStatesHintFull', MAX_RAM_GB_USER, fmtNum(MAX_NODES_USER)));
     };
     maxRamInput.addEventListener('change', applyRam);
     maxRamInput.addEventListener('blur', applyRam);
@@ -8699,7 +8935,7 @@
     for (const p of analyzer.source) analyzer.templates[state.typeMap.get(solverPieceKey(p))] = { ...p };
     const perState = 280 + CELLS * 2 + analyzer.source.length * 3;
     analyzer.maxStates = Math.max(1, Math.min(MAX_NODES_USER,
-      Math.floor(MAX_RAM_GB_USER * GB_BYTES / perState)));
+      (MAX_RAM_GB_USER > 0 ? Math.floor(MAX_RAM_GB_USER * GB_BYTES / perState) : MAX_NODES_HARD_CAP)));
     resetAnalyzerSelections();
     analyzer.result = null; analyzer.index = 0; analyzer.round = 0; analyzer.best = null;
     analyzer.spaceResult = null; analyzer.spaceSource = null; analyzer.spaceIndex = 0;
@@ -9072,7 +9308,7 @@ self.onmessage = async function (e) {
     analyzer.spaceSource = source; analyzer.spaceResult = null; analyzer.spaceIndex = 0; analyzer.spaceFound = 0; resetAnalyzerContours();
     const stride = source.length * 3;
     analyzer.spaceLimit = Math.max(1, Math.min(analyzer.maxStates,
-      Math.floor(MAX_RAM_GB_USER * GB_BYTES / (stride * 2 + source.length * 8 + 160)), Math.floor(0x7fffffff / stride)));
+      (MAX_RAM_GB_USER > 0 ? Math.floor(MAX_RAM_GB_USER * GB_BYTES / (stride * 2 + source.length * 8 + 160)) : MAX_NODES_HARD_CAP), Math.floor(0x7fffffff / stride)));
     analyzerSpaceStatus('spaceProgress', '0', '0', '0.00');
     renderAnalyzerSpace(); updateAnalyzerButtons();
     try {
@@ -10026,6 +10262,15 @@ self.onmessage = async function (e) {
   updateSolveBtn();
   applyBoardSize();
   loadSavedOrFirstLevel();
+  // Restore the durable mirror after first draw, without delaying opening the board.
+  restorePresetRecordBackup().then(changed => {
+    if (!changed) return;
+    buildLevelSelect();
+    if (currentLevelIndex >= 0 && currentLevelIndex < PRESET_LEVELS.length && !game.scrambled) {
+      game.step = parseLevelStepSafe(PRESET_LEVELS[currentLevelIndex].text); renderLevelHint();
+    }
+    if (appMode === 'gallery') buildGallery();
+  }).catch(error => console.error('[Records] Restore failed', error));
   prepareLevelListAfterFirstPaint();
   requestAnimationFrame(updateBackBtnPosition);
 })();
