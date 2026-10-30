@@ -211,7 +211,18 @@
   @keyframes biArrowPulse { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.8); } }
   .bi-arrow-pulse { transform-box: fill-box; transform-origin: center; animation: biArrowPulse 1.4s ease-in-out infinite; }
   @media (prefers-reduced-motion: reduce) { .bi-arrow-pulse { animation: none; } }
-  .overlay { position: fixed; left: 50%; top: 300px; transform: translateX(-50%) translateY(0); z-index: 60; width: min(96vw, 480px); max-width: min(96vw, 480px); display: flex; align-items: center; justify-content: center; background: rgba(20,20,20,.94); backdrop-filter: blur(6px); border-radius: 12px; border: 1px solid rgba(255,209,102,.42); box-shadow: 0 14px 40px rgba(0,0,0,.7); opacity: 1; transition: opacity .28s ease, transform .28s ease; }
+  .overlay { position: absolute; left: 50%; top: 300px; transform: translateX(-50%) translateY(0); z-index: 60; width: min(96vw, 480px); max-width: min(96vw, 480px); display: flex; align-items: center; justify-content: center; background: rgba(20,20,20,.94); backdrop-filter: blur(6px); border-radius: 12px; border: 1px solid rgba(255,209,102,.42); box-shadow: 0 14px 40px rgba(0,0,0,.7); opacity: 1; transition: opacity .28s ease, transform .28s ease; }
+  .step-dialog { width: min(360px, calc(100vw - 32px)); box-sizing: border-box; padding: 0; color: var(--ink); background: rgba(20,20,20,.97); border: 1px solid rgba(255,209,102,.42); border-radius: 12px; box-shadow: 0 14px 40px rgba(0,0,0,.7); }
+  .step-dialog::backdrop { background: rgba(0,0,0,.55); backdrop-filter: blur(3px); }
+  .step-dialog .overlay__card { padding: 20px; }
+  .step-dialog .step-dialog__level { margin: 8px 0 14px; overflow-wrap: anywhere; font-size: 12px; }
+  .step-dialog label { display: block; margin-bottom: 8px; color: var(--sub); font-size: 12px; }
+  .step-dialog .settings-input { width: 100%; box-sizing: border-box; height: 40px; font-size: 18px; }
+  .step-dialog .settings-input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(255,209,102,.12); }
+  .step-dialog .step-dialog__error { margin-top: 8px; color: #ff9494; font-size: 12px; }
+  .step-dialog__actions { display: flex; justify-content: center; gap: 10px; margin-top: 16px; }
+  .step-dialog .step-dialog__cancel { background: linear-gradient(180deg, #555, #333); }
+  .step-dialog .step-dialog__cancel:hover { background: linear-gradient(180deg, #666, #444); }
   .overlay.hidden { opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(14px); }
   .overlay__card { padding: 8px 16px 10px; text-align: center; }
   .overlay__card h2 { margin: 0 0 2px; font-size: 16px; color: var(--gold); letter-spacing: .4px; }
@@ -241,7 +252,7 @@
   button.hint-btn { background: linear-gradient(180deg, #4ea8de, #1d5f8a); border-color: rgba(150,215,245,.55); color: #fff; }
   button.hint-btn:hover:not(:disabled) { background: linear-gradient(180deg, #62b8e8, #2670a0); }
   .hint { margin: 8px 0 0; font-size: 11.5px; line-height: 1.5; text-align: center; color: var(--sub); }
-  .game-view { display: flex; flex-direction: column; gap: 12px; }
+  .game-view { position: relative; display: flex; flex-direction: column; gap: 12px; }
   .level-hint { padding: 8px 14px; font-size: 12.5px; line-height: 1.4; text-align: center; color: #000; background: rgba(90,200,110,.15); border: 1px solid rgba(120,220,140,.32); border-radius: 10px; letter-spacing: .01em; font-weight: 500; }
   .hint-block { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 16px 16px 18px; border-radius: 14px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); }
   .hint-block .mini-board { width: 168px; }
@@ -879,10 +890,14 @@
         <input type="text" id="maxStatesInput" class="settings-input settings-input--states" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="13 600 000">
       </div>
       <div class="settings-hint" id="maxStatesHint"></div>
+      <div class="settings-row settings-row--compact">
+        <label class="settings-label" for="solverTimeInput" data-ruseng="solverTimeLabel">Лимит времени</label>
+        <input type="text" id="solverTimeInput" class="settings-input settings-input--ram" autocomplete="off" spellcheck="false" placeholder="00:00" maxlength="9">
+      </div>
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v2.85)</span></div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v3.00)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -1197,7 +1212,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '2.85';
+  const APP_VERSION = '3.00';
   const LANG_KEY = 'ryzhiy-osel-lang-v1';
   const LAST_LEVEL_KEY = 'ryzhiy-osel-last-level-v1';
   function safeGetItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
@@ -1515,8 +1530,9 @@
       solverError: 'Ошибка: %1',
       solverOom: 'Превышен лимит состояний (%1). Поднимите «Лимит ОЗУ, ГБ» в настройках.',
       solverOomProgress: 'Поиск остановлен: достигнут бюджет памяти или не удалось выделить память. Обработано позиций: %1. Оценка памяти процесса с поправкой на накладные расходы: ≈%2 ГиБ.',
-      maxStatesHintFull: 'Бюджет решателя: %1 ГБ; 28% оставлено для временных данных. Лимит состояний относится только к анализатору.',
-      ramUnlimited: 'Решатель: без лимита ОЗУ (0). Firefox не останавливается на прежнем пороге 10 ГБ. Лимит состояний относится только к анализатору.',
+      maxStatesHintFirefox: 'Лимит хранилища Солвера и Анализатора: %1 ГБ, без вычета резерва. Лимит состояний относится только к анализатору.',
+      maxStatesHintFull: 'Бюджет Солвера и Анализатора: %1 ГБ; 28% оставлено для временных данных. Лимит состояний относится только к анализатору.',
+      ramUnlimited: 'Солвер и Анализатор: без лимита ОЗУ (0). Firefox не останавливается на прежнем пороге 10 ГБ. Лимит состояний относится только к анализатору.',
       maxStatesHintLimited: 'Солвер переберёт до %1 состояний (задано %2, ограничено доступной памятью). Расчётная память: ~%3.',
       gallerySummary: 'Встроенных уровней %1, моих %2, не решено: %3',
       galleryTotal: 'Всего %1',
@@ -1526,7 +1542,12 @@
       previewStart: 'Старт', previewTarget: 'Цель',
       gallerySteps: 'Ходов: %1',
       myLevels: 'Мои уровни',
-      ctxPlay: 'Играть', ctxEdit: 'Редактор', ctxDelete: 'Удалить', ctxConfirmDelete: 'Нажмите ещё раз',
+      parserGoalHoleMismatch: 'Отверстие в цели не совпадает с доской: столбец %1, строка %2.',
+      parserGoalHoleTile: 'Целевая плитка попадает в отверстие: столбец %1, строка %2.',
+      ctxSetStep: 'Задать число ходов', ctxStepPrompt: 'Число ходов (1–99999):', ctxPlay: 'Играть', ctxEdit: 'Редактор', ctxDelete: 'Удалить', ctxConfirmDelete: 'Нажмите ещё раз',
+      solverTimeLabel: 'Лимит времени',
+      solverTimeInvalid: 'Введите время в формате ЧЧ:ММ (например, 02:30) или 0 без ограничения.',
+      solverTimeExpired: 'Поиск остановлен: истёк лимит времени.', batchTimeExpired: 'Авторешение остановлено: истёк общий лимит времени.',
       recordSaving: 'Решение найдено. Сохраняю рекорд…',
       recordSaveFailed: 'Решение найдено, но рекорд не удалось сохранить. Авторешение остановлено. Проверьте доступ к хранилищу браузера.',
       batchRecordMode: 'Авторешение не запущено: для сохранения рекордов выберите режим «Весь путь».',
@@ -1850,8 +1871,9 @@
       solverError: 'Error: %1',
       solverOom: 'State limit exceeded (%1). Increase "RAM limit, GB" in settings.',
       solverOomProgress: 'Search stopped: memory budget reached or allocation failed. Positions explored: %1. Estimated process memory including overhead allowance: ≈%2 GiB.',
-      maxStatesHintFull: 'Solver budget: %1 GiB; 28% reserved for temporary data. The state limit applies only to the analyzer.',
-      ramUnlimited: 'Solver: no RAM limit (0). Firefox no longer stops at the old 10 GiB threshold. The state limit applies only to the analyzer.',
+      maxStatesHintFirefox: 'Solver and Analyzer storage limit: %1 GiB, with no reserve deduction. The state limit applies only to the analyzer.',
+      maxStatesHintFull: 'Solver and Analyzer budget: %1 GiB; 28% reserved for temporary data. The state limit applies only to the analyzer.',
+      ramUnlimited: 'Solver and Analyzer: no RAM limit (0). Firefox no longer stops at the old 10 GiB threshold. The state limit applies only to the analyzer.',
       maxStatesHintLimited: 'Solver will explore up to %1 states (requested %2, limited by available memory). Estimated memory: ~%3.',
       gallerySummary: 'Built-in: %1, mine: %2, unsolved: %3',
       galleryTotal: 'Total %1',
@@ -1861,7 +1883,12 @@
       previewStart: 'Start', previewTarget: 'Target',
       gallerySteps: 'Moves: %1',
       myLevels: 'My levels',
-      ctxPlay: 'Play', ctxEdit: 'Editor', ctxDelete: 'Delete', ctxConfirmDelete: 'Click again to confirm',
+      parserGoalHoleMismatch: 'Goal hole does not match the board: column %1, row %2.',
+      parserGoalHoleTile: 'A target tile overlaps a hole: column %1, row %2.',
+      ctxSetStep: 'Set move count', ctxStepPrompt: 'Move count (1–99999):', ctxPlay: 'Play', ctxEdit: 'Editor', ctxDelete: 'Delete', ctxConfirmDelete: 'Click again to confirm',
+      solverTimeLabel: 'Time limit',
+      solverTimeInvalid: 'Enter HH:MM (for example, 02:30), or 0 for unlimited.',
+      solverTimeExpired: 'Search stopped: time limit reached.', batchTimeExpired: 'Auto-solve stopped: total time limit reached.',
       recordSaving: 'Solution found. Saving record…',
       recordSaveFailed: 'Solution found, but the record could not be saved. Auto-solve stopped. Check browser storage access.',
       batchRecordMode: 'Auto-solve not started: select Whole path mode to save records.',
@@ -2016,6 +2043,47 @@
   const DMOVE_ORDER = ['', 'v', 'h'];
   function dmoveTooltip(id) { return id === 'v' ? t('dmoveVTitle') : t('dmoveHTitle'); }
 
+  const SOLVER_TIME_KEY = 'klotski-solver-time-minutes-v1';
+  function parseSolverTime(text) {
+    const value = String(text || '').trim();
+    if (!value || /^0+$/.test(value)) return 0;
+    if (/^\d{1,6}$/.test(value)) return Number(value) * 60;
+    const match = value.match(/^(\d{1,6}):([0-5]\d)$/);
+    return match ? Number(match[1]) * 60 + Number(match[2]) : null;
+  }
+  function formatSolverTime(minutes) {
+    return String(Math.floor(minutes / 60)) + ':' + String(minutes % 60).padStart(2, '0');
+  }
+  let solverTimeMinutes = Number(safeGetItem(SOLVER_TIME_KEY)) || 0;
+  if (!Number.isSafeInteger(solverTimeMinutes) || solverTimeMinutes < 0 || solverTimeMinutes > 59999999) solverTimeMinutes = 0;
+  let SOLVER_DEADLINE_AT = 0, solverTimeTimer = null, solverTimeRunId = 0, solverTimeIsBatch = false;
+  function endSolverTimeLimit() {
+    if (solverTimeTimer !== null) clearTimeout(solverTimeTimer);
+    solverTimeTimer = null; SOLVER_DEADLINE_AT = 0; solverTimeRunId++;
+  }
+  function expireSolverTimeLimit() {
+    const wasBatch = solverTimeIsBatch;
+    endSolverTimeLimit();
+    if (wasBatch) { batch.active = false; batch.skipRequested = false; }
+    stopSolving(t(wasBatch ? 'batchTimeExpired' : 'solverTimeExpired'));
+    showToast(t(wasBatch ? 'batchTimeExpired' : 'solverTimeExpired'));
+  }
+  function beginSolverTimeLimit(isBatch) {
+    endSolverTimeLimit(); solverTimeIsBatch = isBatch;
+    if (!solverTimeMinutes) return;
+    SOLVER_DEADLINE_AT = Date.now() + solverTimeMinutes * 60000;
+    const token = solverTimeRunId;
+    const tick = () => {
+      if (token !== solverTimeRunId || !SOLVER_DEADLINE_AT) return;
+      const left = SOLVER_DEADLINE_AT - Date.now();
+      if (left <= 0) { expireSolverTimeLimit(); return; }
+      solverTimeTimer = setTimeout(tick, Math.min(left, 60000));
+    };
+    tick();
+  }
+  function checkSolverDeadline() {
+    if (SOLVER_DEADLINE_AT > 0 && Date.now() >= SOLVER_DEADLINE_AT) throw new Error('__TIMEOUT__');
+  }
   const MAX_NODES_HARD_CAP = 1000000000;
   const GB_BYTES = 1073741824;
   // Firefox: zero means no application RAM limit. Chrome: conservative 3 GiB budget.
@@ -2038,8 +2106,8 @@
     return false;
   }
 
-  // Legacy estimate for Analyzer settings only. The solver accounts for buffer
-  // allocations directly; it does not translate RAM into an explored-node cap.
+  // Legacy estimate retained only to migrate old automatically derived state limits.
+  // Both engines now account for their allocated search buffers directly.
   function bytesPerState(cells) {
     cells = (typeof cells === 'number' && cells > 0) ? cells : CELLS;
     return 200 + cells * 2;
@@ -2056,7 +2124,7 @@
   }
 
   let MAX_RAM_GB_USER = DEFAULT_RAM_GB;
-  let MAX_NODES_USER = ramGbToStates(DEFAULT_RAM_GB);
+  let MAX_NODES_USER = MAX_NODES_HARD_CAP;
   let MAX_NODES = MAX_NODES_USER;
 
   function normalizedRamBudget(gb) {
@@ -2067,14 +2135,16 @@
     // Deliberately do not inherit v1 limits (10 GiB in Firefox / 3.8 GiB in Chrome).
     const raw = safeGetItem(MAX_RAM_KEY);
     MAX_RAM_GB_USER = normalizedRamBudget(raw == null ? DEFAULT_RAM_GB : Number(raw));
-    MAX_NODES_USER = ramGbToStates(MAX_RAM_GB_USER);
+    MAX_NODES_USER = MAX_NODES_HARD_CAP;
     const storedStates = Number(safeGetItem(MAX_RAM_KEY + '-analyzer-states'));
-    if (storedStates >= 100000) MAX_NODES_USER = Math.min(storedStates, MAX_NODES_HARD_CAP);
+    if (storedStates >= 100000 && (safeGetItem(MAX_RAM_KEY + '-states-explicit') === '1' || storedStates !== ramGbToStates(MAX_RAM_GB_USER))) {
+      MAX_NODES_USER = Math.min(storedStates, MAX_NODES_HARD_CAP);
+      safeSetItem(MAX_RAM_KEY + '-states-explicit', '1');
+    }
     MAX_NODES = MAX_NODES_USER;
   }
   function saveRamSetting(gb) {
     MAX_RAM_GB_USER = normalizedRamBudget(gb);
-    MAX_NODES_USER = ramGbToStates(MAX_RAM_GB_USER); MAX_NODES = MAX_NODES_USER;
     safeSetItem(MAX_RAM_KEY, String(MAX_RAM_GB_USER));
     safeSetItem(MAX_RAM_KEY + '-analyzer-states', String(MAX_NODES_USER));
   }
@@ -2082,14 +2152,10 @@
     if (!isFinite(states) || states < 100000) states = MAX_NODES_USER;
     MAX_NODES_USER = Math.min(states, MAX_NODES_HARD_CAP); MAX_NODES = MAX_NODES_USER;
     safeSetItem(MAX_RAM_KEY + '-analyzer-states', String(MAX_NODES_USER));
+    safeSetItem(MAX_RAM_KEY + '-states-explicit', '1');
   }
-  /* Called whenever CELLS changes (level switch / board resize) so the
-     displayed "Лимит состояний" reflects the new board size while the
-     user's RAM budget stays the same. */
+  // Board changes do not alter either independently configured limit.
   function recalcMemoryForBoard() {
-    const storedStates = Number(safeGetItem(MAX_RAM_KEY + '-analyzer-states'));
-    MAX_NODES_USER = storedStates >= 100000 ? Math.min(storedStates, MAX_NODES_HARD_CAP) : ramGbToStates(MAX_RAM_GB_USER);
-    MAX_NODES = MAX_NODES_USER;
     if (typeof syncMemoryInputs === 'function') { try { syncMemoryInputs(); } catch (e) {} }
     if (typeof updateMaxStatesHint === 'function') { try { updateMaxStatesHint(); } catch (e) {} }
   }
@@ -2286,10 +2352,42 @@
     return lvl.name || extractNameFromText(lvl.text) || t('defaultLevelName');
   }
 
+  // Board owns the immutable geometry. Legacy exports omitted Goal dots;
+  // restore only blank cells, never overwrite a conflicting target tile.
+  function normalizeGoalHoles(text, signature = false) {
+    const source = String(text || ''), lines = source.split(/\r?\n/);
+    const bi = lines.findIndex(line => /^\s*board\s*:/i.test(line));
+    if (bi < 0) return source;
+    const size = lines[bi].match(/:\s*(\d+)\s*[xх×]\s*(\d+)/i);
+    if (!size) return source;
+    const width = Number(size[1]), height = Number(size[2]);
+    const gi = lines.findIndex((line, i) => i > bi && /^\s*goal\s*:?\s*$/i.test(line));
+    if (gi < 0) return source;
+    const isRow = line => Array.from(line.trim()).length === width && /^[\p{L}\p{N}_.]+$/u.test(line.trim());
+    const board = lines.slice(bi + 1, gi).filter(isRow).map(line => Array.from(line.trim()));
+    if (board.length !== height) return source;
+    const goal = [];
+    for (let i = gi + 1; i < lines.length && goal.length < height; i++) {
+      if (/^\s*tile\s*:/i.test(lines[i])) break;
+      if (isRow(lines[i])) goal.push(i);
+    }
+    if (goal.length !== height) return source;
+    let changed = false;
+    for (let y = 0; y < height; y++) {
+      const index = goal[y], row = Array.from(lines[index].trim()); let rowChanged = false;
+      for (let x = 0; x < width; x++) {
+        if (board[y][x] !== '.' || (row[x] !== '_' && row[x] !== '.')) continue;
+        const value = signature ? '_' : '.';
+        if (row[x] !== value) { row[x] = value; rowChanged = changed = true; }
+      }
+      if (rowChanged) lines[index] = lines[index].replace(lines[index].trim(), row.join(''));
+    }
+    return changed ? lines.join(source.includes('\r\n') ? '\r\n' : '\n') : source;
+  }
   function normalizeLevelsArray(arr) {
     if (!Array.isArray(arr)) return [];
     return arr.filter(l => l && typeof l === 'object' && typeof l.text === 'string').map(l => {
-      const text = String(l.text);
+      const text = normalizeGoalHoles(l.text);
       let name = String(l.name || ''), author = String(l.author || ''), nameEng = String(l.nameEng || ''), group = String(l.group || '');
       if (!name) name = extractNameFromText(text);
       if (!author) author = extractAuthorFromText(text);
@@ -2305,7 +2403,7 @@
   let userLevels = loadUserLevels();
 
   function makeLevelSignature(text) {
-    return String(text || '').split(/\r?\n/).map(l => l.trim())
+    return normalizeGoalHoles(text, true).split(/\r?\n/).map(l => l.trim())
       .filter(l => l.length > 0
         && !/^step\s*:/i.test(l)
         && !/^groupmoves\s*:/i.test(l)
@@ -2324,7 +2422,9 @@
     let records = {};
     try {
       const obj = JSON.parse(localStorage.getItem(PRESET_RECORDS_KEY) || '{}');
-      if (obj && typeof obj === 'object' && !Array.isArray(obj)) records = obj;
+      if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+        for (const [signature, steps] of Object.entries(obj)) records[makeLevelSignature(signature)] = steps;
+      }
     } catch (e) { console.warn('[Records] Legacy records could not be read', e); }
     try {
       for (let i = 0; i < localStorage.length; i++) {
@@ -2333,8 +2433,8 @@
         try {
           const entry = JSON.parse(localStorage.getItem(key));
           if (!entry || typeof entry.signature !== 'string' || !Number.isInteger(entry.steps) || entry.steps <= 0) continue;
-          records[entry.signature] = entry.steps;
-          presetRecordTimes[entry.signature] = Number(entry.updatedAt) || 0;
+          const signature = makeLevelSignature(entry.signature), time = Number(entry.updatedAt) || 0;
+          if (time >= (presetRecordTimes[signature] || 0)) { records[signature] = entry.steps; presetRecordTimes[signature] = time; }
         } catch (e) { console.warn('[Records] Invalid journal entry', e); }
       }
     } catch (e) { console.warn('[Records] Journal could not be read', e); }
@@ -2419,10 +2519,11 @@
     let changed = false;
     for (const entry of entries) {
       if (!entry || typeof entry.signature !== 'string' || !Number.isInteger(entry.steps) || entry.steps <= 0) continue;
-      if (!(entry.updatedAt > (presetRecordTimes[entry.signature] || 0))) continue;
-      presetRecords[entry.signature] = entry.steps;
-      presetRecordTimes[entry.signature] = entry.updatedAt;
-      try { writeStorageChecked(PRESET_ENTRY_PREFIX + encodeURIComponent(entry.signature), JSON.stringify(entry)); } catch (e) {}
+      const signature = makeLevelSignature(entry.signature);
+      if (!(entry.updatedAt > (presetRecordTimes[signature] || 0))) continue;
+      presetRecords[signature] = entry.steps;
+      presetRecordTimes[signature] = entry.updatedAt;
+      try { writeStorageChecked(PRESET_ENTRY_PREFIX + encodeURIComponent(signature), JSON.stringify({ ...entry, signature })); } catch (e) {}
       changed = true;
     }
     if (changed) for (const level of PRESET_LEVELS) {
@@ -3278,8 +3379,8 @@
     for (let i = 0; i < CELLS; i++) if (!fixedCellsSet.has(i)) { freeCellLookup[i] = freeCellIdx.length; freeCellIdx.push(i); }
     const FREE_CELLS = freeCellIdx.length;
     const startCounts = {}, targetCounts = {};
-    for (const p of startPieces) { const tt = typeMap.get(solverPieceKey(p)); startCounts[tt] = (startCounts[tt] || 0) + 1; }
-    for (const p of targetPieces) { const tt = typeMap.get(solverPieceKey(p)); targetCounts[tt] = (targetCounts[tt] || 0) + 1; }
+    for (const p of startPieces) { const tt = typeMap.get(solverPieceKey(p)); if (!typeIndex[tt].fixed) startCounts[tt] = (startCounts[tt] || 0) + 1; }
+    for (const p of targetPieces) { const tt = typeMap.get(solverPieceKey(p)); if (!typeIndex[tt].fixed) targetCounts[tt] = (targetCounts[tt] || 0) + 1; }
     let isFullTarget = true;
     const allKeys = new Set(Object.keys(startCounts).concat(Object.keys(targetCounts)));
     for (const tt of allKeys) if ((startCounts[tt] || 0) !== (targetCounts[tt] || 0)) { isFullTarget = false; break; }
@@ -3390,7 +3491,7 @@
   // All retained search data lives in bounded-size typed-array blocks.
   // Charges are conservative: replaced hash buffers stay charged until the search ends.
   class SolverBudget {
-    constructor(gb) { this.limit = gb > 0 ? gb * 1073741824 * 0.72 : Infinity; this.bytes = 0; this.states = 0; }
+    constructor(gb) { this.limit = gb > 0 ? gb * 1073741824 * (IS_FIREFOX ? 1 : 0.72) : Infinity; this.bytes = 0; this.states = 0; }
     alloc(Type, length) {
       const bytes = length * Type.BYTES_PER_ELEMENT;
       if (!Number.isSafeInteger(bytes) || this.bytes + bytes > this.limit) throw new Error('__OOM__');
@@ -3516,6 +3617,130 @@
       return {type:m.type,fromX:m.fromX+dx,fromY:m.fromY+dy,path:m.path.slice().reverse().map(d=>[-d[0],-d[1]]),shifted:m.shifted?m.shifted.map(sh=>({type:sh.type,fromX:sh.fromX+dx,fromY:sh.fromY+dy})):undefined};
     });
   }
+  // A coordinate retraction is accepted only after a finite geometry certificate:
+  // every legal placement, every non-overlapping pair, and every unit move
+  // remain legal after rounding. Start and goal anchors must be fixed points.
+  // Thus any original single-piece path maps to at most one path/line move;
+  // retained moves are still generated on the original board. This preserves
+  // shortest solutions in line/path modes. Cell-count and group moves opt out.
+  function detectSolverLattice(state) {
+    if (MOVE_MODE === 1) return null;
+    const groups = [], byShape = new Map();
+    for (const p of state.startPieces) {
+      const type = state.typeMap.get(solverPieceKey(p)), info = state.typeIndex[type];
+      if (!info || info.fixed) continue;
+      const key = JSON.stringify([info.w, info.h, info.cells, info.dmove]);
+      let g = byShape.get(key);
+      if (!g) { g = { info, types: new Set(), anchors: [], count: 0, placements: [], at: new Map() }; byShape.set(key, g); groups.push(g); }
+      g.types.add(type); g.anchors.push(p); g.count++;
+    }
+    if (!groups.length) return null;
+    for (const p of state.targetPieces) {
+      const type = state.typeMap.get(solverPieceKey(p));
+      const g = groups.find(g => g.types.has(type));
+      if (g) g.anchors.push(p);
+    }
+    const maskAt = (g, x, y) => {
+      if (x < 0 || y < 0 || x + g.info.w > COLS || y + g.info.h > ROWS) return null;
+      let mask = 0n;
+      for (const [dx, dy] of g.info.cells) {
+        const cell = (y + dy) * COLS + x + dx;
+        if (state.freeCellLookup[cell] < 0) return null;
+        mask |= 1n << BigInt(cell);
+      }
+      return mask;
+    };
+    let total = 0;
+    for (const g of groups) {
+      for (let y = 0; y + g.info.h <= ROWS; y++) for (let x = 0; x + g.info.w <= COLS; x++) {
+        const mask = maskAt(g, x, y); if (mask === null) continue;
+        const p = { x, y, mask }; g.at.set(y * COLS + x, g.placements.length); g.placements.push(p);
+      }
+      total += g.placements.length;
+    }
+    // Keep detection bounded; unsupported/large geometries use the full graph.
+    if (total > 1200) return null;
+    let checks = 0;
+    const gcd = (a, b) => b ? gcd(b, a % b) : a;
+    const result = {};
+    for (const axis of ['x', 'y']) {
+      const extent = axis === 'x' ? COLS : ROWS;
+      const configs = groups.map(g => {
+        const phase = g.anchors[0][axis];
+        let d = 0; for (const p of g.anchors) d = gcd(d, Math.abs(p[axis] - phase));
+        return { phase, max: d || (axis === 'x' ? g.info.w : g.info.h) };
+      });
+      function certify(steps) {
+        const mapped = [];
+        for (let gi = 0; gi < groups.length; gi++) {
+          const g = groups[gi], step = steps[gi], phase = configs[gi].phase;
+          const map = [];
+          for (const p of g.placements) {
+            let v = p[axis];
+            if (step > 1) {
+              const hi = extent - (axis === 'x' ? g.info.w : g.info.h);
+              const lowGrid = Math.ceil(-phase / step), highGrid = Math.floor((hi - phase) / step);
+              v = phase + Math.max(lowGrid, Math.min(highGrid, Math.floor((v - phase) / step + 0.5))) * step;
+            }
+            const q = { x: axis === 'x' ? v : p.x, y: axis === 'y' ? v : p.y };
+            q.mask = maskAt(g, q.x, q.y); if (q.mask === null) return null;
+            map.push(q);
+          }
+          mapped.push(map);
+        }
+        for (let gi = 0; gi < groups.length; gi++) for (let hi = gi; hi < groups.length; hi++) {
+          if (gi === hi && groups[gi].count < 2) continue;
+          const a = groups[gi].placements, b = groups[hi].placements;
+          for (let i = 0; i < a.length; i++) for (let j = gi === hi ? i + 1 : 0; j < b.length; j++) {
+            if (++checks > 3000000) return null;
+            if (!(a[i].mask & b[j].mask) && (mapped[gi][i].mask & mapped[hi][j].mask)) return null;
+          }
+        }
+        for (let gi = 0; gi < groups.length; gi++) {
+          if (steps[gi] === 1) continue;
+          const g = groups[gi];
+          for (let i = 0; i < g.placements.length; i++) {
+            const p = g.placements[i], j = g.at.get(p.y * COLS + p.x + (axis === 'x' ? 1 : COLS));
+            if (j === undefined) continue;
+            const q = g.placements[j];
+            if (q[axis] !== p[axis] + 1 || (axis === 'x' && q.y !== p.y)) continue;
+            const from = mapped[gi][i], to = mapped[gi][j];
+            for (let v = from[axis] + 1; v < to[axis]; v++) {
+              const mask = maskAt(g, axis === 'x' ? v : from.x, axis === 'y' ? v : from.y);
+              if (mask === null) return null;
+              for (let hi = 0; hi < groups.length; hi++) {
+                if (gi === hi && g.count < 2) continue;
+                const others = groups[hi].placements;
+                for (let k = 0; k < others.length; k++) {
+                  if (++checks > 3000000) return null;
+                  if (!(others[k].mask & (p.mask | q.mask)) && (mapped[hi][k].mask & mask)) return null;
+                }
+              }
+            }
+          }
+        }
+        return mapped.reduce((n, a, gi) => n + a.filter((p, i) => p[axis] !== groups[gi].placements[i][axis]).length, 0);
+      }
+      let best = groups.map(() => 1), score = 0;
+      for (let step = Math.max(...configs.map(c => c.max)); step >= 2 && checks <= 3000000; step--) {
+        const eligible = groups.map((g, i) => step <= configs[i].max && g.anchors.every(p => (p[axis] - configs[i].phase) % step === 0)
+          && !(axis === 'x' && g.info.dmove === 'v') && !(axis === 'y' && g.info.dmove === 'h'));
+        const candidates = [best.map((v, i) => eligible[i] ? step : v)];
+        eligible.forEach((yes, i) => { if (yes) { const c = best.slice(); c[i] = step; candidates.push(c); } });
+        for (const candidate of candidates) {
+          if (candidate.every((v, i) => v === best[i])) continue;
+          const value = certify(candidate);
+          if (value !== null && value > score) { best = candidate; score = value; }
+        }
+      }
+      groups.forEach((g, i) => {
+        if (best[i] <= 1) return;
+        for (const type of g.types) { if (!result[type]) result[type] = {}; result[type][axis] = { step: best[i], phase: configs[i].phase % best[i] }; }
+      });
+    }
+    return Object.keys(result).length ? result : null;
+  }
+
   // The move generator and application order are shared with the original solver.
   function* compactSuccessors(node,state,groupShift) {
     const {typeIndex,freeCellLookup}=state, {board,pieces}=node;
@@ -3526,6 +3751,9 @@
       const moves=generateMovesForPiece(board,px,py,tt,info,freeCellLookup,pieces,pi,typeIndex,groupShift);
       placePieceOnBoard(board,pieces,pi,typeIndex,freeCellLookup);
       for(const mv of moves) {
+        const grid = !groupShift && MOVE_MODE !== 1 && state.lattice && state.lattice[tt];
+        if (grid && ((grid.x && (mv.nx - grid.x.phase) % grid.x.step !== 0)
+          || (grid.y && (mv.ny - grid.y.phase) % grid.y.step !== 0))) continue;
         const newBoard=board.slice(),newPieces=pieces.slice();
         erasePieceFromBoard(newBoard,pieces,pi,typeIndex,freeCellLookup);
         const shiftInfo=[];
@@ -3541,8 +3769,100 @@
       }
     }
   }
+  // Reverse BFS needs complete configurations, not just the marked goal tiles.
+  // Fixed cells are board geometry. For a small number of unspecified pieces,
+  // enumerate ALL legal completions (never just their starting positions).
+  // Abort enumeration entirely if it is too large; then use ordinary forward BFS.
+  function prepareSolverGoals(state) {
+    if (Object.prototype.hasOwnProperty.call(state, '_solverGoalRoots')) return state._solverGoalRoots;
+    const finish = roots => (state._solverGoalRoots = roots);
+    const counts = new Map(), base = [], occupied = new Uint8Array(state.FREE_CELLS);
+    for (const p of state.startPieces) {
+      const tt = state.typeMap.get(solverPieceKey(p)), info = state.typeIndex[tt];
+      if (info && !info.fixed) counts.set(tt, (counts.get(tt) || 0) + 1);
+    }
+    function cellsAt(tt, x, y) {
+      const info = state.typeIndex[tt];
+      if (x < 0 || y < 0 || x + info.w > COLS || y + info.h > ROWS) return null;
+      const cells = [];
+      for (const [dx, dy] of info.cells) {
+        const cell = state.freeCellLookup[(y + dy) * COLS + x + dx];
+        if (cell < 0) return null;
+        cells.push(cell);
+      }
+      return cells;
+    }
+    for (const p of state.targetPieces) {
+      const tt = state.typeMap.get(solverPieceKey(p)), info = state.typeIndex[tt];
+      if (!info) return finish(null);
+      if (info.fixed) {
+        for (const [dx, dy] of info.cells) if (state.freeCellLookup[(p.y + dy) * COLS + p.x + dx] >= 0) return finish(null);
+        continue;
+      }
+      if (!(counts.get(tt) > 0)) return finish(null);
+      const cells = cellsAt(tt, p.x, p.y);
+      if (!cells || cells.some(i => occupied[i])) return finish(null);
+      for (const i of cells) occupied[i] = 1;
+      counts.set(tt, counts.get(tt) - 1); base.push(tt, p.x, p.y);
+    }
+    const missing = [];
+    for (const [tt, count] of counts) for (let i = 0; i < count; i++) missing.push(tt);
+    if (missing.length > 3) return finish(null);
+    if (!missing.length) return finish([Uint8Array.from(base)]);
+    const placements = new Map();
+    for (const tt of new Set(missing)) {
+      const info = state.typeIndex[tt], list = [];
+      for (let y = 0; y + info.h <= ROWS; y++) for (let x = 0; x + info.w <= COLS; x++) {
+        const cells = cellsAt(tt, x, y);
+        if (cells && cells.every(i => !occupied[i])) list.push({ x, y, cells });
+      }
+      placements.set(tt, list);
+    }
+    const roots = []; let work = 0, overflow = false;
+    function visit(depth, previous) {
+      if (overflow) return;
+      if (depth === missing.length) {
+        if (roots.length === 64) { overflow = true; return; }
+        roots.push(Uint8Array.from(base)); return;
+      }
+      const tt = missing[depth], list = placements.get(tt);
+      const first = depth && missing[depth - 1] === tt ? previous + 1 : 0;
+      for (let i = first; i < list.length && !overflow; i++) {
+        if (++work > 20000) { overflow = true; break; }
+        const p = list[i]; if (p.cells.some(cell => occupied[cell])) continue;
+        for (const cell of p.cells) occupied[cell] = 1;
+        base.push(tt, p.x, p.y); visit(depth + 1, i); base.length -= 3;
+        for (const cell of p.cells) occupied[cell] = 0;
+      }
+    }
+    visit(0, -1);
+    return finish(!overflow && roots.length ? roots : null);
+  }
+  // Group-push validation still inspects fixed pieces; callers keep its full flat arrays.
+  function compactSolverState(state) {
+    function movable(flat) {
+      const out = [];
+      for (let i = 0; i < flat.length; i += 3) if (!state.typeIndex[flat[i]].fixed) out.push(flat[i], flat[i + 1], flat[i + 2]);
+      return Uint8Array.from(out);
+    }
+    return { ...state, startFlat: movable(state.startFlat), targetFlat: movable(state.targetFlat) };
+  }
   async function solveCompact(state,stopCheck,onProgress,groupShift,method) {
-    const astar=method==='astar',bidir=method==='bidir';
+    checkSolverDeadline();
+    state.lattice = groupShift ? null : detectSolverLattice(state);
+    checkSolverDeadline();
+    state = groupShift ? state : compactSolverState(state);
+    const astar=method==='astar';
+    let goalRoots = !astar && !groupShift ? prepareSolverGoals(state) : null;
+    if (goalRoots && state.lattice) goalRoots = goalRoots.filter(flat => {
+      for (let i = 0; i < flat.length; i += 3) {
+        const grid = state.lattice[flat[i]];
+        if (grid && ((grid.x && (flat[i + 1] - grid.x.phase) % grid.x.step !== 0)
+          || (grid.y && (flat[i + 2] - grid.y.phase) % grid.y.step !== 0))) return false;
+      }
+      return true;
+    });
+    const bidir = !!(goalRoots && goalRoots.length);
     const budget=new SolverBudget(MAX_RAM_GB_USER);
     const forward=new SolverStore(state,budget,astar),backward=bidir?new SolverStore(state,budget,false):null;
     const startBoard=makeSolverBoard(state.startFlat,state.typeIndex,state.freeCellLookup,state.FREE_CELLS);
@@ -3555,23 +3875,30 @@
       let sum=0;for(const target of goals){let best=Infinity;for(let i=0;i<pieces.length;i+=3)if(pieces[i]===target.type){const dx=Math.abs(pieces[i+1]-target.x),dy=Math.abs(pieces[i+2]-target.y);best=Math.min(best,MOVE_MODE===1?dx+dy:MOVE_MODE===2?Number(dx>0)+Number(dy>0):Number(dx+dy>0));}sum+=Number.isFinite(best)?best:0;}return sum;
     }
     let nodes=0,depth=0,lastYield=performance.now();const t0=lastYield;
-    const report=()=>{if(onProgress)onProgress(nodes,depth,performance.now()-t0,budget.stats());};
+    const report=()=>{if(onProgress)onProgress(nodes,depth,performance.now()-t0,{...budget.stats(), searchMode:bidir?'bidirectional':astar?'astar':'forward', reverseRoots:bidir?goalRoots.length:0});};
     const result=path=>{report();return {path,nodes,ms:performance.now()-t0,...budget.stats()};};
     try {
-      if(bidir){const targetBoard=makeSolverBoard(state.targetFlat,state.typeIndex,state.freeCellLookup,state.FREE_CELLS),k=backward.pack(targetBoard);if(forward.equal(0,k))return result([]);backward.add(k,backward.hash(k),state.targetFlat,-1,null,0,0);}
+      report(); // Announce the actual engine before the first expansion.
+      if(bidir) for (const flat of goalRoots) {
+        const targetBoard=makeSolverBoard(flat,state.typeIndex,state.freeCellLookup,state.FREE_CELLS),k=backward.pack(targetBoard),hash=backward.hash(k);
+        if(forward.equal(0,k))return result([]);
+        if(backward.find(k,hash)<0)backward.add(k,hash,flat,-1,null,0,0);
+      }
       const heap=astar?new SolverHeap(forward,budget):null;if(heap)heap.push(0);
-      let frontF=0,endF=1,frontB=0,endB=1;
+      let frontF=0,endF=1,frontB=0,endB=bidir?backward.size:1;
       while(astar?heap.length>0:frontF<endF&&(!bidir||frontB<endB)) {
         const expandForward=!bidir||(endF-frontF<=endB-frontB);
         const store=expandForward?forward:backward,other=bidir?(expandForward?backward:forward):null;
         const begin=astar?0:expandForward?frontF:frontB,end=astar?1:expandForward?endF:endB;
         for(let cursor=begin;cursor<end;cursor++) {
+          checkSolverDeadline();
           if(stopCheck&&stopCheck())return null;
           const id=astar?heap.pop():cursor,node=store.node(id);
           if(astar){const k=store.pack(node.board);if(store.find(k,store.hash(k))!==id)continue;depth=store.cost(id);}
           nodes++;
           if(!bidir&&goal(node.board))return result(store.path(id));
           for(const next of compactSuccessors(node,state,groupShift)) {
+            checkSolverDeadline();
             const k=store.pack(next.board),hash=store.hash(k),previous=store.find(k,hash),g=store.cost(id)+1;
             if(previous<0||(astar&&g<store.cost(previous))) {
               const nextId=store.add(k,hash,next.pieces,id,next.move,g,astar?g+2.5*estimate(next.pieces):0);
@@ -3591,8 +3918,72 @@
   async function solveBidirectional(state,stopCheck,onProgress,maxNodes,groupShift) {return solveCompact(state,stopCheck,onProgress,groupShift,'bidir');}
   async function solveAStar(state,stopCheck,onProgress,maxNodes,groupShift) {return solveCompact(state,stopCheck,onProgress,groupShift,'astar');}
 
+  function canonicalSolverStart(pieces) {
+    return pieces.slice().sort((a,b)=>solverPieceKey(a).localeCompare(solverPieceKey(b))||a.y-b.y||a.x-b.x);
+  }
+  function solverReuseKey(pieces, cols, rows, mode, shift, shapes) {
+    return JSON.stringify([cols,rows,mode,shift,canonicalSolverStart(pieces).map(p=>{
+      const sh=shapes[p.shape];
+      return [solverPieceKey(p),p.x,p.y,sh?[sh.w,sh.h,!!sh.fixed,sh.cells]:null];
+    })]);
+  }
+  async function solveReusableBFS(state,onProgress,groupShift,key) {
+    checkSolverDeadline();
+    // A small complete goal set is better served by bidirectional BFS than
+    // by growing a reusable forward-only tree across the entire component.
+    if (!groupShift && prepareSolverGoals(state)) {
+      reusableSearch = null;
+      return solveCompact(state, null, onProgress, groupShift, 'bfs');
+    }
+    state.lattice = groupShift ? null : detectSolverLattice(state);
+    checkSolverDeadline();
+    state = groupShift ? state : compactSolverState(state);
+    const identity=key+'|'+JSON.stringify([Array.from(state.typeMap),state.lattice]);
+    const reused = !!reusableSearch && reusableSearch.identity === identity;
+    if(!reused) {
+      const budget=new SolverBudget(MAX_RAM_GB_USER),store=new SolverStore(state,budget,false);
+      const board=makeSolverBoard(state.startFlat,state.typeIndex,state.freeCellLookup,state.FREE_CELLS),packed=store.pack(board);
+      store.add(packed,store.hash(packed),state.startFlat,-1,null,0,0);
+      reusableSearch={identity,budget,store,cursor:0};
+    }
+    const cache=reusableSearch,{store,budget}=cache,reusedStates=reused?store.size:0;
+    const targets=[];
+    for(const p of state.targetPieces){const shape=SHAPES[p.shape];if(!shape)continue;for(const[dx,dy]of shape.cells){const fi=state.freeCellLookup[(p.y+dy)*COLS+p.x+dx];if(fi>=0)targets.push([fi,state.typeMap.get(solverPieceKey(p))]);}}
+    function matches(id) {
+      const block=store.blocks[Math.floor(id/store.blockSize)],start=(id%store.blockSize)*store.keyLength;
+      for(const[ci,type]of targets){const v=store.nibble?(block.keys[start+(ci>>1)]>>((ci&1)*4))&15:block.keys[start+ci];if(v!==type)return false;}
+      return true;
+    }
+    const t0=performance.now();let lastYield=t0,nodes=0,depth=0;
+    const report=()=>onProgress&&onProgress(nodes,depth,performance.now()-t0,{...budget.stats(),reusedStates,searchMode:'forward'});
+    const result=id=>{report();return {path:store.path(id),nodes,ms:performance.now()-t0,...budget.stats(),reusedStates};};
+    try {
+      report();
+      // Insertion order is BFS order: the first match has minimum move count.
+      for(let id=0;id<store.size;id++) {
+        checkSolverDeadline();
+        if(matches(id))return result(id);
+        if((id&8191)===0&&performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));lastYield=performance.now();}
+      }
+      while(cache.cursor<store.size) {
+        checkSolverDeadline();const id=cache.cursor,node=store.node(id);depth=store.cost(id);nodes++;
+        if(matches(id))return result(id);
+        for(const next of compactSuccessors(node,state,groupShift)) {
+          checkSolverDeadline();const packed=store.pack(next.board),hash=store.hash(packed);
+          if(store.find(packed,hash)<0)store.add(packed,hash,next.pieces,id,next.move,depth+1,0);
+          if(performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));lastYield=performance.now();}
+        }
+        // Advance only after complete expansion, so another target can resume safely.
+        cache.cursor++;
+        if(performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));lastYield=performance.now();}
+      }
+      report();return null;
+    } catch(error) {report();reusableSearch=null;throw error;}
+  }
+
   let solverWorker = null, solverPending = null, solverWorkerUrl = null;
   let solveSessionId = 0;
+  let solverWorkerCacheKey = null;
   function buildSolverWorkerSource() {
     return [
       "'use strict';",
@@ -3600,8 +3991,11 @@
       "let SHAPES = {};",
       "let MOVE_MODE = 2;",
       "let GROUP_SHIFT = false;",
+      "let SOLVER_DEADLINE_AT = 0;",
+      checkSolverDeadline.toString(),
       "const MAX_NODES = " + MAX_NODES + ";",
       "const MAX_RAM_GB_USER = " + MAX_RAM_GB_USER + ";",
+      "const IS_FIREFOX = " + IS_FIREFOX + ";",
       "const SOLVER_DIRS = [[0,-1],[0,1],[-1,0],[1,0]];",
       "const KEY_CHARS = new Array(256);",
       "for (let i = 0; i < 256; i++) KEY_CHARS[i] = String.fromCharCode(32 + i);",
@@ -3627,7 +4021,14 @@
       SolverStore.toString(),
       SolverHeap.toString(),
       reverseSolverMoves.toString(),
+      detectSolverLattice.toString(),
       compactSuccessors.toString(),
+      canonicalSolverStart.toString(),
+      solverReuseKey.toString(),
+      "let reusableSearch = null;",
+      solveReusableBFS.toString(),
+      prepareSolverGoals.toString(),
+      compactSolverState.toString(),
       solveCompact.toString(),
       solveUnidirectional.toString(),
       solveAStar.toString(),
@@ -3641,17 +4042,25 @@
       "    SHAPES = msg.SHAPES;",
       "    MOVE_MODE = msg.MOVE_MODE || 2;",
       "    GROUP_SHIFT = !!msg.GROUP_SHIFT;",
+      "    SOLVER_DEADLINE_AT = Number(msg.deadlineAt) || 0;",
+      "    checkSolverDeadline();",
+      // Preserve UI piece order: playback assigns numeric types in this same order.
+      // Canonical sorting belongs only in the reuse key; cache identity also checks typeMap.
       "    const state = buildSolverState(msg.startPieces, msg.targetPieces);",
       "    const stopCheck = () => false;",
       "    const maxNodes = MAX_NODES;",
       "    const onProgress = (nodes, depth, ms, stats) => self.postMessage({ type: 'progress', nodes, depth, ms, stats });",
       "    let result;",
-      "    if (msg.method === 'astar') result = await solveAStar(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);",
+      "    const reuse = !!msg.reuse && msg.method !== 'astar' && (GROUP_SHIFT || !prepareSolverGoals(state));",
+      "    if (!reuse) reusableSearch = null;",
+      "    if (reuse) result = await solveReusableBFS(state, onProgress, GROUP_SHIFT, solverReuseKey(msg.startPieces,COLS,ROWS,MOVE_MODE,GROUP_SHIFT,SHAPES));",
+      "    else if (msg.method === 'astar') result = await solveAStar(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);",
       "    else if (state.isFullTarget) result = await solveBidirectional(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);",
       "    else result = await solveUnidirectional(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);",
-      "    if (!result) { self.postMessage({ type: 'none' }); return; }",
-      "    self.postMessage({ type: 'result', path: result.path, nodes: result.nodes, ms: result.ms });",
+      "    if (!result) { self.postMessage({ type: 'none', reusable: reuse }); return; }",
+      "    self.postMessage({ type: 'result', path: result.path, nodes: result.nodes, ms: result.ms, reusable: reuse, reusedStates: result.reusedStates || 0 });",
       "  } catch (err) {",
+      "    reusableSearch = null;",
       "    const msgOut = (err && err.message) || String(err);",
       "    if (msgOut === '__OOM__') self.postMessage({ type: 'oom' });",
       "    else self.postMessage({ type: 'error', message: msgOut, isBrowserOom: /out of memory|allocation failed/i.test(msgOut) });",
@@ -3667,6 +4076,7 @@
     return new Worker(url);
   }
   function terminateSolverWorker() {
+    solverWorkerCacheKey = null;
     if (solverWorker) { try { solverWorker.terminate(); } catch (e) {} solverWorker = null; }
     if (solverWorkerUrl) { try { URL.revokeObjectURL(solverWorkerUrl); } catch (e) {} solverWorkerUrl = null; }
   }
@@ -3675,7 +4085,9 @@
     if (!pending) return;
     if (msg.type === 'progress') { if (pending.onProgress) { try { pending.onProgress(msg.nodes, msg.depth, msg.ms, msg.stats); } catch (err) {} } return; }
     solverPending = null;
-    terminateSolverWorker();
+    if (msg.reusable && batch.active && pending.reuseKey) solverWorkerCacheKey = pending.reuseKey;
+    else terminateSolverWorker();
+    if (msg.reusedStates) console.info('[AutoSolve] Reused BFS states:', msg.reusedStates);
     if (msg.type === 'result') pending.resolve({ path: msg.path, nodes: msg.nodes, ms: msg.ms });
     else if (msg.type === 'oom') pending.reject(new Error('__OOM__'));
     else if (msg.type === 'error') {
@@ -3696,7 +4108,8 @@
       pending.reject(err);
     }
   }
-  function cancelSolverWorker() {
+  function cancelSolverWorker(keepIdle = false) {
+    if (keepIdle && batch.active && !solverPending && solverWorkerCacheKey) return;
     terminateSolverWorker();
     if (solverPending) { const p = solverPending; solverPending = null; p.resolve(null); }
   }
@@ -3704,31 +4117,59 @@
     const startPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
     const targetPieces = game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
     const state = buildSolverState(startPieces, targetPieces);
-    const stopCheck = () => game.stopRequested;
+    const sessionId = solveSessionId;
+    const stopCheck = () => game.stopRequested || !game.solving || sessionId !== solveSessionId;
     const maxNodes = MAX_NODES;
     if (effectiveSolverMethod() === 'astar') return await solveAStar(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);
     if (state.isFullTarget) return await solveBidirectional(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);
     return await solveUnidirectional(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);
   }
-  function solve(onProgress) {
+  async function solve(onProgress) {
+    const isBatch = batch.active || batchMode;
+    if (!isBatch) beginSolverTimeLimit(false);
+    const token = solverTimeRunId;
+    try { checkSolverDeadline(); return await solveSearch(onProgress); }
+    finally { if (!isBatch && token === solverTimeRunId) endSolverTimeLimit(); }
+  }
+  function nextBatchSharesStart(key) {
+    const index = batch.list[batch.pos + 1], level = allLevels()[index];
+    if (!level) return false;
+    try {
+      const parsed = getGalleryParsedLevel(level);
+      if (!parsed) return false;
+      const pieces = parsed.rushHour ? applyRushHourToCfg(parsed.startPieces) : parsed.startPieces;
+      return solverReuseKey(pieces,parsed.cols,parsed.rows,MOVE_MODE,parsed.groupMoves === true,SHAPES) === key;
+    } catch (error) { return false; }
+  }
+  function solveSearch(onProgress) {
     lastSolverMemory = { states: 0, allocatedBytes: 0 };
+    lastSolverSearchMode = null;
     const originalProgress = onProgress;
     onProgress = (nodes, depth, ms, stats) => {
       if (stats) lastSolverMemory = stats;
+      if (stats && stats.searchMode && stats.searchMode !== lastSolverSearchMode) {
+        lastSolverSearchMode = stats.searchMode;
+        const icon = solverStatus.querySelector('.solver-search-mode');
+        if (icon) icon.textContent = solverSearchModeText(lastSolverSearchMode);
+      }
       if (originalProgress) originalProgress(nodes, depth, ms, stats);
     };
     if (typeof Worker === 'undefined' || typeof Blob === 'undefined' || typeof URL === 'undefined') return solveOnMainThread(onProgress);
-    cancelSolverWorker();
-    let worker;
-    try { worker = createSolverWorker(); } catch (err) { return solveOnMainThread(onProgress); }
-    solverWorker = worker;
-    worker.onmessage = handleSolverMessage;
-    worker.onerror = handleSolverError;
     const startPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
     const targetPieces = game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
+    const key = solverReuseKey(startPieces,COLS,ROWS,MOVE_MODE,GROUP_SHIFT,SHAPES);
+    const reuse = batch.active && effectiveSolverMethod() === 'bfs' &&
+      (solverWorkerCacheKey === key || nextBatchSharesStart(key));
+    if (!reuse || solverWorkerCacheKey !== key || !solverWorker || solverPending) cancelSolverWorker();
+    let worker = solverWorker;
+    if (!worker) {
+      try { worker = createSolverWorker(); } catch (err) { return solveOnMainThread(onProgress); }
+      solverWorker = worker;
+      worker.onmessage = handleSolverMessage; worker.onerror = handleSolverError;
+    }
     return new Promise((resolve, reject) => {
-      solverPending = { resolve, reject, onProgress };
-      try { worker.postMessage({ type: 'solve', method: effectiveSolverMethod(), COLS, ROWS, SHAPES, MOVE_MODE, GROUP_SHIFT, startPieces, targetPieces }); }
+      solverPending = { resolve, reject, onProgress, reuseKey: reuse ? key : null };
+      try { worker.postMessage({ type: 'solve', reuse, deadlineAt: SOLVER_DEADLINE_AT, method: effectiveSolverMethod(), COLS, ROWS, SHAPES, MOVE_MODE, GROUP_SHIFT, startPieces, targetPieces }); }
       catch (err) { solverPending = null; terminateSolverWorker(); reject(err); }
     });
   }
@@ -3954,7 +4395,7 @@
   function startGame(startCfg, targetCfg, step, rushHour) {
     game.scrambleId++; game.scrambling = false; game.scrambled = false;
     solveSessionId++;
-    cancelSolverWorker();
+    cancelSolverWorker(true);
     stopGameTimer();
     exitPlaybackMode();
     if (game.dragRaf) { cancelAnimationFrame(game.dragRaf); game.dragRaf = null; }
@@ -4267,7 +4708,9 @@
     if (!overlayEl) return;
     const btn = document.getElementById('hintBtn'); if (!btn) return;
     const r = btn.getBoundingClientRect();
-    overlayEl.style.top = Math.max(8, Math.round(r.top - 8)) + 'px';
+    const parentRect = gameViewEl.getBoundingClientRect();
+    // Anchor inside the game view, not the viewport: scrolling moves both together.
+    overlayEl.style.top = Math.max(0, Math.round(r.top - parentRect.top + gameViewEl.scrollTop - gameViewEl.clientTop - 8)) + 'px';
   }
   function showWinOverlay(showTime) {
     const timeRow = document.getElementById('finalTimeRow');
@@ -4395,6 +4838,8 @@
     return (batch.active || batchMode) ? 'bfs' : solverMethod;
   }
   function updateSolveBtn() {
+    const timeInput = document.getElementById('solverTimeInput');
+    if (timeInput) timeInput.disabled = game.solving || batch.active;
     solverMethodEl.value = effectiveSolverMethod();
     solverMethodEl.disabled = game.solving || game.scrambling || batch.active;
     solveBtn.disabled = game.scrambling;
@@ -4415,6 +4860,7 @@
     if (game.scrambling) hintBtn.disabled = true;
   }
   function stopSolving(message, isError) {
+    if (!batch.active) endSolverTimeLimit();
     solveSessionId++;
     if (game.animTimer) { clearTimeout(game.animTimer); game.animTimer = null; }
     exitPlaybackMode();
@@ -4424,6 +4870,13 @@
     if (message) { solverStatus.textContent = message; solverStatus.classList.toggle('error', !!isError); }
   }
   function oomMessage() { return t('solverOom', fmtNum(MAX_NODES)); }
+  let lastSolverSearchMode = null;
+  function solverSearchModeText(mode) {
+    return mode === 'bidirectional' ? '(⇄)' : mode === 'astar' ? '(*)' : mode === 'forward' ? '(→)' : '';
+  }
+  function solverSearchPrefixHtml(key = 'searchingPrefix') {
+    return t(key) + ' <span class="solver-search-mode">' + solverSearchModeText(lastSolverSearchMode) + '</span>';
+  }
   let lastSolverMemory = { states: 0, allocatedBytes: 0 };
   // Display-only calibration from observed process memory. This is an estimate,
   // not a browser/OS measurement and must never change SolverBudget accounting.
@@ -4432,13 +4885,20 @@
     const overhead = (IS_FIREFOX ? 400 : 600) * 1048576;
     return { storage, overhead, total: storage + overhead };
   }
+  function solverRemainingTimeText(initial = false) {
+    const left = SOLVER_DEADLINE_AT ? Math.max(0, SOLVER_DEADLINE_AT - Date.now())
+      : initial && solverTimeMinutes > 0 ? solverTimeMinutes * 60000 : null;
+    if (left === null) return '';
+    const minutes = Math.ceil(left / 60000);
+    return ' (' + (LANG === 'ru' ? 'осталось ' : 'remaining ') + Math.floor(minutes / 60)
+      + ':' + String(minutes % 60).padStart(2, '0') + ')';
+  }
   function solverMemoryStatusHtml() {
     const mem = solverMemoryEstimate();
     const tooltip = LANG === 'ru'
       ? 'Оценка памяти процесса: хранилище ' + (mem.storage / GB_BYTES).toFixed(2) + ' ГиБ + поправка ' + (mem.overhead / 1048576) + ' МиБ по наблюдениям. Это не измерение памяти браузером.'
       : 'Estimated process memory: storage ' + (mem.storage / GB_BYTES).toFixed(2) + ' GiB + observed overhead allowance ' + (mem.overhead / 1048576) + ' MiB. Not a browser memory measurement.';
-    return ' · ' + (LANG === 'ru' ? 'В памяти: ' : 'Stored: ') + fmtNum(lastSolverMemory.states)
-      + ' · <span title="' + tooltip + '">≈' + (mem.total / GB_BYTES).toFixed(2) + ' GiB</span>';
+    return ' · <span title="' + tooltip + '">≈' + (mem.total / GB_BYTES).toFixed(2) + ' GiB</span>';
   }
   function oomMessageProgress(nodes) {
     const memGB = solverMemoryEstimate().total / GB_BYTES;
@@ -4461,6 +4921,8 @@
 
   function cancelBatch() {
     if (!batch.active) return;
+    if (!solverPending) terminateSolverWorker();
+    endSolverTimeLimit();
     batch.active = false;
     batch.skipRequested = false;
     console.log('[AutoSolve] Batch cancelled at ' + (batch.pos + 1) + '/' + batch.list.length + ' "' + getLevelNameByGlobalIdx(batch.list[batch.pos]) + '"');
@@ -4477,7 +4939,10 @@
 
   async function batchStep() {
     if (!batch.active) return;
+    if (SOLVER_DEADLINE_AT && Date.now() >= SOLVER_DEADLINE_AT) { expireSolverTimeLimit(); return; }
     if (batch.pos >= batch.list.length) {
+      terminateSolverWorker();
+      endSolverTimeLimit();
       batch.active = false;
       console.log('[AutoSolve] Batch complete: solved=' + batch.stats.solved + ', notFound=' + batch.stats.notFound + ', oom=' + batch.stats.oom + ', error=' + batch.stats.error);
       solverStatus.textContent = t('batchDone');
@@ -4540,6 +5005,7 @@
     }
     if (list.length === 0) { showToast(t('batchAllSolved'), true); return; }
     batch.active = true;
+    beginSolverTimeLimit(true);
     batch.list = list;
     batch.pos = 0;
     batch.skipRequested = false;
@@ -4589,24 +5055,29 @@
     const mySessionId = ++solveSessionId;
     const lvlNameForLog = getLevelNameByGlobalIdx(currentLevelIndex);
     solverStatus.classList.remove('error');
-    solverStatus.innerHTML = t('searchingPrefix') + ' ' + t('statesWord') + ' <b>0</b> · ' + t('depthWord') + ' <b>0</b> · ' + t('timeLabel') + ' <b>0.00</b> ' + t('secondsAbbr');
+    lastSolverSearchMode = null;
+    solverStatus.innerHTML = solverSearchPrefixHtml() + ' ' + t('statesWord') + ' <b>0</b> · ' + t('depthWord') + ' <b>0</b> · ' + t('timeLabel') + ' <b>0.00</b> ' + t('secondsAbbr') + solverRemainingTimeText(true);
     game.solving = true; game.stopRequested = false;
     updateSolveBtn(); updateUndoBtn();
     await new Promise(r => setTimeout(r, 20));
     if (solveSessionId !== mySessionId) return;
     let lastNodes = 0, lastDepth = 0, lastMs = 0;
+    let lastStatusUpdate = performance.now();
     const onProgress = (nodes, depth, ms, stats) => {
       lastNodes = nodes; lastDepth = depth; lastMs = ms;
       if (solveSessionId !== mySessionId) return;
       if (!game.solving) return;
-      solverStatus.innerHTML = t('searchingPrefix') + ' ' + t('statesWord') + ' <b>' + fmtNodes(nodes) + '</b> · ' + t('depthWord') + ' <b>' + depth + '</b> · ' + t('timeLabel') + ' <b>' + fmtSolverTime(ms / 1000) + '</b>';
-      solverStatus.innerHTML += solverMemoryStatusHtml();
+      const now = performance.now();
+      if (now - lastStatusUpdate < 1000) return;
+      lastStatusUpdate = now;
+      solverStatus.innerHTML = solverSearchPrefixHtml() + ' ' + t('statesWord') + ' <b>' + fmtNodes(nodes) + '</b> · ' + t('depthWord') + ' <b>' + depth + '</b> · ' + t('timeLabel') + ' <b>' + fmtSolverTime(ms / 1000) + '</b>' + solverRemainingTimeText() + solverMemoryStatusHtml();
     };
     let result = null;
     try { result = await solve(onProgress); }
     catch (err) {
       if (solveSessionId !== mySessionId) return;
       const errMsg = (err && err.message) || String(err);
+      if (errMsg === '__TIMEOUT__') { expireSolverTimeLimit(); return; }
       const isOurOom = errMsg === '__OOM__';
       const isBrowserOom = !!(err && err.isBrowserOom) || /out of memory|allocation failed/i.test(errMsg);
       if (isOurOom || isBrowserOom) {
@@ -4650,6 +5121,8 @@
       } catch (error) { console.error('[Records] Save failed', error); }
       if (solveSessionId !== mySessionId) return;
       if (!saved) {
+        terminateSolverWorker();
+        endSolverTimeLimit();
         batch.active = false;
         game.solving = false; game.stopRequested = false;
         solverStatus.textContent = t('recordSaveFailed'); solverStatus.classList.add('error');
@@ -4678,24 +5151,29 @@
     clearHint();
     if (game.session.pieceId) commitSession();
     const mySessionId = ++solveSessionId;
-    solverStatus.textContent = t('analyzingPrefix');
+    lastSolverSearchMode = null;
+    solverStatus.innerHTML = solverSearchPrefixHtml('analyzingPrefix');
     game.solving = true; game.stopRequested = false;
     updateSolveBtn(); updateUndoBtn();
     await new Promise(r => setTimeout(r, 20));
     if (solveSessionId !== mySessionId) return;
     let lastNodes = 0;
+    let lastStatusUpdate = performance.now();
     const onProgress = (nodes, depth, ms, stats) => {
       lastNodes = nodes;
       if (solveSessionId !== mySessionId) return;
       if (!game.solving) return;
-      solverStatus.innerHTML = t('analyzingPrefix') + ' ' + t('timeLabel') + ' <b>' + fmtSolverTime(ms / 1000) + '</b>';
-      solverStatus.innerHTML += solverMemoryStatusHtml();
+      const now = performance.now();
+      if (now - lastStatusUpdate < 1000) return;
+      lastStatusUpdate = now;
+      solverStatus.innerHTML = solverSearchPrefixHtml('analyzingPrefix') + ' ' + t('timeLabel') + ' <b>' + fmtSolverTime(ms / 1000) + '</b>' + solverRemainingTimeText() + solverMemoryStatusHtml();
     };
     let result = null;
     try { result = await solve(onProgress); }
     catch (err) {
       if (solveSessionId !== mySessionId) return;
       const errMsg = (err && err.message) || String(err);
+      if (errMsg === '__TIMEOUT__') { expireSolverTimeLimit(); return; }
       const isOurOom = errMsg === '__OOM__';
       const isBrowserOom = !!(err && err.isBrowserOom) || /out of memory|allocation failed/i.test(errMsg);
       if (isOurOom || isBrowserOom) { stopSolving(oomMessageProgress(lastNodes), true); return; }
@@ -6844,6 +7322,11 @@
         goalGrid[yy][xx] = L;
       }
     }
+    // Static holes belong to both diagrams even when targetPieces contains only movable tiles.
+    for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (boardGrid[y][x] === HOLE_LETTER) {
+      if (goalGrid[y][x] !== '_' && goalGrid[y][x] !== HOLE_LETTER) throw new Error(t('parserGoalHoleTile', x + 1, y + 1));
+      goalGrid[y][x] = HOLE_LETTER;
+    }
     for (const row of goalGrid) lines.push('  ' + row.join(''));
     lines.push('Tile:');
     const colorDirToLetters = new Map();
@@ -6910,7 +7393,7 @@
   }
   function levelTextToScriptObject(text, indent) {
     const ind = indent || '  ';
-    const lines = String(text || '').split('\n');
+    const lines = normalizeGoalHoles(text).split(/\r?\n/);
     const lineSrc = lines.map(line => ind + "  '" + escapeJsString(line) + "'").join(',\n');
     return '{\n' + ind + '  text: [\n' + lineSrc + '\n' + ind + '  ].join(\'\\n\')\n' + ind + '}';
   }
@@ -7219,7 +7702,7 @@
   let lastParseHadNewShapes = false;
   function parseLevel(text, persistShapes = true) {
     lastParseHadNewShapes = false;
-    const rawLines = String(text).split(/\r?\n/);
+    const rawLines = normalizeGoalHoles(text).split(/\r?\n/);
     const lines = [];
     for (const l of rawLines) { const t2 = l.trim(); if (!t2) continue; if (t2.startsWith('#')) continue; lines.push(t2); }
     if (lines.length === 0) throw new Error(t('parserEmpty'));
@@ -7271,6 +7754,10 @@
     if (cols === 0 || rows === 0) throw new Error(t('parserNoBoard'));
     if (boardLines.length !== rows) throw new Error(t('parserExpectedStartRows', rows, boardLines.length));
     if (goalLines.length !== rows) throw new Error(t('parserExpectedGoalRows', rows, goalLines.length));
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+      if (goalLines[y][x] === '.' && boardLines[y][x] !== '.') throw new Error(t('parserGoalHoleMismatch', x + 1, y + 1));
+      if (boardLines[y][x] === '.' && goalLines[y][x] !== '.') throw new Error(t('parserGoalHoleTile', x + 1, y + 1));
+    }
     const letterToColor = {}, letterToDir = {}, letterToDmove = {}, letterToLabel = {}, letterToRound = {}, letterToRegion = {};
     for (const line of tileLines) {
       const dashIdx = line.lastIndexOf('-');
@@ -7893,6 +8380,96 @@
     buildGallery();
     showToast(t('orderUpdated'));
   }
+  function promptGalleryLevelStep(level) {
+    if (document.querySelector('.step-dialog')) return Promise.resolve(null);
+    return new Promise(resolve => {
+      const previousFocus = document.activeElement;
+      const dialog = document.createElement('dialog');
+      dialog.className = 'step-dialog';
+      dialog.setAttribute('aria-labelledby', 'stepDialogTitle');
+      dialog.innerHTML = '<form class="overlay__card" novalidate>'
+        + '<h2 id="stepDialogTitle">' + t('ctxSetStep') + '</h2>'
+        + '<p class="step-dialog__level"></p>'
+        + '<label for="stepDialogInput">' + t('ctxStepPrompt') + '</label>'
+        + '<input id="stepDialogInput" class="settings-input" type="text" inputmode="numeric" maxlength="5" autocomplete="off" aria-describedby="stepDialogError">'
+        + '<p id="stepDialogError" class="step-dialog__error" role="alert" hidden></p>'
+        + '<div class="step-dialog__actions"><button type="submit">' + t('saveStep') + '</button>'
+        + '<button type="button" class="step-dialog__cancel">' + t('cancel') + '</button></div></form>';
+      dialog.querySelector('.step-dialog__level').textContent = levelDisplayName(level);
+      const input = dialog.querySelector('input'), error = dialog.querySelector('.step-dialog__error');
+      input.value = String(parseLevelStepSafe(level.text) || '');
+      const finish = value => {
+        dialog.close(); dialog.remove();
+        if (previousFocus && previousFocus.isConnected) previousFocus.focus({ preventScroll: true });
+        resolve(value);
+      };
+      dialog.addEventListener('keydown', e => e.stopPropagation());
+      dialog.addEventListener('cancel', e => { e.preventDefault(); finish(null); });
+      dialog.querySelector('.step-dialog__cancel').addEventListener('click', () => finish(null));
+      dialog.addEventListener('click', e => {
+        if (e.target !== dialog) return;
+        const r = dialog.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) finish(null);
+      });
+      input.addEventListener('input', () => { error.hidden = true; input.removeAttribute('aria-invalid'); });
+      dialog.querySelector('form').addEventListener('submit', e => {
+        e.preventDefault();
+        const raw = input.value.trim(), steps = Number(raw);
+        if (!/^[0-9]+$/.test(raw) || !Number.isInteger(steps) || steps < 1 || steps > 99999) {
+          error.textContent = t('saveStepInvalid'); error.hidden = false;
+          input.setAttribute('aria-invalid', 'true'); input.focus(); return;
+        }
+        finish(raw);
+      });
+      document.body.appendChild(dialog); dialog.showModal(); input.focus(); input.select();
+    });
+  }
+  async function setGalleryLevelStep(globalIdx) {
+    const level = allLevels()[globalIdx];
+    if (!level) return false;
+    const raw = await promptGalleryLevelStep(level);
+    if (raw === null) return false;
+    const steps = Number(raw.trim());
+    if (!/^[0-9]+$/.test(raw.trim()) || !Number.isInteger(steps) || steps < 1 || steps > 99999) {
+      showToast(t('saveStepInvalid'), true); return false;
+    }
+    let saved = false;
+    try {
+      if (PRESET_LEVELS.includes(level)) {
+        saved = await savePresetRecordForLevel(level, steps);
+        if (saved) updateLevelStepText(level, steps);
+      } else if (userLevels.includes(level)) {
+        const previous = level.text;
+        updateLevelStepText(level, steps);
+        try { writeStorageChecked(USER_LEVELS_KEY, JSON.stringify(userLevels)); saved = true; }
+        catch (error) { level.text = previous; throw error; }
+      }
+    } catch (error) { console.error('[Records] Gallery manual save failed', error); }
+    if (!saved) { showToast(t('recordSaveFailed'), true); return false; }
+    if (allLevels()[currentLevelIndex] === level) { game.step = steps; renderLevelHint(); }
+    buildLevelSelect();
+    // Refresh text in place: preserve scrolling, expanded stacks and rendered previews.
+    for (const card of galleryViewEl.querySelectorAll('.gallery-card[data-level-index]')) {
+      if (allLevels()[Number(card.dataset.levelIndex)] !== level) continue;
+      const label = card.querySelector('.gallery-card__step');
+      if (label) { label.textContent = t('gallerySteps', steps); label.classList.remove('empty'); }
+    }
+    const groups = getGalleryGroups();
+    let unsolved = 0;
+    groups.forEach((g, i) => {
+      const n = countUnsolvedItems(g.items); unsolved += n;
+      const title = galleryViewEl.querySelector('#gallery-group-' + i + ' .gallery-group__title');
+      if (title) title.textContent = g.title;
+      const link = galleryViewEl.querySelector('a[href="#gallery-group-' + i + '"]');
+      if (link) link.textContent = formatTocTitle(g.group, g.items.length, n);
+    });
+    const summary = galleryViewEl.querySelector('.gallery-summary');
+    if (summary) summary.textContent = userLevels.length
+      ? t('gallerySummary', PRESET_LEVELS.length, userLevels.length, unsolved) + ' · ' + t('galleryTotal', PRESET_LEVELS.length + userLevels.length)
+      : t('gallerySummaryNoUser', PRESET_LEVELS.length, unsolved);
+    showToast(t('levelSavedN', steps));
+    return true;
+  }
   let contextMenuEl = null;
   function hideLevelContextMenu() { if (contextMenuEl && contextMenuEl.parentNode) contextMenuEl.parentNode.removeChild(contextMenuEl); contextMenuEl = null; }
   function showLevelContextMenu(x, y, globalIdx, userIdx) {
@@ -7909,6 +8486,13 @@
     editBtn.innerHTML = '<span class="ctx-ico">✎</span><span>' + t('ctxEdit') + '</span>';
     editBtn.addEventListener('click', e => { e.stopPropagation(); hideLevelContextMenu(); selectLevel(globalIdx, false); openEditor(); });
     menu.appendChild(playBtn); menu.appendChild(editBtn);
+    if (IS_RUSSIAN_SYSTEM) {
+      const stepBtn = document.createElement('button');
+      stepBtn.type = 'button';
+      stepBtn.innerHTML = '<span class="ctx-ico">✓</span><span>' + t('ctxSetStep') + '</span>';
+      stepBtn.addEventListener('click', e => { e.stopPropagation(); hideLevelContextMenu(); void setGalleryLevelStep(globalIdx); });
+      menu.appendChild(stepBtn);
+    }
     if (userIdx >= 0) {
       const delBtn = document.createElement('button');
       delBtn.type = 'button';
@@ -8554,12 +9138,24 @@
       showToast(t('groupShiftToast', GROUP_SHIFT ? t('onLabel') : t('offLabel')));
     });
   }
+  const solverTimeInput = document.getElementById('solverTimeInput');
+  solverTimeInput.value = formatSolverTime(solverTimeMinutes);
+  function applySolverTimeInput() {
+    const minutes = parseSolverTime(solverTimeInput.value);
+    if (minutes === null) { showToast(t('solverTimeInvalid'), true); solverTimeInput.value = formatSolverTime(solverTimeMinutes); return; }
+    solverTimeMinutes = minutes;
+    safeSetItem(SOLVER_TIME_KEY, String(minutes));
+    solverTimeInput.value = formatSolverTime(minutes);
+  }
+  solverTimeInput.addEventListener('change', applySolverTimeInput);
+  solverTimeInput.addEventListener('blur', applySolverTimeInput);
+  solverTimeInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); applySolverTimeInput(); solverTimeInput.blur(); } });
   function updateMaxStatesHint() {
     if (!maxStatesHint) return;
     const states = MAX_NODES_USER;
     const ramGb = MAX_RAM_GB_USER;
     const gbStr = (ramGb >= 1) ? (Math.round(ramGb * 10) / 10).toString() : (Math.round(ramGb * 100) / 100).toString();
-    maxStatesHint.textContent = ramGb === 0 ? t('ramUnlimited') : t('maxStatesHintFull', gbStr, fmtNum(states));
+    maxStatesHint.textContent = ramGb === 0 ? t('ramUnlimited') : t(IS_FIREFOX ? 'maxStatesHintFirefox' : 'maxStatesHintFull', gbStr, fmtNum(states));
   }
   function syncMemoryInputs() {
     if (maxStatesInput) maxStatesInput.value = fmtNum(MAX_NODES_USER);
@@ -8598,7 +9194,7 @@
       saveRamSetting(gb);
       syncMemoryInputs();
       updateMaxStatesHint();
-      showToast(MAX_RAM_GB_USER === 0 ? t('ramUnlimited') : t('maxStatesHintFull', MAX_RAM_GB_USER, fmtNum(MAX_NODES_USER)));
+      showToast(MAX_RAM_GB_USER === 0 ? t('ramUnlimited') : t(IS_FIREFOX ? 'maxStatesHintFirefox' : 'maxStatesHintFull', MAX_RAM_GB_USER, fmtNum(MAX_NODES_USER)));
     };
     maxRamInput.addEventListener('change', applyRam);
     maxRamInput.addEventListener('blur', applyRam);
@@ -8643,108 +9239,81 @@
   })();
 
   /* Analyzer: breadth-first exploration, shared movement rules with the solver. */
-  async function exploreAnalyzer(startPieces, maxStates, stopCheck, onProgress, goalPieces = null, groupShift = GROUP_SHIFT) {
-    const state = buildSolverState(startPieces, []);
-    const { typeIndex, freeCellLookup, FREE_CELLS, startFlat, NUM_TYPES } = state;
-    const keyOf = makeKeyFn(NUM_TYPES);
-    const rootKey = keyOf(makeSolverBoard(startFlat, typeIndex, freeCellLookup, FREE_CELLS));
-    let goalKey = null, goalNode = -1;
+  async function exploreAnalyzer(startPieces, maxStates, stopCheck, onProgress, goalPieces = null, groupShift = GROUP_SHIFT, retainedBytes = 0) {
+    const state = buildSolverState(startPieces, []), stride = state.startFlat.length;
+    const budget = new SolverBudget(MAX_RAM_GB_USER);
+    // Reserve the exported result while the search blocks are still alive.
+    budget.bytes = retainedBytes + 8000;
+    const store = new SolverStore(state, budget, false);
+    const root = store.pack(makeSolverBoard(state.startFlat, state.typeIndex, state.freeCellLookup, state.FREE_CELLS));
+    let goal = null, goalNode = -1, capped = false, depth = 0;
     if (goalPieces) {
       const flat = [];
       for (const p of goalPieces) flat.push(state.typeMap.get(solverPieceKey(p)), p.x, p.y);
-      goalKey = keyOf(makeSolverBoard(flat, typeIndex, freeCellLookup, FREE_CELLS));
-      if (goalKey === rootKey) goalNode = 0;
+      goal = store.pack(makeSolverBoard(flat, state.typeIndex, state.freeCellLookup, state.FREE_CELLS));
     }
-    const visited = new Set([rootKey]);
-    const states = [startFlat], parentList = [-1];
-    const layers = [[0]];
-    let frontier = goalNode === 0 ? [] : layers[0], capped = false;
-    const started = performance.now();
-    let lastYield = started;
-    while (frontier.length) {
-      const next = [];
-      expandLayer: for (const nodeIndex of frontier) {
+    function add(key, hash, pieces, parent, cost) {
+      if (budget.bytes + stride + 4 > budget.limit) throw new Error('__OOM__');
+      budget.bytes += stride + 4;
+      try { return store.add(key, hash, pieces, parent, null, cost, 0); }
+      catch (err) { budget.bytes -= stride + 4; throw err; }
+    }
+    const started = performance.now(); let lastYield = started;
+    add(root, store.hash(root), state.startFlat, -1, 0);
+    if (goal && store.equal(0, goal)) goalNode = 0;
+    maxStates = Math.max(1, maxStates);
+    try {
+      search: for (let id = 0; id < store.size && goalNode < 0; id++) {
         if (stopCheck()) return null;
-        const pieces = states[nodeIndex];
-        const board = makeSolverBoard(pieces, typeIndex, freeCellLookup, FREE_CELLS);
-        for (let pi = 0; pi < pieces.length / 3; pi++) {
-          const type = pieces[pi * 3], info = typeIndex[type];
-          if (!info || info.fixed) continue;
-          const px = pieces[pi * 3 + 1], py = pieces[pi * 3 + 2];
-          erasePieceFromBoard(board, pieces, pi, typeIndex, freeCellLookup);
-          const moves = generateMovesForPiece(board, px, py, type, info, freeCellLookup, pieces, pi, typeIndex, groupShift);
-          placePieceOnBoard(board, pieces, pi, typeIndex, freeCellLookup);
-          for (const move of moves) {
-            const nextBoard = board.slice(), nextPieces = pieces.slice();
-            erasePieceFromBoard(nextBoard, pieces, pi, typeIndex, freeCellLookup);
-            const shifts = [];
-            if (move.shifted) for (const sh of move.shifted) {
-              const qi = findPieceIndexByTypeAndPos(pieces, sh.type, sh.fromX, sh.fromY);
-              if (qi < 0 || qi === pi) continue;
-              erasePieceFromBoard(nextBoard, pieces, qi, typeIndex, freeCellLookup);
-              shifts.push(qi);
-            }
-            nextPieces[pi * 3 + 1] = move.nx;
-            nextPieces[pi * 3 + 2] = move.ny;
-            placePieceOnBoard(nextBoard, nextPieces, pi, typeIndex, freeCellLookup);
-            for (const qi of shifts) {
-              nextPieces[qi * 3 + 1] += move.path[0][0];
-              nextPieces[qi * 3 + 2] += move.path[0][1];
-              placePieceOnBoard(nextBoard, nextPieces, qi, typeIndex, freeCellLookup);
-            }
-            const key = keyOf(nextBoard);
-            if (visited.has(key)) continue;
-            if (visited.size >= maxStates) { capped = true; break expandLayer; }
-            visited.add(key);
-            const childIndex = states.length;
-            states.push(nextPieces); parentList.push(nodeIndex);
-            next.push(childIndex);
-            if (goalKey !== null && key === goalKey) { goalNode = childIndex; break expandLayer; }
+        const cost = store.cost(id);
+        for (const next of compactSuccessors(store.node(id), state, groupShift)) {
+          const key = store.pack(next.board), hash = store.hash(key);
+          if (store.find(key, hash) >= 0) continue;
+          if (store.size >= maxStates) { capped = true; break search; }
+          const child = add(key, hash, next.pieces, id, cost + 1);
+          depth = cost + 1;
+          if (goal && store.equal(child, goal)) { goalNode = child; break search; }
+          if (performance.now() - lastYield > 35) {
+            onProgress(store.size, depth, performance.now() - started);
+            await new Promise(resolve => setTimeout(resolve, 0));
+            if (stopCheck()) return null;
+            lastYield = performance.now();
           }
         }
-        const now = performance.now();
-        if (now - lastYield > 35) {
-          onProgress(visited.size, layers.length - 1 + (next.length ? 1 : 0), now - started);
+        if (performance.now() - lastYield > 35) {
+          onProgress(store.size, depth, performance.now() - started);
           await new Promise(resolve => setTimeout(resolve, 0));
           if (stopCheck()) return null;
           lastYield = performance.now();
-          if (isMemoryHigh()) { capped = true; break expandLayer; }
         }
       }
-      if (next.length) layers.push(next);
-      if (capped || goalNode >= 0) break;
-      frontier = next;
-    }
+    } catch (err) { if (err.message !== '__OOM__') throw err; capped = true; }
     if (stopCheck()) return null;
-    // Keep compact states and parents for path inspection; only the furthest 20% appear in the results selector.
-    const count = Math.min(1000, Math.max(1, Math.ceil(visited.size * 0.2)));
-    const stride = startFlat.length;
-    const positions = new Uint8Array(states.length * stride);
-    const parents = new Int32Array(states.length);
-    const selection = new Uint32Array(count);
-    const depths = new Uint32Array(count);
-    for (let i = 0; i < states.length; i++) {
-      positions.set(states[i], i * stride); parents[i] = parentList[i];
-      if ((i & 2047) === 0 && performance.now() - lastYield > 35) {
+    const count = Math.min(1000, Math.max(1, Math.ceil(store.size * 0.2)));
+    // These bytes were charged above before accepting each state.
+    const positions = new Uint8Array(store.size * stride), parents = new Int32Array(store.size);
+    const selection = new Uint32Array(count), depths = new Uint32Array(count);
+    for (let bi = 0; bi < store.blocks.length; bi++) {
+      const block = store.blocks[bi], first = bi * store.blockSize;
+      const n = Math.min(store.blockSize, store.size - first);
+      positions.set(block.pieces.subarray(0, n * stride), first * stride);
+      parents.set(block.parents.subarray(0, n), first);
+      if (performance.now() - lastYield > 35) {
         await new Promise(resolve => setTimeout(resolve, 0));
         if (stopCheck()) return null;
         lastYield = performance.now();
       }
     }
-    let index = 0;
-    for (let depth = layers.length - 1; depth >= 0 && index < count; depth--) {
-      for (const nodeIndex of layers[depth]) {
-        selection[index] = nodeIndex; depths[index++] = depth;
-        if (index === count) break;
-        if ((index & 2047) === 0 && performance.now() - lastYield > 35) {
-          await new Promise(resolve => setTimeout(resolve, 0));
-          if (stopCheck()) return null;
-          lastYield = performance.now();
-        }
-      }
+    // BFS IDs are ordered by depth. Preserve the old selector's order within a layer.
+    let index = 0, end = store.size;
+    while (end && index < count) {
+      const d = store.cost(end - 1); let lo = 0, hi = end;
+      while (lo < hi) { const mid = Math.floor((lo + hi) / 2); if (store.cost(mid) < d) lo = mid + 1; else hi = mid; }
+      for (let id = lo; id < end && index < count; id++) { selection[index] = id; depths[index++] = d; }
+      end = lo;
     }
-    return { positions, parents, selection, depths, stride, count, goalNode, depth: layers.length - 1,
-      nodes: visited.size, capped, ms: performance.now() - started };
+    return { positions, parents, selection, depths, stride, count, goalNode, depth,
+      nodes: store.size, capped, ms: performance.now() - started, allocatedBytes: budget.bytes };
   }
 
   const analyzerViewEl = document.getElementById('analyzerView');
@@ -8778,9 +9347,31 @@
     nearIndex: 0, pairView: null, filterBase: null, filterMatches: null, filterPairs: null, filterIndex: 0, filterOpen: false, filterMode: 'any', filterWindow: 0,
     pairGeneration: 0, pairWorker: null, pairUrl: null, pairResolve: null, pairCacheBase: null, pairCache: new Map()
   };
+  function analyzerRetainedBytes() {
+    const seen = new Set();
+    function size(v) {
+      if (!v || typeof v !== 'object' || seen.has(v)) return 0;
+      seen.add(v);
+      if (ArrayBuffer.isView(v)) return size(v.buffer);
+      if (v instanceof ArrayBuffer) return v.byteLength;
+      if (v instanceof Map || v instanceof Set) {
+        let bytes = v.size * 80;
+        for (const item of v.values()) bytes += size(item);
+        return bytes;
+      }
+      if (Array.isArray(v)) return v.length * 8 + v.reduce((n, x) => n + size(x), 0);
+      if (Object.getPrototypeOf(v) !== Object.prototype) return 0;
+      return Object.values(v).reduce((n, x) => n + size(x), 0);
+    }
+    return size(analyzer);
+  }
   function analyzerStatus(key, ...args) {
     analyzer.statusKey = key; analyzer.statusArgs = args;
     if (!analyzer.fullActive) {
+      const now = performance.now();
+      if (['anaProgress', 'anaFilterIndexing', 'anaFilterProgress'].includes(key)
+          && now - (analyzer.statusPaint ?? -Infinity) < 1000) return;
+      analyzer.statusPaint = now;
       const viewport = captureAnalyzerViewport(); anaStatusEl.textContent = t(key, ...args); restoreAnalyzerViewport(viewport);
     }
   }
@@ -8933,9 +9524,7 @@
     catch (err) { showToast(err.message || String(err), true); return; }
     analyzer.templates = {};
     for (const p of analyzer.source) analyzer.templates[state.typeMap.get(solverPieceKey(p))] = { ...p };
-    const perState = 280 + CELLS * 2 + analyzer.source.length * 3;
-    analyzer.maxStates = Math.max(1, Math.min(MAX_NODES_USER,
-      (MAX_RAM_GB_USER > 0 ? Math.floor(MAX_RAM_GB_USER * GB_BYTES / perState) : MAX_NODES_HARD_CAP)));
+    analyzer.maxStates = MAX_NODES_USER;
     resetAnalyzerSelections();
     analyzer.result = null; analyzer.index = 0; analyzer.round = 0; analyzer.best = null;
     analyzer.spaceResult = null; analyzer.spaceSource = null; analyzer.spaceIndex = 0;
@@ -9011,8 +9600,8 @@ self.onmessage = async function (e) {
     SHAPES = msg.shapes; MOVE_MODE = msg.moveMode; GROUP_SHIFT = msg.groupShift;
     const progress = (nodes, depth, ms) => self.postMessage({ type: 'progress', nodes, depth, ms });
     const result = msg.kind === 'space'
-      ? await enumerateAnalyzerSpace(msg.source, msg.maxStates, () => false, progress)
-      : await exploreAnalyzer(msg.source, msg.maxStates, () => false, progress, msg.goalPieces || null, msg.groupShift);
+      ? await enumerateAnalyzerSpace(msg.source, msg.maxStates, () => false, progress, null, false, msg.retainedBytes || 0)
+      : await exploreAnalyzer(msg.source, msg.maxStates, () => false, progress, msg.goalPieces || null, msg.groupShift, msg.retainedBytes || 0);
     if (msg.kind === 'distance') {
       const path = result.goalNode >= 0 ? compactAnalyzerPairPath(result) : null;
       self.postMessage({ type: 'distance', distance: path ? path.nodes - 1 : null, path },
@@ -9026,8 +9615,12 @@ self.onmessage = async function (e) {
 };`;
   }
   async function runAnalyzerSearch(source, generation, kind = 'search') {
+    let lastStatusUpdate = performance.now();
     const progress = (nodes, depth, ms) => {
       if (analyzer.generation !== generation || !analyzer.running) return;
+      const now = performance.now();
+      if (now - lastStatusUpdate < 1000) return;
+      lastStatusUpdate = now;
       if (kind === 'space') {
         analyzer.spaceFound = nodes;
         analyzerSpaceStatus('spaceProgress', fmtNum(nodes), fmtNum(depth), fmtSolverTime(ms / 1000));
@@ -9037,7 +9630,7 @@ self.onmessage = async function (e) {
       }
     };
     if (kind === 'search' && analyzer.fullActive) return exploreAnalyzer(source, analyzer.maxStates,
-      () => analyzer.generation !== generation, progress, null, analyzer.groupShift);
+      () => analyzer.generation !== generation, progress, null, analyzer.groupShift, analyzerRetainedBytes());
     let worker = null;
     if (typeof Worker !== 'undefined' && typeof Blob !== 'undefined' && typeof URL !== 'undefined') {
       try {
@@ -9047,7 +9640,7 @@ self.onmessage = async function (e) {
     }
     const limit = kind === 'space' ? analyzer.spaceLimit : analyzer.maxStates;
     if (!worker) return (kind === 'space' ? enumerateAnalyzerSpace : exploreAnalyzer)(source, limit,
-      () => analyzer.generation !== generation, progress, null, analyzer.groupShift);
+      () => analyzer.generation !== generation, progress, null, analyzer.groupShift, analyzerRetainedBytes());
     analyzer.worker = worker;
     return new Promise((resolve, reject) => {
       analyzer.pending = { resolve, reject };
@@ -9063,7 +9656,7 @@ self.onmessage = async function (e) {
         else if (msg.type === 'error') finish(null, new Error(msg.message));
       };
       worker.onerror = e => finish(null, new Error(e.message || 'Worker error'));
-      try { worker.postMessage({ kind, source, maxStates: limit, cols: analyzer.cols,
+      try { worker.postMessage({ kind, source, maxStates: limit, retainedBytes: analyzerRetainedBytes(), cols: analyzer.cols,
         rows: analyzer.rows, shapes: SHAPES, moveMode: analyzer.moveMode, groupShift: analyzer.groupShift }); }
       catch (err) { finish(null, err); }
     });
@@ -9161,7 +9754,8 @@ self.onmessage = async function (e) {
 
 
   /* Geometric state space: fixed obstacles, fixed orientations, indistinguishable equal tiles. */
-  async function enumerateAnalyzerSpace(source, maxStates, stopCheck, onProgress) {
+  async function enumerateAnalyzerSpace(source, maxStates, stopCheck, onProgress, unusedGoal = null, unusedGroup = false, retainedBytes = 0) {
+    const budget = new SolverBudget(MAX_RAM_GB_USER); budget.bytes = retainedBytes;
     const state = buildSolverState(source, []);
     const flat = state.startFlat.slice(), stride = flat.length;
     let fixedMask = 0n, movableArea = 0;
@@ -9204,7 +9798,14 @@ self.onmessage = async function (e) {
       if (depth === slots.length) {
         if (count >= maxStates) { capped = true; break; }
         const chunkIndex = Math.floor(count / chunkSize), offset = count % chunkSize;
-        if (!chunks[chunkIndex]) chunks[chunkIndex] = new Uint8Array(Math.min(chunkSize, maxStates - count) * stride);
+        if (!chunks[chunkIndex]) {
+          const n = Math.min(chunkSize, maxStates - count);
+          const reserve = n * (stride + 4);
+          if (budget.bytes + reserve + n * stride > budget.limit) { capped = true; break; }
+          budget.bytes += reserve;
+          try { chunks[chunkIndex] = budget.alloc(Uint8Array, n * stride); }
+          catch (err) { if (err.message !== '__OOM__') throw err; budget.bytes -= reserve; capped = true; break; }
+        }
         chunks[chunkIndex].set(flat, offset * stride);
         count++; depth--;
       } else {
@@ -9232,7 +9833,7 @@ self.onmessage = async function (e) {
         await new Promise(resolve => setTimeout(resolve, 0));
         if (stopCheck()) return null;
         lastYield = performance.now();
-        if (isMemoryHigh()) { capped = true; break; }
+
       }
     }
     if (stopCheck()) return null;
@@ -9252,6 +9853,10 @@ self.onmessage = async function (e) {
   function analyzerSpaceStatus(key, ...args) {
     analyzer.spaceStatusKey = key; analyzer.spaceStatusArgs = args;
     if (analyzer.fullActive) return;
+    const now = performance.now();
+    if (['spaceProgress', 'contourProgress'].includes(key)
+        && now - (analyzer.spaceStatusPaint ?? -Infinity) < 1000) return;
+    analyzer.spaceStatusPaint = now;
     const viewport = captureAnalyzerViewport();
     document.getElementById('anaSpaceStatus').textContent = t(key, ...args);
     restoreAnalyzerViewport(viewport);
@@ -9307,8 +9912,7 @@ self.onmessage = async function (e) {
     analyzer.running = true; analyzer.auto = false; analyzer.job = 'space'; analyzer.best = null;
     analyzer.spaceSource = source; analyzer.spaceResult = null; analyzer.spaceIndex = 0; analyzer.spaceFound = 0; resetAnalyzerContours();
     const stride = source.length * 3;
-    analyzer.spaceLimit = Math.max(1, Math.min(analyzer.maxStates,
-      (MAX_RAM_GB_USER > 0 ? Math.floor(MAX_RAM_GB_USER * GB_BYTES / (stride * 2 + source.length * 8 + 160)) : MAX_NODES_HARD_CAP), Math.floor(0x7fffffff / stride)));
+    analyzer.spaceLimit = Math.max(1, Math.min(analyzer.maxStates, Math.floor(0x7fffffff / Math.max(1, stride))));
     analyzerSpaceStatus('spaceProgress', '0', '0', '0.00');
     renderAnalyzerSpace(); updateAnalyzerButtons();
     try {
@@ -9543,7 +10147,7 @@ self.onmessage = async function (e) {
   }
   function analyzerFullStatus(key, ...args) {
     analyzer.fullStatusKey = key; analyzer.fullStatusArgs = args;
-    if (analyzer.fullActive && !['fullDone', 'fullInterrupted'].includes(key) && performance.now() - analyzer.fullStatusPaint < 3000) return;
+    if (analyzer.fullActive && !['fullDone', 'fullInterrupted'].includes(key) && performance.now() - analyzer.fullStatusPaint < 1000) return;
     analyzer.fullStatusPaint = performance.now();
     const el = document.getElementById('anaFullStatus');
     const text = key ? t(key, ...args) : '';
@@ -9642,7 +10246,7 @@ self.onmessage = async function (e) {
         if (!current()) return;
         refreshAnalyzerFullStatus();
         document.getElementById('anaSpaceStatus').textContent = t(analyzer.spaceStatusKey, ...analyzer.spaceStatusArgs);
-      }, 3000);
+      }, 1000);
       if (!analyzer.spaceResult || analyzer.spaceResult.capped) await startAnalyzerSpace(true);
       if (!current()) return;
       if (!analyzer.spaceResult || analyzer.spaceResult.capped) throw new Error(t('fullNeedCompleteSpace'));
@@ -9862,7 +10466,7 @@ self.onmessage = async function (e) {
           };
           worker.onerror = event => { if (!valid()) return; analyzer.pairResolve = null; reject(new Error(event.message || 'Worker error')); };
           worker.postMessage({ kind: 'pair', source, goalPieces: target, cols: analyzer.cols, rows: analyzer.rows,
-            shapes: SHAPES, moveMode: analyzer.moveMode, groupShift: analyzer.groupShift, maxStates: analyzer.maxStates });
+            shapes: SHAPES, moveMode: analyzer.moveMode, groupShift: analyzer.groupShift, maxStates: analyzer.maxStates, retainedBytes: analyzerRetainedBytes() });
         });
       } catch (error) {
         if (!valid()) return null;
@@ -9871,7 +10475,7 @@ self.onmessage = async function (e) {
         analyzer.pairWorker = null; analyzer.pairUrl = null; analyzer.pairResolve = null;
       }
     }
-    return exploreAnalyzer(source, analyzer.maxStates, () => !valid(), () => {}, target, analyzer.groupShift);
+    return exploreAnalyzer(source, analyzer.maxStates, () => !valid(), () => {}, target, analyzer.groupShift, analyzerRetainedBytes());
   }
   function compactAnalyzerPairPath(result) {
     const path = [];
@@ -10034,7 +10638,7 @@ self.onmessage = async function (e) {
   }
   function refreshAnalyzerFullStatus(done = false) {
     if (!analyzer.spaceResult || (!analyzer.fullActive && !done)) return;
-    if (!done && performance.now() - analyzer.fullStatusPaint < 3000) return;
+    if (!done && performance.now() - analyzer.fullStatusPaint < 1000) return;
     const total = analyzer.spaceResult.count, assigned = analyzer.spaceAssigned;
     const records = analyzerFullRecords();
     const largest = records.largest ? t('fullBestContour', records.largest.id, fmtNum(records.largest.indices.length)) : t('fullNoBest');
@@ -10215,7 +10819,7 @@ self.onmessage = async function (e) {
           };
           worker.onerror = () => { if (valid()) { analyzerMini.resolve = null; resolve(null); } };
           worker.postMessage({ kind: 'distance', source: start, goalPieces: goal, cols: analyzer.cols, rows: analyzer.rows,
-            shapes: SHAPES, moveMode: analyzer.moveMode, groupShift: analyzer.groupShift, maxStates: analyzer.maxStates });
+            shapes: SHAPES, moveMode: analyzer.moveMode, groupShift: analyzer.groupShift, maxStates: analyzer.maxStates, retainedBytes: analyzerRetainedBytes() });
         });
         if (!valid()) return null;
         if (reply) return reply;
@@ -10224,7 +10828,7 @@ self.onmessage = async function (e) {
       if (analyzerMini.url) URL.revokeObjectURL(analyzerMini.url);
       analyzerMini.worker = null; analyzerMini.url = null; analyzerMini.resolve = null;
     }
-    const result = await exploreAnalyzer(start, analyzer.maxStates, () => !valid(), () => {}, goal, analyzer.groupShift);
+    const result = await exploreAnalyzer(start, analyzer.maxStates, () => !valid(), () => {}, goal, analyzer.groupShift, analyzerRetainedBytes());
     if (!result || !valid()) return null;
     const path = result.goalNode >= 0 ? compactAnalyzerPairPath(result) : null;
     return { distance: path ? path.nodes - 1 : null, path };

@@ -26,7 +26,7 @@ window.BOARD_DESCRIPTIONS = [
     },
     { 
         Group: 'Diniar Namdarian', 
-        Description: 'Puzzles from Diniar Namdarian : <a target="_blank" href="https://robspuzzlepage.com/sliding.htm">robspuzzlepage.com</a>' 
+        Description: 'Puzzles from Diniar Namdarian : <a target="_blank" href="https://sites.google.com/site/geduldspiele/GalleryModernSlidingPuzzles">sites.google.com</a>' 
     },
     { 
         Group: 'Vlaidmir Yaroslavskiy', 
