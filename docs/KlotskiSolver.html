@@ -158,7 +158,7 @@
   .board__inner { position: absolute; inset: 0; touch-action: none; }
   .board-contour-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 0; filter: drop-shadow(0 14px 28px rgba(0,0,0,.55)); }
   .board__grid { position: absolute; inset: 0; pointer-events: none; z-index: 0; background-image: linear-gradient(to right, rgba(0,0,0,.20) 1.5px, transparent 1.5px), linear-gradient(to bottom, rgba(0,0,0,.20) 1.5px, transparent 1.5px); background-size: calc(100% / var(--board-cols)) calc(100% / var(--board-rows)); background-repeat: repeat; }
-  .solver-status { font-size: 11px; line-height: 16px; height: 16px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: center; color: var(--sub); min-height: 16px; max-height: 16px; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+  .solver-status { font-size: 11px; line-height: 16px; min-height: 16px; white-space: normal; overflow-wrap: anywhere; text-align: center; color: var(--sub); letter-spacing: .02em; font-variant-numeric: tabular-nums; }
   .solver-status b { color: var(--gold); font-weight: 700; }
   .solver-status.error { color: #ffb0b0; }
   .piece, .e-piece, .mini-piece { position: absolute; cursor: grab; touch-action: none; will-change: left, top; padding: 4px; z-index: 1; }
@@ -897,7 +897,7 @@
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v3.00)</span></div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v3.05)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -1212,7 +1212,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '3.00';
+  const APP_VERSION = '3.05';
   const LANG_KEY = 'ryzhiy-osel-lang-v1';
   const LAST_LEVEL_KEY = 'ryzhiy-osel-last-level-v1';
   function safeGetItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
@@ -1484,7 +1484,8 @@
       hotkeyCancel: 'Отмена (Esc)',
       hotkeyBatch: 'Автопоиск решений (F8)',
       batchStarted: 'Автопоиск: %1 нерешённых уровней',
-      batchDone: 'Автопоиск завершён',
+      batchDone: 'Автосолвер завершен: решено %1 · не решено %2 · время %3 · максимум ОЗУ %4',
+      batchUnstarted: 'Без запуска: %1',
       batchStopped: 'Автопоиск остановлен',
       batchAllSolved: 'Все уровни уже решены',
       batchNoLevels: 'Нет уровней',
@@ -1529,7 +1530,7 @@
       solverZero: 'Решение: 0 ходов (уже собрано).',
       solverError: 'Ошибка: %1',
       solverOom: 'Превышен лимит состояний (%1). Поднимите «Лимит ОЗУ, ГБ» в настройках.',
-      solverOomProgress: 'Поиск остановлен: достигнут бюджет памяти или не удалось выделить память. Обработано позиций: %1. Оценка памяти процесса с поправкой на накладные расходы: ≈%2 ГиБ.',
+      solverOomProgress: 'Поиск остановлен: достигнут лимит памяти или не удалось выделить память.',
       maxStatesHintFirefox: 'Лимит хранилища Солвера и Анализатора: %1 ГБ, без вычета резерва. Лимит состояний относится только к анализатору.',
       maxStatesHintFull: 'Бюджет Солвера и Анализатора: %1 ГБ; 28% оставлено для временных данных. Лимит состояний относится только к анализатору.',
       ramUnlimited: 'Солвер и Анализатор: без лимита ОЗУ (0). Firefox не останавливается на прежнем пороге 10 ГБ. Лимит состояний относится только к анализатору.',
@@ -1825,7 +1826,8 @@
       hotkeyCancel: 'Cancel (Esc)',
       hotkeyBatch: 'Auto-solve (F8)',
       batchStarted: 'Auto-solve: %1 unsolved levels',
-      batchDone: 'Auto-solve finished',
+      batchDone: 'Auto-solver finished: solved %1 · unsolved %2 · time %3 · peak RAM %4',
+      batchUnstarted: 'Not started: %1',
       batchStopped: 'Auto-solve stopped',
       batchAllSolved: 'All levels already solved',
       batchNoLevels: 'No levels',
@@ -1870,7 +1872,7 @@
       solverZero: 'Solution: 0 moves (already solved).',
       solverError: 'Error: %1',
       solverOom: 'State limit exceeded (%1). Increase "RAM limit, GB" in settings.',
-      solverOomProgress: 'Search stopped: memory budget reached or allocation failed. Positions explored: %1. Estimated process memory including overhead allowance: ≈%2 GiB.',
+      solverOomProgress: 'Search stopped: memory limit reached or allocation failed.',
       maxStatesHintFirefox: 'Solver and Analyzer storage limit: %1 GiB, with no reserve deduction. The state limit applies only to the analyzer.',
       maxStatesHintFull: 'Solver and Analyzer budget: %1 GiB; 28% reserved for temporary data. The state limit applies only to the analyzer.',
       ramUnlimited: 'Solver and Analyzer: no RAM limit (0). Firefox no longer stops at the old 10 GiB threshold. The state limit applies only to the analyzer.',
@@ -2048,38 +2050,65 @@
     const value = String(text || '').trim();
     if (!value || /^0+$/.test(value)) return 0;
     if (/^\d{1,6}$/.test(value)) return Number(value) * 60;
-    const match = value.match(/^(\d{1,6}):([0-5]\d)$/);
+    const match = value.match(/^(\d{1,6}):([0-5]?\d)$/);
     return match ? Number(match[1]) * 60 + Number(match[2]) : null;
   }
   function formatSolverTime(minutes) {
     return String(Math.floor(minutes / 60)) + ':' + String(minutes % 60).padStart(2, '0');
   }
+  function formatSearchElapsed(ms) {
+    return formatSolverTime(Math.floor(Math.max(0, ms) / 60000));
+  }
   let solverTimeMinutes = Number(safeGetItem(SOLVER_TIME_KEY)) || 0;
   if (!Number.isSafeInteger(solverTimeMinutes) || solverTimeMinutes < 0 || solverTimeMinutes > 59999999) solverTimeMinutes = 0;
   let SOLVER_DEADLINE_AT = 0, solverTimeTimer = null, solverTimeRunId = 0, solverTimeIsBatch = false;
+  let solverRunStartedAt = 0;
   function endSolverTimeLimit() {
     if (solverTimeTimer !== null) clearTimeout(solverTimeTimer);
-    solverTimeTimer = null; SOLVER_DEADLINE_AT = 0; solverTimeRunId++;
+    solverTimeTimer = null; SOLVER_DEADLINE_AT = 0; solverRunStartedAt = 0; solverTimeRunId++;
   }
   function expireSolverTimeLimit() {
     const wasBatch = solverTimeIsBatch;
-    endSolverTimeLimit();
-    if (wasBatch) { batch.active = false; batch.skipRequested = false; }
-    stopSolving(t(wasBatch ? 'batchTimeExpired' : 'solverTimeExpired'));
-    showToast(t(wasBatch ? 'batchTimeExpired' : 'solverTimeExpired'));
+    const reason = t(wasBatch ? 'batchTimeExpired' : 'solverTimeExpired');
+    const message = reportSearchOutcome(reason, true);
+    if (wasBatch) {
+      const summary = batchSummary(reason);
+      batch.active = false; batch.skipRequested = false;
+      stopSolving(summary + (game.solving ? '\n' + message : ''), true);
+      showToast(summary);
+      return;
+    }
+    stopSolving(message, true);
+    showToast(reason);
   }
-  function beginSolverTimeLimit(isBatch) {
-    endSolverTimeLimit(); solverTimeIsBatch = isBatch;
-    if (!solverTimeMinutes) return;
-    SOLVER_DEADLINE_AT = Date.now() + solverTimeMinutes * 60000;
+  function sendSolverLimits() {
+    if (solverWorker) solverWorker.postMessage({type: 'limits', ramGB: MAX_RAM_GB_USER, deadlineAt: SOLVER_DEADLINE_AT});
+  }
+  function refreshSolverDeadline() {
+    if (!solverRunStartedAt) return;
+    if (solverTimeTimer !== null) clearTimeout(solverTimeTimer);
+    SOLVER_DEADLINE_AT = solverTimeMinutes ? solverRunStartedAt + solverTimeMinutes * 60000 : 0;
+    sendSolverLimits();
+    if (!SOLVER_DEADLINE_AT) return;
     const token = solverTimeRunId;
     const tick = () => {
       if (token !== solverTimeRunId || !SOLVER_DEADLINE_AT) return;
       const left = SOLVER_DEADLINE_AT - Date.now();
-      if (left <= 0) { expireSolverTimeLimit(); return; }
+      if (left <= 0) {
+        // Give the worker one reporting interval to return its exact final counters.
+        // The watchdog still terminates a worker that is stuck in an allocation.
+        if (solverPending) solverTimeTimer = setTimeout(expireSolverTimeLimit, 120);
+        else expireSolverTimeLimit();
+        return;
+      }
       solverTimeTimer = setTimeout(tick, Math.min(left, 60000));
     };
     tick();
+  }
+  function beginSolverTimeLimit(isBatch) {
+    endSolverTimeLimit(); solverTimeIsBatch = isBatch;
+    solverRunStartedAt = Date.now();
+    refreshSolverDeadline();
   }
   function checkSolverDeadline() {
     if (SOLVER_DEADLINE_AT > 0 && Date.now() >= SOLVER_DEADLINE_AT) throw new Error('__TIMEOUT__');
@@ -3491,7 +3520,11 @@
   // All retained search data lives in bounded-size typed-array blocks.
   // Charges are conservative: replaced hash buffers stay charged until the search ends.
   class SolverBudget {
-    constructor(gb) { this.limit = gb > 0 ? gb * 1073741824 * (IS_FIREFOX ? 1 : 0.72) : Infinity; this.bytes = 0; this.states = 0; }
+    constructor(gb) { this.bytes = 0; this.states = 0; this.updateLimit(gb); }
+    updateLimit(gb) {
+      this.limit = gb > 0 ? gb * 1073741824 * (IS_FIREFOX ? 1 : 0.72) : Infinity;
+      if (this.bytes > this.limit) throw new Error('__OOM__');
+    }
     alloc(Type, length) {
       const bytes = length * Type.BYTES_PER_ELEMENT;
       if (!Number.isSafeInteger(bytes) || this.bytes + bytes > this.limit) throw new Error('__OOM__');
@@ -3741,8 +3774,193 @@
     return Object.keys(result).length ? result : null;
   }
 
+  // A vertex is a statically legal anchor of one shape. Unit edges retain the
+  // exact physical movement rules, including narrow passages and off-grid turns.
+  // Only certified lattice endpoints are omitted from saved states; intermediate
+  // vertices remain available during a move. Labels keep their original type IDs.
+  function buildSolverPlacementGraph(state, groupShift) {
+    const movable = state.startPieces.filter(p => !state.typeIndex[state.typeMap.get(solverPieceKey(p))].fixed);
+    if (!movable.length || (!state.lattice && !(state.FREE_CELLS < CELLS && movable.every(p => SHAPES[p.shape].cells.length >= 4)))) return null;
+    const shapes = new Map(), byType = {}, groups = [], fixed = [];
+    let total = 0, bits = 0;
+    for (let i = 0; i < state.startFlat.length; i += 3) {
+      const tt = state.startFlat[i], info = state.typeIndex[tt];
+      if (info.fixed) { fixed.push(tt, state.startFlat[i + 1], state.startFlat[i + 2]); continue; }
+      if (byType[tt]) { byType[tt].count++; continue; }
+      const grid = state.lattice && state.lattice[tt];
+      const signature = JSON.stringify([info.cells, info.w, info.h, info.dmove, grid]);
+      let graph = shapes.get(signature);
+      if (!graph) {
+        const vertices = [], at = new Int16Array(CELLS).fill(-1), kept = [];
+        for (let y = 0; y + info.h <= ROWS; y++) for (let x = 0; x + info.w <= COLS; x++) {
+          let mask = 0n, ok = true;
+          for (const [dx, dy] of info.cells) {
+            const cell = state.freeCellLookup[(y + dy) * COLS + x + dx];
+            if (cell < 0) { ok = false; break; }
+            mask |= 1n << BigInt(cell);
+          }
+          if (!ok) continue;
+          const keep = !grid || ((!grid.x || (x - grid.x.phase) % grid.x.step === 0) && (!grid.y || (y - grid.y.phase) % grid.y.step === 0));
+          const id = vertices.length, code = keep ? kept.length : -1;
+          at[y * COLS + x] = id;
+          vertices.push({x, y, mask, code, edges: new Int16Array(4).fill(-1)});
+          if (keep) kept.push(id);
+        }
+        if (!kept.length || (total += vertices.length) > 4096) return null;
+        for (const p of vertices) for (let d = 0; d < 4; d++) {
+          const [dx, dy] = SOLVER_DIRS[d], x = p.x + dx, y = p.y + dy;
+          if ((info.dmove === 'v' && dx) || (info.dmove === 'h' && dy)) continue;
+          if (x >= 0 && x < COLS && y >= 0 && y < ROWS) p.edges[d] = at[y * COLS + x];
+        }
+        graph = {vertices, at, kept, bits: Math.max(1, Math.ceil(Math.log2(kept.length)))};
+        shapes.set(signature, graph);
+      }
+      const g = {type: tt, graph, count: 1, offset: 0};
+      byType[tt] = g; groups.push(g);
+    }
+    for (const g of groups) { g.offset = bits; bits += g.count * g.graph.bits; }
+    // Validate both encodability and geometry before switching storage backends.
+    for (const p of state.startPieces.concat(state.targetPieces)) {
+      const tt = state.typeMap.get(solverPieceKey(p));
+      if (state.typeIndex[tt].fixed) continue;
+      const g = byType[tt]; if (!g) return null;
+      const id = g.graph.at[p.y * COLS + p.x];
+      if (id === undefined || id < 0 || g.graph.vertices[id].code < 0) return null;
+    }
+    return {groups, byType, fixed: Uint8Array.from(fixed), keyLength: Math.ceil(bits / 8), groupShift,
+      // Small immutable topology is shared by both search directions.
+      storageBytes: total * (160 + Math.ceil(state.FREE_CELLS / 8)) + shapes.size * CELLS * 2};
+  }
+
+  function* graphSolverSuccessors(node, state) {
+    const {pieces, board} = node, topology = state.graph;
+    let occupied = 0n;
+    for (let i = 0; i < pieces.length; i += 3) {
+      const g = topology.byType[pieces[i]].graph;
+      occupied |= g.vertices[g.at[pieces[i + 2] * COLS + pieces[i + 1]]].mask;
+    }
+    for (let i = 0; i < pieces.length; i += 3) {
+      const tt = pieces[i], g = topology.byType[tt].graph, start = g.at[pieces[i + 2] * COLS + pieces[i + 1]];
+      const blocked = occupied ^ g.vertices[start].mask;
+      const reachable = [], parents = new Int16Array(g.vertices.length).fill(-1), directions = new Uint8Array(g.vertices.length);
+      parents[start] = start;
+      if (MOVE_MODE === 1 || MOVE_MODE === 2) {
+        for (let d = 0; d < 4; d++) {
+          let from = start;
+          for (let step = 1; step < (MOVE_MODE === 1 ? 2 : 64); step++) {
+            const to = g.vertices[from].edges[d];
+            if (to < 0 || (g.vertices[to].mask & blocked)) break;
+            parents[to] = from; directions[to] = d; reachable.push(to); from = to;
+          }
+        }
+      } else {
+        const queue = [start];
+        for (let qi = 0; qi < queue.length; qi++) for (let d = 0; d < 4; d++) {
+          const to = g.vertices[queue[qi]].edges[d];
+          if (to < 0 || parents[to] >= 0 || (g.vertices[to].mask & blocked)) continue;
+          parents[to] = queue[qi]; directions[to] = d; queue.push(to); reachable.push(to);
+        }
+      }
+      for (const to of reachable) {
+        const p = g.vertices[to]; if (p.code < 0) continue;
+        const path = [];
+        for (let v = to; v !== start; v = parents[v]) path.push(SOLVER_DIRS[directions[v]].slice());
+        path.reverse();
+        const next = pieces.slice(), nextBoard = board.slice();
+        erasePieceFromBoard(nextBoard, pieces, i / 3, state.typeIndex, state.freeCellLookup);
+        next[i + 1] = p.x; next[i + 2] = p.y;
+        placePieceOnBoard(nextBoard, next, i / 3, state.typeIndex, state.freeCellLookup);
+        yield {pieces: next, board: nextBoard, move: {type: tt, fromX: pieces[i + 1], fromY: pieces[i + 2], path}};
+      }
+    }
+  }
+
+  // Store only packed vertex IDs and parent links. Types, geometry and fixed
+  // cells are immutable; coordinates and legal replay paths are reconstructed.
+  // Sorting within each type makes indistinguishable pieces canonical.
+  class SolverGraphStore extends SolverStore {
+    constructor(state, budget, astar) {
+      super(state, budget, astar);
+      this.state = state; this.topology = state.graph;
+      this.keyLength = this.topology.keyLength; this.pieceLength = 0;
+      this.blockSize = Math.max(1, Math.min(4096, Math.floor(262144 / (this.keyLength + 16))));
+      if (!budget.graphCharged) {
+        budget.bytes += this.topology.storageBytes; budget.graphCharged = true;
+        if (budget.bytes > budget.limit) throw new Error('__OOM__');
+      }
+    }
+    pack(board, pieces) {
+      const key = new Uint8Array(this.keyLength), repeated = [];
+      for (let i = 0; i < pieces.length; i += 3) {
+        const g = this.topology.byType[pieces[i]]; if (!g) continue;
+        const id = g.graph.at[pieces[i + 2] * COLS + pieces[i + 1]];
+        if (id === undefined || id < 0 || g.graph.vertices[id].code < 0) throw new Error('Invalid graph placement');
+        let value = g.graph.vertices[id].code;
+        if (g.count > 1) { (repeated[g.type] || (repeated[g.type] = [])).push(value); continue; }
+        let bit = g.offset, left = g.graph.bits;
+        while (left) { const n = Math.min(left, 8 - (bit & 7)); key[bit >> 3] |= (value & ((1 << n) - 1)) << (bit & 7); value >>>= n; bit += n; left -= n; }
+      }
+      for (const g of this.topology.groups) if (g.count > 1) {
+        const values = repeated[g.type]; if (!values || values.length !== g.count) throw new Error('Invalid graph piece count');
+        values.sort((a, b) => a - b);
+        let bit = g.offset;
+        for (const value of values) {
+          let v = value, left = g.graph.bits;
+          while (left) { const n = Math.min(left, 8 - (bit & 7)); key[bit >> 3] |= (v & ((1 << n) - 1)) << (bit & 7); v >>>= n; bit += n; left -= n; }
+        }
+      }
+      return key;
+    }
+    add(key, hash, pieces, parent, move, g, f) {
+      if (this.size >= 4294967294) throw new Error('Search storage index capacity reached');
+      const sh = this.prepareShard(hash), id = this.size, bi = Math.floor(id / this.blockSize), pos = id % this.blockSize;
+      let b = this.blocks[bi];
+      if (!b) {
+        const n = this.blockSize, a = (T, len) => this.budget.alloc(T, len);
+        b = {keys: a(Uint8Array, n * this.keyLength), parents: a(Uint32Array, n), costs: a(Uint32Array, n), scores: this.astar ? a(Float64Array, n) : null};
+        this.blocks[bi] = b;
+      }
+      b.keys.set(key, pos * this.keyLength); b.parents[pos] = parent < 0 ? 4294967295 : parent; b.costs[pos] = g; if (b.scores) b.scores[pos] = f;
+      let slot = hash & (sh.ids.length - 1);
+      while (sh.ids[slot] && !(sh.hashes[slot] === hash && this.equal(sh.ids[slot] - 1, key))) slot = (slot + 1) & (sh.ids.length - 1);
+      if (!sh.ids[slot]) sh.used++;
+      sh.ids[slot] = id + 1; sh.hashes[slot] = hash; this.size++; this.budget.states++;
+      return id;
+    }
+    node(id) {
+      const b = this.blocks[Math.floor(id / this.blockSize)], start = (id % this.blockSize) * this.keyLength;
+      const flat = Array.from(this.topology.fixed);
+      for (const g of this.topology.groups) {
+        let bit = g.offset;
+        for (let i = 0; i < g.count; i++) {
+          let value = 0, shift = 0, left = g.graph.bits;
+          while (left) { const n = Math.min(left, 8 - (bit & 7)); value |= ((b.keys[start + (bit >> 3)] >>> (bit & 7)) & ((1 << n) - 1)) << shift; bit += n; shift += n; left -= n; }
+          const p = g.graph.vertices[g.graph.kept[value]]; flat.push(g.type, p.x, p.y);
+        }
+      }
+      const pieces = Uint8Array.from(flat), s = this.state;
+      return {pieces, board: makeSolverBoard(pieces, s.typeIndex, s.freeCellLookup, s.FREE_CELLS)};
+    }
+    path(id) {
+      const out = [];
+      while (id >= 0) {
+        checkSolverDeadline();
+        const b = this.blocks[Math.floor(id / this.blockSize)], parent = b.parents[id % this.blockSize];
+        if (parent === 4294967295) break;
+        let found = false;
+        for (const next of compactSuccessors(this.node(parent), this.state, this.topology.groupShift)) {
+          if (this.equal(id, this.pack(next.board, next.pieces))) { out.push(next.move); found = true; break; }
+        }
+        if (!found) throw new Error('Cannot reconstruct graph search move');
+        id = parent;
+      }
+      return out.reverse();
+    }
+  }
+
   // The move generator and application order are shared with the original solver.
   function* compactSuccessors(node,state,groupShift) {
+    if (state.graph && !groupShift) { yield* graphSolverSuccessors(node, state); return; }
     const {typeIndex,freeCellLookup}=state, {board,pieces}=node;
     for(let pi=0;pi<pieces.length/3;pi++) {
       const tt=pieces[pi*3],info=typeIndex[tt];if(!info||info.fixed)continue;
@@ -3852,6 +4070,7 @@
     state.lattice = groupShift ? null : detectSolverLattice(state);
     checkSolverDeadline();
     state = groupShift ? state : compactSolverState(state);
+    state.graph = buildSolverPlacementGraph(state, groupShift);
     const astar=method==='astar';
     let goalRoots = !astar && !groupShift ? prepareSolverGoals(state) : null;
     if (goalRoots && state.lattice) goalRoots = goalRoots.filter(flat => {
@@ -3864,9 +4083,18 @@
     });
     const bidir = !!(goalRoots && goalRoots.length);
     const budget=new SolverBudget(MAX_RAM_GB_USER);
-    const forward=new SolverStore(state,budget,astar),backward=bidir?new SolverStore(state,budget,false):null;
-    const startBoard=makeSolverBoard(state.startFlat,state.typeIndex,state.freeCellLookup,state.FREE_CELLS);
-    const key=forward.pack(startBoard);forward.add(key,forward.hash(key),state.startFlat,-1,null,0,0);
+    const Store = state.graph ? SolverGraphStore : SolverStore;
+    let forward, backward;
+    try {
+      forward = new Store(state, budget, astar);
+      backward = bidir ? new Store(state, budget, false) : null;
+      const startBoard = makeSolverBoard(state.startFlat, state.typeIndex, state.freeCellLookup, state.FREE_CELLS);
+      const key = forward.pack(startBoard, state.startFlat);
+      forward.add(key, forward.hash(key), state.startFlat, -1, null, 0, 0);
+    } catch (err) {
+      if (onProgress) onProgress(0, 0, 0, budget.stats());
+      throw err;
+    }
     const targets=[];
     for(const p of state.targetPieces){const shape=SHAPES[p.shape];if(!shape)continue;const cells=[];for(const [dx,dy] of shape.cells){const fi=state.freeCellLookup[(p.y+dy)*COLS+p.x+dx];if(fi>=0)cells.push(fi);}targets.push({type:state.typeMap.get(solverPieceKey(p)),cells});}
     const goal=board=>targets.every(tgt=>tgt.cells.every(ci=>board[ci]===tgt.type));
@@ -3880,7 +4108,7 @@
     try {
       report(); // Announce the actual engine before the first expansion.
       if(bidir) for (const flat of goalRoots) {
-        const targetBoard=makeSolverBoard(flat,state.typeIndex,state.freeCellLookup,state.FREE_CELLS),k=backward.pack(targetBoard),hash=backward.hash(k);
+        const targetBoard=makeSolverBoard(flat,state.typeIndex,state.freeCellLookup,state.FREE_CELLS),k=backward.pack(targetBoard,flat),hash=backward.hash(k);
         if(forward.equal(0,k))return result([]);
         if(backward.find(k,hash)<0)backward.add(k,hash,flat,-1,null,0,0);
       }
@@ -3894,20 +4122,20 @@
           checkSolverDeadline();
           if(stopCheck&&stopCheck())return null;
           const id=astar?heap.pop():cursor,node=store.node(id);
-          if(astar){const k=store.pack(node.board);if(store.find(k,store.hash(k))!==id)continue;depth=store.cost(id);}
+          if(astar){const k=store.pack(node.board,node.pieces);if(store.find(k,store.hash(k))!==id)continue;depth=store.cost(id);}
           nodes++;
           if(!bidir&&goal(node.board))return result(store.path(id));
           for(const next of compactSuccessors(node,state,groupShift)) {
             checkSolverDeadline();
-            const k=store.pack(next.board),hash=store.hash(k),previous=store.find(k,hash),g=store.cost(id)+1;
+            const k=store.pack(next.board,next.pieces),hash=store.hash(k),previous=store.find(k,hash),g=store.cost(id)+1;
             if(previous<0||(astar&&g<store.cost(previous))) {
               const nextId=store.add(k,hash,next.pieces,id,next.move,g,astar?g+2.5*estimate(next.pieces):0);
               if(other){const meet=other.find(k,hash);if(meet>=0)return result(expandForward?store.path(nextId).concat(reverseSolverMoves(other.path(meet))):other.path(meet).concat(reverseSolverMoves(store.path(nextId))));}
               if(heap)heap.push(nextId);
             }
-            if(performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));lastYield=performance.now();if(stopCheck&&stopCheck())return null;}
+            if(performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));budget.updateLimit(MAX_RAM_GB_USER);checkSolverDeadline();lastYield=performance.now();if(stopCheck&&stopCheck())return null;}
           }
-          if(performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));lastYield=performance.now();}
+          if(performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));budget.updateLimit(MAX_RAM_GB_USER);checkSolverDeadline();lastYield=performance.now();}
         }
         if(!astar){if(expandForward){frontF=endF;endF=forward.size;}else{frontB=endB;endB=backward.size;}depth++;}
       }
@@ -3938,18 +4166,27 @@
     state.lattice = groupShift ? null : detectSolverLattice(state);
     checkSolverDeadline();
     state = groupShift ? state : compactSolverState(state);
+    state.graph = buildSolverPlacementGraph(state, groupShift);
     const identity=key+'|'+JSON.stringify([Array.from(state.typeMap),state.lattice]);
     const reused = !!reusableSearch && reusableSearch.identity === identity;
     if(!reused) {
-      const budget=new SolverBudget(MAX_RAM_GB_USER),store=new SolverStore(state,budget,false);
-      const board=makeSolverBoard(state.startFlat,state.typeIndex,state.freeCellLookup,state.FREE_CELLS),packed=store.pack(board);
-      store.add(packed,store.hash(packed),state.startFlat,-1,null,0,0);
-      reusableSearch={identity,budget,store,cursor:0};
+      const budget = new SolverBudget(MAX_RAM_GB_USER);
+      try {
+        const store = state.graph ? new SolverGraphStore(state, budget, false) : new SolverStore(state, budget, false);
+        const board = makeSolverBoard(state.startFlat, state.typeIndex, state.freeCellLookup, state.FREE_CELLS);
+        const packed = store.pack(board, state.startFlat);
+        store.add(packed, store.hash(packed), state.startFlat, -1, null, 0, 0);
+        reusableSearch = {identity, budget, store, cursor: 0};
+      } catch (err) {
+        if (onProgress) onProgress(0, 0, 0, budget.stats());
+        throw err;
+      }
     }
     const cache=reusableSearch,{store,budget}=cache,reusedStates=reused?store.size:0;
     const targets=[];
     for(const p of state.targetPieces){const shape=SHAPES[p.shape];if(!shape)continue;for(const[dx,dy]of shape.cells){const fi=state.freeCellLookup[(p.y+dy)*COLS+p.x+dx];if(fi>=0)targets.push([fi,state.typeMap.get(solverPieceKey(p))]);}}
     function matches(id) {
+      if (store.topology) { const board = store.node(id).board; return targets.every(([ci, type]) => board[ci] === type); }
       const block=store.blocks[Math.floor(id/store.blockSize)],start=(id%store.blockSize)*store.keyLength;
       for(const[ci,type]of targets){const v=store.nibble?(block.keys[start+(ci>>1)]>>((ci&1)*4))&15:block.keys[start+ci];if(v!==type)return false;}
       return true;
@@ -3959,23 +4196,24 @@
     const result=id=>{report();return {path:store.path(id),nodes,ms:performance.now()-t0,...budget.stats(),reusedStates};};
     try {
       report();
+      budget.updateLimit(MAX_RAM_GB_USER);
       // Insertion order is BFS order: the first match has minimum move count.
       for(let id=0;id<store.size;id++) {
         checkSolverDeadline();
         if(matches(id))return result(id);
-        if((id&8191)===0&&performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));lastYield=performance.now();}
+        if((id&8191)===0&&performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));budget.updateLimit(MAX_RAM_GB_USER);checkSolverDeadline();lastYield=performance.now();}
       }
       while(cache.cursor<store.size) {
         checkSolverDeadline();const id=cache.cursor,node=store.node(id);depth=store.cost(id);nodes++;
         if(matches(id))return result(id);
         for(const next of compactSuccessors(node,state,groupShift)) {
-          checkSolverDeadline();const packed=store.pack(next.board),hash=store.hash(packed);
+          checkSolverDeadline();const packed=store.pack(next.board,next.pieces),hash=store.hash(packed);
           if(store.find(packed,hash)<0)store.add(packed,hash,next.pieces,id,next.move,depth+1,0);
-          if(performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));lastYield=performance.now();}
+          if(performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));budget.updateLimit(MAX_RAM_GB_USER);checkSolverDeadline();lastYield=performance.now();}
         }
         // Advance only after complete expansion, so another target can resume safely.
         cache.cursor++;
-        if(performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));lastYield=performance.now();}
+        if(performance.now()-lastYield>40){report();await new Promise(r=>setTimeout(r,0));budget.updateLimit(MAX_RAM_GB_USER);checkSolverDeadline();lastYield=performance.now();}
       }
       report();return null;
     } catch(error) {report();reusableSearch=null;throw error;}
@@ -3994,7 +4232,7 @@
       "let SOLVER_DEADLINE_AT = 0;",
       checkSolverDeadline.toString(),
       "const MAX_NODES = " + MAX_NODES + ";",
-      "const MAX_RAM_GB_USER = " + MAX_RAM_GB_USER + ";",
+      "let MAX_RAM_GB_USER = " + MAX_RAM_GB_USER + ";",
       "const IS_FIREFOX = " + IS_FIREFOX + ";",
       "const SOLVER_DIRS = [[0,-1],[0,1],[-1,0],[1,0]];",
       "const KEY_CHARS = new Array(256);",
@@ -4022,6 +4260,9 @@
       SolverHeap.toString(),
       reverseSolverMoves.toString(),
       detectSolverLattice.toString(),
+      buildSolverPlacementGraph.toString(),
+      graphSolverSuccessors.toString(),
+      SolverGraphStore.toString(),
       compactSuccessors.toString(),
       canonicalSolverStart.toString(),
       solverReuseKey.toString(),
@@ -4036,12 +4277,16 @@
       solveBidirectional.toString(),
       "self.onmessage = async function (e) {",
       "  const msg = e.data;",
+      "  if (msg && msg.type === 'limits') {",
+      "    MAX_RAM_GB_USER = msg.ramGB; SOLVER_DEADLINE_AT = msg.deadlineAt; return;",
+      "  }",
       "  if (!msg || msg.type !== 'solve') return;",
       "  try {",
       "    COLS = msg.COLS; ROWS = msg.ROWS; CELLS = COLS * ROWS;",
       "    SHAPES = msg.SHAPES;",
       "    MOVE_MODE = msg.MOVE_MODE || 2;",
       "    GROUP_SHIFT = !!msg.GROUP_SHIFT;",
+      "    if (Number.isFinite(msg.ramGB)) MAX_RAM_GB_USER = msg.ramGB;",
       "    SOLVER_DEADLINE_AT = Number(msg.deadlineAt) || 0;",
       "    checkSolverDeadline();",
       // Preserve UI piece order: playback assigns numeric types in this same order.
@@ -4128,7 +4373,14 @@
     const isBatch = batch.active || batchMode;
     if (!isBatch) beginSolverTimeLimit(false);
     const token = solverTimeRunId;
-    try { checkSolverDeadline(); return await solveSearch(onProgress); }
+    try {
+      checkSolverDeadline();
+      const result = await solveSearch(onProgress);
+      if (result) {
+        reportSearchOutcome(t('doneWord') + ' ' + result.path.length + ' ' + t('movesWord'), false, result);
+      }
+      return result;
+    }
     finally { if (!isBatch && token === solverTimeRunId) endSolverTimeLimit(); }
   }
   function nextBatchSharesStart(key) {
@@ -4142,11 +4394,16 @@
     } catch (error) { return false; }
   }
   function solveSearch(onProgress) {
+    lastSearchStartedAt = Date.now(); lastSearchNodes = 0;
     lastSolverMemory = { states: 0, allocatedBytes: 0 };
     lastSolverSearchMode = null;
     const originalProgress = onProgress;
     onProgress = (nodes, depth, ms, stats) => {
-      if (stats) lastSolverMemory = stats;
+      lastSearchNodes = nodes;
+      if (stats) {
+        lastSolverMemory = stats;
+        if (batch.active) batch.peakRam = Math.max(batch.peakRam, solverMemoryEstimate(stats).total);
+      }
       if (stats && stats.searchMode && stats.searchMode !== lastSolverSearchMode) {
         lastSolverSearchMode = stats.searchMode;
         const icon = solverStatus.querySelector('.solver-search-mode');
@@ -4169,7 +4426,7 @@
     }
     return new Promise((resolve, reject) => {
       solverPending = { resolve, reject, onProgress, reuseKey: reuse ? key : null };
-      try { worker.postMessage({ type: 'solve', reuse, deadlineAt: SOLVER_DEADLINE_AT, method: effectiveSolverMethod(), COLS, ROWS, SHAPES, MOVE_MODE, GROUP_SHIFT, startPieces, targetPieces }); }
+      try { worker.postMessage({ type: 'solve', reuse, ramGB: MAX_RAM_GB_USER, deadlineAt: SOLVER_DEADLINE_AT, method: effectiveSolverMethod(), COLS, ROWS, SHAPES, MOVE_MODE, GROUP_SHIFT, startPieces, targetPieces }); }
       catch (err) { solverPending = null; terminateSolverWorker(); reject(err); }
     });
   }
@@ -4279,6 +4536,7 @@
     list: [],
     pos: 0,
     skipRequested: false,
+    attempted: new Set(), peakRam: 0,
     stats: { solved: 0, notFound: 0, oom: 0, error: 0 }
   };
   let batchMode = false;
@@ -4900,11 +5158,21 @@
       : 'Estimated process memory: storage ' + (mem.storage / GB_BYTES).toFixed(2) + ' GiB + observed overhead allowance ' + (mem.overhead / 1048576) + ' MiB. Not a browser memory measurement.';
     return ' · <span title="' + tooltip + '">≈' + (mem.total / GB_BYTES).toFixed(2) + ' GiB</span>';
   }
-  function oomMessageProgress(nodes) {
-    const memGB = solverMemoryEstimate().total / GB_BYTES;
-    return t('solverOomProgress', fmtNum(nodes), memGB.toFixed(2));
+  let lastSearchStartedAt = 0, lastSearchNodes = 0;
+  function reportSearchOutcome(reason, stopped, result) {
+    const nodes = result ? result.nodes : lastSearchNodes;
+    const ms = result ? result.ms : lastSearchStartedAt ? Date.now() - lastSearchStartedAt : 0;
+    const ram = (solverMemoryEstimate().total / GB_BYTES).toFixed(2);
+    const details = [t('statesWord') + ' ' + fmtNodes(nodes), t('timeLabel') + ' ' + formatSearchElapsed(ms),
+      (LANG === 'ru' ? 'ОЗУ ≈' : 'RAM ≈') + ram + ' GiB'];
+    if (batch.active && solverRunStartedAt) details.push((LANG === 'ru' ? 'Весь запуск: ' : 'Entire run: ') + formatSearchElapsed(Date.now() - solverRunStartedAt));
+    const text = reason + ' · ' + details.join(' · ');
+    const level = getLevelNameByGlobalIdx(currentLevelIndex);
+    console[stopped ? 'warn' : 'log']((batch.active ? '[AutoSolve] ' : '[Solver] ') + level + ' — ' + text,
+      {processed: nodes, storedStates: lastSolverMemory.states, allocatedBytes: lastSolverMemory.allocatedBytes,
+       elapsedMs: ms, ramLimitGiB: MAX_RAM_GB_USER, timeLimitMinutes: solverTimeMinutes});
+    return text;
   }
-
   function getLevelNameByGlobalIdx(idx) {
     const all = allLevels();
     if (idx < 0 || idx >= all.length) return '?';
@@ -4919,39 +5187,54 @@
     } catch (e) {}
   }
 
+  function batchSummary(reason = '') {
+    const unstarted = batch.list.length - batch.attempted.size;
+    const ram = batch.peakRam ? '≈' + (batch.peakRam / GB_BYTES).toFixed(2) + ' GiB' : '—';
+    const parts = [t('batchDone', batch.stats.solved, batch.attempted.size - batch.stats.solved,
+      formatSearchElapsed(Date.now() - solverRunStartedAt), ram)];
+    if (unstarted) parts.push(t('batchUnstarted', unstarted));
+    if (reason) parts.push(reason);
+    const message = parts.join(' · ');
+    console.log('[AutoSolve] ' + message);
+    return message;
+  }
+
   function cancelBatch() {
     if (!batch.active) return;
     if (!solverPending) terminateSolverWorker();
+    const message = batchSummary(t('batchStopped'));
     endSolverTimeLimit();
     batch.active = false;
     batch.skipRequested = false;
     console.log('[AutoSolve] Batch cancelled at ' + (batch.pos + 1) + '/' + batch.list.length + ' "' + getLevelNameByGlobalIdx(batch.list[batch.pos]) + '"');
     console.log('[AutoSolve] Batch stats: solved=' + batch.stats.solved + ', notFound=' + batch.stats.notFound + ', oom=' + batch.stats.oom + ', error=' + batch.stats.error);
     if (game.solving) {
-      stopSolving(t('batchStopped'));
+      stopSolving(message);
     } else {
-      solverStatus.textContent = t('batchStopped');
+      solverStatus.textContent = message;
       solverStatus.classList.remove('error');
       updateSolveBtn();
     }
-    showToast(t('batchStopped'));
+    showToast(message);
   }
 
   async function batchStep() {
     if (!batch.active) return;
     if (SOLVER_DEADLINE_AT && Date.now() >= SOLVER_DEADLINE_AT) { expireSolverTimeLimit(); return; }
     if (batch.pos >= batch.list.length) {
+      const message = batchSummary();
       terminateSolverWorker();
       endSolverTimeLimit();
       batch.active = false;
       console.log('[AutoSolve] Batch complete: solved=' + batch.stats.solved + ', notFound=' + batch.stats.notFound + ', oom=' + batch.stats.oom + ', error=' + batch.stats.error);
-      solverStatus.textContent = t('batchDone');
+      solverStatus.textContent = message;
       solverStatus.classList.remove('error');
       updateSolveBtn();
-      showToast(t('batchDone'));
+      showToast(message);
       return;
     }
     batch.skipRequested = false;
+    lastSearchStartedAt = 0; lastSearchNodes = 0; lastSolverMemory = {states: 0, allocatedBytes: 0};
     const globalIdx = batch.list[batch.pos];
     const lvlName = getLevelNameByGlobalIdx(globalIdx);
     console.log('[AutoSolve] ' + (batch.pos + 1) + '/' + batch.list.length + ' "' + lvlName + '" (globalIdx=' + globalIdx + ') starting...');
@@ -4963,7 +5246,7 @@
       appEl.style.transition = '';
     }
     try { selectLevel(globalIdx, false); }
-    catch (e) { console.error('[AutoSolve] selectLevel error:', e); batch.stats.error++; batch.pos++; batchStep(); return; }
+    catch (e) { console.error('[AutoSolve] selectLevel error:', e); batch.attempted.add(globalIdx); batch.stats.error++; batch.pos++; batchStep(); return; }
     solverStatus.textContent = t('batchProgress', batch.pos + 1, batch.list.length);
     solverStatus.classList.remove('error');
     updateSolveBtn();
@@ -4975,6 +5258,7 @@
       batchStep();
       return;
     }
+    batch.attempted.add(globalIdx);
     batchMode = true;
     try { await runSolver(); } catch (e) { console.error('[AutoSolve] runSolver error:', e); batch.stats.error++; }
     batchMode = false;
@@ -5005,6 +5289,7 @@
     }
     if (list.length === 0) { showToast(t('batchAllSolved'), true); return; }
     batch.active = true;
+    batch.attempted.clear(); batch.peakRam = 0;
     beginSolverTimeLimit(true);
     batch.list = list;
     batch.pos = 0;
@@ -5056,7 +5341,7 @@
     const lvlNameForLog = getLevelNameByGlobalIdx(currentLevelIndex);
     solverStatus.classList.remove('error');
     lastSolverSearchMode = null;
-    solverStatus.innerHTML = solverSearchPrefixHtml() + ' ' + t('statesWord') + ' <b>0</b> · ' + t('depthWord') + ' <b>0</b> · ' + t('timeLabel') + ' <b>0.00</b> ' + t('secondsAbbr') + solverRemainingTimeText(true);
+    solverStatus.innerHTML = solverSearchPrefixHtml() + ' ' + t('statesWord') + ' <b>0</b> · ' + t('depthWord') + ' <b>0</b> · ' + t('timeLabel') + ' <b>0:00</b>' + solverRemainingTimeText(true);
     game.solving = true; game.stopRequested = false;
     updateSolveBtn(); updateUndoBtn();
     await new Promise(r => setTimeout(r, 20));
@@ -5070,7 +5355,7 @@
       const now = performance.now();
       if (now - lastStatusUpdate < 1000) return;
       lastStatusUpdate = now;
-      solverStatus.innerHTML = solverSearchPrefixHtml() + ' ' + t('statesWord') + ' <b>' + fmtNodes(nodes) + '</b> · ' + t('depthWord') + ' <b>' + depth + '</b> · ' + t('timeLabel') + ' <b>' + fmtSolverTime(ms / 1000) + '</b>' + solverRemainingTimeText() + solverMemoryStatusHtml();
+      solverStatus.innerHTML = solverSearchPrefixHtml() + ' ' + t('statesWord') + ' <b>' + fmtNodes(nodes) + '</b> · ' + t('depthWord') + ' <b>' + depth + '</b> · ' + t('timeLabel') + ' <b>' + formatSearchElapsed(ms) + '</b>' + solverRemainingTimeText() + solverMemoryStatusHtml();
     };
     let result = null;
     try { result = await solve(onProgress); }
@@ -5081,12 +5366,9 @@
       const isOurOom = errMsg === '__OOM__';
       const isBrowserOom = !!(err && err.isBrowserOom) || /out of memory|allocation failed/i.test(errMsg);
       if (isOurOom || isBrowserOom) {
-        if (batchMode) {
-          console.error('[AutoSolve] OOM on "' + lvlNameForLog + '" — positions: ' + lastNodes + ', depth: ' + lastDepth + ', accounted storage: ' + (lastSolverMemory.allocatedBytes / GB_BYTES).toFixed(2) + ' GiB, RAM budget: ' + (MAX_RAM_GB_USER || 'unlimited'));
-          batch.stats.oom++;
-          game.solving = false; updateSolveBtn(); updateUndoBtn(); return;
-        }
-        stopSolving(oomMessageProgress(lastNodes), true); return;
+        const message = reportSearchOutcome(t('solverOomProgress'), true);
+        if (batchMode) batch.stats.oom++;
+        stopSolving(message, true); return;
       }
       console.error('[AutoSolve] Solver error on "' + lvlNameForLog + '":', err);
       if (batchMode) { batch.stats.error++; game.solving = false; updateSolveBtn(); updateUndoBtn(); return; }
@@ -5097,12 +5379,13 @@
     if (!game.solving) return;
     if (!result) {
       if (batchMode) {
-        console.warn('[AutoSolve] NOT FOUND "' + lvlNameForLog + '" — states: ' + lastNodes + ', depth: ' + lastDepth + ', time: ' + (lastMs / 1000).toFixed(2) + 's');
+        console.warn('[AutoSolve] NOT FOUND "' + lvlNameForLog + '" — states: ' + lastNodes + ', depth: ' + lastDepth + ', time: ' + formatSearchElapsed(lastMs));
         batch.stats.notFound++;
         game.solving = false; updateSolveBtn(); updateUndoBtn(); return;
       }
       stopSolving(t('solverNotFound'), true); return;
     }
+    if (batchMode) batch.stats.solved++;
     if (shouldSaveStep() && result.path.length > 0) {
       const steps = result.path.length;
       const level = allLevels()[currentLevelIndex];
@@ -5121,23 +5404,20 @@
       } catch (error) { console.error('[Records] Save failed', error); }
       if (solveSessionId !== mySessionId) return;
       if (!saved) {
+        const message = batch.active ? batchSummary(t('recordSaveFailed')) : t('recordSaveFailed');
         terminateSolverWorker();
         endSolverTimeLimit();
         batch.active = false;
         game.solving = false; game.stopRequested = false;
-        solverStatus.textContent = t('recordSaveFailed'); solverStatus.classList.add('error');
-        updateSolveBtn(); updateUndoBtn(); showToast(t('recordSaveFailed'), true);
+        solverStatus.textContent = message; solverStatus.classList.add('error');
+        updateSolveBtn(); updateUndoBtn(); showToast(message, true);
         return;
       }
       game.step = steps; renderLevelHint();
       if (!game.solving) return;
       if (!batchMode) showToast(t('levelSavedN', steps));
     }
-    solverStatus.innerHTML = t('doneWord') + ' <b>' + result.path.length + '</b> ' + t('movesWord') + ' · ' + t('nodesWord') + ' <b>' + fmtNodes(result.nodes) + '</b> · ' + t('timeLabel') + ' <b>' + fmtSolverTime(result.ms / 1000) + '</b>';
-    if (batchMode) {
-      console.log('[AutoSolve] SOLVED "' + lvlNameForLog + '" — moves: ' + result.path.length + ', states: ' + result.nodes + ', time: ' + (result.ms / 1000).toFixed(2) + 's');
-      batch.stats.solved++;
-    }
+    solverStatus.innerHTML = t('doneWord') + ' <b>' + result.path.length + '</b> ' + t('movesWord') + ' · ' + t('nodesWord') + ' <b>' + fmtNodes(result.nodes) + '</b> · ' + t('timeLabel') + ' <b>' + formatSearchElapsed(result.ms) + '</b>' + solverMemoryStatusHtml();
     if (batchMode) {
       game.solving = false; game.stopRequested = false;
       updateSolveBtn(); updateUndoBtn();
@@ -5166,7 +5446,7 @@
       const now = performance.now();
       if (now - lastStatusUpdate < 1000) return;
       lastStatusUpdate = now;
-      solverStatus.innerHTML = solverSearchPrefixHtml('analyzingPrefix') + ' ' + t('timeLabel') + ' <b>' + fmtSolverTime(ms / 1000) + '</b>' + solverRemainingTimeText() + solverMemoryStatusHtml();
+      solverStatus.innerHTML = solverSearchPrefixHtml('analyzingPrefix') + ' ' + t('timeLabel') + ' <b>' + formatSearchElapsed(ms) + '</b>' + solverRemainingTimeText() + solverMemoryStatusHtml();
     };
     let result = null;
     try { result = await solve(onProgress); }
@@ -5176,7 +5456,7 @@
       if (errMsg === '__TIMEOUT__') { expireSolverTimeLimit(); return; }
       const isOurOom = errMsg === '__OOM__';
       const isBrowserOom = !!(err && err.isBrowserOom) || /out of memory|allocation failed/i.test(errMsg);
-      if (isOurOom || isBrowserOom) { stopSolving(oomMessageProgress(lastNodes), true); return; }
+      if (isOurOom || isBrowserOom) { stopSolving(reportSearchOutcome(t('solverOomProgress'), true), true); return; }
       console.error(err);
       stopSolving(t('solverError', err.message), true);
       return;
@@ -7952,7 +8232,7 @@
         catch (error) { level.text = previousText; throw error; }
       }
     } catch (error) { console.error('[Records] Manual save failed', error); }
-    if (!saved) { showToast(t('recordSaveFailed'), true); return false; }
+    if (!saved) { showToast(message, true); return false; }
     if (editor.sourceLevelRef !== ref) return true;
     editor.levelStep = steps;
     if (currentLevelIndex === ref.index) { game.step = steps; renderLevelHint(); }
@@ -8445,7 +8725,7 @@
         catch (error) { level.text = previous; throw error; }
       }
     } catch (error) { console.error('[Records] Gallery manual save failed', error); }
-    if (!saved) { showToast(t('recordSaveFailed'), true); return false; }
+    if (!saved) { showToast(message, true); return false; }
     if (allLevels()[currentLevelIndex] === level) { game.step = steps; renderLevelHint(); }
     buildLevelSelect();
     // Refresh text in place: preserve scrolling, expanded stacks and rendered previews.
@@ -9143,9 +9423,11 @@
   function applySolverTimeInput() {
     const minutes = parseSolverTime(solverTimeInput.value);
     if (minutes === null) { showToast(t('solverTimeInvalid'), true); solverTimeInput.value = formatSolverTime(solverTimeMinutes); return; }
+    const changed = solverTimeMinutes !== minutes;
     solverTimeMinutes = minutes;
     safeSetItem(SOLVER_TIME_KEY, String(minutes));
     solverTimeInput.value = formatSolverTime(minutes);
+    if (changed) refreshSolverDeadline();
   }
   solverTimeInput.addEventListener('change', applySolverTimeInput);
   solverTimeInput.addEventListener('blur', applySolverTimeInput);
@@ -9191,7 +9473,9 @@
       const raw = (maxRamInput.value || '').replace(',', '.').replace(/[^\d.]/g, '');
       let gb = parseFloat(raw);
       if (!isFinite(gb) || gb < 0 || (gb > 0 && gb < 0.03)) gb = MAX_RAM_GB_USER;
+      const previous = MAX_RAM_GB_USER;
       saveRamSetting(gb);
+      if (previous !== MAX_RAM_GB_USER) sendSolverLimits();
       syncMemoryInputs();
       updateMaxStatesHint();
       showToast(MAX_RAM_GB_USER === 0 ? t('ramUnlimited') : t(IS_FIREFOX ? 'maxStatesHintFirefox' : 'maxStatesHintFull', MAX_RAM_GB_USER, fmtNum(MAX_NODES_USER)));
