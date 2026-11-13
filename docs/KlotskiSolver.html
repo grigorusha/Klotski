@@ -30,6 +30,45 @@
   }
   .app { position: relative; width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; transition: width .2s; }
   .app.editing { max-width: 780px; }
+  .back-btn.editor-gallery-btn { left: auto; right: 12px; }
+  .app.editing .app-header { padding-inline: 90px; grid-template-columns: minmax(0,1fr); }
+  .app.editing .app-header .title { grid-column: 1; grid-row: 1; overflow: hidden; text-overflow: ellipsis; }
+  .app.editing .app-header > span { display: none; }
+  .gallery-hotkeys { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; margin: 12px 0 8px; padding: 12px; border: 1px solid rgba(255,255,255,.15); border-radius: 10px; color: var(--sub); }
+  .gallery-hotkeys kbd { padding: 2px 5px; border: 1px solid rgba(255,255,255,.24); border-radius: 4px; color: var(--gold); }
+  .print-heading { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 8px; }
+  .print-heading .analyzer-title { grid-column: 2; }
+  .controls.print-download-bar { justify-content: flex-end; }
+  .controls.print-download-bar button { flex: 0 1 auto; padding-inline: 10px; white-space: normal; }
+  .print-preview-stack > h3 { text-align: center; }
+  .print-preview-tools.print-layout-selector { justify-content: center; flex-wrap: nowrap; }
+  .print-layout-selector label { min-width: 0; text-align: center; color: var(--sub); font-size: 14px; font-weight: 700; }
+  .print-layout-selector select { min-width: 0; max-width: 58%; }
+  .controls.print-3d-actions { flex-wrap: wrap; height: auto; }
+  .controls.print-3d-actions button { flex: 1 1 auto; white-space: normal; }
+  .print-preview-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+  #print3D { display: block; width: 100%; height: clamp(240px,52vw,420px); background: #1b222e; border: 1px solid rgba(255,255,255,.15); border-radius: 8px; touch-action: none; cursor: grab; }
+  .print-preview-layout { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(0,1fr); gap: 16px; align-items: start; }
+  .print-controls-column { display: grid; gap: 10px; min-width: 0; }
+  @media (max-width: 540px) {
+    .print-preview-layout { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+    .print-controls-column .print-grid { grid-template-columns: minmax(0,1fr); }
+    .print-preview-tools select { max-width: 100%; }
+  }
+  .print-preview-stack { display: grid; gap: 10px; min-width: 0; }
+  .print-bed-note { font-size: 12px; line-height: 1.35; color: var(--sub); }
+  #print3D:active { cursor: grabbing; }
+  .app.printing { max-width: 860px; }
+  .print-view { display: grid; gap: 12px; }
+  .print-view h3 { margin: 0; color: var(--sub); font-size: 14px; }
+  .print-view p { margin: 0; }
+  #printFields { display: grid; grid-template-columns: minmax(0,1fr); gap: 10px; border: 0; padding: 0; margin: 0; min-width: 0; }
+  .print-settings { display: grid; align-content: start; gap: 10px; padding: 12px; border: 1px solid rgba(255,255,255,.15); border-radius: 10px; }
+  .print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .print-grid label { display: grid; gap: 4px; align-content: end; min-width: 0; font-size: 12px; color: var(--sub); }
+  .print-grid .settings-input { box-sizing: border-box; width: 100%; min-width: 0; }
+  #printPreview, #print3D { width: 100%; min-width: 0; box-sizing: border-box; }
+  #printPreview { display: block; height: auto; border: 1px solid rgba(255,255,255,.15); border-radius: 8px; }
   .app.analyzing { max-width: 900px; }
   .app-version { color: #fff; font-weight: 400; letter-spacing: normal; }
   .analyzer-view { overflow-anchor: none; display: flex; flex-direction: column; gap: 16px; }
@@ -679,8 +718,6 @@
   .gallery-card:active { transform: translateY(0); }
   .gallery-card .mini-board { width: 100%; border-radius: 8px; box-shadow: inset 0 0 0 2px #707070, inset 0 0 15px rgba(0,0,0,.18); }
   .batch-pick, .gallery-unsolved-check { width: 16px; height: 16px; accent-color: var(--gold); cursor: pointer; }
-  .gallery-unsolved-check.counted-only { appearance: none; -webkit-appearance: none; margin: 3px 3px 3px 4px; flex-shrink: 0; border: 1px solid var(--gold); border-radius: 3px; background: linear-gradient(#44391e, #292313); position: relative; }
-  .gallery-unsolved-check.counted-only::after { content: "+"; position: absolute; inset: 0; display: grid; place-items: center; font: bold 16px/1 Arial, sans-serif; color: var(--gold); }
   .gallery-unsolved-check:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   .batch-pick { display: none; position: absolute; left: 7px; top: 6px; }
   .batch-picking .batch-pick { display: block; }
@@ -851,6 +888,7 @@
 
 <div class="app" id="app">
   <button id="backBtn" class="back-btn" hidden><span class="btn-ico">←</span><span class="btn-lbl" data-ruseng="back">Назад</span></button>
+  <button id="editorGalleryBtn" class="back-btn level-gallery editor-gallery-btn" type="button" hidden><span class="btn-ico">▦</span><span class="btn-lbl" data-ruseng="gallery">Галерея</span></button>
   <button id="scrollTopBtn" class="back-btn scroll-top-btn" type="button" hidden><span class="btn-ico">↑</span><span class="btn-lbl" data-ruseng="scrollTop">Наверх</span></button>
 
   <div class="app-header">
@@ -973,7 +1011,7 @@
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v3.47)</span></div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v3.60)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -1053,6 +1091,7 @@
       <button id="applyEditBtn" class="primary" data-ruseng-title="hotkeyRun" title="Запустить (F9)"><span class="btn-ico">▶</span><span class="btn-lbl" data-ruseng="run">Запустить</span></button>
       <button id="cancelEditBtn" data-ruseng-title="hotkeyCancel" title="Отмена (Esc)"><span class="btn-ico">✕</span><span class="btn-lbl" data-ruseng="cancel">Отмена</span></button>
       <button id="analyzerBtn" class="hint-btn" type="button"><span class="btn-ico">🔬</span><span class="btn-lbl" data-ruseng="analyzerBtn">Анализатор</span></button>
+      <button id="printBtn" class="danger" type="button"><span class="btn-ico">▣</span><span class="btn-lbl" data-ruseng="printBtn">Печать</span></button>
     </div>
 
     <div class="level-text-block">
@@ -1109,6 +1148,185 @@
       </div>
     </div>
   </div>
+
+  <section id="printView" class="print-view" hidden>
+    <div class="print-heading">
+      <h2 class="analyzer-title" data-ruseng="printBtn">Печать</h2>
+      <div class="controls print-download-bar">
+        <button type="button" id="printDownload" class="primary" data-ruseng="printDownload">Скачать STL</button>
+      </div>
+    </div>
+    <div class="print-preview-layout">
+      <div class="print-preview-stack">
+        <div class="print-preview-tools print-layout-selector">
+          <label for="printPreviewMode" data-ruseng="printPreviewMode">Вид раскладки</label>
+          <select id="printPreviewMode" class="settings-input">
+            <option value="bed" data-ruseng="printOnBed">На столе</option>
+            <option value="assembled" data-ruseng="printAssembled">В коробочке</option>
+          </select>
+        </div>
+        <canvas id="printPreview" hidden></canvas>
+        <h3 id="print3DTitle" data-ruseng="printStlPreview">Просмотр STL в 3D</h3>
+        <div class="controls print-3d-actions">
+          <button type="button" id="printShow3D" data-ruseng="printShow3D">Посмотреть в 3Д</button>
+          <button type="button" id="printReset3D" data-ruseng="printReset3D" disabled>Сбросить вид</button>
+        </div>
+        <canvas id="print3D" tabindex="0" aria-labelledby="print3DTitle"></canvas>
+        <p class="settings-hint" data-ruseng="print3DHelp">Левая кнопка — поворот, правая — сдвиг, колесо — масштаб.</p>
+      </div>
+      <div class="print-controls-column">
+        <form id="printForm"><fieldset id="printFields"><section class="print-settings">
+          <h3>
+          <span data-ruseng="printBasic">Размеры раскладки</span>
+          </h3>
+          <p class="print-bed-note" data-ruseng="printBedNote">Ширина доступной площади на печатном столе. Глубина занятой площади рассчитывается по раскладке деталей.</p>
+          <div class="print-grid">
+          <label>
+          <span data-ruseng="print_layoutWidth">Ширина раскладки, мм</span>
+          <input class="settings-input" name="layoutWidth" type="number" value="220" min="50" max="2000" step="1" required>
+          </label>
+          <label>
+          <span data-ruseng="printDetail">Шаг сетки, мм</span>
+          <select class="settings-input" name="resolution">
+          <option value="0.1">0.10</option>
+          <option value="0.2">0.20</option>
+          <option value="0.3">0.30</option>
+          <option value="0.4" selected>0.40</option>
+          <option value="0.5">0.50</option>
+          <option value="0.6">0.60</option>
+            </select>
+          </label>
+          </div>
+          </section>
+          <section class="print-settings">
+          <h3>
+          <span data-ruseng="printBox">Коробочка</span>
+          </h3>
+          <div class="print-grid">
+          <label>
+          <span data-ruseng="print_floorThickness">Толщина донышка, мм</span>
+          <input class="settings-input" name="floorThickness" type="number" value="2" min="1" max="10" step="0.1" required>
+          </label>
+          <label>
+          <span data-ruseng="print_wallThickness">Толщина стенки, мм</span>
+          <input class="settings-input" name="wallThickness" type="number" value="2" min="1.2" max="10" step="0.1" required>
+          </label>
+          <label>
+          <span data-ruseng="print_wallHeight">Высота борта над донышком, мм</span>
+          <input class="settings-input" name="wallHeight" type="number" value="5" min="2" max="15" step="0.1" required>
+          </label>
+          <label>
+          <span data-ruseng="print_boxGap">Запас у каждой стенки, мм</span>
+          <input class="settings-input" name="boxGap" type="number" value="0.1" min="0" max="2" step="0.05" required>
+          </label>
+          <label>
+          <span data-ruseng="print_boxRadius">Внешнее скругление углов, мм</span>
+          <input class="settings-input" name="boxRadius" type="number" value="2" min="0" max="2" step="0.1" required>
+          </label>
+          <label>
+          <span data-ruseng="print_boxTop">Верхняя фаска, мм</span>
+          <input class="settings-input" name="boxTop" type="number" value="0.5" min="0" max="0.8" step="0.05" required>
+          </label>
+          <label>
+          <span data-ruseng="print_boxBottom">Нижняя фаска, мм</span>
+          <input class="settings-input" name="boxBottom" type="number" value="0.5" min="0" max="0.8" step="0.05" required>
+          </label>
+          </div>
+          </section>
+          <section class="print-settings">
+          <h3>
+          <span data-ruseng="printTiles">Плитки</span>
+          </h3>
+          <div class="print-grid">
+          <label>
+          <span data-ruseng="print_pitch">Сторона клетки, мм</span>
+          <input class="settings-input" name="pitch" type="number" value="10" min="8" max="60" step="0.5" required>
+          </label>
+          <label>
+          <span data-ruseng="print_tileThickness">Толщина плитки, мм</span>
+          <input class="settings-input" name="tileThickness" type="number" value="5" min="1" max="30" step="0.1" required>
+          </label>
+          <label>
+          <span data-ruseng="print_tileGap">Зазор между плитками, мм</span>
+          <input class="settings-input" name="tileGap" type="number" value="0.1" min="0" max="2" step="0.05" required>
+          </label>
+          <label>
+          <span data-ruseng="print_tileRadius">Боковое скругление углов, мм</span>
+          <input class="settings-input" name="tileRadius" type="number" value="2" min="0" max="3" step="0.1" required>
+          </label>
+          <label>
+          <span data-ruseng="print_tileTop">Верхняя фаска, мм</span>
+          <input class="settings-input" name="tileTop" type="number" value="0.5" min="0" max="1.25" step="0.05" required>
+          </label>
+          <label>
+          <span data-ruseng="print_tileBottom">Нижняя фаска, мм</span>
+          <input class="settings-input" name="tileBottom" type="number" value="0.5" min="0" max="1.25" step="0.05" required>
+          </label>
+          </div>
+          </section>
+          <section class="print-settings">
+          <h3>
+          <span data-ruseng="printMarks">Надписи</span>
+          </h3>
+          <div class="print-grid">
+          <label>
+          <span data-ruseng="printAuthor">Автор на верхнем борту</span>
+          <input type="text" class="settings-input" name="author" maxlength="64">
+          </label>
+          <label>
+          <span data-ruseng="print_authorText">Рельеф имени автора</span>
+          <select class="settings-input" name="authorText">
+          <option value="off" data-ruseng="print_off">Нет</option>
+          <option value="raised" data-ruseng="print_raised" selected>Выпуклая</option>
+          <option value="recessed" data-ruseng="print_recessed">Углублённая</option>
+          </select>
+          </label>
+          <label>
+          <span data-ruseng="printTitle">Название на нижнем борту</span>
+          <input type="text" class="settings-input" name="title" maxlength="64">
+          </label>
+          <label>
+          <span data-ruseng="print_titleText">Рельеф названия</span>
+          <select class="settings-input" name="titleText">
+          <option value="off" data-ruseng="print_off">Нет</option>
+          <option value="raised" data-ruseng="print_raised">Выпуклая</option>
+          <option value="recessed" data-ruseng="print_recessed" selected>Углублённая</option>
+          </select>
+          </label>
+          <label>
+          <span data-ruseng="print_tileText">Рельеф меток плиток</span>
+          <select class="settings-input" name="tileText">
+          <option value="off" data-ruseng="print_off">Нет</option>
+          <option value="raised" data-ruseng="print_raised">Выпуклая</option>
+          <option value="recessed" data-ruseng="print_recessed" selected>Углублённая</option>
+          </select>
+          </label>
+          <label>
+          <span data-ruseng="printFont">Шрифт надписей</span>
+          <select class="settings-input" name="font">
+            <option value="Arial">Arial</option><option value="Verdana">Verdana</option>
+            <option value="Georgia">Georgia</option><option value="Times New Roman">Times New Roman</option>
+            <option value="Courier New">Courier New</option><option value="Trebuchet MS">Trebuchet MS</option>
+          </select>
+          </label>
+          <label>
+          <span data-ruseng="print_fontSize">Размер шрифта на коробочке, мм (0 — авто)</span>
+          <input class="settings-input" name="fontSize" type="number" value="0" min="0" max="40" step="0.1" required>
+          </label>
+          <label>
+          <span data-ruseng="print_letterSpacing">Межбуквенный интервал, мм</span>
+          <input class="settings-input" name="letterSpacing" type="number" value="0.3" min="0" max="5" step="0.05" required>
+          </label>
+          <label>
+          <span data-ruseng="print_depth">Высота или глубина рельефа, мм</span>
+          <input class="settings-input" name="depth" type="number" value="0.65" min="0.3" max="1" step="0.05" required>
+          </label>
+          </div>
+          </section></fieldset></form>
+        <p id="printStatus" class="settings-hint" role="status"></p>
+      </div>
+    </div>
+  </section>
 
   <div class="analyzer-view" id="analyzerView" hidden>
     <h2 class="analyzer-title" data-ruseng="anaTitle">Анализ головоломки</h2>
@@ -1293,7 +1511,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '3.47';
+  const APP_VERSION = '3.60';
   const DISK_HELPER_VERSION = '1.01';
   let diskLogTarget=null, diskLogBusy=false, diskLogWarned=false;
   const diskLogQueue=[];
@@ -1486,6 +1704,56 @@
       anaReverseDistance: "Доски выбраны в обратном порядке. Расстояние с групповым сдвигом нужно проверить решателем.",
       anaPathHint: "Пошаговый просмотр доступен после поиска.",
       analyzerBtn: "Анализатор",
+      galleryF4: "Поиск дубликатов",
+      galleryF8: "Автопоиск решений",
+      galleryF8Unavailable: "Автопоиск решений доступен на русскоязычной системе",
+      galleryPasteSolution: "Вставить решение",
+      printFont: "Шрифт надписей",
+      print_floorThickness: "Толщина донышка, мм",
+      print_wallThickness: "Толщина стенки, мм",
+      print_fontSize: "Размер шрифта на коробочке, мм (0 — авто)",
+      print_letterSpacing: "Межбуквенный интервал, мм",
+      printBedNote: "Ширина доступной площади на печатном столе. Глубина занятой площади рассчитывается по раскладке деталей.",
+
+      printOnBed: "На столе",
+      printAssembled: "В коробочке",
+      printPreviewMode: "Вид раскладки",
+      printStlPreview: "Просмотр STL в 3D",
+      printShow3D: "Посмотреть в 3Д",
+      printHide3D: "Отключить 3Д",
+      printReset3D: "Сбросить вид",
+      print3DHelp: "Левая кнопка — поворот, правая — сдвиг, колесо — масштаб.",
+
+      printBtn: "Печать",
+      printBasic: "Размеры раскладки",
+      printBox: "Коробочка",
+      printTiles: "Плитки",
+      printMarks: "Надписи",
+      print_pitch: "Сторона клетки, мм",
+      print_tileThickness: "Толщина плитки, мм",
+      print_layoutWidth: "Ширина раскладки, мм",
+      print_wallHeight: "Высота борта над донышком, мм",
+      printDetail: "Шаг сетки, мм",
+      print_boxGap: "Запас у каждой стенки, мм",
+      print_boxRadius: "Внешнее скругление углов, мм",
+      print_boxTop: "Верхняя фаска, мм",
+      print_boxBottom: "Нижняя фаска, мм",
+      print_tileGap: "Зазор между плитками, мм",
+      print_tileRadius: "Боковое скругление углов, мм",
+      print_tileTop: "Верхняя фаска, мм",
+      print_tileBottom: "Нижняя фаска, мм",
+      printAuthor: "Автор на верхнем борту",
+      print_authorText: "Рельеф имени автора",
+      print_off: "Нет",
+      print_raised: "Выпуклая",
+      print_recessed: "Углублённая",
+      printTitle: "Название на нижнем борту",
+      print_titleText: "Рельеф названия",
+      print_tileText: "Рельеф меток плиток",
+      print_depth: "Высота или глубина рельефа, мм",
+      printDownload: "Скачать STL",
+      printLayout: "Раскладка деталей на столе",
+
       anaTitle: "Анализ головоломки",
       anaAuto: "Авто",
       anaSearch: "Поиск",
@@ -1708,7 +1976,7 @@
       tocTitle: 'Оглавление',
       galleryNoLevels: 'Уровни не найдены',
       previewStart: 'Старт', previewTarget: 'Цель',
-      onlyUnsolved: 'только нерешенные', countedUnsolved: 'Есть число ходов, нет решения', gallerySteps: 'Ходов: %1',
+      onlyUnsolved: 'только нерешенные', gallerySteps: 'Ходов: %1',
       myLevels: 'Мои уровни',
       parserGoalHoleMismatch: 'Отверстие в цели не совпадает с доской: столбец %1, строка %2.',
       parserGoalHoleTile: 'Целевая плитка попадает в отверстие: столбец %1, строка %2.',
@@ -1857,6 +2125,56 @@
       anaReverseDistance: "The boards are selected in reverse order. Check the distance with group shift using the solver.",
       anaPathHint: "Step through the path after running a search.",
       analyzerBtn: "Analyzer",
+      galleryF4: "Find duplicates",
+      galleryF8: "Auto-solve",
+      galleryF8Unavailable: "Auto-solve is available on Russian-language systems",
+      galleryPasteSolution: "Paste solution",
+      printFont: "Lettering font",
+      print_floorThickness: "Floor thickness, mm",
+      print_wallThickness: "Wall thickness, mm",
+      print_fontSize: "Tray font size, mm (0 for automatic)",
+      print_letterSpacing: "Letter spacing, mm",
+      printBedNote: "Enter the available print bed width. The layout determines the occupied depth.",
+
+      printOnBed: "On the print bed",
+      printAssembled: "In the tray",
+      printPreviewMode: "Layout view",
+      printStlPreview: "3D STL preview",
+      printShow3D: "View in 3D",
+      printHide3D: "Disable 3D",
+      printReset3D: "Reset view",
+      print3DHelp: "Left-drag to rotate, right-drag to pan, scroll to zoom.",
+
+      printBtn: "Print",
+      printBasic: "Layout dimensions",
+      printBox: "Tray",
+      printTiles: "Tiles",
+      printMarks: "Lettering",
+      print_pitch: "Cell size, mm",
+      print_tileThickness: "Tile thickness, mm",
+      print_layoutWidth: "Layout width, mm",
+      print_wallHeight: "Rim height above floor, mm",
+      printDetail: "Mesh spacing, mm",
+      print_boxGap: "Clearance at each wall, mm",
+      print_boxRadius: "Outer corner radius, mm",
+      print_boxTop: "Top chamfer, mm",
+      print_boxBottom: "Bottom chamfer, mm",
+      print_tileGap: "Gap between tiles, mm",
+      print_tileRadius: "Side corner radius, mm",
+      print_tileTop: "Top chamfer, mm",
+      print_tileBottom: "Bottom chamfer, mm",
+      printAuthor: "Author on upper rim",
+      print_authorText: "Author relief",
+      print_off: "Off",
+      print_raised: "Raised",
+      print_recessed: "Recessed",
+      printTitle: "Title on lower rim",
+      print_titleText: "Title relief",
+      print_tileText: "Tile marking relief",
+      print_depth: "Relief height or depth, mm",
+      printDownload: "Download STL",
+      printLayout: "Parts on the print bed",
+
       anaTitle: "Puzzle analysis",
       anaAuto: "Auto",
       anaSearch: "Search",
@@ -2078,7 +2396,7 @@
       tocTitle: 'Contents',
       galleryNoLevels: 'No levels found',
       previewStart: 'Start', previewTarget: 'Target',
-      onlyUnsolved: 'Unsolved only', countedUnsolved: 'Move count set, no solution', gallerySteps: 'Moves: %1',
+      onlyUnsolved: 'Unsolved only', gallerySteps: 'Moves: %1',
       myLevels: 'My levels',
       parserGoalHoleMismatch: 'Goal hole does not match the board: column %1, row %2.',
       parserGoalHoleTile: 'A target tile overlaps a hole: column %1, row %2.',
@@ -2336,15 +2654,17 @@
     if (solverTimeTimer !== null) clearTimeout(solverTimeTimer);
     solverTimeTimer = null; SOLVER_DEADLINE_AT = 0; solverRunStartedAt = 0; solverTimeRunId++;
   }
-  function expireSolverTimeLimit() {
+  function expireSolverTimeLimit(fromSearch = false) {
     if (searchPaused) return;
     if(restoringSearch) {solverTimeTimer=setTimeout(expireSolverTimeLimit,1000);return;}
-    if(solverPending && effectiveSolverMethod()==='bfs' && solverTimeIsBatch) return;
+    if (!fromSearch && solverTimeIsBatch && batchMode && game.solving) return;
     const wasBatch = solverTimeIsBatch;
     const reason = t(wasBatch ? 'batchTimeExpired' : 'solverTimeExpired');
     const message = reportSearchOutcome(reason, true);
     if (wasBatch) {
       const summary = batchSummary(reason);
+      const levels = allLevels();
+      stoppedBatchLevels = new Set(batch.list.slice(batch.pos).map(index => levels[index]));
       batch.active = false; batch.skipRequested = false;
       stopSolving(summary + (game.solving ? '\n' + message : ''), true);
       showToast(summary);
@@ -3939,13 +4259,17 @@
   // Thus any original single-piece path maps to at most one path/line move;
   // retained moves are still generated on the original board. This preserves
   // shortest solutions in line/path modes. Cell-count and group moves opt out.
-  function detectSolverLattice(state) {
+  function solverGridAllows(grid,x,y) {
+    if(!grid) return true;
+    return ['x','y'].every(axis=>{const a=grid[axis],v=axis==='x'?x:y;return !a||(a.values?a.values.includes(v):(v-a.phase)%a.step===0);});
+  }
+  function detectSolverLattice(state, flexible = false) {
     if (MOVE_MODE === 1) return null;
     const groups = [], byShape = new Map();
     for (const p of state.startPieces) {
       const type = state.typeMap.get(solverPieceKey(p)), info = state.typeIndex[type];
       if (!info || info.fixed) continue;
-      const key = JSON.stringify([info.w, info.h, info.cells, info.dmove]);
+      const key = JSON.stringify([info.w, info.h, info.cells, info.dmove,flexible?type:null]);
       let g = byShape.get(key);
       if (!g) { g = { info, types: new Set(), anchors: [], count: 0, placements: [], at: new Map() }; byShape.set(key, g); groups.push(g); }
       g.types.add(type); g.anchors.push(p); g.count++;
@@ -3982,11 +4306,15 @@
     for (const axis of ['x', 'y']) {
       const extent = axis === 'x' ? COLS : ROWS;
       const configs = groups.map(g => {
-        const phase = g.anchors[0][axis];
+        const phase = flexible ? 0 : g.anchors[0][axis];
         let d = 0; for (const p of g.anchors) d = gcd(d, Math.abs(p[axis] - phase));
-        return { phase, max: d || (axis === 'x' ? g.info.w : g.info.h) };
+        return { phase, max: flexible ? Math.max(d,4,axis === 'x' ? g.info.w : g.info.h) : d || (axis === 'x' ? g.info.w : g.info.h) };
       });
-      function certify(steps) {
+      function retained(gi,step) {
+        const g=groups[gi],phase=configs[gi].phase,limit=extent-(axis==='x'?g.info.w:g.info.h);
+        return Array.from({length:limit+1},(_,v)=>v).filter(v=>(v-phase)%step===0||g.anchors.some(p=>p[axis]===v));
+      }
+      function certify(steps, balanced = false, away = false) {
         const mapped = [];
         for (let gi = 0; gi < groups.length; gi++) {
           const g = groups[gi], step = steps[gi], phase = configs[gi].phase;
@@ -3997,6 +4325,7 @@
               const hi = extent - (axis === 'x' ? g.info.w : g.info.h);
               const lowGrid = Math.ceil(-phase / step), highGrid = Math.floor((hi - phase) / step);
               v = phase + Math.max(lowGrid, Math.min(highGrid, Math.floor((v - phase) / step + 0.5))) * step;
+              if(flexible) {const values=retained(gi,step);v=balanced?values[Math.min(values.length-1,Math.floor(p[axis]*values.length/(hi+1)))]:values.reduce((a,b)=>(Math.abs(b-p[axis])<Math.abs(a-p[axis]) || Math.abs(b-p[axis])===Math.abs(a-p[axis])&&(!away||p[axis]>=hi/2))?b:a);if(g.anchors.some(a=>a[axis]===p[axis]))v=p[axis];}
             }
             const q = { x: axis === 'x' ? v : p.x, y: axis === 'y' ? v : p.y };
             q.mask = maskAt(g, q.x, q.y); if (q.mask === null) return null;
@@ -4021,6 +4350,7 @@
             const q = g.placements[j];
             if (q[axis] !== p[axis] + 1 || (axis === 'x' && q.y !== p.y)) continue;
             const from = mapped[gi][i], to = mapped[gi][j];
+            if(to[axis]<from[axis]) return null;
             for (let v = from[axis] + 1; v < to[axis]; v++) {
               const mask = maskAt(g, axis === 'x' ? v : from.x, axis === 'y' ? v : from.y);
               if (mask === null) return null;
@@ -4039,20 +4369,27 @@
       }
       let best = groups.map(() => 1), score = 0;
       for (let step = Math.max(...configs.map(c => c.max)); step >= 2 && checks <= 3000000; step--) {
-        const eligible = groups.map((g, i) => step <= configs[i].max && g.anchors.every(p => (p[axis] - configs[i].phase) % step === 0)
+        const eligible = groups.map((g, i) => step <= configs[i].max && (flexible || g.anchors.every(p => (p[axis] - configs[i].phase) % step === 0))
           && !(axis === 'x' && g.info.dmove === 'v') && !(axis === 'y' && g.info.dmove === 'h'));
         const candidates = [best.map((v, i) => eligible[i] ? step : v)];
         eligible.forEach((yes, i) => { if (yes) { const c = best.slice(); c[i] = step; candidates.push(c); } });
         for (const candidate of candidates) {
           if (candidate.every((v, i) => v === best[i])) continue;
-          const value = certify(candidate);
+          let value = certify(candidate);
+          if(value===null && flexible) value=certify(candidate,true);
+          if(value===null && flexible) value=certify(candidate,false,true);
           if (value !== null && value > score) { best = candidate; score = value; }
         }
       }
       groups.forEach((g, i) => {
         if (best[i] <= 1) return;
-        for (const type of g.types) { if (!result[type]) result[type] = {}; result[type][axis] = { step: best[i], phase: configs[i].phase % best[i] }; }
+        for (const type of g.types) { if (!result[type]) result[type] = {}; result[type][axis] = flexible ? {step:best[i],phase:configs[i].phase % best[i],values:retained(i,best[i])} : { step: best[i], phase: configs[i].phase % best[i] }; }
       });
+      if(flexible && axis==='x') for(const g of groups) {
+        const grid=result[g.types.values().next().value];
+        g.placements=g.placements.filter(p=>solverGridAllows(grid,p.x,p.y));
+        g.at=new Map(g.placements.map((p,i)=>[p.y*COLS+p.x,i]));
+      }
     }
     return Object.keys(result).length ? result : null;
   }
@@ -4061,9 +4398,9 @@
   // exact physical movement rules, including narrow passages and off-grid turns.
   // Only certified lattice endpoints are omitted from saved states; intermediate
   // vertices remain available during a move. Labels keep their original type IDs.
-  function buildSolverPlacementGraph(state, groupShift) {
+  function buildSolverPlacementGraph(state, groupShift, force = false) {
     const movable = state.startPieces.filter(p => !state.typeIndex[state.typeMap.get(solverPieceKey(p))].fixed);
-    if (!movable.length || (!state.lattice && !(state.FREE_CELLS < CELLS && movable.every(p => SHAPES[p.shape].cells.length >= 4)))) return null;
+    if (!movable.length || (!force && !state.lattice && !(state.FREE_CELLS < CELLS && movable.every(p => SHAPES[p.shape].cells.length >= 4)))) return null;
     const shapes = new Map(), byType = {}, groups = [], fixed = [];
     let total = 0, bits = 0;
     for (let i = 0; i < state.startFlat.length; i += 3) {
@@ -4083,7 +4420,7 @@
             mask |= 1n << BigInt(cell);
           }
           if (!ok) continue;
-          const keep = !grid || ((!grid.x || (x - grid.x.phase) % grid.x.step === 0) && (!grid.y || (y - grid.y.phase) % grid.y.step === 0));
+          const keep = solverGridAllows(grid,x,y);
           const id = vertices.length, code = keep ? kept.length : -1;
           at[y * COLS + x] = id;
           vertices.push({x, y, mask, code, edges: new Int16Array(4).fill(-1)});
@@ -4119,10 +4456,12 @@
     const {pieces, board} = node, topology = state.graph;
     let occupied = 0n;
     for (let i = 0; i < pieces.length; i += 3) {
+      if(state.typeIndex[pieces[i]].fixed) continue;
       const g = topology.byType[pieces[i]].graph;
       occupied |= g.vertices[g.at[pieces[i + 2] * COLS + pieces[i + 1]]].mask;
     }
     for (let i = 0; i < pieces.length; i += 3) {
+      if(state.typeIndex[pieces[i]].fixed) continue;
       const tt = pieces[i], g = topology.byType[tt].graph, start = g.at[pieces[i + 2] * COLS + pieces[i + 1]];
       const blocked = occupied ^ g.vertices[start].mask;
       const reachable = [], parents = new Int16Array(g.vertices.length).fill(-1), directions = new Uint8Array(g.vertices.length);
@@ -4244,6 +4583,95 @@
     }
   }
 
+  // Enumerate unlabelled legal layouts, not labelled search states. The bound is
+  // all-or-nothing: an interrupted enumeration must never become a pruning rule.
+  function buildSolverLayoutIndex(state) {
+    if(!state.graph || CELLS>256) return null;
+    const groups=[],bySignature=new Map(),byType={};
+    for(const g of state.graph.groups) {
+      const info=state.typeIndex[g.type],sig=JSON.stringify([info.cells,info.dmove]);
+      let q=bySignature.get(sig);
+      if(!q){q={graph:g.graph,types:[],index:groups.length};bySignature.set(sig,q);groups.push(q);}
+      for(let i=0;i<g.count;i++)q.types.push(g.type);
+      byType[g.type]=q;
+    }
+    // Small repeated-shape puzzles only; otherwise keep the ordinary codec.
+    if(!groups.some(g=>g.types.length>=3) || groups.some(g=>g.types.length>8) || groups.reduce((s,g)=>s+g.types.length,0)>10) return null;
+    for(const g of groups){g.types.sort((a,b)=>a-b);g.factorial=1;for(let i=2;i<=g.types.length;i++)g.factorial*=i;}
+    const order=groups.slice().sort((a,b)=>a.graph.vertices.length-b.graph.vertices.length);
+    const layouts=[],index=new Map(),selected=groups.map(()=>[]);let work=0,aborted=false;
+    function visitGroup(k,occupied) {
+      if(aborted)return;
+      if(k===order.length){if(layouts.length>=20000){aborted=true;return;}const row=selected.flat(),key=row.join(',');index.set(key,layouts.length);layouts.push(Uint16Array.from(row));return;}
+      const g=order[k],vertices=g.graph.vertices;
+      function place(first,left,mask){
+        if(++work>300000){aborted=true;return;}
+        if((work&4095)===0)checkSolverDeadline();
+        if(!left){visitGroup(k+1,mask);return;}
+        for(let i=first;i<=vertices.length-left&&!aborted;i++){
+          const v=vertices[i];if(v.code<0 || (mask&v.mask))continue;
+          selected[g.index].push(i);place(i+1,left-1,mask|v.mask);selected[g.index].pop();
+        }
+      }
+      place(0,g.types.length,occupied);
+    }
+    visitGroup(0,0n);
+    if(aborted || !layouts.length)return null;
+    let capacity=layouts.length;
+    for(const g of groups)capacity*=g.factorial;
+    if(capacity>Number.MAX_SAFE_INTEGER)return null;
+    const keyLength=Math.max(1,Math.ceil(Math.log2(capacity)/8));
+    if(keyLength>=state.graph.keyLength)return null;
+    const storageBytes=layouts.length*(160+groups.reduce((s,g)=>s+g.types.length*12,0));
+    return {groups,byType,layouts,index,keyLength,storageBytes};
+  }
+  class SolverLayoutStore extends SolverGraphStore {
+    constructor(state,budget,index){
+      super(state,budget,false);this.layoutIndex=index;this.keyLength=index.keyLength;
+      budget.bytes+=index.storageBytes;if(budget.bytes>budget.limit)throw new Error('__OOM__');
+    }
+    pack(board,pieces){
+      const ix=this.layoutIndex,positions=ix.groups.map(()=>[]);
+      for(let i=0;i<pieces.length;i+=3){const g=ix.byType[pieces[i]];if(!g)continue;const id=g.graph.at[pieces[i+2]*COLS+pieces[i+1]];if(id<0)throw new Error('Invalid layout placement');positions[g.index].push([id,pieces[i]]);}
+      for(const list of positions)list.sort((a,b)=>a[0]-b[0]);
+      let value=ix.index.get(positions.flatMap(a=>a.map(p=>p[0])).join(','));
+      if(value===undefined)throw new Error('Invalid search layout');
+      let multiplier=ix.layouts.length;
+      for(const g of ix.groups){const remaining=g.types.slice();let rank=0;for(const p of positions[g.index]){const at=remaining.indexOf(p[1]);if(at<0)throw new Error('Invalid layout type');rank=rank*remaining.length+at;remaining.splice(at,1);}value+=rank*multiplier;multiplier*=g.factorial;}
+      const key=new Uint8Array(this.keyLength);for(let i=0;i<key.length;i++){key[i]=value%256;value=Math.floor(value/256);}return key;
+    }
+    decodeKey(key,start=0){
+      const ix=this.layoutIndex;let value=0;for(let i=this.keyLength-1;i>=0;i--)value=value*256+key[start+i];
+      const row=ix.layouts[value%ix.layouts.length];value=Math.floor(value/ix.layouts.length);if(!row)throw new Error('Invalid saved layout');
+      const flat=Array.from(this.topology.fixed);let pos=0;
+      for(const g of ix.groups){let rank=value%g.factorial;value=Math.floor(value/g.factorial);const digits=new Array(g.types.length),remaining=g.types.slice();for(let i=digits.length-1;i>=0;i--){const radix=digits.length-i;digits[i]=rank%radix;rank=Math.floor(rank/radix);}for(const digit of digits){const type=remaining.splice(digit,1)[0],v=g.graph.vertices[row[pos++]];flat.push(type,v.x,v.y);}}
+      // Stable order is essential for partial-layer checkpoint cursors.
+      const entries=[];for(let i=0;i<flat.length;i+=3)entries.push(flat.slice(i,i+3));entries.sort((a,b)=>a[0]-b[0]||a[2]-b[2]||a[1]-b[1]);
+      const pieces=Uint8Array.from(entries.flat()),s=this.state;return {pieces,board:makeSolverBoard(pieces,s.typeIndex,s.freeCellLookup,s.FREE_CELLS)};
+    }
+  }
+  // Exact one-cell group closures on the placement graph. Single-piece routes
+  // use graph traversal; pushes retain their original one-cell move cost.
+  function* graphSolverGroupSuccessors(node,state){
+    yield* graphSolverSuccessors(node,state);
+    const {pieces}=node,entries=[];
+    for(let i=0;i<pieces.length;i+=3){const g=state.graph.byType[pieces[i]];if(g){const id=g.graph.at[pieces[i+2]*COLS+pieces[i+1]];entries.push({i,g:g.graph,id,mask:g.graph.vertices[id].mask});}}
+    const emitted=new Set();
+    for(let d=0;d<4;d++)for(let root=0;root<entries.length;root++){
+      const queue=[root],selected=new Set(queue);let valid=true;
+      for(let qi=0;qi<queue.length&&valid;qi++){
+        const e=entries[queue[qi]],to=e.g.vertices[e.id].edges[d];if(to<0){valid=false;break;}
+        const mask=e.g.vertices[to].mask;
+        for(let j=0;j<entries.length;j++)if(!selected.has(j)&&(mask&entries[j].mask)){selected.add(j);queue.push(j);}
+      }
+      if(!valid||queue.length<2)continue;
+      const signature=d+':'+Array.from(selected).sort((a,b)=>a-b).join(',');if(emitted.has(signature))continue;emitted.add(signature);
+      const [dx,dy]=SOLVER_DIRS[d],next=pieces.slice(),e=entries[root],shifted=[];
+      for(const j of queue){const i=entries[j].i;next[i+1]+=dx;next[i+2]+=dy;if(j!==root)shifted.push({type:pieces[i],fromX:pieces[i+1],fromY:pieces[i+2]});}
+      yield {pieces:next,board:makeSolverBoard(next,state.typeIndex,state.freeCellLookup,state.FREE_CELLS),move:{type:pieces[e.i],fromX:pieces[e.i+1],fromY:pieces[e.i+2],path:[[dx,dy]],shifted}};
+    }
+  }
+
   // The move generator and application order are shared with the original solver.
   function* compactSuccessors(node,state,groupShift) {
     if (state.graph && !groupShift) { yield* graphSolverSuccessors(node, state); return; }
@@ -4256,8 +4684,7 @@
       placePieceOnBoard(board,pieces,pi,typeIndex,freeCellLookup);
       for(const mv of moves) {
         const grid = !groupShift && MOVE_MODE !== 1 && state.lattice && state.lattice[tt];
-        if (grid && ((grid.x && (mv.nx - grid.x.phase) % grid.x.step !== 0)
-          || (grid.y && (mv.ny - grid.y.phase) % grid.y.step !== 0))) continue;
+        if (!solverGridAllows(grid,mv.nx,mv.ny)) continue;
         const newBoard=board.slice(),newPieces=pieces.slice();
         erasePieceFromBoard(newBoard,pieces,pi,typeIndex,freeCellLookup);
         const shiftInfo=[];
@@ -4273,6 +4700,329 @@
       }
     }
   }
+  // In mode 3 every connected route of one tile is one move. If nobody else
+  // can move at an endpoint, stopping there cannot help a shortest solution:
+  // the next move must be the same tile and is already part of this route.
+  function solverUsefulEndpoint(next,state,rootFlat) {
+    const pieces=next.pieces;
+    const matches=flat=>{
+      for(let i=0;i<flat.length;i+=3) {
+        if(state.typeIndex[flat[i]].fixed) continue;
+        let found=false;
+        for(let j=0;j<pieces.length;j+=3)if(pieces[j]===flat[i]&&pieces[j+1]===flat[i+1]&&pieces[j+2]===flat[i+2]){found=true;break;}
+        if(!found)return false;
+      }
+      return true;
+    };
+    if(matches(state.targetFlat)||matches(rootFlat)) return true;
+    let x=next.move.fromX,y=next.move.fromY;
+    for(const [dx,dy] of next.move.path){x+=dx;y+=dy;}
+    const occupancy=new Int16Array(state.FREE_CELLS).fill(-1);
+    for(let i=0;i<pieces.length;i+=3) {
+      const info=state.typeIndex[pieces[i]];if(info.fixed)continue;
+      for(const [dx,dy] of info.cells)occupancy[state.freeCellLookup[(pieces[i+2]+dy)*COLS+pieces[i+1]+dx]]=i;
+    }
+    for(let i=0;i<pieces.length;i+=3) {
+      const info=state.typeIndex[pieces[i]],px=pieces[i+1],py=pieces[i+2];
+      if(info.fixed || pieces[i]===next.move.type&&px===x&&py===y)continue;
+      for(const [dx,dy] of SOLVER_DIRS) {
+        if(info.dmove==='h'&&dy||info.dmove==='v'&&dx)continue;
+        const nx=px+dx,ny=py+dy;
+        if(nx<0||ny<0||nx+info.w>COLS||ny+info.h>ROWS)continue;
+        let free=true;
+        for(const [cx,cy] of info.cells){const cell=state.freeCellLookup[(ny+cy)*COLS+nx+cx];if(cell<0||occupancy[cell]!==-1&&occupancy[cell]!==i){free=false;break;}}
+        if(free)return true;
+      }
+    }
+    return false;
+  }
+  // Exact predecessors of a one-cell push, including groups that cannot be
+  // obtained by simply pushing in the opposite direction.
+  function* solverGroupPredecessors(node,state) {
+    yield* compactSuccessors(node,state,false); // Single-piece moves are reversible.
+    const {pieces}=node, indices=[];
+    for(let i=0;i<pieces.length/3;i++) if(!state.typeIndex[pieces[i*3]].fixed) indices.push(i);
+    const count=indices.length;
+    if(count>30) throw new Error('Reverse group search capacity exceeded');
+    const occupied=new Int16Array(CELLS).fill(-1);
+    indices.forEach((pi,i)=>{const info=state.typeIndex[pieces[pi*3]];for(const [x,y] of info.cells) occupied[(pieces[pi*3+2]+y)*COLS+pieces[pi*3+1]+x]=i;});
+    for(const [dx,dy] of SOLVER_DIRS) {
+      const edges=new Int32Array(count),ancestors=new Int32Array(count);
+      let movable=0;
+      for(let i=0;i<count;i++) {
+        const pi=indices[i],x=pieces[pi*3+1],y=pieces[pi*3+2],info=state.typeIndex[pieces[pi*3]];
+        let legal=!(info.dmove==='h'&&dy || info.dmove==='v'&&dx);
+        for(const [cx,cy] of info.cells) {
+          const px=x+cx-dx,py=y+cy-dy;
+          if(px<0||py<0||px>=COLS||py>=ROWS||state.freeCellLookup[py*COLS+px]<0) legal=false;
+          const qx=x+cx+dx,qy=y+cy+dy;
+          if(qx>=0&&qy>=0&&qx<COLS&&qy<ROWS) {
+            const j=occupied[qy*COLS+qx];
+            if(j>=0&&j!==i) edges[i]|=1<<j;
+          }
+        }
+        if(legal) movable|=1<<i;
+        ancestors[i]=1<<i;
+      }
+      for(let i=0;i<count;i++) for(let j=0;j<count;j++) if(edges[i]&(1<<j)) ancestors[j]|=1<<i;
+      for(let k=0;k<count;k++) for(let i=0;i<count;i++) if(ancestors[i]&(1<<k)) ancestors[i]|=ancestors[k];
+      const emitted=new Set();
+      for(let root=0;root<count;root++) {
+        let reachable=1<<root,old=0;
+        while(old!==reachable){old=reachable;for(let i=0;i<count;i++)if(reachable&(1<<i))reachable|=edges[i];}
+        const initial=ancestors[root];
+        if((initial&movable)!==initial || (initial&reachable)!==initial) continue;
+        const queue=[initial],seen=new Set(queue);
+        for(let at=0;at<queue.length;at++) {
+          const mask=queue[at];
+          if((mask&(mask-1))!==0 && !emitted.has(mask)) {
+            const predecessor=pieces.slice();
+            const selected=[];
+            for(let i=0;i<count;i++) if(mask&(1<<i)) {const pi=indices[i];selected.push(pi);predecessor[pi*3+1]-=dx;predecessor[pi*3+2]-=dy;}
+            // Verify using the game's actual push closure, not a geometric guess.
+            const group=computeGroupForPushSolver(predecessor,state.typeIndex,indices[root],dx,dy);
+            if(group && group.length===selected.length && group.every(pi=>selected.includes(pi))) {
+              emitted.add(mask);
+              const pi=indices[root];
+              const forward={type:predecessor[pi*3],fromX:predecessor[pi*3+1],fromY:predecessor[pi*3+2],path:[[dx,dy]],
+                shifted:group.filter(i=>i!==pi).map(i=>({type:predecessor[i*3],fromX:predecessor[i*3+1],fromY:predecessor[i*3+2]}))};
+              yield {pieces:predecessor,board:makeSolverBoard(predecessor,state.typeIndex,state.freeCellLookup,state.FREE_CELLS),move:reverseSolverMoves([forward])[0]};
+            }
+          }
+          let boundary=0;
+          for(let i=0;i<count;i++) if(mask&(1<<i)) boundary|=edges[i];
+          boundary&=~mask;
+          for(let i=0;i<count;i++) if(boundary&(1<<i)) {
+            const next=mask|ancestors[i];
+            if((next&movable)===next&&(next&reachable)===next&&!seen.has(next)){seen.add(next);queue.push(next);}
+          }
+        }
+      }
+    }
+  }
+  // Contact masks include clipped, statically illegal forward placements too:
+  // a tile at a boundary can still belong to a valid predecessor shifted back.
+  function prepareSolverGraphContacts(state) {
+    const seen=new Set();let work=0;
+    for(const group of state.graph.groups){
+      const g=group.graph;if(seen.has(g))continue;seen.add(g);
+      const info=state.typeIndex[group.type];
+      for(const v of g.vertices){
+        if((++work&63)===0)checkSolverDeadline();
+        v.contacts=SOLVER_DIRS.map(([dx,dy])=>{
+          let mask=0n;
+          for(const [cx,cy] of info.cells){const x=v.x+cx+dx,y=v.y+cy+dy;if(x<0||y<0||x>=COLS||y>=ROWS)continue;const cell=state.freeCellLookup[y*COLS+x];if(cell>=0)mask|=1n<<BigInt(cell);}
+          return mask;
+        });
+      }
+      state.graph.storageBytes+=g.vertices.length*(96+4*(24+Math.ceil(state.FREE_CELLS/8)));
+    }
+  }
+
+  function* graphSolverGroupPredecessors(node,state) {
+    yield* compactSuccessors(node,state,false); // Single-piece moves are reversible.
+    const {pieces}=node, indices=[];
+    for(let i=0;i<pieces.length/3;i++) if(!state.typeIndex[pieces[i*3]].fixed) indices.push(i);
+    const count=indices.length;
+    if(count>30) throw new Error('Reverse group search capacity exceeded');
+    const entries=indices.map(pi=>{const graph=state.graph.byType[pieces[pi*3]].graph;return {pi,graph,id:graph.at[pieces[pi*3+2]*COLS+pieces[pi*3+1]]};});
+    for(let direction=0;direction<4;direction++) {
+      const [dx,dy]=SOLVER_DIRS[direction],opposite=SOLVER_DIRS.findIndex(d=>d[0]===-dx&&d[1]===-dy);
+      const edges=new Int32Array(count),ancestors=new Int32Array(count),back=new Int16Array(count);
+      let movable=0;
+      for(let i=0;i<count;i++) {
+        const v=entries[i].graph.vertices[entries[i].id];back[i]=v.edges[opposite];
+        if(back[i]>=0)movable|=1<<i;
+        for(let j=0;j<count;j++)if(j!==i&&(v.contacts[direction]&entries[j].graph.vertices[entries[j].id].mask))edges[i]|=1<<j;
+        ancestors[i]=1<<i;
+      }
+      for(let i=0;i<count;i++) for(let j=0;j<count;j++) if(edges[i]&(1<<j)) ancestors[j]|=1<<i;
+      for(let k=0;k<count;k++) for(let i=0;i<count;i++) if(ancestors[i]&(1<<k)) ancestors[i]|=ancestors[k];
+      const emitted=new Set();
+      for(let root=0;root<count;root++) {
+        let reachable=1<<root,old=0;
+        while(old!==reachable){old=reachable;for(let i=0;i<count;i++)if(reachable&(1<<i))reachable|=edges[i];}
+        const initial=ancestors[root];
+        if((initial&movable)!==initial || (initial&reachable)!==initial) continue;
+        const queue=[initial],seen=new Set(queue);
+        for(let at=0;at<queue.length;at++) {
+          const mask=queue[at];
+          if((mask&(mask-1))!==0 && !emitted.has(mask)) {
+            const predecessor=pieces.slice();
+            const selected=[];
+            for(let i=0;i<count;i++) if(mask&(1<<i)) {const pi=indices[i];selected.push(pi);predecessor[pi*3+1]-=dx;predecessor[pi*3+2]-=dy;}
+            // Check the same forward push closure using exact placement masks.
+            const closure=[root];let closureMask=1<<root,valid=true;
+            for(let qi=0;qi<closure.length&&valid;qi++){
+              const i=closure[qi],v=entries[i].graph.vertices[(mask&(1<<i))?back[i]:entries[i].id];
+              const to=v.edges[direction];if(to<0){valid=false;break;}
+              const shiftedMask=entries[i].graph.vertices[to].mask;
+              for(let j=0;j<count;j++)if(!(closureMask&(1<<j))){
+                const other=entries[j].graph.vertices[(mask&(1<<j))?back[j]:entries[j].id];
+                if(shiftedMask&other.mask){closureMask|=1<<j;closure.push(j);}
+              }
+            }
+            const group=closure.map(i=>indices[i]);
+            if(valid && closureMask===mask) {
+              emitted.add(mask);
+              const pi=indices[root];
+              const forward={type:predecessor[pi*3],fromX:predecessor[pi*3+1],fromY:predecessor[pi*3+2],path:[[dx,dy]],
+                shifted:group.filter(i=>i!==pi).map(i=>({type:predecessor[i*3],fromX:predecessor[i*3+1],fromY:predecessor[i*3+2]}))};
+              yield {pieces:predecessor,board:makeSolverBoard(predecessor,state.typeIndex,state.freeCellLookup,state.FREE_CELLS),move:reverseSolverMoves([forward])[0]};
+            }
+          }
+          let boundary=0;
+          for(let i=0;i<count;i++) if(mask&(1<<i)) boundary|=edges[i];
+          boundary&=~mask;
+          for(let i=0;i<count;i++) if(boundary&(1<<i)) {
+            const next=mask|ancestors[i];
+            if((next&movable)===next&&(next&reachable)===next&&!seen.has(next)){seen.add(next);queue.push(next);}
+          }
+        }
+      }
+    }
+  }
+  // A pocket is detected from shape geometry, never from a level name. Empty
+  // cells between two occupied cells indicate a recess or an enclosed cavity.
+  function solverShapeHasPocket(info) {
+    const cells=new Set(info.cells.map(([x,y])=>y*info.w+x));
+    for(let y=0;y<info.h;y++)for(let x=0;x<info.w;x++)if(!cells.has(y*info.w+x)){
+      let left=false,right=false,up=false,down=false;
+      for(let i=0;i<x;i++)if(cells.has(y*info.w+i))left=true;
+      for(let i=x+1;i<info.w;i++)if(cells.has(y*info.w+i))right=true;
+      for(let i=0;i<y;i++)if(cells.has(i*info.w+x))up=true;
+      for(let i=y+1;i<info.h;i++)if(cells.has(i*info.w+x))down=true;
+      if(left&&right || up&&down)return true;
+    }
+    return false;
+  }
+  // Geometry-only transition graph. Labels are removed during preparation and
+  // restored via the position-to-piece mapping for EVERY actual search move.
+  // Partial preparation only caches exact transitions; missing rows use the
+  // normal generator. No incomplete reachability result is used for pruning.
+  class SolverPocketAnalysis {
+    constructor(state,roots,limit,account) {
+      this.state=state;this.limit=limit;this.account=account;this.bytes=0;
+      this.rows=new Map();this.queue=[];this.removed=new Set();this.protected=new Set();
+      this.types={};this.prepared=false;this.preparing=false;this.completed=0;
+      this.hits=0;this.misses=0;this.pruned=0;this.overflow=false;this.discarded=false;
+      const shapes=new Map();
+      for(const g of state.graph.groups){const info=state.typeIndex[g.type],key=JSON.stringify([info.w,info.h,info.cells,info.dmove]);if(!shapes.has(key))shapes.set(key,g.type);this.types[g.type]=shapes.get(key);}
+      for(const flat of [state.startFlat,...roots]){const key=this.canonical(flat).key;this.protected.add(key);this.enqueue(key);}
+    }
+    canonical(pieces) {
+      const entries=[];
+      for(let i=0;i<pieces.length;i+=3)if(this.types[pieces[i]])entries.push([this.types[pieces[i]],pieces[i+1],pieces[i+2],i]);
+      entries.sort((a,b)=>a[0]-b[0]||a[2]-b[2]||a[1]-b[1]);
+      const flat=Uint8Array.from(entries.flatMap(p=>p.slice(0,3)));
+      return {key:String.fromCharCode(...flat),flat,map:entries.map(p=>p[3])};
+    }
+    enqueue(key) {
+      if(this.rows.has(key))return;
+      const bytes=192+key.length*2;
+      if(this.rows.size>=20000 || this.bytes+bytes>this.limit){this.overflow=true;return;}
+      const row={key,f:null,b:null};this.rows.set(key,row);this.queue.push(row);this.bytes+=bytes;this.account(bytes);
+    }
+    node(key) {
+      const pieces=Uint8Array.from(key,c=>c.charCodeAt(0)),s=this.state;
+      return {pieces,board:makeSolverBoard(pieces,s.typeIndex,s.freeCellLookup,s.FREE_CELLS)};
+    }
+    raw(node,backward) {
+      return backward ? graphSolverGroupPredecessors(node,this.state) : graphSolverGroupSuccessors(node,this.state);
+    }
+    template(node,next) {
+      const move=next.move,flat=node.pieces;
+      const locate=p=>{for(let i=0;i<flat.length;i+=3)if(flat[i]===p.type&&flat[i+1]===p.fromX&&flat[i+2]===p.fromY)return i/3;throw new Error('Invalid pocket transition');};
+      const dirs=move.path.map(d=>SOLVER_DIRS.findIndex(v=>v[0]===d[0]&&v[1]===d[1]));
+      const data=Uint16Array.from([locate(move),dirs.length,...dirs,(move.shifted||[]).length,...(move.shifted||[]).map(locate)]);
+      let dx=0,dy=0;for(const d of move.path){dx+=d[0];dy+=d[1];}
+      return {data,to:this.canonical(next.pieces).key,dx,dy};
+    }
+    *moves(node,backward) {
+      if(this.discarded){this.misses++;yield* this.raw(node,backward);return;}
+      const canonical=this.canonical(node.pieces),row=this.rows.get(canonical.key),list=backward?row?.b:row?.f;
+      if(!list){this.misses++;yield* this.raw(node,backward);return;}
+      this.hits++;
+      for(const item of list){
+        if(this.removed.has(item.to)){this.pruned++;continue;}
+        const a=item.data,root=canonical.map[a[0]],n=a[1],{dx,dy}=item;
+        const pieces=node.pieces.slice(),original=node.pieces,map=canonical.map;
+        for(let j=0;j<a[2+n];j++){const i=map[a[3+n+j]];pieces[i+1]+=dx;pieces[i+2]+=dy;}
+        pieces[root+1]+=dx;pieces[root+2]+=dy;
+        const state=this.state;
+        // The search needs only coordinates. Boards and replay descriptions
+        // are materialized only when another consumer actually requests them.
+        yield {pieces,
+          get board(){return makeSolverBoard(pieces,state.typeIndex,state.freeCellLookup,state.FREE_CELLS);},
+          get move(){const path=[],shifted=[];for(let j=0;j<n;j++)path.push(SOLVER_DIRS[a[2+j]].slice());
+            for(let j=0;j<a[2+n];j++){const i=map[a[3+n+j]];shifted.push({type:original[i],fromX:original[i+1],fromY:original[i+2]});}
+            return {type:original[root],fromX:original[root+1],fromY:original[root+2],path,...(shifted.length?{shifted}:{})};}
+        };
+      }
+    }
+    action(item) {
+      const a=item.data,n=a[1],indices=[a[0]];let dx=0,dy=0;
+      for(let j=0;j<n;j++){dx+=SOLVER_DIRS[a[2+j]][0];dy+=SOLVER_DIRS[a[2+j]][1];}
+      for(let j=0;j<a[2+n];j++)indices.push(a[3+n+j]);
+      return indices.sort((a,b)=>a-b).join(',')+':'+dx+','+dy;
+    }
+    prune() {
+      let transit=0,leaves=0;
+      // In path mode, two consecutive moves of the same physical tile can be
+      // replaced by one legal path. Require BOTH incoming and outgoing moves
+      // to involve that tile alone; a group push on either side forbids removal.
+      if(MOVE_MODE===3)for(const row of this.rows.values()){
+        if(!row.f||!row.b||this.protected.has(row.key))continue;
+        const all=row.f.concat(row.b);if(!all.length)continue;
+        const root=all[0].data[0];
+        if(all.every(e=>e.data[0]===root&&e.data[2+e.data[1]]===0)){this.removed.add(row.key);transit++;}
+      }
+      // Strip only reversible dead ends with one physical mapping. Two edges
+      // to the same anonymous layout may permute labels: those MUST be kept.
+      const pending=Array.from(this.rows.values()),queued=new Set(this.rows.keys());
+      while(pending.length){
+        const row=pending.pop();queued.delete(row.key);
+        if(!row.f||!row.b||this.protected.has(row.key)||this.removed.has(row.key))continue;
+        const all=row.f.concat(row.b).filter(e=>!this.removed.has(e.to));
+        if(all.some(e=>e.to===row.key))continue;
+        if(!all.length || all.every(e=>e.to===all[0].to&&this.action(e)===this.action(all[0]))){
+          this.removed.add(row.key);leaves++;
+          for(const edge of row.f.concat(row.b)){const neighbor=this.rows.get(edge.to);if(neighbor&&!this.removed.has(edge.to)&&!queued.has(edge.to)){queued.add(edge.to);pending.push(neighbor);}}
+        }
+      }
+      return {transit,leaves};
+    }
+    async prepare(checkpoint,options={}) {
+      this.preparing=true;const start=searchNow(),maxMs=options.maxMs??120000,maxNodes=options.maxNodes??20000;
+      let reason='complete';
+      try {
+        for(let i=0;i<this.queue.length;i++){
+          await checkpoint();if(this.discarded){reason='memory';break;}
+          if(searchNow()-start>=maxMs||this.completed>=maxNodes){reason='budget';break;}
+          const row=this.queue[i],node=this.node(row.key),lists=[];let bytes=0;
+          for(const backward of [false,true]){
+            const list=[];
+            for(const next of this.raw(node,backward)){
+              checkSolverDeadline();
+              const item=this.template(node,next);bytes+=128+item.data.byteLength+item.to.length*2;list.push(item);
+              if(this.bytes+bytes>this.limit)break;
+            }
+            lists.push(list);if(this.bytes+bytes>this.limit)break;
+          }
+          if(lists.length!==2||this.bytes+bytes>this.limit){reason='memory';break;}
+          row.f=lists[0];row.b=lists[1];this.bytes+=bytes;this.account(bytes);this.completed++;
+          for(const item of row.f.concat(row.b))this.enqueue(item.to);
+          if(this.overflow){reason='memory';break;}
+        }
+        const removed=this.discarded?{transit:0,leaves:0}:this.prune();
+        console.info('[Pocket analysis]',{layouts:this.completed,queued:this.rows.size,removed:removed.transit+removed.leaves,...removed,bytes:this.bytes,elapsedMs:Math.round(searchNow()-start),reason});
+      } finally {this.preparing=false;this.prepared=true;}
+    }
+    clear() {
+      const bytes=this.bytes;this.rows.clear();this.queue.length=0;this.removed.clear();this.bytes=0;this.discarded=true;this.prepared=true;this.account(-bytes);
+    }
+  }
+
   // Reverse BFS needs complete configurations, not just the marked goal tiles.
   // Fixed cells are board geometry. For a small number of unspecified pieces,
   // enumerate ALL legal completions (never just their starting positions).
@@ -4356,8 +5106,7 @@
     if (goalRoots && state.lattice) goalRoots = goalRoots.filter(flat => {
       for (let i = 0; i < flat.length; i += 3) {
         const grid = state.lattice[flat[i]];
-        if (grid && ((grid.x && (flat[i + 1] - grid.x.phase) % grid.x.step !== 0)
-          || (grid.y && (flat[i + 2] - grid.y.phase) % grid.y.step !== 0))) return false;
+        if (!solverGridAllows(grid,flat[i+1],flat[i+2])) return false;
       }
       return true;
     });
@@ -4661,11 +5410,17 @@
     const digest=await crypto.subtle.digest('SHA-256',bytes);
     return Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');
   }
-  async function readCheckpoint(url) {
-    const info = await diskReadJson(url + 'session.json');
+  function isCheckpointDestination(folder) {
+    return !!(folder?.url || (folder?.external && folder.handle));
+  }
+  async function readCheckpoint(source) {
+    const location = typeof source === 'string' ? {url:source,opened:true} : source;
+    const info = location.handle
+      ? JSON.parse(await (await (await location.handle.getFileHandle('session.json')).getFile()).text())
+      : await diskReadJson(location.url + 'session.json');
     if (info.format !== 'KlotskiCheckpoint1' || info.engine !== 1 || !Array.isArray(info.chunks)) throw new Error('Unsupported checkpoint');
     if (info.chunks.length > 10000 || info.chunks.some(n=>!Number.isInteger(n)||n<1||n>1048576)) throw new Error('Invalid checkpoint');
-    const reader = await externalRun({url,opened:true});
+    const reader = await externalRun(location);
     const decoder = new TextDecoder(); let json = '';
     if(info.integrity && info.integrity!=='SHA-256') throw new Error('__CHECKPOINT_INVALID__');
     if(info.integrity && (!Array.isArray(info.chunkHashes)||info.chunkHashes.length!==info.chunks.length)) throw new Error('__CHECKPOINT_INVALID__');
@@ -4678,7 +5433,7 @@
     const data = JSON.parse(json);
     if (data.engine !== 1 || !data.meta || !Array.isArray(data.sides)) throw new Error('Invalid checkpoint');
     if(info.integrity && data.integrity!==info.integrity) throw new Error('__CHECKPOINT_INVALID__');
-    return {data,url};
+    return {data,url:location.url,location};
   }
   // Each record is a parent index in the preceding layer followed by sorted tile anchors.
   function layerKey(flat) {
@@ -4788,25 +5543,42 @@
 
   async function solveExternalLayers(state, folder, stopped, progress) {
     const grouped = GROUP_SHIFT;
-    state.lattice = grouped ? null : detectSolverLattice(state);
+    // Preserve the exact encoding/direction of older, potentially very large saves.
+    const revision = diskControl.resume ? (diskControl.resume.data.searchRevision || 1) : 5;
+    const improved = revision >= 2;
+    state.lattice = grouped ? null : detectSolverLattice(state,improved);
     if (!grouped) state = compactSolverState(state);
-    state.graph = buildSolverPlacementGraph(state,grouped);
-    // For directed pushes the next frontier depends on the previous pair of sets.
-    // An exactly repeated pair therefore proves that no new goal will be reached.
+    state.graph = buildSolverPlacementGraph(state,grouped,improved && grouped);
+    state.fastGroups = revision >= 3 && grouped && !!state.graph;
+    if(revision >= 4 && state.fastGroups) prepareSolverGraphContacts(state);
+    const layoutIndex = state.fastGroups ? buildSolverLayoutIndex(state) : null;
+    const movableCount=state.startPieces.filter(p=>!SHAPES[p.shape].fixed).length;
+    const reverseGroups=grouped && improved && !!state.graph && movableCount<=30;
     const frontierPairs = grouped ? new Map() : null;
+    let pocket=null;
+    function* successors(node,backward=false) {
+      const candidates=pocket ? pocket.moves(node,backward) : backward && reverseGroups ? (revision >= 4 ? graphSolverGroupPredecessors(node,state) : solverGroupPredecessors(node,state)) : (state.fastGroups ? graphSolverGroupSuccessors(node,state) : compactSuccessors(node,state,grouped));
+      for(const next of candidates) {
+        if(pocket?.removed.size && pocket.removed.has(pocket.canonical(next.pieces).key))continue;
+        if(improved && !grouped && MOVE_MODE===3 && !solverUsefulEndpoint(next,state,state.startFlat)) continue;
+        yield next;
+      }
+    }
     const budget = new SolverBudget(MAX_RAM_GB_USER);
-    const codec = state.graph ? new SolverGraphStore(state,budget,false) : null;
+    const codec = layoutIndex ? new SolverLayoutStore(state,budget,layoutIndex) : state.graph ? new SolverGraphStore(state,budget,false) : null;
+    if(layoutIndex) console.log("[Solver graph]",layoutIndex.layouts.length,"unlabelled layouts; key",state.graph.keyLength,"→",codec.keyLength,"bytes");
     const encode = pieces => codec ? codec.pack(null,pieces) : layerKey(pieces);
     const decode = key => codec ? codec.decodeKey(key) : {
       pieces:key, board:makeSolverBoard(key,state.typeIndex,state.freeCellLookup,state.FREE_CELLS)
     };
-    const roots = grouped ? null : solverReverseRoots(state);
+    const roots = grouped && !reverseGroups ? null : solverReverseRoots(state);
     const forward = {name:'forward', layers:[], resident:0};
     const backward = {name:'backward', layers:[], resident:0};
     const sides = roots ? [forward,backward] : [forward];
     const encoding = JSON.stringify({cols:COLS,rows:ROWS,mode:MOVE_MODE,grouped,
       types:Array.from(state.typeMap),typeIndex:state.typeIndex,free:Array.from(state.freeCellLookup),
       start:Array.from(state.startFlat),target:Array.from(state.targetFlat),lattice:state.lattice,
+      ...(revision >= 3 ? {layout:layoutIndex ? [1,layoutIndex.layouts.length,layoutIndex.keyLength] : null} : {}),
       graph:state.graph ? state.graph.groups.map(g=>[g.type,g.count,g.offset,g.graph.bits,g.graph.kept.map(i=>[g.graph.vertices[i].x,g.graph.vertices[i].y])]) : null});
     const started = searchNow();
     let elapsedBefore = 0, expansion = null, appliedRevision = -1, recovering = false;
@@ -4818,10 +5590,10 @@
       side.layers.push(layer);
       return layer;
     }
-    let used = state.graph?.storageBytes || 0, nodes = 0, states = 0, depth = 0;
+    let used = (state.graph?.storageBytes || 0)+(layoutIndex?.storageBytes || 0), nodes = 0, states = 0, depth = 0;
     let lastYield = started, run = null;
     function report() {
-      progress?.(nodes,depth,elapsedBefore+searchNow()-started,{states,allocatedBytes:used,searchMode:roots ? 'bidirectional' : 'forward',archivedLayers:forward.resident+backward.resident,offloadCount,offloadedBytes});
+      progress?.(nodes,depth,elapsedBefore+searchNow()-started,{states,allocatedBytes:used,searchMode:roots ? 'bidirectional' : 'forward',archivedLayers:forward.resident+backward.resident,offloadCount,offloadedBytes,pocketPreparing:!!pocket?.preparing,pocketLayouts:pocket?.completed||0,pocketRemoved:pocket?.removed.size||0});
     }
     async function applyDestination() {
       if (appliedRevision === diskControl.revision) return;
@@ -4833,17 +5605,17 @@
     }
     async function saveCheckpoint() {
       if(recovering) throw new Error('Решение уже найдено, восстанавливается путь');
-      if (!folder?.url || folder.opened) throw new Error('Для сохранения подключите WebDAV сервер');
+      if (!isCheckpointDestination(folder) || folder.opened) throw new Error('Подключите внешнюю папку для сохранения поиска');
       diskControl.notify({type:'saving'});
       const totalBytes=sides.reduce((n,s)=>n+s.layers.reduce((n,l)=>n+l.size*l.stride,0),0);
       let writtenBytes=0,lastPercent=-1;
       const progressSave=()=>{const percent=Math.min(99,Math.floor(writtenBytes/Math.max(1,totalBytes)*100));if(percent!==lastPercent){lastPercent=percent;diskControl.notify({type:'save-progress',percent});}};
       progressSave();
       const savedRun = await externalRun({...folder,saved:true});
-      diskControl.notify({type:'run-open',location:savedRun.location});
+      diskControl.notify({type:'run-open',location:savedRun.location,parent:folder});
       let committed = false;
       try {
-        const manifest = {engine:1,integrity:'SHA-256',encoding,meta:diskControl.meta,sequence,nodes,states,depth,offloadCount,offloadedBytes,
+        const manifest = {engine:1,searchRevision:revision,integrity:'SHA-256',encoding,meta:diskControl.meta,sequence,nodes,states,depth,offloadCount,offloadedBytes,
           elapsed:elapsedBefore+searchNow()-started,expansion,
           pairs:frontierPairs ? Array.from(frontierPairs.entries()) : null,sides:[]};
         for (const side of sides) {
@@ -4873,7 +5645,7 @@
         const descriptor={format:'KlotskiCheckpoint1',engine:1,integrity:'SHA-256',chunks,chunkHashes,title:diskControl.meta?.title||'Klotski',savedAt:new Date().toISOString(),depth,states};
         await savedRun.write('session.json',new TextEncoder().encode(JSON.stringify(descriptor)));
         committed = true;
-        diskControl.notify({type:'saved',url:savedRun.location.url,...descriptor});
+        diskControl.notify({type:'saved',url:savedRun.location.url,directory:savedRun.location.handle?.name,...descriptor});
       } finally { if(!committed) await savedRun.remove(); }
     }
     async function processControl() {
@@ -4892,7 +5664,9 @@
         await processControl();
       }
       if (stopped()) throw new Error('__LAYER_CANCEL__');
-      checkSolverDeadline(); budget.updateLimit(MAX_RAM_GB_USER);
+      if (!recovering || !batchRecovery) checkSolverDeadline();
+      budget.updateLimit(MAX_RAM_GB_USER);
+      if(pocket?.bytes && (used>budget.limit || pocket.bytes>budget.limit/10))pocket.clear();
 
     }
     async function restoreCheckpoint(snapshot) {
@@ -4945,7 +5719,8 @@
       }
       if(required>budget.limit) throw new Error('Для восстановления сессии увеличьте лимит ОЗУ');
       console.info('[Checkpoint] Verifying all layers', {bytes:totalBytes,integrity:data.integrity||'legacy layer hashes'});
-      const reader=await externalRun({url:snapshot.url,opened:true});
+      const location = snapshot.location || {url:snapshot.url,opened:true};
+      const reader=await externalRun(location);
       for(let sideId=0;sideId<sides.length;sideId++) {
         const side=sides[sideId], saved=data.sides[sideId];
         if(side.name!==saved.name) throw new Error('Invalid checkpoint side');
@@ -4964,7 +5739,7 @@
           for(const block of layer.blocks) {
             if(stopped()) throw new Error('__LAYER_CANCEL__');
             await new Promise(r=>setTimeout(r,0));
-            block.source={url:snapshot.url,opened:true}; block.data=null;
+            block.source=location; block.data=null;
             // One <=1 MiB block at a time, including every archived layer.
             const bytes=await reader.read(block.file,0,block.length,block.length);
             if(data.integrity) {
@@ -5008,6 +5783,7 @@
     }
 
     async function makeRoom(extra) {
+      if(pocket?.bytes){pocket.clear();if(used+extra<=budget.limit)return;}
       await new Promise(r=>setTimeout(r,0));
       await checkpoint();
       if (!folder) throw new Error('__OOM__');
@@ -5050,7 +5826,7 @@
         if (child) {
           const node = decode(key);
           let move = null;
-          for (const next of compactSuccessors(node,state,grouped)) {
+          for (const next of successors(node,side===backward)) {
             if (encode(next.pieces).every((v,i)=>v===child[i])) { move = next.move; break; }
           }
           if (!move) throw new Error('Invalid BFS layer file');
@@ -5073,6 +5849,8 @@
         return false;
       });
     }
+    let searchReady = false;
+    let batchRecovery = false;
     try {
       const root = encode(state.startFlat);
       if (goal(state.startFlat)) return {path:[],nodes:0,ms:0};
@@ -5098,8 +5876,18 @@
           start.add(key,hash,0xffffffff,cap,table); used += start.bytes-before; states++;
         }
       }
+      searchReady = true;
+      if(revision>=5 && reverseGroups && roots && budget.limit>=8*1048576 && state.graph.groups.some(g=>solverShapeHasPocket(state.typeIndex[g.type]))) {
+        pocket=new SolverPocketAnalysis(state,roots,Math.min(128*1048576,budget.limit/10),delta=>{used+=delta;});
+      }
       report();
       while (true) {
+        // Solve nearby goals directly; expensive preparation is reserved for
+        // searches that have actually progressed beyond a few short layers.
+        if(pocket && !pocket.prepared && (nodes>=64 || depth>=4)) {
+          const prepMs=SOLVER_DEADLINE_AT ? Math.min(120000,Math.max(0,(SOLVER_DEADLINE_AT-Date.now())/4)) : 120000;
+          await pocket.prepare(checkpoint,{maxMs:prepMs});report();
+        }
         const front = forward.layers[forward.layers.length-1];
         const back = backward.layers[backward.layers.length-1];
         const expandBack = expansion ? expansion.side === 'backward' : back && (back.size < front.size || (back.size === front.size && back.depth < front.depth));
@@ -5116,7 +5904,7 @@
           if (used > budget.limit) await makeRoom(0);
           const node = decode(current.record(id).subarray(4));
           nodes++;
-          for (const next of compactSuccessors(node,state,grouped)) {
+          for (const next of successors(node,side===backward)) {
             if (searchNow()-lastYield>=35) await checkpoint();
             const key = encode(next.pieces), hash = SolverStore.prototype.hash(key);
             if (nextLayer.contains(key,hash) || current.contains(key,hash) || previous?.contains(key,hash)) continue;
@@ -5131,6 +5919,7 @@
             const meet = otherFront ? otherFront.find(key,hash) : -1;
             if (otherFront ? meet >= 0 : goal(next.pieces)) {
               depth = nextLayer.depth + (otherFront?.depth || 0); report();
+              batchRecovery = diskControl.autoSave;
               diskControl.save=false; diskControl.autoSave=false; recovering=true;
               const path = await recover(forward,expandBack ? meet : index);
               if (otherFront) {
@@ -5144,7 +5933,7 @@
         expansion=null;
         if (!nextLayer.size) { report(); return null; }
         if (grouped) {
-          const signature = current.signature() + '|' + nextLayer.signature();
+          const signature = (reverseGroups?side.name+'|':'') + current.signature() + '|' + nextLayer.signature();
           const candidates = frontierPairs.get(signature) || [];
           for (const old of candidates) {
             if (await layers[old].sameMembers(current,run,checkpoint)
@@ -5156,12 +5945,18 @@
         }
       }
     } catch(error) {
-      if(error.message==='__TIMEOUT__' && diskControl.autoSave && folder?.url) {
-        try { await saveCheckpoint(); } catch(saveError) { diskControl.notify({type:'save-error',message:saveError.message}); }
+      const limitReached = ['__TIMEOUT__','__OOM__','__THREE_LAYERS__','__SIX_LAYERS__'].includes(error.message);
+      if (searchReady && diskControl.autoSave && limitReached && isCheckpointDestination(folder)) {
+        pocket?.clear();
+        // Resume rebuilds the hash tables from the stored records.
+        for (const side of sides) for (const layer of side.layers) layer.slots = null;
+        try { await saveCheckpoint(); }
+        catch (saveError) { diskControl.notify({type:'save-error',message:saveError.message}); }
       }
       report(); if (error.message === '__LAYER_CANCEL__') return null;
       throw error;
     } finally {
+      if(pocket)console.info("[Pocket search]",{cacheHits:pocket.hits,cacheMisses:pocket.misses,pruned:pocket.pruned,layouts:pocket.completed});
       for(const owned of ownedRuns) try { await owned.remove(); } catch(error) { console.warn('[Klotski] Temporary layer files:',error); }
     }
   }
@@ -5206,11 +6001,11 @@
       SolverStore.toString(),
       SolverHeap.toString(),
       reverseSolverMoves.toString(),
-      detectSolverLattice.toString(),
+      solverGridAllows.toString(), detectSolverLattice.toString(),
       buildSolverPlacementGraph.toString(),
       graphSolverSuccessors.toString(),
-      SolverGraphStore.toString(),
-      compactSuccessors.toString(),
+      SolverGraphStore.toString(), buildSolverLayoutIndex.toString(), SolverLayoutStore.toString(), graphSolverGroupSuccessors.toString(),
+      compactSuccessors.toString(), solverUsefulEndpoint.toString(), solverGroupPredecessors.toString(), prepareSolverGraphContacts.toString(), graphSolverGroupPredecessors.toString(), solverShapeHasPocket.toString(), SolverPocketAnalysis.toString(),
       canonicalSolverStart.toString(),
       solverReuseKey.toString(),
       "let reusableSearch = null;",
@@ -5220,7 +6015,7 @@
       solveCompact.toString(),
       "let diskControl = {folder:null,revision:0,save:false,notify:m=>self.postMessage(m)};",
       "let diskTransport=null, diskRequestSerial=0; const diskRequests=new Map();",
-      webDavFetch.toString(), diskFetch.toString(), diskReadJson.toString(), checkpointDigest.toString(), readCheckpoint.toString(),
+      webDavFetch.toString(), diskFetch.toString(), diskReadJson.toString(), checkpointDigest.toString(), isCheckpointDestination.toString(), readCheckpoint.toString(),
       readDiskCapacity.toString(), externalRun.toString(), layerKey.toString(), ExternalLayer.toString(), solveExternalLayers.toString(),
       solveUnidirectional.toString(),
       solveAStar.toString(),
@@ -5504,9 +6299,12 @@
   const pbSpeed = document.getElementById('pbSpeed');
   const pbSpeedLabel = document.getElementById('pbSpeedLabel');
 
+  const editorGalleryBtn = document.getElementById('editorGalleryBtn');
+  let galleryFromEditor = null;
   function updateBackBtnPosition() {
     const r = appEl.getBoundingClientRect();
     if (backBtn && !backBtn.hidden) backBtn.style.left = Math.max(4, r.left) + 'px';
+    if (!editorGalleryBtn.hidden) editorGalleryBtn.style.right = Math.max(4, document.documentElement.clientWidth - r.right) + 'px';
     if (scrollTopBtn) scrollTopBtn.style.right = Math.max(4, window.innerWidth - r.right) + 'px';
     updateScrollTopButton();
   }
@@ -5631,22 +6429,25 @@
     catch (e) { boardEl.style.transform = 'scale(1)'; boardEl.style.opacity = '1'; }
   }
   function setAppMode(mode) {
-    if (appMode === 'gallery' && mode !== 'gallery') endBatchSelection();
+    if (appMode === 'gallery' && mode !== 'gallery') { endBatchSelection(); galleryFromEditor=null; }
     appMode = mode;
     const isGame = mode === 'game', isEditor = mode === 'editor', isGallery = mode === 'gallery';
     if (!isGame) exitPlaybackMode();
     gameViewEl.hidden = !isGame;
     editorViewEl.hidden = !isEditor;
     analyzerViewEl.hidden = mode !== 'analyzer';
+    printView.hidden = mode !== 'print';
     galleryViewEl.hidden = !isGallery;
     if (isGallery) scheduleGalleryPreviews();
     levelRowEl.hidden = !isGame;
     statsEl.hidden = !isGame;
     backBtn.hidden = isGame;
+    editorGalleryBtn.hidden = !isEditor;
     updateScrollTopButton();
     appEl.classList.toggle('editing', isEditor);
     appEl.classList.toggle('gallery', isGallery);
     appEl.classList.toggle('analyzing', mode === 'analyzer');
+    appEl.classList.toggle('printing', mode === 'print');
     if (!isEditor) { solverStatus.textContent = ''; solverStatus.classList.remove('error'); closeManualPaste(); }
     hideLevelContextMenu();
     if (isGame) { try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) { window.scrollTo(0, 0); } }
@@ -6189,6 +6990,7 @@
     return mode === 'bidirectional' ? '(⇄)' : mode === 'astar' ? '(*)' : mode === 'forward' ? '(→)' : '';
   }
   function solverSearchPrefixHtml(key = 'searchingPrefix') {
+    if(key==='searchingPrefix' && lastSolverMemory.pocketPreparing) return (LANG==='ru'?'Подготовка графа карманов: ':'Preparing pocket graph: ')+fmtNodes(lastSolverMemory.pocketLayouts)+' · ';
     return t(key) + ' <span class="solver-search-mode">' + solverSearchModeText(lastSolverSearchMode) + '</span>';
   }
   let lastSolverMemory = { states: 0, allocatedBytes: 0 };
@@ -6368,15 +7170,17 @@
     input.indeterminate = count > 0 && count < ids.length;
   }
   function selectBatchRange(index, checked, shift, ids = [index]) {
-    const range = new Set(ids);
+    let range = ids;
     let edge = ids[ids.length - 1];
     if (shift) {
       checked = true;
       const order = batchOrder(), anchor = order.indexOf(batchAnchor);
       if (anchor >= 0) {
         const first = order.indexOf(ids[0]), last = order.indexOf(edge);
-        for (const id of order.slice(Math.min(anchor,first), Math.max(anchor,last)+1)) range.add(id);
-        if (anchor > last) edge = ids[0];
+        if (first >= 0 && last >= 0) {
+          range = order.slice(Math.min(anchor,first), Math.max(anchor,last)+1);
+          if (anchor > last) { range.reverse(); edge = ids[0]; }
+        }
       }
     }
     for (const id of range) {
@@ -6393,7 +7197,7 @@
       galleryViewEl.classList.add('batch-picking');
       showToast(t('batchPick')); return;
     }
-    const list = batchOrder().filter(index => batchSelection.has(index));
+    const list = [...batchSelection];
     if (!list.length) { showToast(t('batchPick')); return; }
     endBatchSelection();
     batch.startedAt = performance.now();
@@ -6480,7 +7284,7 @@
         if (batch.active) cancelBatch(true);
         stopSolving(message,true); showToast(reason,true); return;
       }
-      if (errMsg === '__TIMEOUT__') { expireSolverTimeLimit(); return; }
+      if (errMsg === '__TIMEOUT__') { expireSolverTimeLimit(true); return; }
       const isOurOom = errMsg === '__OOM__' || errMsg === '__THREE_LAYERS__' || errMsg === '__SIX_LAYERS__';
       const isBrowserOom = !!(err && err.isBrowserOom) || /out of memory|allocation failed/i.test(errMsg);
       if (isOurOom || isBrowserOom) {
@@ -6576,7 +7380,7 @@
     catch (err) {
       if (solveSessionId !== mySessionId) return;
       const errMsg = localizedDiskError(err);
-      if (errMsg === '__TIMEOUT__') { expireSolverTimeLimit(); return; }
+      if (errMsg === '__TIMEOUT__') { expireSolverTimeLimit(true); return; }
       const isOurOom = errMsg === '__OOM__' || errMsg === '__THREE_LAYERS__' || errMsg === '__SIX_LAYERS__';
       const isBrowserOom = !!(err && err.isBrowserOom) || /out of memory|allocation failed/i.test(errMsg);
       if (isOurOom || isBrowserOom) { stopSolving(reportSearchOutcome(t('solverOomProgress'), true), true); return; }
@@ -7096,6 +7900,10 @@
   window.addEventListener('keydown', e => {
     const tgt = e.target;
     const inInput = tgt && (['INPUT','TEXTAREA','SELECT'].indexOf((tgt.tagName||'').toUpperCase()) >= 0 || tgt.isContentEditable);
+    if (appMode === 'print') {
+      if (e.key === 'Escape') { closePrintSpace(); e.preventDefault(); }
+      return;
+    }
     if (appMode === 'editor' && inInput) return;
 
     if (e.key === 'Escape') {
@@ -9242,7 +10050,7 @@
   }
   function matchesGalleryFilter(level) {
     if (!galleryFilter) return true;
-    return !gallerySolutionLength(level) && (galleryFilter !== 2 || parseLevelStepSafe(level.text) > 0);
+    return !gallerySolutionLength(level);
   }
   function renderGallerySteps(label,level) {
     const step = parseLevelStepSafe(level.text);
@@ -10059,6 +10867,7 @@
     stepLevel(1);
   });
   backBtn.addEventListener('click', () => {
+    if (appMode === 'print') { closePrintSpace(); return; }
     if (appMode === 'analyzer') { exitAnalyzer(false); return; }
     if (appMode === 'editor') {
       if (tileEditActive) { cancelTileEditor(); return; }
@@ -10066,6 +10875,10 @@
       if (editor.showAllCustom) { editor.showAllCustom = false; buildPalette(); return; }
       cancelEditor();
     } else if (appMode === 'gallery') {
+      if (galleryFromEditor) {
+        [COLS,ROWS] = galleryFromEditor;
+        setAppMode('editor'); applyBoardSize(); renderEditor(); window.scrollTo(0,0); return;
+      }
       appEl.style.transition = 'none';
       setAppMode('game');
       void appEl.offsetWidth;
@@ -10227,9 +11040,8 @@
     editBtn.addEventListener('click', e => { e.stopPropagation(); hideLevelContextMenu(); selectLevel(globalIdx, false); openEditor(); });
     menu.appendChild(playBtn); menu.appendChild(editBtn);
     const pasteBtn = document.createElement('button');
-    pasteBtn.textContent = '▣ ' + t('pasteSolution');
+    pasteBtn.textContent = '▣ ' + t('galleryPasteSolution');
     pasteBtn.onclick = () => { hideLevelContextMenu(); pasteSolution(globalIdx); };
-    menu.appendChild(pasteBtn);
     const copyBtn = document.createElement('button');
     copyBtn.type = 'button';
     copyBtn.textContent = '▣ ' + t('copySolution');
@@ -10268,6 +11080,7 @@
       });
       menu.appendChild(delBtn);
     }
+    menu.appendChild(pasteBtn);
     menu.style.left = '0px'; menu.style.top = '0px'; menu.style.visibility = 'hidden';
     document.body.appendChild(menu);
     const rect = menu.getBoundingClientRect();
@@ -10692,13 +11505,11 @@
     const filter = document.createElement('input');
     filter.type = 'checkbox'; filter.className = 'gallery-unsolved-check';
     filter.checked = galleryFilter !== 0;
-    filter.indeterminate = galleryFilter === 2;
-    filter.classList.toggle('counted-only', galleryFilter === 2);
-    filter.title = t(galleryFilter === 2 ? 'countedUnsolved' : 'onlyUnsolved');
+    filter.title = t('onlyUnsolved');
     filter.setAttribute('aria-label', filter.title);
     filterLabel.append(filter, t('onlyUnsolved'));
     filter.addEventListener('change', () => {
-      galleryFilter = (galleryFilter + 1) % 3;
+      galleryFilter = filter.checked ? 1 : 0;
       if (galleryFilter && batchSelection) {
         const levels = allLevels();
         for (const id of batchSelection) if (!matchesGalleryFilter(levels[id])) batchSelection.delete(id);
@@ -10854,14 +11665,23 @@
       groupEl.appendChild(gridEl);
       galleryViewEl.appendChild(groupEl);
     }
+    const hotkeys=document.createElement('div');
+    hotkeys.className='gallery-hotkeys';
+    for (const [key,label] of [['F4','galleryF4'],['F8',IS_RUSSIAN_SYSTEM ? 'galleryF8' : 'galleryF8Unavailable']]) {
+      const item=document.createElement('span'),kbd=document.createElement('kbd');
+      kbd.textContent=key;item.append(kbd,' '+t(label));hotkeys.appendChild(item);
+    }
+    galleryViewEl.appendChild(hotkeys);
   }
   function openGallery() {
+    galleryFromEditor = appMode === 'editor' ? [COLS,ROWS] : null;
     cancelBatch(true);
     if (stoppedBatchLevels) {
-      const remaining = new Set();
-      allLevels().forEach((level,index) => {
-        if (stoppedBatchLevels.has(level) && !gallerySolutionLength(level)) remaining.add(index);
-      });
+      const levels = allLevels();
+      const remaining = new Set([...stoppedBatchLevels]
+        .filter(level => level && !gallerySolutionLength(level))
+        .map(level => levels.indexOf(level))
+        .filter(index => index >= 0));
       stoppedBatchLevels = null;
       batchAnchor = null;
       batchSelection = remaining.size ? remaining : null;
@@ -10881,6 +11701,7 @@
     });
   }
   galleryBtn.addEventListener('click', openGallery);
+  editorGalleryBtn.addEventListener('click', () => { if (!tileEditActive) openGallery(); });
   undoBtn.addEventListener('click', undoGame);
   scrambleBtn.addEventListener('click', scrambleGame);
   redoBtn.addEventListener('click', redoGame);
@@ -10993,7 +11814,10 @@
       return true;
     }
     if(message.type==='saved' || message.type==='save-error') {
-      if(message.type==='saved') for(const entry of activeDiskRuns) if(entry.location.url===message.url) entry.keep=true;
+      if (message.type==='saved') for (const entry of activeDiskRuns) {
+        if (message.url ? entry.location.url===message.url :
+            message.directory && entry.location.handle?.name===message.directory) entry.keep=true;
+      }
       savePercent=message.type==='saved'?100:null;
       savingSearch=false; updatePauseControls();
       const text=message.type==='saved' ? (LANG==='ru'?'Поиск сохранён. Можно закрыть окно.':'Search saved. You may close this window.') : (LANG==='ru'?'Не удалось сохранить поиск: ':'Cannot save search: ')+localizedDiskError(message.message);
@@ -11006,10 +11830,19 @@
   }
   async function listSavedSearches(folder) {
     const list=document.getElementById('savedSearches'); list.replaceChildren();
-    if(!folder?.url) return;
+    if(!isCheckpointDestination(folder)) return;
     try {
       let entries;
-      if(folder.diskStatus) entries=await diskReadJson(folder.url+'sessions');
+      if (folder.handle) {
+        entries = [];
+        for await (const [name, handle] of folder.handle.entries()) {
+          if (handle.kind !== 'directory' || !/^klotski-save-[0-9a-f]{32}/.test(name)) continue;
+          try {
+            const info = JSON.parse(await (await (await handle.getFileHandle('session.json')).getFile()).text());
+            if (info.format === 'KlotskiCheckpoint1') entries.push({...info,name});
+          } catch {}
+        }
+      } else if(folder.diskStatus) entries=await diskReadJson(folder.url+'sessions');
       else {
         const response=await webDavFetch(folder.url,{method:'PROPFIND',headers:{Depth:'1'},credentials:'include',redirect:'error'});
         if(!response.ok) throw new Error('WebDAV PROPFIND: HTTP '+response.status);
@@ -11034,25 +11867,37 @@
         const remove=document.createElement('button');remove.type='button';remove.className='settings-input saved-search-delete';remove.textContent='×';
         remove.title=LANG==='ru'?'Удалить сохранение':'Delete saved search';remove.setAttribute('aria-label',remove.title+' '+entry.title);
         remove.addEventListener('click',async()=>{
-          const url=folder.url+encodeURIComponent(entry.name)+'/';
-          if(url===activeResumeUrl) {showToast(LANG==='ru'?'Это сохранение используется текущим поиском. Сначала остановите поиск.':'This save is in use. Stop the search first.',true);return;}
+          if(savedSearchId(folder,entry.name)===activeResumeUrl) {showToast(LANG==='ru'?'Это сохранение используется текущим поиском. Сначала остановите поиск.':'This save is in use. Stop the search first.',true);return;}
           remove.disabled=true;button.disabled=true;
-          try {const response=await webDavFetch(url,{method:'DELETE',credentials:'include',redirect:'error'});if(!response.ok && response.status!==404) throw new Error('WebDAV HTTP '+response.status);row.remove();}
+          try {
+            if (folder.handle) await folder.handle.removeEntry(entry.name,{recursive:true});
+            else {
+              const response=await webDavFetch(savedSearchId(folder,entry.name),{method:'DELETE',credentials:'include',redirect:'error'});
+              if (!response.ok && response.status!==404) throw new Error('WebDAV HTTP '+response.status);
+            }
+            row.remove();
+          }
           catch(error){showToast(localizedDiskError(error),true);remove.disabled=false;button.disabled=false;}
         });
         row.append(button,remove);list.append(row);
       }
     } catch(error) { if(externalFolder===folder) showToast((LANG==='ru'?'Список сохранённых поисков недоступен: ':'Saved searches unavailable: ')+error.message,true); }
   }
+  function savedSearchId(folder,name) {
+    return folder.handle ? name : folder.url+encodeURIComponent(name)+'/';
+  }
   async function resumeSavedSearch(folder,name,button) {
     if(openingSavedSearch) return;
     if(game.solving || batch.active || analyzer.fullActive) { showToast(LANG==='ru'?'Сначала остановите текущий процесс.':'Stop the current process first.',true);return; }
     const originalCaption=button.textContent;
-    button.disabled=true; openingSavedSearch=true;loadButton=button;activeResumeUrl=folder.url+encodeURIComponent(name)+'/';
+    button.disabled=true; openingSavedSearch=true;loadButton=button;activeResumeUrl=savedSearchId(folder,name);
     button.textContent=LANG==='ru'?'Загрузка 0%':'Loading 0%';
     const session=solveSessionId;
     try {
-      const snapshot=await readCheckpoint(folder.url+encodeURIComponent(name)+'/');
+      const source = folder.handle
+        ? {handle:await folder.handle.getDirectoryHandle(name),opened:true}
+        : savedSearchId(folder,name);
+      const snapshot=await readCheckpoint(source);
       if(externalFolder!==folder || session!==solveSessionId || game.solving || batch.active) return;
       resumeSearchProcess(); endSolverTimeLimit(); batchMode=false;
       const meta=snapshot.data.meta;
@@ -11168,7 +12013,7 @@
     if (!externalFolderAvailable) return;
     try {
       const handle = await window.showDirectoryPicker({mode:'readwrite', id:'klotski-layers'});
-      await connectLayerFolder({handle},handle.name);
+      await connectLayerFolder({handle,external:true},handle.name);
     } catch(error) { if (error.name !== 'AbortError') showToast(localizedDiskError(error),true); }
   });
   document.getElementById('layerHelper').addEventListener('click', () => {
@@ -13018,6 +13863,848 @@ self.onmessage = async function (e) {
   document.getElementById('anaSortSteps').addEventListener('click', () => toggleAnalyzerContourSort('steps'));
   document.getElementById('anaSortStates').addEventListener('click', () => toggleAnalyzerContourSort('states'));
 
+
+  function printFootprint(part,settings) {
+    const square = x => x*x;
+    function rectangle(x,y,left,bottom,right,top) {
+      const dx = Math.max(left-x,x-right), dy = Math.max(bottom-y,y-top);
+      return Math.hypot(Math.max(dx,0),Math.max(dy,0)) + Math.min(0,Math.max(dx,dy));
+    }
+    function roundedRectangle(x,y,left,bottom,right,top,radius) {
+      return rectangle(x,y,left+radius,bottom+radius,right-radius,top-radius)-radius;
+    }
+    function cellRegion(cells, pitch, radius) {
+      const keys = new Set(cells.map(([x,y]) => x+','+y));
+      const has = (x,y) => keys.has(x+','+y);
+      const horizontal = new Map(), vertical = new Map(), corners = [];
+      function add(lines, level, begin) {
+        if (!lines.has(level)) lines.set(level,[]);
+        lines.get(level).push(begin);
+      }
+      for (const [x,y] of cells) {
+        if (!has(x-1,y)) add(vertical,x,y);
+        if (!has(x+1,y)) add(vertical,x+1,y);
+        if (!has(x,y-1)) add(horizontal,y,x);
+        if (!has(x,y+1)) add(horizontal,y+1,x);
+        if (radius > 0) for (const sx of [-1,1]) for (const sy of [-1,1]) {
+          if (!has(x+sx,y) && !has(x,y+sy))
+            corners.push([(x+(sx>0))*pitch,(y+(sy>0))*pitch,sx,sy]);
+        }
+      }
+      function merge(lines) {
+        const segments = [];
+        for (const [level,starts] of lines) {
+          starts.sort((a,b)=>a-b);
+          let first=starts[0], end=first+1;
+          for (const start of starts.slice(1)) {
+            if (start === end) end++;
+            else { segments.push([level*pitch,first*pitch,end*pitch]);first=start;end=start+1; }
+          }
+          segments.push([level*pitch,first*pitch,end*pitch]);
+        }
+        return segments;
+      }
+      const hs=merge(horizontal), vs=merge(vertical);
+      return (x,y) => {
+        let distance = Infinity;
+        for (const [at,lo,hi] of hs) distance = Math.min(distance,square(y-at)+square(Math.max(lo-x,0,x-hi)));
+        for (const [at,lo,hi] of vs) distance = Math.min(distance,square(x-at)+square(Math.max(lo-y,0,y-hi)));
+        let signed = Math.sqrt(distance)*(has(Math.floor(x/pitch),Math.floor(y/pitch)) ? -1 : 1);
+        for (const [cx,cy,sx,sy] of corners) {
+          const dx=(x-cx)*sx, dy=(y-cy)*sy;
+          if (dx > -radius && dy > -radius && dx < radius && dy < radius && (dx <= 0 || dy <= 0))
+            signed=Math.max(signed,Math.hypot(dx+radius,dy+radius)-radius);
+        }
+        return signed;
+      };
+    }
+    const {pitch,tileGap,boxGap}=settings;
+    function withCuts(distance,x,y) {
+      for (const [cx,cy,r] of part.cuts) distance=Math.max(distance,r-Math.hypot(x-cx,y-cy));
+      return distance;
+    }
+    if (part.kind==='box') {
+      const fixed=part.cells.length ? cellRegion(part.cells,pitch,0) : null;
+      return {
+        outer:(x,y)=>roundedRectangle(x,y,...part.bounds,part.radius),
+        opening:(x,y)=>rectangle(x,y,...part.cavity),
+        blocks:(x,y)=>fixed ? withCuts(fixed(x,y)+boxGap,x,y) : Infinity
+      };
+    }
+    const cells=part.circle ? null : cellRegion(part.cells,pitch,part.radius);
+    const radius=part.bounds[2]/2;
+    return {outer(x,y) {
+      let distance=(cells ? cells(x,y) : Math.hypot(x-radius,y-radius)-radius)+tileGap/2;
+      for (const [cx,cy,r] of part.bridges) distance=Math.min(distance,rectangle(x,y,cx-r,cy-r,cx+r,cy+r));
+      return withCuts(distance,x,y);
+    }};
+  }
+
+  // The worker consumes millimetres throughout. Each part is one signed solid,
+  // including its lettering, so the STL has no separate intersecting glyph shells.
+  function makePrintMesh(parts, settings, ranges = []) {
+    const step = settings.resolution;
+    const tetrahedra = [[0,1,3,7],[0,1,5,7],[0,2,3,7],[0,2,6,7],[0,4,5,7],[0,4,6,7]];
+    let buffer = new ArrayBuffer(84 + 8192 * 50), view = new DataView(buffer);
+    let triangles = 0;
+    function maskDistance(mask,x,y) {
+      const [left,bottom,width,height] = mask.rect;
+      if (x<=left || x>=left+width || y<=bottom || y>=bottom+height) return 1;
+      const u=(x-left)/width*(mask.width-1);
+      const v=(mask.mirror ? (y-bottom)/height : 1-(y-bottom)/height)*(mask.height-1);
+      const ix=Math.floor(u), iy=Math.floor(v), fx=u-ix, fy=v-iy;
+      const at=iy*mask.width+ix, a=mask.alpha;
+      const opacity=(a[at]*(1-fx)+a[at+1]*fx)*(1-fy)+(a[at+mask.width]*(1-fx)+a[at+mask.width+1]*fx)*fy;
+      return (127.5-opacity)/255*step;
+    }
+    function triangle(a,b,c,inside) {
+      let nx=(b[1]-a[1])*(c[2]-a[2])-(b[2]-a[2])*(c[1]-a[1]);
+      let ny=(b[2]-a[2])*(c[0]-a[0])-(b[0]-a[0])*(c[2]-a[2]);
+      let nz=(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
+      const length=Math.hypot(nx,ny,nz);
+      if (!length) return;
+      if (nx*(inside[0]-a[0])+ny*(inside[1]-a[1])+nz*(inside[2]-a[2]) > 0) {
+        [b,c]=[c,b];nx=-nx;ny=-ny;nz=-nz;
+      }
+      let offset=84+50*triangles;
+      if (offset+50>buffer.byteLength) {
+        const capacity=Math.min(160*1024*1024,buffer.byteLength*2);
+        if (capacity<offset+50) throw new Error('size');
+        const next=new ArrayBuffer(capacity);
+        new Uint8Array(next).set(new Uint8Array(buffer));
+        buffer=next;view=new DataView(buffer);
+      }
+      for (const value of [nx/length,ny/length,nz/length,...a,...b,...c]) {
+        view.setFloat32(offset,value,true);offset+=4;
+      }
+      view.setUint16(offset,0,true);
+      triangles++;
+    }
+    function meshPart(part) {
+      const box=part.kind==='box', {depth}=settings;
+      const floor=part.floorThickness ?? 2;
+      const bottomBevel=part.bottomBevel, topBevel=part.topBevel;
+      const x0=part.bounds[0]-step*1.37,y0=part.bounds[1]-step*1.29;
+      const nx=Math.ceil((part.bounds[2]-x0)/step)+3, ny=Math.ceil((part.bounds[3]-y0)/step)+3;
+      const lowerText=part.masks.find(mask=>mask.face==='bottom' && mask.mode==='raised');
+      const upperText=part.masks.find(mask=>mask.face==='top' && mask.mode==='raised');
+      const zShift=lowerText ? depth : 0;
+      // Include every horizontal feature plane, sampled just to either side.
+      // Preserve the configured thickness and relief heights in the mesh.
+      const features=[-zShift,0,part.height,bottomBevel,part.height-topBevel];
+      if (box) features.push(floor,part.height-0.35);
+      for (const mask of part.masks) {
+        const face=mask.face==='top' ? part.height : 0;
+        features.push(face+(mask.face==='top' ? 1 : -1)*(mask.mode==='raised' ? depth : -depth));
+      }
+      const minimum=-zShift-step,maximum=part.height+(upperText ? depth : 0)+step;
+      const zSet=new Set([minimum,maximum]);
+      for (let z=minimum+step*0.71;z<maximum;z+=step) zSet.add(z);
+      for (const plane of features) for (const shift of [-0.04,0.04]) if (plane+shift>minimum && plane+shift<maximum) zSet.add(plane+shift);
+      const zs=[...zSet].sort((a,b)=>a-b);
+      if (nx*ny*zs.length>60000000) throw new Error('size');
+      const footprint=printFootprint(part,settings);
+      const count=nx*ny, outer=new Float32Array(count), inner=new Float32Array(count), blocks=new Float32Array(count);
+      const text=part.masks.map(mask=>({mask, field:new Float32Array(count)}));
+      for (let j=0;j<ny;j++) for (let i=0;i<nx;i++) {
+        const x=x0+i*step,y=y0+j*step,k=j*nx+i;
+        outer[k]=footprint.outer(x,y);
+        if (box) {
+          inner[k]=footprint.opening(x,y);
+          blocks[k]=footprint.blocks(x,y);
+        }
+        for (const entry of text) entry.field[k]=maskDistance(entry.mask,x,y);
+      }
+      for (const entry of text) {
+        if (!entry.field.some((value,index)=>value<0 && outer[index]<-0.25)) throw new Error('lettering');
+      }
+      function sampleLayer(z,values) {
+        const bevel=Math.max(0,bottomBevel-z,topBevel-(part.height-z));
+        for (let k=0;k<count;k++) {
+          let field=Math.max(outer[k]+bevel,-z,z-part.height);
+          if (box) {
+            const opening=Math.max(inner[k]-Math.max(0,z-(part.height-topBevel)),floor-z);
+            field=Math.max(field,-opening);
+            if (part.cells.length) field=Math.min(field,Math.max(blocks[k]+bevel,floor-0.35-z,z-part.height,inner[k]-0.25));
+          }
+          for (const {mask,field:letters} of text) {
+            const top=mask.face==='top', face=top ? part.height : 0;
+            const relief=top ? z-face : face-z;
+            const footprint=Math.max(letters[k],outer[k]+0.25);
+            if (mask.mode==='raised') field=Math.min(field,Math.max(footprint,relief-depth,-0.38-relief));
+            else field=Math.max(field,-Math.max(footprint,-depth-relief,relief-0.5));
+          }
+          // Avoid a sample on the isosurface and keep edge interpolation stable
+          // after conversion to the 32-bit coordinates used in binary STL.
+          values[k]=field<0 ? Math.min(-0.001,field) : Math.max(0.001,field);
+        }
+      }
+      let lower=new Float32Array(count),upper=new Float32Array(count);
+      sampleLayer(zs[0],lower);
+      const xAt=i=>x0+i*step+part.offset[0],yAt=j=>y0+j*step+part.offset[1];
+      for (let layer=1;layer<zs.length;layer++) {
+        sampleLayer(zs[layer],upper);
+        const isFlat = k => lower[k]*upper[k]<0 &&
+          lower[k]===lower[k+1] && lower[k]===lower[k+nx] && lower[k]===lower[k+nx+1] &&
+          upper[k]===upper[k+1] && upper[k]===upper[k+nx] && upper[k]===upper[k+nx+1];
+        for (let j=0;j<ny-1;j++) for (let i=0;i<nx-1;i++) {
+          const k=j*nx+i;
+          const positive=lower[k]>0;
+          if ((lower[k+1]>0)===positive && (lower[k+nx]>0)===positive && (lower[k+nx+1]>0)===positive &&
+              (upper[k]>0)===positive && (upper[k+1]>0)===positive && (upper[k+nx]>0)===positive && (upper[k+nx+1]>0)===positive) continue;
+          const values=[lower[k],lower[k+1],lower[k+nx],lower[k+nx+1],upper[k],upper[k+1],upper[k+nx],upper[k+nx+1]];
+          const points=values.map((_,n)=>[xAt(i+(n&1)),yAt(j+((n>>1)&1)),zs[layer-1+((n>>2)&1)]+zShift]);
+          function cross(a,b) {
+            if (a>b) [a,b]=[b,a];
+            const fraction=values[a]/(values[a]-values[b]);
+            return points[a].map((v,axis)=>Math.fround(v+(points[b][axis]-v)*fraction));
+          }
+          // Planar patches need two triangles. Keep the tetrahedral edge
+          // midpoint at a transition to the general mesh to avoid T-junctions.
+          if (isFlat(k)) {
+            const inside=points[positive ? 4 : 0];
+            const corners=[cross(0,4),cross(1,5),cross(3,7),cross(2,6)];
+            const neighbors=[j>0 && isFlat(k-nx),i<nx-2 && isFlat(k+1),j<ny-2 && isFlat(k+nx),i>0 && isFlat(k-1)];
+            if (neighbors.every(Boolean)) {
+              triangle(corners[0],corners[1],corners[2],inside);
+              triangle(corners[0],corners[2],corners[3],inside);
+            } else {
+              const diagonals=[[0,5],[1,7],[2,7],[0,6]], boundary=[];
+              for (let n=0;n<4;n++) {
+                boundary.push(corners[n]);
+                if (!neighbors[n]) boundary.push(cross(...diagonals[n]));
+              }
+              const center=cross(0,7);
+              for (let n=0;n<boundary.length;n++) triangle(center,boundary[n],boundary[(n+1)%boundary.length],inside);
+            }
+            continue;
+          }
+          for (const tet of tetrahedra) {
+            const inSet=tet.filter(n=>values[n]<0),outSet=tet.filter(n=>values[n]>0);
+            if (!inSet.length || !outSet.length) continue;
+            const inside=points[inSet[0]];
+            if (inSet.length===1 || outSet.length===1) {
+              const one=inSet.length===1 ? inSet[0] : outSet[0];
+              const other=inSet.length===1 ? outSet : inSet;
+              triangle(cross(one,other[0]),cross(one,other[1]),cross(one,other[2]),inside);
+            } else {
+              const a=cross(inSet[0],outSet[0]),b=cross(inSet[0],outSet[1]);
+              const c=cross(inSet[1],outSet[1]),d=cross(inSet[1],outSet[0]);
+              triangle(a,b,c,inside);triangle(a,c,d,inside);
+            }
+          }
+        }
+        [lower,upper]=[upper,lower];
+      }
+    }
+    for (const part of parts) {
+      const first=triangles;
+      meshPart(part);
+      ranges.push([first,triangles-first]);
+    }
+    new Uint8Array(buffer,0,80).set(new TextEncoder().encode('Klotski binary STL, units: mm'));
+    view.setUint32(80,triangles,true);
+    return buffer.slice(0,84+50*triangles);
+  }
+
+  const printView = document.getElementById('printView');
+  const printForm = document.getElementById('printForm');
+  const printStatus = document.getElementById('printStatus');
+  const printDownload = document.getElementById('printDownload');
+  const printPreview = document.getElementById('printPreview');
+  const printMessage = (ru,en) => LANG === 'ru' ? ru : en;
+  let printWorker = null;
+  let printGeneration = 0;
+
+  function readPrintSettings() {
+    const fields = printForm.elements;
+    if (!printForm.checkValidity()) throw new Error(printMessage('Проверьте диапазоны настроек печати.','Check the print setting ranges.'));
+    const settings = {};
+    for (const input of printForm.querySelectorAll('input[type="number"], select')) {
+      settings[input.name] = input.type === 'number' || input.name === 'resolution' ? Number(input.value) : input.value;
+    }
+    settings.author = fields.author.value.trim();
+    settings.title = fields.title.value.trim();
+    const cornerInset=Math.max(0,settings.boxRadius+settings.boxTop-settings.wallThickness);
+    if (settings.wallThickness<=2*settings.boxTop ||
+        (cornerInset>0 && Math.SQRT2*cornerInset+settings.boxTop>=settings.boxRadius) ||
+        settings.boxBottom>=settings.floorThickness) {
+      throw new Error(printMessage('Уменьшите фаску или увеличьте толщину коробочки.','Reduce the chamfer or increase the tray thickness.'));
+    }
+    if (settings.tileTop+settings.tileBottom>=settings.tileThickness ||
+        (settings.tileText==='recessed' && settings.depth>=settings.tileThickness)) {
+      throw new Error(printMessage('Увеличьте толщину плитки или уменьшите фаски и глубину надписей.','Increase tile thickness or reduce bevels and lettering depth.'));
+    }
+    return settings;
+  }
+
+  function printTileLabel(piece) {
+    const symbols = {
+      up:'↑',down:'↓',left:'←',right:'→',upRight:'↗',downRight:'↘',downLeft:'↙',upLeft:'↖',
+      lineV:'│',lineH:'━',lineD1:'╲',lineD2:'╱',circle:'○',triangle:'▲',triangleDown:'▼',
+      square:'■',diamond:'◆',star:'★',smiley:'☺',sad:'☹',heart:'♥',fire:'🔥',clock:'◷',car:'🚗'
+    };
+    const symbol = piece.dmove === 'v' ? '↕' : piece.dmove === 'h' ? '↔' : (symbols[piece.dir] || '');
+    const label = piece.label || '';
+    return label.includes('\uFFFC') ? label.replaceAll('\uFFFC',symbol) : label.trim() ? label : symbol;
+  }
+
+  // Size the two inscription bands to the chosen physical font size.
+  // Wrap long inscriptions to keep the box width tied to the board.
+  function prepareTrayInscription(text,mode,width,settings) {
+    if (!text || mode==='off') return null;
+    const fontSize=settings.fontSize || 0;
+    const label={text,mode,face:'top',font:settings.font || 'Arial',fontSize,letterSpacing:settings.letterSpacing ?? 0.3};
+    const ctx=document.createElement('canvas').getContext('2d');
+    ctx.font=printLabelFont(label.font,100);
+    const limit=Math.max(1,width*0.92-1);
+    const wrapSize=fontSize || 1;
+    const fits=line=>measurePrintLine(ctx,line,label.letterSpacing*100/wrapSize).width*wrapSize/100<=limit;
+    if (!fontSize && fits(text)) return {label,band:6};
+    const lines=[];
+    let line='';
+    for (const word of text.trim().split(/\s+/)) {
+      const candidate=line ? line+' '+word : word;
+      if (fits(candidate)) { line=candidate; continue; }
+      if (line) lines.push(line);
+      line='';
+      for (const char of printGraphemes(word)) {
+        if (line && !fits(line+char)) { lines.push(line);line=''; }
+        line+=char;
+      }
+    }
+    if (line) lines.push(line);
+    label.text=lines.join('\n');
+    return {label,band:Math.max(6,(fontSize || 3)*1.15*lines.length/0.91+1.5)};
+  }
+
+  function buildPrintLayout(settings) {
+    const {pitch,boxGap,tileGap,tileThickness=5} = settings;
+    const blocked = new Set(), occupied = new Map(), tiles = [];
+    const key = (x,y) => x+','+y;
+    for (const piece of editor.startPieces) {
+      const shape = SHAPES[piece.shape];
+      if (!shape) continue;
+      const yBase = ROWS-piece.y-shape.h;
+      if (shape.fixed) {
+        for (const [x,y] of shape.cells) {
+          const id=key(piece.x+x,yBase+shape.h-1-y);
+          if (occupied.has(id)) throw new Error(printMessage('Плитка перекрывает неподвижную клетку. Исправьте стартовую доску.','A tile overlaps a blocked cell. Correct the starting board.'));
+          blocked.add(id);
+        }
+        continue;
+      }
+      const tile = {
+        kind:'tile', cells:shape.cells.map(([x,y])=>[x,shape.h-1-y]),
+        bounds:[0,0,shape.w*pitch,shape.h*pitch], height:tileThickness,
+        radius:settings.tileRadius, topBevel:settings.tileTop, bottomBevel:settings.tileBottom,
+        circle:piece.round && shape.w===shape.h && shape.cells.length===shape.w*shape.h,
+        origin:[piece.x,yBase], bridges:[], cuts:[], masks:[], labels:[]
+      };
+      for (const [x,y] of tile.cells) {
+        const cx=x+piece.x,cy=y+yBase,id=key(cx,cy);
+        if (cx<0||cy<0||cx>=COLS||cy>=ROWS||occupied.has(id)||blocked.has(id))
+          throw new Error(printMessage('Проверьте границы и перекрытия плиток на стартовой доске.','Check tile overlaps and boundaries on the starting board.'));
+        occupied.set(id,tile);
+      }
+      const label=printTileLabel(piece);
+      if (label.trim() && settings.tileText!=='off') {
+        const rect=bestRectForLabel(shape,label,piece.region);
+        const margin=Math.max(1.3,tileGap/2+settings.tileTop+0.8);
+        const rectWidth=rect.w*pitch-2*margin,rectHeight=rect.h*pitch-2*margin;
+        if (rectWidth<1 || rectHeight<1) throw new Error(printMessage('Для меток увеличьте клетку или уменьшите фаску.','Increase the cell size or reduce the chamfer to fit the markings.'));
+        const inset = tile.circle ? 0.15 : 0;
+        tile.labels.push({text:label,face:'top',mode:settings.tileText,
+          rect:[rect.x*pitch+margin+rectWidth*inset,(shape.h-rect.y-rect.h)*pitch+margin+rectHeight*inset,
+            rectWidth*(1-2*inset),rectHeight*(1-2*inset)]});
+      }
+      tiles.push(tile);
+    }
+    const width=COLS*pitch,height=ROWS*pitch;
+    const author=prepareTrayInscription(settings.author,settings.authorText,width,settings);
+    const title=prepareTrayInscription(settings.title,settings.titleText,width,settings);
+    const authorBand=author?.band ?? 0,titleBand=title?.band ?? 0;
+    const floorThickness=settings.floorThickness ?? 2;
+    const wallThickness=settings.wallThickness ?? 2;
+    const edge=boxGap+wallThickness;
+    const box={
+      kind:'box', floorThickness, height:floorThickness+settings.wallHeight, cells:[...blocked].map(id=>id.split(',').map(Number)),
+      bounds:[-edge,-edge-titleBand,width+edge,height+edge+authorBand],
+      cavity:[-boxGap,-boxGap,width+boxGap,height+boxGap],
+      radius:settings.boxRadius,topBevel:settings.boxTop,bottomBevel:settings.boxBottom,
+      cuts:[],masks:[],labels:[]
+    };
+    if (author) box.labels.push({...author.label,rect:[0,(box.cavity[3]+box.bounds[3]-(authorBand-1))/2,width,authorBand-1], centerInk:true});
+    if (title) box.labels.push({...title.label,rect:[0,(box.bounds[1]+box.cavity[1]-(titleBand-1))/2,width,titleBand-1], centerInk:true});
+
+    // Join diagonal cells with a printable bridge. Reserve room in any
+    // neighbouring piece that would otherwise occupy the bridge's corners.
+    const bridges = new Map();
+    for (const tile of tiles) {
+      const cells=new Set(tile.cells.map(([x,y])=>key(x,y)));
+      for (const [x,y] of tile.cells) for (const dy of [-1,1]) {
+        if (!cells.has(key(x+1,y+dy)) || cells.has(key(x+1,y)) || cells.has(key(x,y+dy))) continue;
+        const cx=x+1,cy=y+(dy>0 ? 1 : 0);
+        const bx=cx+tile.origin[0],by=cy+tile.origin[1],id=key(bx,by);
+        if (bridges.has(id) && bridges.get(id)!==tile)
+          throw new Error(printMessage('Две диагональные плитки пересекаются перемычками. Разведите их на стартовой доске.','Two diagonal tile bridges cross. Separate those tiles on the starting board.'));
+        bridges.set(id,tile);
+        const half=Math.max(0.95,tileGap/2+settings.tileRadius*0.3+0.75);
+        tile.bridges.push([cx*pitch,cy*pitch,half]);
+        const clearance=Math.SQRT2*half+Math.max(tileGap,boxGap);
+        for (const dx of [-1,0]) for (const ddy of [-1,0]) {
+          const nearby=key(bx+dx,by+ddy),other=occupied.get(nearby);
+          if (other && other!==tile) other.cuts.push([(bx-other.origin[0])*pitch,(by-other.origin[1])*pitch,clearance]);
+          if (blocked.has(nearby)) box.cuts.push([bx*pitch,by*pitch,clearance]);
+        }
+      }
+      const pending=[tile.cells[0]],visited=new Set();
+      for (let i=0;i<pending.length;i++) {
+        const [x,y]=pending[i],id=key(x,y);
+        if (visited.has(id)) continue;
+        visited.add(id);
+        for (const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]]) {
+          const next=key(x+dx,y+dy);
+          if (cells.has(next) && !visited.has(next)) pending.push([x+dx,y+dy]);
+        }
+      }
+      if (visited.size!==cells.size)
+        throw new Error(printMessage('Одна из плиток состоит из раздельных фрагментов. Соедините их в редакторе плиток.','A tile contains separate fragments. Connect them in the tile editor.'));
+    }
+
+    const parts=[box,...tiles.sort((a,b)=>b.bounds[3]-a.bounds[3])];
+    const shelves=[];
+    let nextY=2,usedWidth=0;
+    for (const part of parts) {
+      const [left,bottom,right,top]=part.bounds;
+      const w=right-left,h=top-bottom;
+      if (w+4>settings.layoutWidth+0.00001) throw new Error(printMessage('Коробочка или плитка шире раскладки. Увеличьте её ширину или уменьшите размер клетки.','A part is wider than the layout. Increase the layout width or reduce the cell size.'));
+      let shelf=shelves.find(row=>row.height>=h && row.x+w+2<=settings.layoutWidth);
+      if (!shelf) {
+        shelf={x:2,y:nextY,height:h};
+        shelves.push(shelf);nextY+=h+4;
+      }
+      part.offset=[shelf.x-left,shelf.y-bottom];
+      usedWidth=Math.max(usedWidth,shelf.x+w+2);
+      shelf.x+=w+4;
+    }
+    for (const part of parts) {
+      part.assembledOffset=part.kind==='box' ? [0,0] : part.origin.map(value=>value*pitch);
+      for (const label of part.labels) {
+        label.font=settings.font || 'Arial';
+        label.fontSize=label.fontSize ?? 0;
+        label.letterSpacing=settings.letterSpacing ?? 0.3;
+      }
+    }
+    return {parts,width:usedWidth,height:nextY-2,assembledBounds:box.bounds,
+      floorThickness,maxHeight:Math.max(floorThickness+tileThickness,box.height)+settings.depth};
+  }
+
+  function printLabelFont(family,size) {
+    return '900 '+size+'px "'+family+'", Arial, sans-serif';
+  }
+
+  const printSegmenter=typeof Intl.Segmenter==='function' ? new Intl.Segmenter(undefined,{granularity:'grapheme'}) : null;
+
+  function printGraphemes(text) {
+    return printSegmenter ? Array.from(printSegmenter.segment(text),item=>item.segment) : Array.from(text);
+  }
+
+  function measurePrintLine(ctx,line,gap) {
+    const runs=gap ? printGraphemes(line) : [line];
+    const metrics=runs.map(run=>ctx.measureText(run));
+    const advance=metrics.reduce((sum,item)=>sum+item.width,0);
+    return {runs,metrics,advance,width:advance+Math.max(0,runs.length-1)*gap};
+  }
+
+  function paintPrintLabel(ctx,label,width,height,scale,color) {
+    const lines=label.text.split('\n');
+    const font=size=>printLabelFont(label.font,size);
+    ctx.font=font(100);
+    const gap=(label.letterSpacing || 0)*scale;
+    const fitWidth=Math.min(...lines.map(line=>{
+      const {runs,advance}=measurePrintLine(ctx,line,gap);
+      if (!advance) return Infinity;
+      return (width*0.92-Math.max(0,runs.length-1)*gap)*100/advance;
+    }));
+    if (fitWidth<=0) throw new Error(printMessage('Уменьшите межбуквенный интервал: надпись не помещается.','Reduce letter spacing to fit the inscription.'));
+    const fit=Math.min(height*0.91/(1.15*lines.length),fitWidth);
+    const size=label.fontSize>0 ? Math.min(fit,label.fontSize*scale) : fit;
+    ctx.font=font(size);ctx.textAlign='left';ctx.textBaseline=label.centerInk ? 'alphabetic' : 'middle';
+    ctx.fillStyle=color;ctx.strokeStyle=color;ctx.lineJoin='round';ctx.lineWidth=Math.max(1,scale*0.18);
+    const advance=size*1.15;
+    let shift=0;
+    if (label.centerInk) {
+      let top=Infinity,bottom=-Infinity;
+      for (const [i,line] of lines.entries()) {
+        if (!line.trim()) continue;
+        const metrics=ctx.measureText(line),baseline=(i-(lines.length-1)/2)*advance;
+        top=Math.min(top,baseline-metrics.actualBoundingBoxAscent);
+        bottom=Math.max(bottom,baseline+metrics.actualBoundingBoxDescent);
+      }
+      if (Number.isFinite(top+bottom)) shift=-(top+bottom)/2;
+    }
+    for (const [index,line] of lines.entries()) {
+      const y=height/2+(index-(lines.length-1)/2)*advance+shift;
+      const measured=measurePrintLine(ctx,line,gap);
+      let x=(width-measured.width)/2;
+      for (const [i,run] of measured.runs.entries()) {
+        ctx.strokeText(run,x,y);ctx.fillText(run,x,y);
+        x+=measured.metrics[i].width+gap;
+      }
+    }
+  }
+
+  function rasterizePrintLabel(label) {
+    const canvas=document.createElement('canvas');
+    const [, ,width,height]=label.rect;
+    const scale=Math.min(10,Math.sqrt(1000000/(width*height)));
+    canvas.width=Math.max(4,Math.ceil(width*scale));
+    canvas.height=Math.max(4,Math.ceil(height*scale));
+    const ctx=canvas.getContext('2d',{willReadFrequently:true});
+    paintPrintLabel(ctx,label,canvas.width,canvas.height,scale,'#fff');
+    const rgba=ctx.getImageData(0,0,canvas.width,canvas.height).data,alpha=new Uint8Array(canvas.width*canvas.height);
+    for (let i=0;i<alpha.length;i++) alpha[i]=rgba[4*i+3];
+    return {rect:label.rect,face:label.face,mode:label.mode,mirror:label.face==='bottom',
+      width:canvas.width,height:canvas.height,alpha};
+  }
+
+  function createPrintViewer(canvas) {
+    const gl = canvas.getContext('webgl', {antialias:true});
+    if (!gl) throw new Error('WebGL');
+    function shader(type, source) {
+      const result = gl.createShader(type);
+      gl.shaderSource(result, source);
+      gl.compileShader(result);
+      if (!gl.getShaderParameter(result, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(result));
+      return result;
+    }
+    const program = gl.createProgram();
+    const vertex = shader(gl.VERTEX_SHADER, `
+      attribute vec3 position, normal;
+      uniform vec3 offset, center, color;
+      uniform vec2 yaw, pitch, scale, pan;
+      varying vec3 paint;
+      vec3 rotate(vec3 p) {
+        vec3 q = vec3(yaw.x*p.x-yaw.y*p.y,yaw.y*p.x+yaw.x*p.y,p.z);
+        return vec3(q.x,pitch.x*q.y-pitch.y*q.z,pitch.y*q.y+pitch.x*q.z);
+      }
+      void main() {
+        vec3 p = rotate(position+offset-center);
+        gl_Position = vec4(p.xy*scale+pan,-p.z*max(scale.x,scale.y)*0.08,1.0);
+        float light = max(0.0,dot(rotate(normal),normalize(vec3(-0.4,-0.6,1.0))));
+        paint = color*(0.44+0.56*light);
+      }
+    `);
+    const fragment = shader(gl.FRAGMENT_SHADER, `
+      precision mediump float;
+      varying vec3 paint;
+      void main() { gl_FragColor = vec4(paint,1.0); }
+    `);
+    gl.attachShader(program,vertex);gl.attachShader(program,fragment);gl.linkProgram(program);
+    gl.deleteShader(vertex);gl.deleteShader(fragment);
+    if (!gl.getProgramParameter(program,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program));
+    const uniforms = Object.fromEntries(['offset','center','color','yaw','pitch','scale','pan'].map(name=>[name,gl.getUniformLocation(program,name)]));
+    const position=gl.getAttribLocation(program,'position'),normal=gl.getAttribLocation(program,'normal');
+    let model=null, buffer=null, yaw=-0.45, pitch=-0.62, zoom=1, drag=null, frame=0, panX=0, panY=0;
+    function draw() {
+      frame=0;
+      const ratio=Math.min(window.devicePixelRatio || 1,2);
+      const width=Math.max(1,Math.round(canvas.clientWidth*ratio)),height=Math.max(1,Math.round(canvas.clientHeight*ratio));
+      if (canvas.width!==width || canvas.height!==height) { canvas.width=width;canvas.height=height; }
+      gl.viewport(0,0,width,height);
+      gl.clearColor(0.105,0.135,0.18,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+      if (!model) return;
+      const {layout,ranges,assembled}=model;
+      const bounds=assembled ? layout.assembledBounds : [0,0,layout.width,layout.height];
+      const [left,bottom,right,top]=bounds;
+      const size=1.76*zoom/Math.hypot(right-left,top-bottom,layout.maxHeight);
+      gl.useProgram(program);gl.enable(gl.DEPTH_TEST);
+      gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+      gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,3,gl.FLOAT,false,16,0);
+      gl.enableVertexAttribArray(normal);gl.vertexAttribPointer(normal,3,gl.BYTE,true,16,12);
+      gl.uniform2f(uniforms.yaw,Math.cos(yaw),Math.sin(yaw));
+      gl.uniform2f(uniforms.pitch,Math.cos(pitch),Math.sin(pitch));
+      gl.uniform2f(uniforms.scale,size*Math.min(1,height/width),size*Math.min(1,width/height));
+      gl.uniform2f(uniforms.pan,2*panX/Math.max(1,canvas.clientWidth),-2*panY/Math.max(1,canvas.clientHeight));
+      gl.uniform3f(uniforms.center,(left+right)/2,(bottom+top)/2,layout.maxHeight/2);
+      for (const [i,part] of layout.parts.entries()) {
+        const [x,y]=assembled ? part.assembledOffset : part.offset;
+        gl.uniform3f(uniforms.offset,x-part.offset[0],y-part.offset[1],assembled && part.kind==='tile' ? layout.floorThickness : 0);
+        gl.uniform3fv(uniforms.color,part.kind==='box' ? [0.62,0.72,0.84] : [0.45,0.82,0.94]);
+        gl.drawArrays(gl.TRIANGLES,ranges[i][0]*3,ranges[i][1]*3);
+      }
+    }
+    function redraw() { if (!frame) frame=requestAnimationFrame(draw); }
+    function reset() { yaw=-0.45;pitch=-0.62;zoom=1;panX=panY=0;redraw(); }
+    function rotate(dx,dy) { yaw+=dx;pitch+=dy;redraw(); }
+    function magnify(factor) { zoom=Math.max(0.35,Math.min(8,zoom*factor));redraw(); }
+    canvas.addEventListener('contextmenu',event=>event.preventDefault());
+    canvas.addEventListener('pointerdown',event=>{
+      if (!model || (event.button!==0 && event.button!==2)) return;
+      event.preventDefault();
+      canvas.focus({preventScroll:true});
+      drag={id:event.pointerId,x:event.clientX,y:event.clientY,pan:event.button===2};
+      canvas.setPointerCapture(event.pointerId);
+    });
+    canvas.addEventListener('pointermove',event=>{
+      if (drag?.id!==event.pointerId) return;
+      const dx=event.clientX-drag.x,dy=event.clientY-drag.y;
+      if (drag.pan) { panX+=dx;panY+=dy;redraw(); }
+      else rotate(dx*0.012,dy*0.012);
+      drag.x=event.clientX;drag.y=event.clientY;
+    });
+    canvas.addEventListener('lostpointercapture',()=>{ drag=null; });
+    canvas.addEventListener('wheel',event=>{
+      if (!model) return;
+      event.preventDefault();magnify(Math.exp(-event.deltaY*0.001));
+    },{passive:false});
+    canvas.addEventListener('dblclick',reset);
+    canvas.addEventListener('keydown',event=>{
+      if (!model) return;
+      const rotations={ArrowLeft:[-.12,0],ArrowRight:[.12,0],ArrowUp:[0,-.12],ArrowDown:[0,.12]};
+      if (rotations[event.key]) rotate(...rotations[event.key]);
+      else if (event.key==='+' || event.key==='=') magnify(1.15);
+      else if (event.key==='-') magnify(1/1.15);
+      else if (event.key==='Home') reset();
+      else return;
+      event.preventDefault();
+    });
+    const observer=new ResizeObserver(redraw);
+    observer.observe(canvas);
+    function clear() {
+      if (buffer) gl.deleteBuffer(buffer);
+      buffer=null;model=null;redraw();
+    }
+    return {
+      clear, reset,
+      show(stl,ranges,layout,assembled) {
+        clear();
+        const data=new DataView(stl),count=data.getUint32(80,true);
+        const packed=new ArrayBuffer(count*48),coordinates=new Float32Array(packed),normals=new Int8Array(packed);
+        for (let i=0;i<count;i++) {
+          const offset=84+i*50;
+          const nx=Math.round(data.getFloat32(offset,true)*127);
+          const ny=Math.round(data.getFloat32(offset+4,true)*127);
+          const nz=Math.round(data.getFloat32(offset+8,true)*127);
+          for (let j=0;j<3;j++) {
+            const target=i*48+j*16,source=offset+12+j*12;
+            for (let k=0;k<3;k++) coordinates[target/4+k]=data.getFloat32(source+k*4,true);
+            normals[target+12]=nx;normals[target+13]=ny;normals[target+14]=nz;
+          }
+        }
+        buffer=gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,packed,gl.STATIC_DRAW);
+        if (gl.getError()!==gl.NO_ERROR) { clear();throw new Error('WebGL'); }
+        model={ranges,layout,assembled};reset();
+      },
+      setAssembled(assembled) { if (model) { model.assembled=assembled;reset(); } }
+    };
+  }
+
+  function drawPrintPlan(layout, settings, assembled) {
+    const [left,bottom,right,top]=assembled ? layout.assembledBounds : [0,0,layout.width,layout.height];
+    const width=right-left,height=top-bottom;
+    const scale=Math.min(760/width,480/height,12);
+    const columns=Math.ceil(width*scale),rows=Math.ceil(height*scale);
+    printPreview.width=columns;printPreview.height=rows;
+    const ctx=printPreview.getContext('2d'),pixels=ctx.createImageData(columns,rows),rgba=pixels.data;
+    for (let k=0;k<rgba.length;k+=4) { rgba[k]=32;rgba[k+1]=38;rgba[k+2]=49;rgba[k+3]=255; }
+    for (const part of layout.parts) {
+      const [x,y]=assembled ? part.assembledOffset : part.offset;
+      const [a,b,c,d]=part.bounds;
+      const {outer,opening,blocks}=printFootprint(part,settings);
+      const fromX=Math.max(0,Math.floor((x+a-left)*scale));
+      const toX=Math.min(columns,Math.ceil((x+c-left)*scale));
+      const fromY=Math.max(0,Math.floor((top-y-d)*scale));
+      const toY=Math.min(rows,Math.ceil((top-y-b)*scale));
+      const tile=part.kind==='tile';
+      for (let row=fromY;row<toY;row++) for (let col=fromX;col<toX;col++) {
+        const px=left+(col+.5)/scale-x,py=top-(row+.5)/scale-y;
+        const distance=outer(px,py);
+        const alpha=Math.max(0,Math.min(1,.5-distance*scale));
+        if (!alpha) continue;
+        const floor=opening && opening(px,py)<part.topBevel && blocks(px,py)>0;
+        const shade=!floor && distance+part.topBevel>0 ? .84 : 1;
+        const at=4*(row*columns+col);
+        rgba[at]=rgba[at]*(1-alpha)+(tile?157:floor?59:112)*shade*alpha;
+        rgba[at+1]=rgba[at+1]*(1-alpha)+(tile?200:floor?70:129)*shade*alpha;
+        rgba[at+2]=rgba[at+2]*(1-alpha)+(tile?231:floor?85:151)*shade*alpha;
+      }
+    }
+    ctx.putImageData(pixels,0,0);
+    for (const part of layout.parts) {
+      const [x,y]=assembled ? part.assembledOffset : part.offset;
+      for (const label of part.labels) {
+        const [lx,ly,w,h]=label.rect;
+        ctx.save();ctx.translate((x+lx-left)*scale,(top-y-ly-h)*scale);
+        paintPrintLabel(ctx,label,w*scale,h*scale,scale,label.mode==='raised' ? '#e3f2ff' : '#14202e');
+        ctx.restore();
+      }
+    }
+    printPreview.hidden=false;
+  }
+
+  const printPreviewMode=document.getElementById('printPreviewMode');
+  const printShow3D=document.getElementById('printShow3D');
+  const printReset3D=document.getElementById('printReset3D');
+  let printViewer=null, printModel=null, printPreviewFrame=0, printRebuildTimer=0;
+  let printWorkerAction=null;
+  let print3DEnabled=false;
+  function setPrint3DEnabled(enabled) {
+    print3DEnabled=enabled;
+    const label=enabled ? 'printHide3D' : 'printShow3D';
+    printShow3D.dataset.ruseng=label;
+    printShow3D.textContent=t(label);
+  }
+  const printAssembled=()=>printPreviewMode.value==='assembled';
+
+  function refreshPrintPreview() {
+    if (printWorker) return;
+    try {
+      const settings=readPrintSettings(),layout=buildPrintLayout(settings);
+      drawPrintPlan(layout,settings,printAssembled());
+      printStatus.textContent=printMessage('Деталей: ','Parts: ')+layout.parts.length+
+        printMessage(' · STL на столе ',' · STL on bed ')+layout.width.toFixed(1)+' × '+layout.height.toFixed(1)+printMessage(' мм',' mm');
+      printDownload.disabled=false;printShow3D.disabled=false;
+    } catch (error) {
+      printPreview.hidden=true;printStatus.textContent=error.message;
+      printDownload.disabled=true;printShow3D.disabled=!print3DEnabled;
+    }
+  }
+  function invalidatePrintModel() {
+    printModel=null;printViewer?.clear();printReset3D.disabled=true;
+  }
+
+  function closePrintSpace() {
+    clearTimeout(printRebuildTimer);
+    setPrint3DEnabled(false);
+    printGeneration++;
+    invalidatePrintModel();
+    if (printWorker) printWorker.terminate();
+    printWorker=null;document.getElementById('printFields').disabled=false;
+    setAppMode('editor');renderEditor();
+  }
+
+  document.getElementById('printBtn').addEventListener('click', () => {
+    if (appMode!=='editor' || tileEditActive) return;
+    printForm.elements.author.value=levelAuthorInput.value;
+    printForm.elements.title.value=levelNameInput.value;
+    setAppMode('print');
+    refreshPrintPreview();
+    window.scrollTo(0,0);
+  });
+  printForm.addEventListener('input', () => {
+    invalidatePrintModel();
+    if (!printPreviewFrame) printPreviewFrame=requestAnimationFrame(()=>{
+      printPreviewFrame=0;
+      if (appMode==='print') refreshPrintPreview();
+    });
+    clearTimeout(printRebuildTimer);
+    if (print3DEnabled) printRebuildTimer=setTimeout(()=>{
+      if (appMode==='print' && print3DEnabled && !printDownload.disabled) buildOrUsePrintModel('view');
+    },450);
+  });
+  printPreviewMode.addEventListener('change',()=>{
+    printViewer?.setAssembled(printAssembled());
+    refreshPrintPreview();
+  });
+  printReset3D.addEventListener('click',()=>printViewer?.reset());
+  printForm.addEventListener('submit', event => event.preventDefault());
+  function deliverPrintModel(action) {
+    const {buffer,ranges,layout,title}=printModel;
+    if (action==='view') {
+      if (!print3DEnabled) return;
+      try {
+        printViewer ||= createPrintViewer(document.getElementById('print3D'));
+        printViewer.show(buffer,ranges,layout,printAssembled());
+        printReset3D.disabled=false;
+      } catch (error) {
+        printReset3D.disabled=true;
+        printStatus.textContent=printMessage('Не удалось открыть 3D-просмотр. STL можно скачать.','Could not open the 3D preview. The STL is available for download.');
+        setPrint3DEnabled(false);
+        console.warn('STL preview',error);
+      }
+      return;
+    }
+    const url=URL.createObjectURL(new Blob([buffer],{type:'model/stl'}));
+    const link=document.createElement('a');
+    link.href=url;link.download=(title.replace(/[\\/:*?"<>|]/g,'_') || 'Klotski')+'.stl';
+    document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+    printStatus.textContent=printMessage('Бинарный STL готов · ','Binary STL ready · ')+(buffer.byteLength/1048576).toFixed(1)+' MiB';
+  }
+
+  function buildOrUsePrintModel(action) {
+    if (printWorker) return;
+    if (printModel) { deliverPrintModel(action); return; }
+    let workerUrl;
+    try {
+      const settings=readPrintSettings(),layout=buildPrintLayout(settings);
+      const parts=layout.parts.map(part=>({...part,masks:part.labels.map(rasterizePrintLabel)}));
+      const script=`
+        const printFootprint=${printFootprint.toString()};
+        const makePrintMesh=${makePrintMesh.toString()};
+        onmessage=({data})=>{try {
+          const ranges=[];
+          const buffer=makePrintMesh(data.parts,data.settings,ranges);
+          postMessage({buffer,ranges},[buffer]);
+        } catch(error) {postMessage({error:error.message});}};
+      `;
+      workerUrl=URL.createObjectURL(new Blob([script],{type:'text/javascript'}));
+      printWorker=new Worker(workerUrl);
+      printWorkerAction=action;
+      const generation=++printGeneration;
+      function finish(message) {
+        if (message && action==='view') setPrint3DEnabled(false);
+        printWorker.terminate();printWorker=null;
+        document.getElementById('printFields').disabled=false;
+        refreshPrintPreview();
+        if (message) printStatus.textContent=message;
+      }
+      printWorker.onmessage=({data})=>{
+        if (printGeneration!==generation) return;
+        if (data.error) {
+          const messages={
+            size:printMessage('Модель слишком велика для выбранной детализации. Увеличьте шаг сетки или уменьшите клетку.','The model is too large at this resolution. Use a coarser mesh or a smaller cell.'),
+            lettering:printMessage('Одна из надписей слишком мала для выбранной сетки. Сократите текст или уменьшите шаг сетки.','A label is too small at this resolution. Shorten the text or use a finer mesh.')
+          };
+          finish(messages[data.error] || printMessage('Не удалось построить STL: ','Could not build STL: ')+data.error);
+          return;
+        }
+        printModel={buffer:data.buffer,ranges:data.ranges,layout,title:settings.title};
+        finish();deliverPrintModel(action);
+        if (action==='download' && print3DEnabled && printReset3D.disabled)
+          deliverPrintModel('view');
+      };
+      printWorker.onerror=()=>{
+        if (printGeneration===generation)
+          finish(printMessage('Не удалось построить STL. Попробуйте увеличить шаг сетки.','Could not build STL. Try a coarser mesh.'));
+      };
+      document.getElementById('printFields').disabled=true;
+      printDownload.disabled=true;printShow3D.disabled=!print3DEnabled;
+      printStatus.textContent=printMessage('Построение STL…','Building STL…');
+      printWorker.postMessage({parts,settings});
+    } catch (error) {
+      printWorker?.terminate();printWorker=null;
+      document.getElementById('printFields').disabled=false;
+      if (action==='view') setPrint3DEnabled(false);
+      refreshPrintPreview();printStatus.textContent=error.message;
+    } finally { if (workerUrl) URL.revokeObjectURL(workerUrl); }
+  }
+  printDownload.addEventListener('click',()=>buildOrUsePrintModel('download'));
+  printShow3D.addEventListener('click',()=>{
+    clearTimeout(printRebuildTimer);
+    setPrint3DEnabled(!print3DEnabled);
+    if (print3DEnabled) { buildOrUsePrintModel('view'); return; }
+    printViewer?.clear();printReset3D.disabled=true;
+    if (printWorker && printWorkerAction==='view') {
+      printGeneration++;
+      printWorker.terminate();printWorker=null;
+      document.getElementById('printFields').disabled=false;
+      refreshPrintPreview();
+    }
+  });
 
   applyStaticTranslations();
   updatePlayPauseBtn();
