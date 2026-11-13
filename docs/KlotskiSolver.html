@@ -1011,7 +1011,7 @@
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v3.60)</span></div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v3.62)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -1205,15 +1205,15 @@
           <div class="print-grid">
           <label>
           <span data-ruseng="print_floorThickness">Толщина донышка, мм</span>
-          <input class="settings-input" name="floorThickness" type="number" value="2" min="1" max="10" step="0.1" required>
+          <input class="settings-input" name="floorThickness" type="number" value="2.5" min="1" max="10" step="0.1" required>
           </label>
           <label>
           <span data-ruseng="print_wallThickness">Толщина стенки, мм</span>
-          <input class="settings-input" name="wallThickness" type="number" value="2" min="1.2" max="10" step="0.1" required>
+          <input class="settings-input" name="wallThickness" type="number" value="1.5" min="1.2" max="10" step="0.1" required>
           </label>
           <label>
           <span data-ruseng="print_wallHeight">Высота борта над донышком, мм</span>
-          <input class="settings-input" name="wallHeight" type="number" value="5" min="2" max="15" step="0.1" required>
+          <input class="settings-input" name="wallHeight" type="number" value="5.5" min="2" max="15" step="0.1" required>
           </label>
           <label>
           <span data-ruseng="print_boxGap">Запас у каждой стенки, мм</span>
@@ -1222,6 +1222,10 @@
           <label>
           <span data-ruseng="print_boxRadius">Внешнее скругление углов, мм</span>
           <input class="settings-input" name="boxRadius" type="number" value="2" min="0" max="2" step="0.1" required>
+          </label>
+          <label>
+          <span data-ruseng="print_boxInnerRadius">Внутреннее скругление углов, мм</span>
+          <input class="settings-input" name="boxInnerRadius" type="number" value="2" min="0" max="4" step="0.1" required>
           </label>
           <label>
           <span data-ruseng="print_boxTop">Верхняя фаска, мм</span>
@@ -1511,7 +1515,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '3.60';
+  const APP_VERSION = '3.62';
   const DISK_HELPER_VERSION = '1.01';
   let diskLogTarget=null, diskLogBusy=false, diskLogWarned=false;
   const diskLogQueue=[];
@@ -1736,6 +1740,7 @@
       printDetail: "Шаг сетки, мм",
       print_boxGap: "Запас у каждой стенки, мм",
       print_boxRadius: "Внешнее скругление углов, мм",
+      print_boxInnerRadius: "Внутреннее скругление углов, мм",
       print_boxTop: "Верхняя фаска, мм",
       print_boxBottom: "Нижняя фаска, мм",
       print_tileGap: "Зазор между плитками, мм",
@@ -2157,6 +2162,7 @@
       printDetail: "Mesh spacing, mm",
       print_boxGap: "Clearance at each wall, mm",
       print_boxRadius: "Outer corner radius, mm",
+      print_boxInnerRadius: "Inner corner radius, mm",
       print_boxTop: "Top chamfer, mm",
       print_boxBottom: "Bottom chamfer, mm",
       print_tileGap: "Gap between tiles, mm",
@@ -13873,7 +13879,7 @@ self.onmessage = async function (e) {
     function roundedRectangle(x,y,left,bottom,right,top,radius) {
       return rectangle(x,y,left+radius,bottom+radius,right-radius,top-radius)-radius;
     }
-    function cellRegion(cells, pitch, radius) {
+    function cellRegion(cells, pitch, radius, concaveRadius=0) {
       const keys = new Set(cells.map(([x,y]) => x+','+y));
       const has = (x,y) => keys.has(x+','+y);
       const horizontal = new Map(), vertical = new Map(), corners = [];
@@ -13886,9 +13892,13 @@ self.onmessage = async function (e) {
         if (!has(x+1,y)) add(vertical,x+1,y);
         if (!has(x,y-1)) add(horizontal,y,x);
         if (!has(x,y+1)) add(horizontal,y+1,x);
-        if (radius > 0) for (const sx of [-1,1]) for (const sy of [-1,1]) {
-          if (!has(x+sx,y) && !has(x,y+sy))
-            corners.push([(x+(sx>0))*pitch,(y+(sy>0))*pitch,sx,sy]);
+        if (radius > 0 || concaveRadius > 0) for (const sx of [-1,1]) for (const sy of [-1,1]) {
+          const cx=(x+(sx>0))*pitch,cy=(y+(sy>0))*pitch;
+          const sideX=has(x+sx,y),sideY=has(x,y+sy),diagonal=has(x+sx,y+sy);
+          if (radius>0 && !sideX && !sideY)
+            corners.push([cx,cy,sx,sy,radius,false]);
+          if (concaveRadius>0 && sideX && sideY && !diagonal)
+            corners.push([cx,cy,-sx,-sy,concaveRadius,true]);
         }
       }
       function merge(lines) {
@@ -13910,10 +13920,12 @@ self.onmessage = async function (e) {
         for (const [at,lo,hi] of hs) distance = Math.min(distance,square(y-at)+square(Math.max(lo-x,0,x-hi)));
         for (const [at,lo,hi] of vs) distance = Math.min(distance,square(x-at)+square(Math.max(lo-y,0,y-hi)));
         let signed = Math.sqrt(distance)*(has(Math.floor(x/pitch),Math.floor(y/pitch)) ? -1 : 1);
-        for (const [cx,cy,sx,sy] of corners) {
+        for (const [cx,cy,sx,sy,radius,concave] of corners) {
           const dx=(x-cx)*sx, dy=(y-cy)*sy;
-          if (dx > -radius && dy > -radius && dx < radius && dy < radius && (dx <= 0 || dy <= 0))
-            signed=Math.max(signed,Math.hypot(dx+radius,dy+radius)-radius);
+          if (dx > -radius && dy > -radius && dx < radius && dy < radius && (dx <= 0 || dy <= 0)) {
+            const arc=Math.hypot(dx+radius,dy+radius)-radius;
+            signed=concave ? Math.min(signed,-arc) : Math.max(signed,arc);
+          }
         }
         return signed;
       };
@@ -13924,11 +13936,22 @@ self.onmessage = async function (e) {
       return distance;
     }
     if (part.kind==='box') {
-      const fixed=part.cells.length ? cellRegion(part.cells,pitch,0) : null;
+      const radius=settings.boxInnerRadius ?? 2;
+      // The clearance offset expands a rounded cell corner by boxGap.
+      const playableRadius=Math.max(0,radius-boxGap);
+      const concaveRadius=radius>0 ? Math.min(radius+boxGap,pitch/2) : 0;
+      const playable=part.playableCells?.length ? cellRegion(part.playableCells,pitch,playableRadius,concaveRadius) : null;
       return {
         outer:(x,y)=>roundedRectangle(x,y,...part.bounds,part.radius),
-        opening:(x,y)=>rectangle(x,y,...part.cavity),
-        blocks:(x,y)=>fixed ? withCuts(fixed(x,y)+boxGap,x,y) : Infinity
+        opening(x,y) {
+          const envelope=roundedRectangle(x,y,...part.cavity,radius);
+          if (!part.playableCells) return envelope;
+          if (!playable) return Infinity;
+          // Carve only playable cells. The remaining material forms both the
+          // border at edge cutouts and the solid posts at interior obstacles.
+          const recess=-withCuts(boxGap-playable(x,y),x,y);
+          return Math.max(envelope,recess);
+        }
       };
     }
     const cells=part.circle ? null : cellRegion(part.cells,pitch,part.radius);
@@ -13982,7 +14005,7 @@ self.onmessage = async function (e) {
     }
     function meshPart(part) {
       const box=part.kind==='box', {depth}=settings;
-      const floor=part.floorThickness ?? 2;
+      const floor=part.floorThickness ?? 2.5;
       const bottomBevel=part.bottomBevel, topBevel=part.topBevel;
       const x0=part.bounds[0]-step*1.37,y0=part.bounds[1]-step*1.29;
       const nx=Math.ceil((part.bounds[2]-x0)/step)+3, ny=Math.ceil((part.bounds[3]-y0)/step)+3;
@@ -13992,7 +14015,7 @@ self.onmessage = async function (e) {
       // Include every horizontal feature plane, sampled just to either side.
       // Preserve the configured thickness and relief heights in the mesh.
       const features=[-zShift,0,part.height,bottomBevel,part.height-topBevel];
-      if (box) features.push(floor,part.height-0.35);
+      if (box) features.push(floor);
       for (const mask of part.masks) {
         const face=mask.face==='top' ? part.height : 0;
         features.push(face+(mask.face==='top' ? 1 : -1)*(mask.mode==='raised' ? depth : -depth));
@@ -14004,15 +14027,12 @@ self.onmessage = async function (e) {
       const zs=[...zSet].sort((a,b)=>a-b);
       if (nx*ny*zs.length>60000000) throw new Error('size');
       const footprint=printFootprint(part,settings);
-      const count=nx*ny, outer=new Float32Array(count), inner=new Float32Array(count), blocks=new Float32Array(count);
+      const count=nx*ny, outer=new Float32Array(count), inner=box ? new Float32Array(count) : null;
       const text=part.masks.map(mask=>({mask, field:new Float32Array(count)}));
       for (let j=0;j<ny;j++) for (let i=0;i<nx;i++) {
         const x=x0+i*step,y=y0+j*step,k=j*nx+i;
         outer[k]=footprint.outer(x,y);
-        if (box) {
-          inner[k]=footprint.opening(x,y);
-          blocks[k]=footprint.blocks(x,y);
-        }
+        if (box) inner[k]=footprint.opening(x,y);
         for (const entry of text) entry.field[k]=maskDistance(entry.mask,x,y);
       }
       for (const entry of text) {
@@ -14025,7 +14045,6 @@ self.onmessage = async function (e) {
           if (box) {
             const opening=Math.max(inner[k]-Math.max(0,z-(part.height-topBevel)),floor-z);
             field=Math.max(field,-opening);
-            if (part.cells.length) field=Math.min(field,Math.max(blocks[k]+bevel,floor-0.35-z,z-part.height,inner[k]-0.25));
           }
           for (const {mask,field:letters} of text) {
             const top=mask.face==='top', face=top ? part.height : 0;
@@ -14224,18 +14243,22 @@ self.onmessage = async function (e) {
     const author=prepareTrayInscription(settings.author,settings.authorText,width,settings);
     const title=prepareTrayInscription(settings.title,settings.titleText,width,settings);
     const authorBand=author?.band ?? 0,titleBand=title?.band ?? 0;
-    const floorThickness=settings.floorThickness ?? 2;
-    const wallThickness=settings.wallThickness ?? 2;
+    const floorThickness=settings.floorThickness ?? 2.5;
+    const wallThickness=settings.wallThickness ?? 1.5;
     const edge=boxGap+wallThickness;
+    const playableCells=blocked.size ? [] : null;
+    if (playableCells) for (let y=0;y<ROWS;y++) for (let x=0;x<COLS;x++) {
+      if (!blocked.has(key(x,y))) playableCells.push([x,y]);
+    }
     const box={
-      kind:'box', floorThickness, height:floorThickness+settings.wallHeight, cells:[...blocked].map(id=>id.split(',').map(Number)),
+      kind:'box', floorThickness, height:floorThickness+settings.wallHeight, playableCells,
       bounds:[-edge,-edge-titleBand,width+edge,height+edge+authorBand],
       cavity:[-boxGap,-boxGap,width+boxGap,height+boxGap],
       radius:settings.boxRadius,topBevel:settings.boxTop,bottomBevel:settings.boxBottom,
       cuts:[],masks:[],labels:[]
     };
-    if (author) box.labels.push({...author.label,rect:[0,(box.cavity[3]+box.bounds[3]-(authorBand-1))/2,width,authorBand-1], centerInk:true});
-    if (title) box.labels.push({...title.label,rect:[0,(box.bounds[1]+box.cavity[1]-(titleBand-1))/2,width,titleBand-1], centerInk:true});
+    if (author) box.labels.push({...author.label,rect:[0,(box.cavity[3]+box.bounds[3]-(authorBand-1))/2,width,authorBand-1]});
+    if (title) box.labels.push({...title.label,rect:[0,(box.bounds[1]+box.cavity[1]-(titleBand-1))/2,width,titleBand-1]});
 
     // Join diagonal cells with a printable bridge. Reserve room in any
     // neighbouring piece that would otherwise occupy the bridge's corners.
@@ -14330,27 +14353,33 @@ self.onmessage = async function (e) {
     if (fitWidth<=0) throw new Error(printMessage('Уменьшите межбуквенный интервал: надпись не помещается.','Reduce letter spacing to fit the inscription.'));
     const fit=Math.min(height*0.91/(1.15*lines.length),fitWidth);
     const size=label.fontSize>0 ? Math.min(fit,label.fontSize*scale) : fit;
-    ctx.font=font(size);ctx.textAlign='left';ctx.textBaseline=label.centerInk ? 'alphabetic' : 'middle';
+    ctx.font=font(size);ctx.textAlign='left';ctx.textBaseline='alphabetic';
     ctx.fillStyle=color;ctx.strokeStyle=color;ctx.lineJoin='round';ctx.lineWidth=Math.max(1,scale*0.18);
     const advance=size*1.15;
-    let shift=0;
-    if (label.centerInk) {
-      let top=Infinity,bottom=-Infinity;
-      for (const [i,line] of lines.entries()) {
-        if (!line.trim()) continue;
-        const metrics=ctx.measureText(line),baseline=(i-(lines.length-1)/2)*advance;
-        top=Math.min(top,baseline-metrics.actualBoundingBoxAscent);
-        bottom=Math.max(bottom,baseline+metrics.actualBoundingBoxDescent);
-      }
-      if (Number.isFinite(top+bottom)) shift=-(top+bottom)/2;
-    }
-    for (const [index,line] of lines.entries()) {
-      const y=height/2+(index-(lines.length-1)/2)*advance+shift;
-      const measured=measurePrintLine(ctx,line,gap);
-      let x=(width-measured.width)/2;
-      for (const [i,run] of measured.runs.entries()) {
-        ctx.strokeText(run,x,y);ctx.fillText(run,x,y);
-        x+=measured.metrics[i].width+gap;
+    let top=Infinity,bottom=-Infinity;
+    const positioned=lines.map((line,i)=>{
+      const {runs,metrics,width:lineWidth}=measurePrintLine(ctx,line,gap);
+      const baseline=(i-(lines.length-1)/2)*advance;
+      let left=Infinity,right=-Infinity,x=0;
+      const glyphs=runs.map((run,j)=>{
+        const metric=metrics[j],glyph={run,x};
+        if (run.trim()) {
+          left=Math.min(left,x-metric.actualBoundingBoxLeft);
+          right=Math.max(right,x+metric.actualBoundingBoxRight);
+          top=Math.min(top,baseline-metric.actualBoundingBoxAscent);
+          bottom=Math.max(bottom,baseline+metric.actualBoundingBoxDescent);
+        }
+        x+=metric.width+gap;
+        return glyph;
+      });
+      return {glyphs,baseline,center:Number.isFinite(left+right) ? (left+right)/2 : lineWidth/2};
+    });
+    const center=Number.isFinite(top+bottom) ? (top+bottom)/2 : 0;
+    for (const line of positioned) {
+      const y=height/2+line.baseline-center;
+      for (const {run,x} of line.glyphs) {
+        const left=width/2+x-line.center;
+        ctx.strokeText(run,left,y);ctx.fillText(run,left,y);
       }
     }
   }
@@ -14513,7 +14542,7 @@ self.onmessage = async function (e) {
     for (const part of layout.parts) {
       const [x,y]=assembled ? part.assembledOffset : part.offset;
       const [a,b,c,d]=part.bounds;
-      const {outer,opening,blocks}=printFootprint(part,settings);
+      const {outer,opening}=printFootprint(part,settings);
       const fromX=Math.max(0,Math.floor((x+a-left)*scale));
       const toX=Math.min(columns,Math.ceil((x+c-left)*scale));
       const fromY=Math.max(0,Math.floor((top-y-d)*scale));
@@ -14524,8 +14553,10 @@ self.onmessage = async function (e) {
         const distance=outer(px,py);
         const alpha=Math.max(0,Math.min(1,.5-distance*scale));
         if (!alpha) continue;
-        const floor=opening && opening(px,py)<part.topBevel && blocks(px,py)>0;
-        const shade=!floor && distance+part.topBevel>0 ? .84 : 1;
+        const cavity=opening ? opening(px,py) : Infinity;
+        const floor=cavity<=0;
+        const bevel=cavity>0 && cavity<part.topBevel || distance+part.topBevel>0;
+        const shade=!floor && bevel ? .84 : 1;
         const at=4*(row*columns+col);
         rgba[at]=rgba[at]*(1-alpha)+(tile?157:floor?59:112)*shade*alpha;
         rgba[at+1]=rgba[at+1]*(1-alpha)+(tile?200:floor?70:129)*shade*alpha;
