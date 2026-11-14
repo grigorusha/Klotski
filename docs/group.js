@@ -29,6 +29,10 @@ window.BOARD_DESCRIPTIONS = [
         Description: 'Puzzles from Diniar Namdarian : <a target="_blank" href="https://sites.google.com/site/geduldspiele/GalleryModernSlidingPuzzles">sites.google.com</a>' 
     },
     { 
+        Group: 'Osanori Yamamoto', 
+        Description: 'Puzzles from Osanori Yamamoto : <a target="_blank" href="https://www.facebook.com/profile.php?id=100009283240627">www.facebook.com</a>' 
+    },
+    { 
         Group: 'Vlaidmir Yaroslavskiy', 
         Description: 'Puzzles from Vlaidmir Yaroslavskiy' 
     },

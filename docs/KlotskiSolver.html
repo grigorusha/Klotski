@@ -38,9 +38,10 @@
   .gallery-hotkeys kbd { padding: 2px 5px; border: 1px solid rgba(255,255,255,.24); border-radius: 4px; color: var(--gold); }
   .print-heading { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 8px; }
   .print-heading .analyzer-title { grid-column: 2; }
-  .controls.print-download-bar { justify-content: flex-end; }
+  .controls.print-download-bar { justify-content: flex-end; flex-wrap: wrap; height: auto; }
   .controls.print-download-bar button { flex: 0 1 auto; padding-inline: 10px; white-space: normal; }
   .print-preview-stack > h3 { text-align: center; }
+  #printStatus { margin: 0; text-align: center; }
   .print-preview-tools.print-layout-selector { justify-content: center; flex-wrap: nowrap; }
   .print-layout-selector label { min-width: 0; text-align: center; color: var(--sub); font-size: 14px; font-weight: 700; }
   .print-layout-selector select { min-width: 0; max-width: 58%; }
@@ -653,9 +654,9 @@
   .color-palette { display: flex; flex-direction: column; gap: 8px; padding: 10px 10px 8px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
   .color-palette__row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; }
   .color-palette__row + .color-palette__row { padding-top: 6px; border-top: 1px solid rgba(255,255,255,.10); }
-  .color-palette__row--icons { gap: 4px; }
+  .color-palette__row--icons { gap: 3px; }
   .palette-arrow-gap { flex: 0 0 5px; height: 1px; }
-  .color-palette__row--icons .color-palette-sep { margin: 0 2px; min-height: 26px; }
+  .color-palette__row--icons .color-palette-sep { margin: 0 2px; min-height: 22px; }
   .color-palette__row--chars { gap: 3px; flex-wrap: nowrap; }
   .color-swatch { width: 30px; height: 30px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: transform .1s, border-color .15s; box-shadow: inset 0 2px 0 rgba(255,255,255,.25), inset 0 -3px 6px rgba(0,0,0,.3); }
   .color-swatch:hover { transform: scale(1.1); }
@@ -680,6 +681,8 @@
     color: #fff;
   }
   .color-swatch.dir-swatch svg { width: 18px; height: 18px; display: block; }
+  .color-palette__row--icons .dir-swatch { width: 22px; height: 22px; flex-basis: 22px; border-radius: 6px; }
+  .color-palette__row--icons .dir-swatch svg { width: 15px; height: 15px; }
   .editor-subhint { flex-basis: 100%; margin: 6px 0 0; font-size: 11px; line-height: 1.35; text-align: center; color: var(--sub); letter-spacing: .02em; }
   .gallery-view { display: flex; flex-direction: column; gap: 16px; }
   .gallery-summary { padding: 10px 14px; border-radius: 10px; background: rgba(90,200,110,.15); border: 1px solid rgba(120,220,140,.32); color: #000; font-size: 12.5px; font-weight: 500; text-align: center; letter-spacing: .01em; }
@@ -1011,7 +1014,7 @@
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v3.62)</span></div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v3.73)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -1153,6 +1156,7 @@
     <div class="print-heading">
       <h2 class="analyzer-title" data-ruseng="printBtn">Печать</h2>
       <div class="controls print-download-bar">
+        <button type="button" id="printStep" data-ruseng="printStep" data-ruseng-title="printStepHint">Скачать STEP</button>
         <button type="button" id="printDownload" class="primary" data-ruseng="printDownload">Скачать STL</button>
       </div>
     </div>
@@ -1162,10 +1166,12 @@
           <label for="printPreviewMode" data-ruseng="printPreviewMode">Вид раскладки</label>
           <select id="printPreviewMode" class="settings-input">
             <option value="bed" data-ruseng="printOnBed">На столе</option>
-            <option value="assembled" data-ruseng="printAssembled">В коробочке</option>
+            <option value="assembled" data-ruseng="printAssembled" selected>В коробочке</option>
+            <option value="closed" data-ruseng="printClosed" hidden disabled>С закрытой крышкой</option>
           </select>
         </div>
         <canvas id="printPreview" hidden></canvas>
+        <p id="printStatus" class="settings-hint" role="status"></p>
         <h3 id="print3DTitle" data-ruseng="printStlPreview">Просмотр STL в 3D</h3>
         <div class="controls print-3d-actions">
           <button type="button" id="printShow3D" data-ruseng="printShow3D">Посмотреть в 3Д</button>
@@ -1176,29 +1182,6 @@
       </div>
       <div class="print-controls-column">
         <form id="printForm"><fieldset id="printFields"><section class="print-settings">
-          <h3>
-          <span data-ruseng="printBasic">Размеры раскладки</span>
-          </h3>
-          <p class="print-bed-note" data-ruseng="printBedNote">Ширина доступной площади на печатном столе. Глубина занятой площади рассчитывается по раскладке деталей.</p>
-          <div class="print-grid">
-          <label>
-          <span data-ruseng="print_layoutWidth">Ширина раскладки, мм</span>
-          <input class="settings-input" name="layoutWidth" type="number" value="220" min="50" max="2000" step="1" required>
-          </label>
-          <label>
-          <span data-ruseng="printDetail">Шаг сетки, мм</span>
-          <select class="settings-input" name="resolution">
-          <option value="0.1">0.10</option>
-          <option value="0.2">0.20</option>
-          <option value="0.3">0.30</option>
-          <option value="0.4" selected>0.40</option>
-          <option value="0.5">0.50</option>
-          <option value="0.6">0.60</option>
-            </select>
-          </label>
-          </div>
-          </section>
-          <section class="print-settings">
           <h3>
           <span data-ruseng="printBox">Коробочка</span>
           </h3>
@@ -1306,6 +1289,10 @@
           </select>
           </label>
           <label>
+          <span data-ruseng="print_markerSize">Размер маркеров на плитках, %</span>
+          <input class="settings-input" name="markerSize" type="number" value="100" min="25" max="150" step="1" required>
+          </label>
+          <label>
           <span data-ruseng="printFont">Шрифт надписей</span>
           <select class="settings-input" name="font">
             <option value="Arial">Arial</option><option value="Verdana">Verdana</option>
@@ -1326,8 +1313,52 @@
           <input class="settings-input" name="depth" type="number" value="0.65" min="0.3" max="1" step="0.05" required>
           </label>
           </div>
+          </section>
+          <section class="print-settings">
+          <h3>
+          <span data-ruseng="printLid">Крышка</span>
+          </h3>
+          <div class="print-grid">
+          <label>
+          <span data-ruseng="printLid">Крышка</span>
+          <select class="settings-input" name="lid">
+            <option value="off" data-ruseng="print_off">Нет</option>
+            <option value="hinged" data-ruseng="printHingedLid">На шарнире с защёлкой</option>
+          </select>
+          </label>
+          <label>
+          <span data-ruseng="printLidThickness">Толщина крышки, мм</span>
+          <input class="settings-input" name="lidThickness" type="number" value="2.5" min="1.6" max="6" step="0.1" required>
+          </label>
+          <label>
+          <span data-ruseng="printLidGap">Зазор креплений, мм</span>
+          <input class="settings-input" name="lidGap" type="number" value="0.35" min="0.25" max="0.65" step="0.05" required>
+          </label>
+          </div>
+          </section>
+          <section class="print-settings">
+          <h3>
+          <span data-ruseng="printBasic">Размеры раскладки</span>
+          </h3>
+          <p class="print-bed-note" data-ruseng="printBedNote">Ширина доступной площади на печатном столе. Глубина занятой площади рассчитывается по раскладке деталей.</p>
+          <div class="print-grid">
+          <label>
+          <span data-ruseng="print_layoutWidth">Ширина раскладки, мм</span>
+          <input class="settings-input" name="layoutWidth" type="number" value="220" min="50" max="2000" step="1" required>
+          </label>
+          <label>
+          <span data-ruseng="printDetail">Шаг сетки, мм</span>
+          <select class="settings-input" name="resolution">
+          <option value="0.1">0.10</option>
+          <option value="0.2">0.20</option>
+          <option value="0.3">0.30</option>
+          <option value="0.4" selected>0.40</option>
+          <option value="0.5">0.50</option>
+          <option value="0.6">0.60</option>
+            </select>
+          </label>
+          </div>
           </section></fieldset></form>
-        <p id="printStatus" class="settings-hint" role="status"></p>
       </div>
     </div>
   </section>
@@ -1515,7 +1546,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '3.62';
+  const APP_VERSION = '3.73';
   const DISK_HELPER_VERSION = '1.01';
   let diskLogTarget=null, diskLogBusy=false, diskLogWarned=false;
   const diskLogQueue=[];
@@ -1721,9 +1752,16 @@
 
       printOnBed: "На столе",
       printAssembled: "В коробочке",
+      printClosed: "С закрытой крышкой",
+      printLid: "Крышка",
+      printHingedLid: "На шарнире с защёлкой",
+      printLidThickness: "Толщина крышки, мм",
+      printLidGap: "Зазор креплений, мм",
       printPreviewMode: "Вид раскладки",
       printStlPreview: "Просмотр STL в 3D",
       printShow3D: "Посмотреть в 3Д",
+      printBuilding: "Построение STL…",
+      print_markerSize: "Размер маркеров на плитках, %",
       printHide3D: "Отключить 3Д",
       printReset3D: "Сбросить вид",
       print3DHelp: "Левая кнопка — поворот, правая — сдвиг, колесо — масштаб.",
@@ -1757,6 +1795,8 @@
       print_tileText: "Рельеф меток плиток",
       print_depth: "Высота или глубина рельефа, мм",
       printDownload: "Скачать STL",
+      printStep: "Скачать STEP",
+      printStepHint: "Твёрдые тела для CAD с рельефом надписей и маркеров.",
       printLayout: "Раскладка деталей на столе",
 
       anaTitle: "Анализ головоломки",
@@ -1885,6 +1925,10 @@
       decorLineHTitle: 'Полоска горизонтальная',
       decorLineD1Title: 'Полоска диагональ \\',
       decorLineD2Title: 'Полоска диагональ /',
+      rightTriangleNW: 'Прямоугольный треугольник, угол слева сверху',
+      rightTriangleNE: 'Прямоугольный треугольник, угол справа сверху',
+      rightTriangleSE: 'Прямоугольный треугольник, угол справа снизу',
+      rightTriangleSW: 'Прямоугольный треугольник, угол слева снизу',
       decorCircleTitle: 'Кольцо',
       decorTriangleTitle: 'Треугольник',
       decorDiamondTitle: 'Ромб',
@@ -2143,9 +2187,16 @@
 
       printOnBed: "On the print bed",
       printAssembled: "In the tray",
+      printClosed: "Closed lid",
+      printLid: "Lid",
+      printHingedLid: "Hinged with a snap latch",
+      printLidThickness: "Lid thickness, mm",
+      printLidGap: "Hardware clearance, mm",
       printPreviewMode: "Layout view",
       printStlPreview: "3D STL preview",
       printShow3D: "View in 3D",
+      printBuilding: "Building STL…",
+      print_markerSize: "Tile marker size, %",
       printHide3D: "Disable 3D",
       printReset3D: "Reset view",
       print3DHelp: "Left-drag to rotate, right-drag to pan, scroll to zoom.",
@@ -2179,6 +2230,8 @@
       print_tileText: "Tile marking relief",
       print_depth: "Relief height or depth, mm",
       printDownload: "Download STL",
+      printStep: "Download STEP",
+      printStepHint: "CAD solids with raised or recessed lettering and tile markings.",
       printLayout: "Parts on the print bed",
 
       anaTitle: "Puzzle analysis",
@@ -2307,6 +2360,10 @@
       decorLineHTitle: 'Horizontal stripe',
       decorLineD1Title: 'Diagonal stripe \\',
       decorLineD2Title: 'Diagonal stripe /',
+      rightTriangleNW: 'Right triangle, right angle top left',
+      rightTriangleNE: 'Right triangle, right angle top right',
+      rightTriangleSE: 'Right triangle, right angle bottom right',
+      rightTriangleSW: 'Right triangle, right angle bottom left',
       decorCircleTitle: 'Ring',
       decorTriangleTitle: 'Triangle',
       decorDiamondTitle: 'Diamond',
@@ -2496,9 +2553,17 @@
   const DIR_EN_TO_ID = { up: 'up', down: 'down', left: 'left', right: 'right', upright: 'upRight', downright: 'downRight', downleft: 'downLeft', upleft: 'upLeft' };
   const DIR_ROT = { up: 0, right: 90, down: 180, left: 270, upRight: 45, downRight: 135, downLeft: 225, upLeft: 315 };
 
+  const RIGHT_TRIANGLES = {
+    rightTriangleNW: { corner: [-1,-1], glyph: '◤' },
+    rightTriangleNE: { corner: [1,-1], glyph: '◥' },
+    rightTriangleSE: { corner: [1,1], glyph: '◢' },
+    rightTriangleSW: { corner: [-1,1], glyph: '◣' }
+  };
   const DECOR_ID_TO_EN = {
     lineV: 'LineV', lineH: 'LineH',
     lineD1: 'LineD1', lineD2: 'LineD2',
+    rightTriangleNW: 'RightTriangleNW', rightTriangleNE: 'RightTriangleNE',
+    rightTriangleSE: 'RightTriangleSE', rightTriangleSW: 'RightTriangleSW',
     circle: 'Ring', triangle: 'Triangle', triangleDown: 'TriangleDown', square: 'Square', diamond: 'Diamond', star: 'Star',
     smiley: 'Smiley', sad: 'SadSmiley', heart: 'Heart',
     fire: 'Fire', clock: 'Clock', car: 'Car'
@@ -2507,13 +2572,15 @@
     linev: 'lineV', lineh: 'lineH',
     lined1: 'lineD1', lined2: 'lineD2',
     line1: 'lineD1', line2: 'lineD2',
+    righttrianglenw: 'rightTriangleNW', righttrianglene: 'rightTriangleNE',
+    righttrianglese: 'rightTriangleSE', righttrianglesw: 'rightTriangleSW',
     ring: 'circle', triangle: 'triangle', triangledown: 'triangleDown', square: 'square', diamond: 'diamond', star: 'star',
     smiley: 'smiley', smile: 'smiley', sadsmiley: 'sad', sad: 'sad', frown: 'sad',
     heart: 'heart',
     fire: 'fire', flame: 'fire', clock: 'clock', car: 'car'
   };
   const DECOR_ORDER = ['', ...DIR_IDS,
-                       'lineV', 'lineH', 'lineD1', 'lineD2',
+                       'lineV', 'lineH', 'lineD1', 'lineD2', ...Object.keys(RIGHT_TRIANGLES),
                        'circle', 'triangle', 'triangleDown', 'square', 'diamond', 'star', 'smiley', 'sad', 'heart', 'fire', 'clock', 'car'];
   const LIGHT_TILE_COLORS = new Set(['yellow', 'lime', 'beige', 'white']);
   const LIGHT_MARKER_COLORS = new Set(['yellow', 'beige', 'white']);
@@ -2534,6 +2601,7 @@
     'C 0.92 0.80 0.74 0.95 0.50 0.96 Z';
 
   function dirTooltip(id) {
+    if (Object.hasOwn(RIGHT_TRIANGLES, id)) return t(id);
     switch (id) {
       case 'upRight': return t('arrowUpRightTitle');
       case 'downRight': return t('arrowDownRightTitle');
@@ -3520,11 +3588,17 @@
       `<path d="M 0.5 0.17 V 0.23 M 0.83 0.5 H 0.77 M 0.5 0.83 V 0.77 M 0.17 0.5 H 0.23 M 0.5 0.25 V 0.5 L 0.6732 0.4" fill="none" stroke="${details}" stroke-width="0.06" stroke-linecap="round" stroke-linejoin="round"/>` +
       `<circle cx="0.5" cy="0.5" r="0.035" fill="${details}"/>`;
   }
+  function rightTrianglePoints(corner, cx, cy, halfSide) {
+    const [sx,sy] = corner;
+    const x = halfSide * sx, y = halfSide * sy;
+    return `${cx+x},${cy+y} ${cx-x},${cy+y} ${cx+x},${cy-y}`;
+  }
   function pieceDecorMarkup(decor, cx, cy, rectW, rectH) {
     if (!decor) return '';
     const minDim = Math.min(rectW, rectH);
     if (minDim < 0.1) return '';
     const sw = 0.06, shf = 0.30;
+    const squareSide = minDim * 0.55;
     // Line symbols use twice their previous thickness, independently of arrows.
     const lineCrossSize = decor === 'lineV' ? rectW : decor === 'lineH' ? rectH : minDim;
     const arrowWidth = lineCrossSize * 0.25;
@@ -3540,6 +3614,10 @@
       else { x1 = cx - dx; y1 = cy + dy; x2 = cx + dx; y2 = cy - dy; }
       return `<line x1="${x1.toFixed(4)}" y1="${y1.toFixed(4)}" x2="${x2.toFixed(4)}" y2="${y2.toFixed(4)}" stroke="rgba(0,0,0,0.72)" stroke-width="${bw}" stroke-linecap="round"/><line x1="${x1.toFixed(4)}" y1="${y1.toFixed(4)}" x2="${x2.toFixed(4)}" y2="${y2.toFixed(4)}" stroke="#ffffff" stroke-width="${lw}" stroke-linecap="round"/>`;
     }
+    if (Object.hasOwn(RIGHT_TRIANGLES, decor)) {
+      const points = rightTrianglePoints(RIGHT_TRIANGLES[decor].corner, cx, cy, squareSide / 2);
+      return `<polygon points="${points}" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw}" stroke-linejoin="round"/>`;
+    }
     if (decor === 'circle') { const r = minDim * 0.30; return `<circle cx="${cx.toFixed(4)}" cy="${cy.toFixed(4)}" r="${r.toFixed(4)}" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw}"/>`; }
     if (decor === 'triangleDown') return `<g transform="rotate(180 ${cx} ${cy})">${pieceDecorMarkup('triangle', cx, cy, rectW, rectH)}</g>`;
     if (decor === 'diamond') { const r = minDim * 0.38; return `<path d="M ${cx} ${cy-r} L ${cx+r} ${cy} L ${cx} ${cy+r} L ${cx-r} ${cy} Z" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw}" stroke-linejoin="round"/>`; }
@@ -3550,7 +3628,7 @@
       const yBot = cy + R * 0.75;
       return `<path d="M ${cx.toFixed(4)} ${yTop.toFixed(4)} L ${(cx + r23).toFixed(4)} ${yBot.toFixed(4)} L ${(cx - r23).toFixed(4)} ${yBot.toFixed(4)} Z" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw}" stroke-linejoin="round"/>`;
     }
-    if (decor === 'square') { const s = minDim * 0.55; return `<rect x="${(cx - s/2).toFixed(4)}" y="${(cy - s/2).toFixed(4)}" width="${s.toFixed(4)}" height="${s.toFixed(4)}" rx="${(minDim*0.06).toFixed(4)}" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw}"/>`; }
+    if (decor === 'square') { const s = squareSide; return `<rect x="${(cx - s/2).toFixed(4)}" y="${(cy - s/2).toFixed(4)}" width="${s.toFixed(4)}" height="${s.toFixed(4)}" rx="${(minDim*0.06).toFixed(4)}" fill="#ffffff" stroke="rgba(0,0,0,0.72)" stroke-width="${sw}"/>`; }
     if (decor === 'star') {
       const R = minDim * 0.42, r = R * 0.42;
       let d = '';
@@ -3616,12 +3694,16 @@
     return '';
   }
 
+  function tileLabelFontSize(lines, width, height) {
+    const longest = Math.max(1, ...lines.map(line => line.replace(/ /g, '').length));
+    return Math.min(height * 0.72 / lines.length, width * 0.78 / longest);
+  }
+
   function pieceLabelMarkup(label, cx, cy, rectW, rectH) {
     if (!label || label.length === 0) return '';
     const lines = String(label).split('\n');
     const lineCount = lines.length;
-    const maxLineLen = Math.max(1, ...lines.map(l => l.replace(/ /g, '').length));
-    const fs = Math.min(rectH * 0.72 / lineCount, rectW * 0.78 / maxLineLen);
+    const fs = tileLabelFontSize(lines, rectW, rectH);
     if (fs < 0.05) return '';
     const strokeW = Math.max(0.015, fs * 0.12);
     const lineHeight = fs * 1.15;
@@ -3668,6 +3750,10 @@
     else if (decor === 'lineH') inner = `<line x1="0.15" y1="0.5" x2="0.85" y2="0.5" stroke="${c}" stroke-width="0.14" stroke-linecap="round"/>`;
     else if (decor === 'lineD1') inner = `<line x1="0.2" y1="0.2" x2="0.8" y2="0.8" stroke="${c}" stroke-width="0.14" stroke-linecap="round"/>`;
     else if (decor === 'lineD2') inner = `<line x1="0.8" y1="0.2" x2="0.2" y2="0.8" stroke="${c}" stroke-width="0.14" stroke-linecap="round"/>`;
+    else if (Object.hasOwn(RIGHT_TRIANGLES, decor)) {
+      const points = rightTrianglePoints(RIGHT_TRIANGLES[decor].corner, 0.5, 0.5, 0.3);
+      inner = `<polygon points="${points}" fill="${c}"/>`;
+    }
     else if (decor === 'circle') inner = `<circle cx="0.5" cy="0.5" r="0.32" fill="none" stroke="${c}" stroke-width="0.12"/>`;
     else if (decor === 'clock') inner = clockFaceMarkup('none', c, c, 0.08);
     else if (decor === 'triangle') inner = `<path d="M 0.5 0.12 L 0.88 0.78 L 0.12 0.78 Z" fill="none" stroke="${c}" stroke-width="0.12" stroke-linejoin="round"/>`;
@@ -5439,7 +5525,7 @@
     const data = JSON.parse(json);
     if (data.engine !== 1 || !data.meta || !Array.isArray(data.sides)) throw new Error('Invalid checkpoint');
     if(info.integrity && data.integrity!==info.integrity) throw new Error('__CHECKPOINT_INVALID__');
-    return {data,url:location.url,location};
+    return {data,url:location.url,location,automatic:info.automatic===true};
   }
   // Each record is a parent index in the preceding layer followed by sorted tile anchors.
   function layerKey(flat) {
@@ -5589,6 +5675,25 @@
     const started = searchNow();
     let elapsedBefore = 0, expansion = null, appliedRevision = -1, recovering = false;
     const ownedRuns = [];
+    const hourlyInterval=60*60*1000;
+    let nextHourlySave=started+hourlyInterval, automaticSave=null, completedSearch=false;
+    async function removeAutomaticSave(save) {
+      if (!save) return;
+      try {
+        if (save.remove) await save.remove();
+        else if (save.parent?.handle) await save.parent.handle.removeEntry(save.location.handle.name,{recursive:true});
+        else {
+          const response=await diskFetch(save.location.url,{method:'DELETE',credentials:'include',redirect:'error'});
+          if (!response.ok && response.status!==404) throw new Error('WebDAV DELETE: HTTP '+response.status);
+        }
+      } catch(error) {
+        if (error.name!=='NotFoundError') {
+          console.warn('[Klotski] Automatic checkpoint cleanup:',error);
+          return;
+        }
+      }
+      diskControl.notify({type:'checkpoint-removed',url:save.location.url,directory:save.location.handle?.name});
+    }
     let sequence = 0, offloadCount = 0, offloadedBytes = 0;
     function newLayer(side, length) {
       const layer = new ExternalLayer(side.layers.length,length);
@@ -5609,10 +5714,10 @@
       appliedRevision = diskControl.revision;
       diskControl.notify({type:'destination', connected:!!folder});
     }
-    async function saveCheckpoint() {
+    async function saveCheckpoint(automatic=false) {
       if(recovering) throw new Error('Решение уже найдено, восстанавливается путь');
       if (!isCheckpointDestination(folder) || folder.opened) throw new Error('Подключите внешнюю папку для сохранения поиска');
-      diskControl.notify({type:'saving'});
+      diskControl.notify({type:'saving',automatic});
       const totalBytes=sides.reduce((n,s)=>n+s.layers.reduce((n,l)=>n+l.size*l.stride,0),0);
       let writtenBytes=0,lastPercent=-1;
       const progressSave=()=>{const percent=Math.min(99,Math.floor(writtenBytes/Math.max(1,totalBytes)*100));if(percent!==lastPercent){lastPercent=percent;diskControl.notify({type:'save-progress',percent});}};
@@ -5648,18 +5753,41 @@
           const chunk=bytes.subarray(offset,offset+1048576);
           await savedRun.write('manifest-'+chunks.length+'.bin',chunk); chunks.push(chunk.length);chunkHashes.push(await checkpointDigest(chunk));
         }
-        const descriptor={format:'KlotskiCheckpoint1',engine:1,integrity:'SHA-256',chunks,chunkHashes,title:diskControl.meta?.title||'Klotski',savedAt:new Date().toISOString(),depth,states};
+        const descriptor={format:'KlotskiCheckpoint1',engine:1,automatic,integrity:'SHA-256',chunks,chunkHashes,title:diskControl.meta?.title||'Klotski',savedAt:new Date().toISOString(),depth,states};
         await savedRun.write('session.json',new TextEncoder().encode(JSON.stringify(descriptor)));
         committed = true;
         diskControl.notify({type:'saved',url:savedRun.location.url,directory:savedRun.location.handle?.name,...descriptor});
-      } finally { if(!committed) await savedRun.remove(); }
+        if (automatic) {
+          const previous=automaticSave;
+          automaticSave=savedRun;
+          // A resumed run may still read archived layers from the old save.
+          // Repoint those reads before deleting the previous checkpoint.
+          if (previous) for (const side of sides) for (const layer of side.layers) {
+            if (!layer.archived) continue;
+            for (const block of layer.blocks) {
+              const source=block.source,old=previous.location;
+              if (source && (old.url ? source.url===old.url : source.handle===old.handle))
+                block.source=savedRun.location;
+            }
+          }
+          await removeAutomaticSave(previous);
+        }
+      } finally {
+        if (!committed) try { await savedRun.remove(); }
+        catch(error) { console.warn('[Klotski] Incomplete checkpoint cleanup:',error); }
+      }
     }
     async function processControl() {
       await applyDestination();
-      if (diskControl.save) {
+      if (!stopped() && diskControl.autoSave && !recovering && !searchPaused) checkSolverDeadline();
+      const hourly=searchReady && !recovering && !searchPaused && !stopped() &&
+        searchNow()>=nextHourlySave && isCheckpointDestination(folder);
+      if (diskControl.save || hourly) {
+        const automatic=!diskControl.save;
         diskControl.save = false;
-        try { await saveCheckpoint(); }
-        catch(error) { diskControl.notify({type:'save-error',message:error.message}); }
+        try { await saveCheckpoint(automatic); }
+        catch(error) { diskControl.notify({type:'save-error',automatic,message:error.message}); }
+        if (automatic) nextHourlySave=searchNow()+hourlyInterval;
       }
     }
     async function checkpoint() {
@@ -5859,7 +5987,8 @@
     let batchRecovery = false;
     try {
       const root = encode(state.startFlat);
-      if (goal(state.startFlat)) return {path:[],nodes:0,ms:0};
+      if (diskControl.resume?.automatic) automaticSave=diskControl.resume;
+      if (goal(state.startFlat)) { completedSearch=true; return {path:[],nodes:0,ms:0}; }
       await applyDestination();
       if(diskControl.resume) {
         const restoreStarted=Date.now(), deadline=SOLVER_DEADLINE_AT;
@@ -5868,6 +5997,7 @@
         await restoreCheckpoint(diskControl.resume);
         const duration=Date.now()-restoreStarted;
         SOLVER_DEADLINE_AT=deadline ? deadline+duration : 0;
+        nextHourlySave=searchNow()+hourlyInterval;
         diskControl.notify({type:'restored',duration});
       }
       else for (const side of sides) {
@@ -5932,19 +6062,20 @@
                 const tail = await recover(backward,expandBack ? index : meet);
                 for (const move of reverseSolverMoves(tail)) path.push(move);
               }
+              completedSearch=true;
               return {path,nodes,ms:elapsedBefore+searchNow()-started};
             }
           }
         }
         expansion=null;
-        if (!nextLayer.size) { report(); return null; }
+        if (!nextLayer.size) { completedSearch=true; report(); return null; }
         if (grouped) {
           const signature = (reverseGroups?side.name+'|':'') + current.signature() + '|' + nextLayer.signature();
           const candidates = frontierPairs.get(signature) || [];
           for (const old of candidates) {
             if (await layers[old].sameMembers(current,run,checkpoint)
                 && await layers[old+1].sameMembers(nextLayer,run,checkpoint)) {
-              report(); return null;
+              completedSearch=true; report(); return null;
             }
           }
           candidates.push(current.depth); frontierPairs.set(signature,candidates);
@@ -5956,12 +6087,13 @@
         pocket?.clear();
         // Resume rebuilds the hash tables from the stored records.
         for (const side of sides) for (const layer of side.layers) layer.slots = null;
-        try { await saveCheckpoint(); }
-        catch (saveError) { diskControl.notify({type:'save-error',message:saveError.message}); }
+        try { await saveCheckpoint(true); }
+        catch (saveError) { diskControl.notify({type:'save-error',automatic:true,message:saveError.message}); }
       }
       report(); if (error.message === '__LAYER_CANCEL__') return null;
       throw error;
     } finally {
+      if (completedSearch) await removeAutomaticSave(automaticSave);
       if(pocket)console.info("[Pocket search]",{cacheHits:pocket.hits,cacheMisses:pocket.misses,pruned:pocket.pruned,layouts:pocket.completed});
       for(const owned of ownedRuns) try { await owned.remove(); } catch(error) { console.warn('[Klotski] Temporary layer files:',error); }
     }
@@ -6055,7 +6187,7 @@
       "    let result;",
       "    const reuse = !!msg.reuse && msg.method !== 'astar' && (GROUP_SHIFT || !prepareSolverGoals(state));",
       "    if (!reuse) reusableSearch = null;",
-      "    diskControl={folder:msg.layerFolder||null,revision:0,save:false,meta:msg.diskMeta,resume:msg.diskResume,autoSave:msg.autoSave,notify:m=>self.postMessage(m)};",
+      "    diskControl={folder:msg.layerFolder||null,revision:0,save:false,meta:msg.diskMeta,resume:msg.diskResume,autoSave:msg.autoSave||!!msg.diskResume,notify:m=>self.postMessage(m)};",
       "    if (msg.method !== 'astar') result = await solveExternalLayers(state,msg.layerFolder||null,stopCheck,onProgress);",
       "    else if (reuse) result = await solveReusableBFS(state, onProgress, GROUP_SHIFT, solverReuseKey(msg.startPieces,COLS,ROWS,MOVE_MODE,GROUP_SHIFT,SHAPES));",
       "    else if (msg.method === 'astar') result = await solveAStar(state, stopCheck, onProgress, maxNodes, GROUP_SHIFT);",
@@ -6195,7 +6327,7 @@
       originalStart:game.startCfg,trace:game.trace,step:game.step,rushHour:game.rushHour,
       levelText:allLevels()[currentLevelIndex]?.text||null};
     const diskResume=pendingDiskResume; pendingDiskResume=null; restoringSearch=!!diskResume;
-    diskControl={folder,revision:0,save:false,meta:diskMeta,resume:diskResume,autoSave:batch.active,notify:message=>handleDiskMessage(message)};
+    diskControl={folder,revision:0,save:false,meta:diskMeta,resume:diskResume,autoSave:batch.active||!!diskResume,notify:message=>handleDiskMessage(message)};
     try {
       if (run) {
         await waitForSearchResume();
@@ -8713,6 +8845,8 @@
     const sep1 = document.createElement('div'); sep1.className = 'color-palette-sep'; row2.appendChild(sep1);
     for (const id of ['lineV', 'lineH', 'lineD1', 'lineD2']) row2.appendChild(makeDirDecorButton(id));
     const sep2 = document.createElement('div'); sep2.className = 'color-palette-sep'; row2.appendChild(sep2);
+    for (const id of Object.keys(RIGHT_TRIANGLES)) row2.appendChild(makeDirDecorButton(id));
+    const sep3 = document.createElement('div'); sep3.className = 'color-palette-sep'; row2.appendChild(sep3);
     for (const id of ['circle', 'triangle', 'triangleDown', 'square', 'diamond', 'star', 'smiley', 'sad', 'heart', 'fire', 'clock', 'car']) row2.appendChild(makeDirDecorButton(id));
     colorPaletteEl.appendChild(row2);
 
@@ -11058,7 +11192,6 @@
       hideLevelContextMenu();
       if (copyResult) copyTextToClipboard(writeSolution(copyLevel,copyResult.path,copyResult.mode),t('copiedToBuffer'),t('copyFailed'));
     };
-    menu.appendChild(copyBtn);
     if (userIdx >= 0) {
       const delBtn = document.createElement('button');
       delBtn.type = 'button';
@@ -11086,6 +11219,7 @@
       });
       menu.appendChild(delBtn);
     }
+    menu.appendChild(copyBtn);
     menu.appendChild(pasteBtn);
     menu.style.left = '0px'; menu.style.top = '0px'; menu.style.visibility = 'hidden';
     document.body.appendChild(menu);
@@ -11359,14 +11493,15 @@
     const arrows = { up: [0,-1], right: [1,0], down: [0,1], left: [-1,0],
       upRight: [1,-1], downRight: [1,1], downLeft: [-1,1], upLeft: [-1,-1] };
     const lines = { lineH: [1,0], lineV: [0,1], lineD1: [1,1], lineD2: [1,-1] };
-    let vector = arrows[dir] || lines[dir];
+    const rightTriangle = Object.hasOwn(RIGHT_TRIANGLES, dir) ? RIGHT_TRIANGLES[dir] : null;
+    let vector = arrows[dir] || lines[dir] || rightTriangle?.corner;
     if (dir === 'triangle') vector = [0,-1];
     if (dir === 'triangleDown') vector = [0,1];
     if (!vector) return dir;
     const [a,b,c,d] = transform;
     let x = a * vector[0] + b * vector[1], y = c * vector[0] + d * vector[1];
     if (lines[dir] && (x < 0 || (x === 0 && y < 0))) { x = -x; y = -y; }
-    const kind = arrows[dir] ? 'arrow' : lines[dir] ? 'line' : 'triangle';
+    const kind = arrows[dir] ? 'arrow' : lines[dir] ? 'line' : rightTriangle ? 'rightTriangle' : 'triangle';
     return kind + ':' + x + ',' + y;
   }
   function galleryDuplicateBoardKey(level, transform) {
@@ -11804,6 +11939,13 @@
   function handleDiskMessage(message) {
     if(message.type==='run-open') {activeDiskRuns.push({location:message.location,parent:message.parent,keep:false});return true;}
     if(message.type==='destination') return true;
+    if(message.type==='checkpoint-removed') {
+      const index=activeDiskRuns.findIndex(entry=>message.url ? entry.location.url===message.url :
+        message.directory && entry.location.handle?.name===message.directory);
+      if (index>=0) activeDiskRuns.splice(index,1);
+      listSavedSearches(externalFolder);
+      return true;
+    }
     if(message.type==='save-progress') {savePercent=message.percent;updatePauseControls();return true;}
     if(message.type==='load-progress') {if(loadButton) loadButton.textContent=(LANG==='ru'?'Проверка и загрузка ':'Verify and load ')+message.percent+'%';if(restoringSearch) solverStatus.textContent=(LANG==='ru'?'Проверка сохранения: ':'Verifying save: ')+message.percent+'% · '+(message.verifiedBytes/2**30).toFixed(2)+' / '+(message.totalBytes/2**30).toFixed(2)+' GiB';return true;}
     if(message.type==='restoring') {restoringSearch=true;solverStatus.textContent=LANG==='ru'?'Загрузка сохранённого поиска…':'Loading saved search…';return true;}
@@ -11816,25 +11958,36 @@
     }
     if(message.type==='saving') {
       savePercent=0; savingSearch=true; updatePauseControls();
-      layerStatus.textContent=LANG==='ru'?'Сохранение поиска… Не закрывайте окно до завершения.':'Saving search… Keep this window open until finished.';
+      layerStatus.textContent=message.automatic
+        ? (LANG==='ru'?'Автосохранение поиска…':'Autosaving search…')
+        : (LANG==='ru'?'Сохранение поиска… Не закрывайте окно до завершения.':'Saving search… Keep this window open until finished.');
       return true;
     }
     if(message.type==='saved' || message.type==='save-error') {
       if (message.type==='saved') for (const entry of activeDiskRuns) {
         if (message.url ? entry.location.url===message.url :
-            message.directory && entry.location.handle?.name===message.directory) entry.keep=true;
+            message.directory && entry.location.handle?.name===message.directory) {
+          entry.keep=true;
+          entry.automatic=message.automatic;
+        }
       }
       savePercent=message.type==='saved'?100:null;
       savingSearch=false; updatePauseControls();
-      const text=message.type==='saved' ? (LANG==='ru'?'Поиск сохранён. Можно закрыть окно.':'Search saved. You may close this window.') : (LANG==='ru'?'Не удалось сохранить поиск: ':'Cannot save search: ')+localizedDiskError(message.message);
-      layerStatus.textContent=text; showToast(text,message.type==='save-error');
+      const text=message.type==='saved'
+        ? message.automatic ? (LANG==='ru'?'Поиск автосохранён.':'Search autosaved.')
+          : (LANG==='ru'?'Поиск сохранён. Можно закрыть окно.':'Search saved. You may close this window.')
+        : (LANG==='ru'?'Не удалось сохранить поиск: ':'Cannot save search: ')+localizedDiskError(message.message);
+      layerStatus.textContent=text;
+      if (!message.automatic || message.type==='save-error') showToast(text,message.type==='save-error');
       console.info('[Klotski checkpoint]',text,message.type==='saved'?{depth:message.depth,states:message.states}:message.message);
       if(message.type==='saved') listSavedSearches(externalFolder);
       return true;
     }
     return false;
   }
+  let savedSearchListRevision=0;
   async function listSavedSearches(folder) {
+    const revision=++savedSearchListRevision;
     const list=document.getElementById('savedSearches'); list.replaceChildren();
     if(!isCheckpointDestination(folder)) return;
     try {
@@ -11862,7 +12015,7 @@
           try { const info=await diskReadJson(folder.url+encodeURIComponent(name)+'/session.json'); if(info.format==='KlotskiCheckpoint1') entries.push({...info,name}); } catch {}
         }
       }
-      if(externalFolder!==folder) return;
+      if(externalFolder!==folder || revision!==savedSearchListRevision) return;
       entries.sort((a,b)=>String(b.savedAt).localeCompare(String(a.savedAt)));
       for(const entry of entries) {
         if(!/^klotski-(?:bfs|save)-[0-9a-f]{32}(?:-[a-zA-Z0-9_\u0400-\u04ff-]{1,60})?$/.test(entry.name)) continue;
@@ -11873,7 +12026,9 @@
         const remove=document.createElement('button');remove.type='button';remove.className='settings-input saved-search-delete';remove.textContent='×';
         remove.title=LANG==='ru'?'Удалить сохранение':'Delete saved search';remove.setAttribute('aria-label',remove.title+' '+entry.title);
         remove.addEventListener('click',async()=>{
-          if(savedSearchId(folder,entry.name)===activeResumeUrl) {showToast(LANG==='ru'?'Это сохранение используется текущим поиском. Сначала остановите поиск.':'This save is in use. Stop the search first.',true);return;}
+          const id=savedSearchId(folder,entry.name);
+          if(id===activeResumeUrl || activeDiskRuns.some(run=>run.automatic &&
+              (run.location.url===id || run.location.handle?.name===id))) {showToast(LANG==='ru'?'Это сохранение используется текущим поиском. Сначала остановите поиск.':'This save is in use. Stop the search first.',true);return;}
           remove.disabled=true;button.disabled=true;
           try {
             if (folder.handle) await folder.handle.removeEntry(entry.name,{recursive:true});
@@ -11904,6 +12059,7 @@
         ? {handle:await folder.handle.getDirectoryHandle(name),opened:true}
         : savedSearchId(folder,name);
       const snapshot=await readCheckpoint(source);
+      if (folder.handle) snapshot.parent={handle:folder.handle};
       if(externalFolder!==folder || session!==solveSessionId || game.solving || batch.active) return;
       resumeSearchProcess(); endSolverTimeLimit(); batchMode=false;
       const meta=snapshot.data.meta;
@@ -13935,6 +14091,7 @@ self.onmessage = async function (e) {
       for (const [cx,cy,r] of part.cuts) distance=Math.max(distance,r-Math.hypot(x-cx,y-cy));
       return distance;
     }
+    if (part.kind==='lid') return {outer:(x,y)=>roundedRectangle(x,y,...part.panel,part.radius)};
     if (part.kind==='box') {
       const radius=settings.boxInnerRadius ?? 2;
       // The clearance offset expands a rounded cell corner by boxGap.
@@ -13942,7 +14099,7 @@ self.onmessage = async function (e) {
       const concaveRadius=radius>0 ? Math.min(radius+boxGap,pitch/2) : 0;
       const playable=part.playableCells?.length ? cellRegion(part.playableCells,pitch,playableRadius,concaveRadius) : null;
       return {
-        outer:(x,y)=>roundedRectangle(x,y,...part.bounds,part.radius),
+        outer:(x,y)=>roundedRectangle(x,y,...(part.panel || part.bounds),part.radius),
         opening(x,y) {
           const envelope=roundedRectangle(x,y,...part.cavity,radius);
           if (!part.playableCells) return envelope;
@@ -13965,12 +14122,184 @@ self.onmessage = async function (e) {
 
   // The worker consumes millimetres throughout. Each part is one signed solid,
   // including its lettering, so the STL has no separate intersecting glyph shells.
-  function makePrintMesh(parts, settings, ranges = []) {
-    const step = settings.resolution;
+  function printHardwareField(part,x,y,z,field) {
+    const {cx,rear,front,axisY,axisZ,span,ear,pin,bore,gap,catchZ,latch,seat,lidTop}=part.hardware;
+    const dx=Math.abs(x-cx);
+    if (part.kind==='box') {
+      const radial=Math.hypot(y-axisY,z-axisZ);
+      if (y>rear-0.8 && dx<span+ear) {
+        const side=Math.max(span-dx,dx-span-ear);
+        const collar=radial-3.3;
+        const arm=Math.max(rear-0.8-y,y-axisY,Math.abs(z-axisZ)-2.35);
+        const hole=bore-radial;
+        // An upward slot snaps over the lid axle. The throat is narrower
+        // than the axle and widens toward the mouth.
+        const slot=Math.max(axisZ-z,Math.abs(y-axisY)-(pin-0.48+0.24*Math.max(0,z-axisZ)));
+        field=Math.min(field,Math.max(side,Math.min(collar,arm),hole,-slot));
+      }
+      const recess=Math.max(dx-latch-gap,front-0.8-y,y-front-0.75,Math.abs(z-catchZ)-(0.55+gap));
+      return Math.max(field,-recess);
+    }
+    // The exported lid is top-down on the bed. Convert to closed-box height.
+    const closedZ=lidTop-z;
+    const axle=Math.max(Math.hypot(y-axisY,closedZ-axisZ)-pin,dx-span-ear+gap);
+    const stem=Math.max(dx-span+gap,y-axisY,rear+gap-y,axisZ-0.35-closedZ,closedZ-seat-0.65);
+    const hingeRoot=Math.max(dx-span+gap,y-axisY,rear-1-y,seat-closedZ,closedZ-seat-0.65);
+    const tongue=Math.max(dx-latch,front-gap-1.55-y,y-front+gap,catchZ-0.95-closedZ,closedZ-seat-0.65);
+    const latchRoot=Math.max(dx-latch,front-gap-1.55-y,y-front-0.65,seat-closedZ,closedZ-seat-0.65);
+    const toothDepth=0.50-Math.max(0,catchZ-closedZ)*0.85;
+    const tooth=Math.max(dx-latch+0.3,front-gap-0.65-y,y-front-toothDepth,catchZ-0.90-closedZ,closedZ-catchZ-0.50);
+    return Math.min(field,axle,stem,hingeRoot,tongue,latchRoot,tooth);
+  }
+
+  // Collapse edges within a geometric error budget. The link test preserves
+  // closed shells and the normal test prevents folds at fine relief edges.
+  function simplifyPrintSurface(points, faces, tolerance, report) {
+    const n=points.length/3;
+    const quadrics=new Float64Array(n*10);
+    const terms=new Float64Array(10);
+    function normal(ax,ay,az,bx,by,bz,cx,cy,cz) {
+      return [(by-ay)*(cz-az)-(bz-az)*(cy-ay),
+        (bz-az)*(cx-ax)-(bx-ax)*(cz-az),(bx-ax)*(cy-ay)-(by-ay)*(cx-ax)];
+    }
+    function faceNormal(a,b,c) {
+      return normal(points[a],points[a+1],points[a+2],points[b],points[b+1],points[b+2],points[c],points[c+1],points[c+2]);
+    }
+    for (let i=0;i<faces.length;i+=3) {
+      const a=faces[i]*3,b=faces[i+1]*3,c=faces[i+2]*3;
+      let [x,y,z]=faceNormal(a,b,c);
+      const length=Math.hypot(x,y,z);
+      if (!length) continue;
+      x/=length;y/=length;z/=length;
+      const d=-(x*points[a]+y*points[a+1]+z*points[a+2]);
+      terms.set([x*x,x*y,x*z,x*d,y*y,y*z,y*d,z*z,z*d,d*d]);
+      // Area weighting keeps the error independent of sample density.
+      for (let j=0;j<3;j++) {
+        const q=faces[i+j]*10;
+        for (let k=0;k<10;k++) quadrics[q+k]+=terms[k]*length;
+      }
+    }
+    const allowed=tolerance*tolerance;
+    const locked=new Uint8Array(n), removed=new Uint8Array(n);
+    const heads=new Int32Array(n), next=new Int32Array(faces.length);
+    const neighbors=new Float64Array(n);
+    let live=faces.length/3;
+    for (let pass=0;pass<36;pass++) {
+      heads.fill(-1);locked.fill(0);
+      for (let i=0;i<faces.length;i++) {
+        const v=faces[i];
+        if (v<0) continue;
+        next[i]=heads[v];heads[v]=i;
+      }
+      let changes=0;
+      for (let a=pass%2 ? n-1 : 0;a>=0 && a<n;a+=pass%2 ? -1 : 1) {
+        if (removed[a] || locked[a] || heads[a]<0) continue;
+        const va=a*3,qa=a*10;
+        const x0=points[va],y0=points[va+1],z0=points[va+2];
+        const candidates=[];
+        const stamp=pass*n+a+1;
+        for (let e=heads[a];e!==-1;e=next[e]) {
+          const i=e-e%3;
+          for (let j=i;j<i+3;j++) {
+            const b=faces[j];
+            if (b<0 || b===a || neighbors[b]===stamp) continue;
+            neighbors[b]=stamp;
+            if (locked[b]) continue;
+            const vb=b*3,qb=b*10;
+            const x1=points[vb],y1=points[vb+1],z1=points[vb+2];
+            for (let k=0;k<10;k++) terms[k]=quadrics[qa+k]+quadrics[qb+k];
+            const [xx,xy,xz,xd,yy,yz,yd,zz,zd,dd]=terms;
+            const weight=xx+yy+zz;
+            let best=Infinity,position=null;
+            // Minimize the quadric along the edge, including its endpoints.
+            const dx=x1-x0,dy=y1-y0,dz=z1-z0;
+            const curvature=xx*dx*dx+yy*dy*dy+zz*dz*dz+2*(xy*dx*dy+xz*dx*dz+yz*dy*dz);
+            const slope=dx*(xx*x0+xy*y0+xz*z0+xd)+dy*(xy*x0+yy*y0+yz*z0+yd)+dz*(xz*x0+yz*y0+zz*z0+zd);
+            for (const t of [curvature>1e-14 ? Math.max(0,Math.min(1,-slope/curvature)) : 0.5,0,1]) {
+              const x=Math.fround(x0+dx*t),y=Math.fround(y0+dy*t),z=Math.fround(z0+dz*t);
+              const error=Math.max(0,xx*x*x+yy*y*y+zz*z*z+dd+2*(xy*x*y+xz*x*z+yz*y*z+xd*x+yd*y+zd*z))/weight;
+              if (error<best) {best=error;position=[x,y,z];}
+            }
+            if (best<=allowed) candidates.push({b,position,score:best+1e-9*(dx*dx+dy*dy+dz*dz)});
+          }
+        }
+        candidates.sort((p,q)=>p.score-q.score);
+        for (const {b,position} of candidates) {
+          const shared=[],affected=[];
+          let valid=true;
+          // Only the two vertices opposite the collapsed edge may be common
+          // to both one-rings. Also reject the four-face tetrahedron case.
+          for (let e=heads[a];e!==-1;e=next[e]) {
+            const i=e-e%3;
+            const v=faces[i+(e+1-i)%3],w=faces[i+(e+2-i)%3];
+            if (v===b || w===b) shared.push(v===b?w:v);
+            else affected.push(i);
+          }
+          if (shared.length!==2 || shared[0]===shared[1]) continue;
+          for (let e=heads[b];e!==-1;e=next[e]) {
+            const i=e-e%3;
+            const v=faces[i+(e+1-i)%3],w=faces[i+(e+2-i)%3];
+            if (v===a || w===a) continue;
+            const commonV=neighbors[v]===stamp,commonW=neighbors[w]===stamp;
+            if ((commonV && !shared.includes(v)) || (commonW && !shared.includes(w)) || (commonV && commonW)) {
+              valid=false;break;
+            }
+            affected.push(i);
+          }
+          if (!valid) continue;
+          const [x,y,z]=position,vb=b*3;
+          for (const i of affected) {
+            const v=faces[i]*3,w=faces[i+1]*3,u=faces[i+2]*3;
+            const [nx,ny,nz]=faceNormal(v,w,u);
+            const moved=k=>k===va || k===vb;
+            const [rx,ry,rz]=normal(
+              moved(v)?x:points[v],moved(v)?y:points[v+1],moved(v)?z:points[v+2],
+              moved(w)?x:points[w],moved(w)?y:points[w+1],moved(w)?z:points[w+2],
+              moved(u)?x:points[u],moved(u)?y:points[u+1],moved(u)?z:points[u+2]);
+            const lengths=Math.hypot(nx,ny,nz)*Math.hypot(rx,ry,rz);
+            if (lengths<1e-19 || nx*rx+ny*ry+nz*rz<0.35*lengths) {valid=false;break;}
+          }
+          if (!valid) continue;
+          points[va]=x;points[va+1]=y;points[va+2]=z;
+          for (let k=0;k<10;k++) quadrics[qa+k]+=quadrics[b*10+k];
+          for (const v of [a,b]) for (let e=heads[v];e!==-1;e=next[e]) {
+            const i=e-e%3;
+            if (faces[i]<0) continue;
+            for (let j=i;j<i+3;j++) locked[faces[j]]=1;
+            if (faces[i]===a || faces[i+1]===a || faces[i+2]===a) {
+              if (v===b) {faces[i]=faces[i+1]=faces[i+2]=-1;live--;}
+            } else if (v===b) faces[e]=a;
+          }
+          removed[b]=1;changes++;
+          break;
+        }
+      }
+      report?.((pass+1)/36);
+      if (!changes || live<32) break;
+    }
+    return faces;
+  }
+
+  function makePrintMesh(parts, settings, ranges = [], report) {
+    function meshStep(part) {
+      return part.masks.length || part.hardware ? Math.min(settings.resolution,0.2) : settings.resolution;
+    }
+    const weights=report ? parts.map(part=>{
+      const [x,y,right,top]=part.bounds,step=meshStep(part);
+      const height=Math.max(part.height,part.meshHeight ?? 0);
+      return (right-x+step)*(top-y+step)*(height+step)/step**3;
+    }) : [];
+    const total=weights.reduce((sum,value)=>sum+value,0);
+    let completed=0,last=-1;
+    function progress(weight,fraction) {
+      if (!report) return;
+      const percent=Math.min(99,Math.floor(99*(completed+weight*fraction)/total));
+      if (percent>last) { last=percent;report(percent); }
+    }
     const tetrahedra = [[0,1,3,7],[0,1,5,7],[0,2,3,7],[0,2,6,7],[0,4,5,7],[0,4,6,7]];
     let buffer = new ArrayBuffer(84 + 8192 * 50), view = new DataView(buffer);
     let triangles = 0;
-    function maskDistance(mask,x,y) {
+    function maskDistance(mask,x,y,step) {
       const [left,bottom,width,height] = mask.rect;
       if (x<=left || x>=left+width || y<=bottom || y>=bottom+height) return 1;
       const u=(x-left)/width*(mask.width-1);
@@ -13980,15 +14309,12 @@ self.onmessage = async function (e) {
       const opacity=(a[at]*(1-fx)+a[at+1]*fx)*(1-fy)+(a[at+mask.width]*(1-fx)+a[at+mask.width+1]*fx)*fy;
       return (127.5-opacity)/255*step;
     }
-    function triangle(a,b,c,inside) {
+    function triangle(a,b,c) {
       let nx=(b[1]-a[1])*(c[2]-a[2])-(b[2]-a[2])*(c[1]-a[1]);
       let ny=(b[2]-a[2])*(c[0]-a[0])-(b[0]-a[0])*(c[2]-a[2]);
       let nz=(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
       const length=Math.hypot(nx,ny,nz);
       if (!length) return;
-      if (nx*(inside[0]-a[0])+ny*(inside[1]-a[1])+nz*(inside[2]-a[2]) > 0) {
-        [b,c]=[c,b];nx=-nx;ny=-ny;nz=-nz;
-      }
       let offset=84+50*triangles;
       if (offset+50>buffer.byteLength) {
         const capacity=Math.min(160*1024*1024,buffer.byteLength*2);
@@ -14003,8 +14329,30 @@ self.onmessage = async function (e) {
       view.setUint16(offset,0,true);
       triangles++;
     }
-    function meshPart(part) {
+    function meshPart(part,weight) {
       const box=part.kind==='box', {depth}=settings;
+      const hardware=part.hardware;
+      const step=meshStep(part);
+      const vertices=[], faces=[], index=new Map();
+      function addVertex(point) {
+        const key=point.join(',');
+        let id=index.get(key);
+        if (id===undefined) {
+          id=vertices.length/3;
+          index.set(key,id);
+          vertices.push(...point);
+        }
+        return id;
+      }
+      function meshTriangle(a,b,c,inside) {
+        const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2];
+        const vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
+        const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;
+        if (nx===0 && ny===0 && nz===0) return;
+        if (nx*(inside[0]-a[0])+ny*(inside[1]-a[1])+nz*(inside[2]-a[2])>0) [b,c]=[c,b];
+        faces.push(addVertex(a),addVertex(b),addVertex(c));
+        if (faces.length>24000000) throw new Error('size');
+      }
       const floor=part.floorThickness ?? 2.5;
       const bottomBevel=part.bottomBevel, topBevel=part.topBevel;
       const x0=part.bounds[0]-step*1.37,y0=part.bounds[1]-step*1.29;
@@ -14016,11 +14364,16 @@ self.onmessage = async function (e) {
       // Preserve the configured thickness and relief heights in the mesh.
       const features=[-zShift,0,part.height,bottomBevel,part.height-topBevel];
       if (box) features.push(floor);
+      if (hardware) {
+        const {axisZ,catchZ,pin,lidTop}=hardware;
+        if (box) features.push(axisZ,catchZ);
+        else features.push(lidTop-axisZ-pin,lidTop-axisZ+pin,lidTop-catchZ+0.95);
+      }
       for (const mask of part.masks) {
         const face=mask.face==='top' ? part.height : 0;
         features.push(face+(mask.face==='top' ? 1 : -1)*(mask.mode==='raised' ? depth : -depth));
       }
-      const minimum=-zShift-step,maximum=part.height+(upperText ? depth : 0)+step;
+      const minimum=-zShift-step,maximum=Math.max(part.height+(upperText ? depth : 0),part.meshHeight ?? 0)+step;
       const zSet=new Set([minimum,maximum]);
       for (let z=minimum+step*0.71;z<maximum;z+=step) zSet.add(z);
       for (const plane of features) for (const shift of [-0.04,0.04]) if (plane+shift>minimum && plane+shift<maximum) zSet.add(plane+shift);
@@ -14033,10 +14386,20 @@ self.onmessage = async function (e) {
         const x=x0+i*step,y=y0+j*step,k=j*nx+i;
         outer[k]=footprint.outer(x,y);
         if (box) inner[k]=footprint.opening(x,y);
-        for (const entry of text) entry.field[k]=maskDistance(entry.mask,x,y);
+        for (const entry of text) entry.field[k]=maskDistance(entry.mask,x,y,step);
       }
       for (const entry of text) {
         if (!entry.field.some((value,index)=>value<0 && outer[index]<-0.25)) throw new Error('lettering');
+      }
+      const hardwareSamples=[];
+      if (hardware) for (let j=0;j<ny;j++) {
+        const y=y0+j*step;
+        if (y>=hardware.front+0.85 && y<=hardware.rear-1.01) continue;
+        for (let i=0;i<nx;i++) {
+          const x=x0+i*step;
+          if (Math.abs(x-hardware.cx)<=Math.max(hardware.span+hardware.ear,hardware.latch+hardware.gap))
+            hardwareSamples.push([j*nx+i,x,y]);
+        }
       }
       function sampleLayer(z,values) {
         const bevel=Math.max(0,bottomBevel-z,topBevel-(part.height-z));
@@ -14055,12 +14418,19 @@ self.onmessage = async function (e) {
           }
           // Avoid a sample on the isosurface and keep edge interpolation stable
           // after conversion to the 32-bit coordinates used in binary STL.
+          values[k]=!hardware ? (field<0 ? Math.min(-0.001,field) : Math.max(0.001,field)) : field;
+        }
+        if (!hardware) return;
+        for (const [k,x,y] of hardwareSamples) values[k]=printHardwareField(part,x,y,z,values[k]);
+        for (let k=0;k<count;k++) {
+          const field=values[k];
           values[k]=field<0 ? Math.min(-0.001,field) : Math.max(0.001,field);
         }
       }
       let lower=new Float32Array(count),upper=new Float32Array(count);
       sampleLayer(zs[0],lower);
-      const xAt=i=>x0+i*step+part.offset[0],yAt=j=>y0+j*step+part.offset[1];
+      const xAt=i=>(part.kind==='lid' ? 2*hardware.cx-(x0+i*step) : x0+i*step)+part.offset[0];
+      const yAt=j=>y0+j*step+part.offset[1];
       for (let layer=1;layer<zs.length;layer++) {
         sampleLayer(zs[layer],upper);
         const isFlat = k => lower[k]*upper[k]<0 &&
@@ -14085,8 +14455,8 @@ self.onmessage = async function (e) {
             const corners=[cross(0,4),cross(1,5),cross(3,7),cross(2,6)];
             const neighbors=[j>0 && isFlat(k-nx),i<nx-2 && isFlat(k+1),j<ny-2 && isFlat(k+nx),i>0 && isFlat(k-1)];
             if (neighbors.every(Boolean)) {
-              triangle(corners[0],corners[1],corners[2],inside);
-              triangle(corners[0],corners[2],corners[3],inside);
+              meshTriangle(corners[0],corners[1],corners[2],inside);
+              meshTriangle(corners[0],corners[2],corners[3],inside);
             } else {
               const diagonals=[[0,5],[1,7],[2,7],[0,6]], boundary=[];
               for (let n=0;n<4;n++) {
@@ -14094,7 +14464,7 @@ self.onmessage = async function (e) {
                 if (!neighbors[n]) boundary.push(cross(...diagonals[n]));
               }
               const center=cross(0,7);
-              for (let n=0;n<boundary.length;n++) triangle(center,boundary[n],boundary[(n+1)%boundary.length],inside);
+              for (let n=0;n<boundary.length;n++) meshTriangle(center,boundary[n],boundary[(n+1)%boundary.length],inside);
             }
             continue;
           }
@@ -14105,21 +14475,33 @@ self.onmessage = async function (e) {
             if (inSet.length===1 || outSet.length===1) {
               const one=inSet.length===1 ? inSet[0] : outSet[0];
               const other=inSet.length===1 ? outSet : inSet;
-              triangle(cross(one,other[0]),cross(one,other[1]),cross(one,other[2]),inside);
+              meshTriangle(cross(one,other[0]),cross(one,other[1]),cross(one,other[2]),inside);
             } else {
               const a=cross(inSet[0],outSet[0]),b=cross(inSet[0],outSet[1]);
               const c=cross(inSet[1],outSet[1]),d=cross(inSet[1],outSet[0]);
-              triangle(a,b,c,inside);triangle(a,c,d,inside);
+              meshTriangle(a,b,c,inside);meshTriangle(a,c,d,inside);
             }
           }
         }
         [lower,upper]=[upper,lower];
+        progress(weight,0.74*layer/(zs.length-1));
+      }
+      index.clear();
+      const points=Float32Array.from(vertices),indices=Int32Array.from(faces);
+      vertices.length=faces.length=0;
+      simplifyPrintSurface(points,indices,0.025,report ? fraction=>progress(weight,0.74+0.24*fraction) : null);
+      for (let i=0;i<indices.length;i+=3) {
+        if (indices[i]<0) continue;
+        const a=indices[i]*3,b=indices[i+1]*3,c=indices[i+2]*3;
+        triangle(points.subarray(a,a+3),points.subarray(b,b+3),points.subarray(c,c+3));
       }
     }
-    for (const part of parts) {
-      const first=triangles;
-      meshPart(part);
+    for (const [i,part] of parts.entries()) {
+      const first=triangles,weight=weights[i] ?? 0;
+      meshPart(part,weight);
       ranges.push([first,triangles-first]);
+      completed+=weight;
+      progress(0,0);
     }
     new Uint8Array(buffer,0,80).set(new TextEncoder().encode('Klotski binary STL, units: mm'));
     view.setUint32(80,triangles,true);
@@ -14130,6 +14512,7 @@ self.onmessage = async function (e) {
   const printForm = document.getElementById('printForm');
   const printStatus = document.getElementById('printStatus');
   const printDownload = document.getElementById('printDownload');
+  const printStep = document.getElementById('printStep');
   const printPreview = document.getElementById('printPreview');
   const printMessage = (ru,en) => LANG === 'ru' ? ru : en;
   let printWorker = null;
@@ -14163,7 +14546,7 @@ self.onmessage = async function (e) {
       lineV:'│',lineH:'━',lineD1:'╲',lineD2:'╱',circle:'○',triangle:'▲',triangleDown:'▼',
       square:'■',diamond:'◆',star:'★',smiley:'☺',sad:'☹',heart:'♥',fire:'🔥',clock:'◷',car:'🚗'
     };
-    const symbol = piece.dmove === 'v' ? '↕' : piece.dmove === 'h' ? '↔' : (symbols[piece.dir] || '');
+    const symbol = piece.dmove === 'v' ? '↕' : piece.dmove === 'h' ? '↔' : (symbols[piece.dir] || RIGHT_TRIANGLES[piece.dir]?.glyph || '');
     const label = piece.label || '';
     return label.includes('\uFFFC') ? label.replaceAll('\uFFFC',symbol) : label.trim() ? label : symbol;
   }
@@ -14228,12 +14611,19 @@ self.onmessage = async function (e) {
       }
       const label=printTileLabel(piece);
       if (label.trim() && settings.tileText!=='off') {
-        const rect=bestRectForLabel(shape,label,piece.region);
+        const icon=piece.dir && !piece.dmove && !piece.label?.trim() &&
+          (piece.dir==='square' || piece.dir==='circle' || Object.hasOwn(RIGHT_TRIANGLES,piece.dir));
+        const rect=icon ? largestInscribedRect(shape,null,piece.region) : bestRectForLabel(shape,label,piece.region);
         const margin=Math.max(1.3,tileGap/2+settings.tileTop+0.8);
         const rectWidth=rect.w*pitch-2*margin,rectHeight=rect.h*pitch-2*margin;
         if (rectWidth<1 || rectHeight<1) throw new Error(printMessage('Для меток увеличьте клетку или уменьшите фаску.','Increase the cell size or reduce the chamfer to fit the markings.'));
         const inset = tile.circle ? 0.15 : 0;
+        const markerScale=(settings.markerSize ?? 100)/100;
         tile.labels.push({text:label,face:'top',mode:settings.tileText,
+          tileMarker:true,
+          fontSize:tileLabelFontSize(label.split('\n'),rect.w*pitch,rect.h*pitch)*markerScale,
+          markerSide:icon ? Math.min(rect.w,rect.h)*pitch*markerScale : 0,
+          markerIcon:icon ? piece.dir : null,
           rect:[rect.x*pitch+margin+rectWidth*inset,(shape.h-rect.y-rect.h)*pitch+margin+rectHeight*inset,
             rectWidth*(1-2*inset),rectHeight*(1-2*inset)]});
       }
@@ -14295,7 +14685,8 @@ self.onmessage = async function (e) {
         throw new Error(printMessage('Одна из плиток состоит из раздельных фрагментов. Соедините их в редакторе плиток.','A tile contains separate fragments. Connect them in the tile editor.'));
     }
 
-    const parts=[box,...tiles.sort((a,b)=>b.bounds[3]-a.bounds[3])];
+    const lid=settings.lid==='hinged' ? addPrintLid(box,settings,tiles) : null;
+    const parts=[box,...(lid ? [lid] : []),...tiles.sort((a,b)=>b.bounds[3]-a.bounds[3])];
     const shelves=[];
     let nextY=2,usedWidth=0;
     for (const part of parts) {
@@ -14312,15 +14703,40 @@ self.onmessage = async function (e) {
       shelf.x+=w+4;
     }
     for (const part of parts) {
-      part.assembledOffset=part.kind==='box' ? [0,0] : part.origin.map(value=>value*pitch);
+      part.assembledOffset=part.kind==='tile' ? part.origin.map(value=>value*pitch) : [0,0];
       for (const label of part.labels) {
         label.font=settings.font || 'Arial';
         label.fontSize=label.fontSize ?? 0;
         label.letterSpacing=settings.letterSpacing ?? 0.3;
       }
     }
-    return {parts,width:usedWidth,height:nextY-2,assembledBounds:box.bounds,
-      floorThickness,maxHeight:Math.max(floorThickness+tileThickness,box.height)+settings.depth};
+    if (lid) lid.bedLift=lid.labels.some(label=>label.mode==='raised') ? settings.depth : 0;
+    const assembledBounds=lid ? [box.bounds[0],lid.bounds[1],box.bounds[2],box.bounds[3]] : box.bounds;
+    return {parts,width:usedWidth,height:nextY-2,assembledBounds,
+      floorThickness,maxHeight:Math.max(floorThickness+tileThickness,lid?.hardware.lidTop ?? box.height)+settings.depth};
+  }
+
+  function addPrintLid(box,settings,tiles) {
+    const [left,front,right,rear]=box.bounds;
+    const tileHeight=Math.max(0,...tiles.map(tile=>tile.height+(tile.labels.some(label=>label.mode==='raised') ? settings.depth : 0)));
+    if (box.height<7 || right-left<19 || settings.wallHeight+0.25<tileHeight) {
+      throw new Error(printMessage('Для крышки увеличьте высоту коробочки или уменьшите толщину плиток.','For the lid, increase the tray height or reduce the tile thickness.'));
+    }
+    const gap=settings.lidGap, seat=box.height+0.25, thickness=settings.lidThickness;
+    const lidTop=seat+thickness, axisZ=box.height-3.25, catchZ=box.height-2.6;
+    const pin=1.6, ear=2.45, span=Math.min(10,(right-left)/2-ear-2);
+    const hardware={cx:(left+right)/2,rear,front,axisY:rear+3.65,axisZ,span,ear,pin,bore:pin+gap,
+      gap,catchZ,latch:Math.min(7,(right-left)*0.20),seat,lidTop};
+    const panel=box.bounds;
+    box.panel=panel;
+    box.bounds=[left,front,right,hardware.axisY+3.3];
+    box.hardware=hardware;
+    // Put the former rim inscriptions on the outside of the lid.
+    const labels=box.labels.splice(0).map(label=>({...label,face:'bottom',readFromAbove:true}));
+    return {kind:'lid',panel,hardware,labels,masks:[],
+      bounds:[left,front-gap-1.55,right,hardware.axisY+pin],
+      height:thickness,meshHeight:lidTop-axisZ+pin,radius:box.radius,
+      topBevel:0,bottomBevel:Math.min(0.4,box.topBevel)};
   }
 
   function printLabelFont(family,size) {
@@ -14341,17 +14757,51 @@ self.onmessage = async function (e) {
   }
 
   function paintPrintLabel(ctx,label,width,height,scale,color) {
+    if (label.markerIcon) {
+      const icon=label.markerIcon, ratio=icon==='circle' ? 0.60 : 0.55;
+      const side=Math.min(label.markerSide*scale,Math.min(width,height)*0.96/ratio);
+      const x=width/2,y=height/2,half=side*ratio/2;
+      ctx.fillStyle=color;
+      ctx.beginPath();
+      if (icon==='circle') ctx.arc(x,y,half,0,2*Math.PI);
+      else if (icon==='square') {
+        const r=side*0.06;
+        ctx.moveTo(x-half+r,y-half);
+        ctx.arcTo(x+half,y-half,x+half,y+half,r);
+        ctx.arcTo(x+half,y+half,x-half,y+half,r);
+        ctx.arcTo(x-half,y+half,x-half,y-half,r);
+        ctx.arcTo(x-half,y-half,x+half,y-half,r);
+      } else {
+        const [sx,sy]=RIGHT_TRIANGLES[icon].corner;
+        ctx.moveTo(x+sx*half,y+sy*half);
+        ctx.lineTo(x-sx*half,y+sy*half);
+        ctx.lineTo(x+sx*half,y-sy*half);
+      }
+      ctx.closePath();
+      ctx.fill();
+      return;
+    }
     const lines=label.text.split('\n');
     const font=size=>printLabelFont(label.font,size);
     ctx.font=font(100);
     const gap=(label.letterSpacing || 0)*scale;
-    const fitWidth=Math.min(...lines.map(line=>{
-      const {runs,advance}=measurePrintLine(ctx,line,gap);
+    const measuredLines=lines.map(line=>measurePrintLine(ctx,line,gap));
+    const fitWidth=Math.min(...measuredLines.map(({runs,advance})=>{
       if (!advance) return Infinity;
       return (width*0.92-Math.max(0,runs.length-1)*gap)*100/advance;
     }));
     if (fitWidth<=0) throw new Error(printMessage('Уменьшите межбуквенный интервал: надпись не помещается.','Reduce letter spacing to fit the inscription.'));
-    const fit=Math.min(height*0.91/(1.15*lines.length),fitWidth);
+    let lineHeight=1.15*lines.length;
+    if (label.tileMarker) {
+      let top=Infinity,bottom=-Infinity;
+      for (const [i,{runs,metrics}] of measuredLines.entries()) for (const [j,metric] of metrics.entries()) {
+        if (!runs[j].trim()) continue;
+        top=Math.min(top,115*i-metric.actualBoundingBoxAscent);
+        bottom=Math.max(bottom,115*i+metric.actualBoundingBoxDescent);
+      }
+      if (bottom>top) lineHeight=(bottom-top)/100;
+    }
+    const fit=Math.min(height*0.91/lineHeight,fitWidth);
     const size=label.fontSize>0 ? Math.min(fit,label.fontSize*scale) : fit;
     ctx.font=font(size);ctx.textAlign='left';ctx.textBaseline='alphabetic';
     ctx.fillStyle=color;ctx.strokeStyle=color;ctx.lineJoin='round';ctx.lineWidth=Math.max(1,scale*0.18);
@@ -14394,8 +14844,556 @@ self.onmessage = async function (e) {
     paintPrintLabel(ctx,label,canvas.width,canvas.height,scale,'#fff');
     const rgba=ctx.getImageData(0,0,canvas.width,canvas.height).data,alpha=new Uint8Array(canvas.width*canvas.height);
     for (let i=0;i<alpha.length;i++) alpha[i]=rgba[4*i+3];
-    return {rect:label.rect,face:label.face,mode:label.mode,mirror:label.face==='bottom',
+    return {rect:label.rect,face:label.face,mode:label.mode,mirror:label.face==='bottom' && !label.readFromAbove,
       width:canvas.width,height:canvas.height,alpha};
+  }
+
+  function makeExactPrintStep(layout, settings, title) {
+    const rows=[];
+    const add=entity=>{rows.push(entity);return '#'+rows.length;};
+    const name=value=>"'"+String(value).replace(/[^\x20-\x7e]/g,'_').replaceAll("'","''")+"'";
+    const real=n=>Number(n.toFixed(9)).toString().replace(/^(-?\d+)$/,'$1.');
+    const tuple=values=>'('+values.join(',')+')';
+    const num=values=>tuple(values.map(real));
+    const sub=(a,b)=>a.map((x,i)=>x-b[i]);
+    const neg=a=>a.map(x=>-x);
+    const dot=(a,b)=>a.reduce((sum,x,i)=>sum+x*b[i],0);
+    const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+    const unit=a=>a.map(x=>x/Math.hypot(...a));
+    const point=p=>add("CARTESIAN_POINT('',"+num(p)+")");
+    const direction=d=>add("DIRECTION('',"+num(unit(d))+")");
+    const X=[1,0,0],Z=[0,0,1];
+    function axis(p,n,u) {
+      u ||= Math.abs(n[0])<0.9 ? unit(cross([0,1,0],n)) : [0,1,0];
+      return add("AXIS2_PLACEMENT_3D('',"+[point(p),direction(n),direction(u)].join(',')+")");
+    }
+    const line=(a,b)=>({a,b});
+    const arc=(a,b,c,n)=>({a,b,c,n});
+    const rev=e=>({...e,a:e.b,b:e.a,n:e.n && neg(e.n)});
+    const reversed=loop=>loop.slice().reverse().map(rev);
+    function rounded([l,b,r,t],radius,z) {
+      if (radius<1e-8) return polygon([[l,b,z],[r,b,z],[r,t,z],[l,t,z]]);
+      const d=radius,p=[[l+d,b,z],[r-d,b,z],[r,b+d,z],[r,t-d,z],[r-d,t,z],[l+d,t,z],[l,t-d,z],[l,b+d,z]];
+      const centers=[[r-d,b+d,z],[r-d,t-d,z],[l+d,t-d,z],[l+d,b+d,z]];
+      return p.map((a,i)=>i%2 ? arc(a,p[(i+1)%8],centers[i>>1],Z) : line(a,p[i+1]));
+    }
+    function polygon(points) {return points.map((p,i)=>line(p,points[(i+1)%points.length]));}
+    const plane=(p,n)=>({type:'PLANE',p,n});
+    function writer(label,placement) {
+      const [sx,sz,dx,dy,dz]=placement;
+      const transform=p=>[p[0]*sx+dx,p[1]+dy,p[2]*sz+dz];
+      const rotate=n=>[n[0]*sx,n[1],n[2]*sz];
+      const key=p=>p.map(v=>Math.round(v*1e7)).join(',');
+      const vertices=new Map(),edges=new Map(),faces=[];
+      function vertex(p) {
+        const k=key(p);
+        if (!vertices.has(k)) vertices.set(k,add("VERTEX_POINT('',"+point(transform(p))+")"));
+        return vertices.get(k);
+      }
+      function face(loops,surface,same=true) {
+        const bounds=loops.map((loop,i)=>{
+          const references=loop.map(e=>{
+            const a=vertex(e.a),b=vertex(e.b);
+            const k=(a<b ? a+b : b+a)+(e.c ? ':'+key(e.c) : '');
+            let edge=edges.get(k);
+            if (!edge) {
+              const curve=e.c ? add("CIRCLE('',"+axis(transform(e.c),rotate(e.n),rotate(sub(e.a,e.c)))+','+real(Math.hypot(...sub(e.a,e.c)))+')')
+                : add("LINE('',"+point(transform(e.a))+','+add("VECTOR('',"+direction(rotate(sub(e.b,e.a)))+",1.)")+")");
+              edge={start:a,id:add("EDGE_CURVE('',"+[a,b,curve,'.T.'].join(',')+")")};
+              edges.set(k,edge);
+            }
+            return add("ORIENTED_EDGE('',*,*,"+edge.id+','+(edge.start===a?'.T.':'.F.')+')');
+          });
+          const id=add("EDGE_LOOP('',"+tuple(references)+')');
+          return add((i ? 'FACE_BOUND' : 'FACE_OUTER_BOUND')+"('',"+id+",.T.)");
+        });
+        const {type,p,n,u,params=[]}=surface;
+        const geometry=add(type+"('',"+[axis(transform(p),rotate(n),u&&rotate(u)),...params.map(real)].join(',')+")");
+        faces.push(add("ADVANCED_FACE('',"+tuple(bounds)+','+geometry+','+(same?'.T.':'.F.')+')'));
+      }
+      return {face,solid:()=>add('MANIFOLD_SOLID_BREP('+name(label)+','+add("CLOSED_SHELL('',"+tuple(faces)+")")+")")};
+    }
+    function horizontal(w,loops,z,up) {
+      w.face(loops,plane([0,0,z],up?Z:neg(Z)));
+    }
+    function loft(w,low,high,inward=false,holes=new Map()) {
+      low.forEach((a,i)=>{
+        const b=high[i];
+        let loop=[a,line(a.b,b.b),rev(b),line(b.a,a.a)],surface,same=true;
+        if (a.c) {
+          const r0=Math.hypot(...sub(a.a,a.c)),r1=Math.hypot(...sub(b.a,b.c));
+          const rise=b.c[2]-a.c[2];
+          const sign=r1>=r0 ? 1 : -1;
+          const conical=Math.abs(r1-r0)>1e-8;
+          surface={type:conical?'CONICAL_SURFACE':'CYLINDRICAL_SURFACE',
+            p:sign>0?a.c:b.c,n:sign>0?Z:neg(Z),u:sub(a.a,a.c),
+            params:conical?[Math.min(r0,r1),Math.atan2(Math.abs(r1-r0),rise)]:[r0]};
+          same=dot(a.n,Z)>0;
+        } else {
+          surface=plane(a.a,unit(cross(sub(a.b,a.a),sub(b.a,a.a))));
+        }
+        if (inward) {loop=reversed(loop);same=!same;}
+        w.face([loop,...(holes.get(i)||[])],surface,same);
+      });
+    }
+    function profileExtrusion(w,profile,x0,x1,omit=new Set()) {
+      // Profiles are counterclockwise in the (Y,Z) plane.
+      const at=x=>profile.map(e=>e.c ? arc([x,...e.a],[x,...e.b],[x,...e.c],e.n) : line([x,...e.a],[x,...e.b]));
+      const low=at(x0),high=at(x1);
+      w.face([reversed(low)],plane([x0,0,0],neg(X)));
+      w.face([high],plane([x1,0,0],X));
+      low.forEach((a,i)=>{
+        if (omit.has(i)) return;
+        const b=high[i],loop=[a,line(a.b,b.b),rev(b),line(b.a,a.a)];
+        if (a.c) {
+          const surface={type:'CYLINDRICAL_SURFACE',p:a.c,n:X,u:sub(a.a,a.c),params:[Math.hypot(...sub(a.a,a.c))]};
+          w.face([loop],surface,dot(a.n,X)>0);
+        } else w.face([loop],plane(a.a,unit(cross(sub(a.b,a.a),X))));
+      });
+    }
+    function hardwareFaces(w,part) {
+      const h=part.hardware;
+      const {cx,rear,front,axisY:y,axisZ:z,span,ear,pin,bore,gap,catchZ,latch,seat}=h;
+      const holes=new Map();
+      function cut(index,points) {
+        if (!holes.has(index)) holes.set(index,[]);
+        holes.get(index).push(reversed(polygon(points)));
+      }
+      function attach(index,x0,x1,at,lo,hi,back) {
+        const loop=[[x1,at,lo],[x0,at,lo],[x0,at,hi],[x1,at,hi]];
+        cut(index,back ? loop : loop.reverse());
+      }
+      if (part.kind==='box') {
+        const R=3.3,A=2.35, Y=y-Math.sqrt(R*R-A*A);
+        const slot=(r,sign)=>{
+          const slope=.24,width=pin-.48;
+          const v=(-width*slope+Math.sqrt((1+slope*slope)*r*r-width*width))/(1+slope*slope);
+          return [y+sign*(width+slope*v),z+v];
+        };
+        const p=[[rear,z-A],[Y,z-A],slot(R,1),slot(bore,1),
+          [y,z-bore],slot(bore,-1),slot(R,-1),[Y,z+A],[rear,z+A]];
+        const center=[y,z];
+        const arcs=new Map([[1,X],[3,neg(X)],[4,neg(X)],[6,X]]);
+        const profile=p.map((a,i)=>arcs.has(i)?arc(a,p[i+1],center,arcs.get(i)):line(a,p[(i+1)%p.length]));
+        for (const [x0,x1] of [[cx-span-ear,cx-span],[cx+span,cx+span+ear]]) {
+          attach(part.radius ? 4 : 2,x0,x1,rear,z-A,z+A,true);
+          profileExtrusion(w,profile,x0,x1,new Set([8]));
+        }
+        const low=catchZ-.55-gap,high=catchZ+.55+gap,x0=cx-latch-gap,x1=cx+latch+gap;
+        const mouth=polygon([[x0,front,low],[x1,front,low],[x1,front,high],[x0,front,high]]);
+        const back=polygon(mouth.map(e=>[e.a[0],front+.8,e.a[2]]));
+        holes.set(0,[reversed(mouth)]);
+        w.face([back],plane(back[0].a,[0,-1,0]));
+        mouth.forEach((e,i)=>{
+          const b=back[i];
+          const loop=[e,line(e.b,b.b),rev(b),line(b.a,e.a)];
+          w.face([loop],plane(e.a,unit(cross(sub(e.b,e.a),[0,1,0]))));
+        });
+      } else {
+        const right=span-gap,end=span+ear-gap,root=rear+gap;
+        // Use a straight stem that blends into the axle along two exact
+        // circular edges. The end portions remain full cylinders.
+        const stemY=y-pin*0.6,stemZ=z+pin*0.8;
+        const profile=[
+          line([rear,seat+.1],[root,seat+.1]),line([root,seat+.1],[root,stemZ]),
+          line([root,stemZ],[stemY,stemZ]),
+          arc([stemY,stemZ],[y,z-pin],[y,z],X),
+          arc([y,z-pin],[y+pin,z],[y,z],X),
+          arc([y+pin,z],[y,z+pin],[y,z],X),
+          line([y,z+pin],[y,seat+.65]),line([y,seat+.65],[rear,seat+.65]),
+          line([rear,seat+.65],[rear,seat+.1])
+        ];
+        // Split the centre shell at the ends of the stem so each projecting
+        // axle is a cylindrical portion of the same closed solid.
+        const circle=[
+          arc([stemY,stemZ],[y,z-pin],[y,z],X),
+          arc([y,z-pin],[y+pin,z],[y,z],X),
+          arc([y+pin,z],[y,z+pin],[y,z],X),
+          arc([y,z+pin],[stemY,stemZ],[y,z],X)
+        ];
+        function at(loop,x) {return loop.map(e=>e.c?arc([x,...e.a],[x,...e.b],[x,...e.c],e.n):line([x,...e.a],[x,...e.b]));}
+        function walls(loop,x0,x1) {
+          const low=at(loop,x0),high=at(loop,x1);
+          low.forEach((a,i)=>{
+            const b=high[i],boundary=[a,line(a.b,b.b),rev(b),line(b.a,a.a)];
+            const surf=a.c?{type:'CYLINDRICAL_SURFACE',p:a.c,n:X,u:sub(a.a,a.c),params:[pin]}:plane(a.a,unit(cross(sub(a.b,a.a),X)));
+            w.face([boundary],surf);
+          });
+        }
+        walls(profile.slice(0,-1),cx-right,cx+right);
+        const exposed=[...profile.slice(0,3),rev(circle[3]),...profile.slice(6)];
+        w.face([reversed(at(exposed,cx-right))],plane([cx-right,0,0],neg(X)));
+        w.face([at(exposed,cx+right)],plane([cx+right,0,0],X));
+        walls(circle,cx-end,cx-right);walls(circle,cx+right,cx+end);
+        w.face([reversed(at(circle,cx-end))],plane([cx-end,0,0],neg(X)));
+        w.face([at(circle,cx+end)],plane([cx+end,0,0],X));
+        attach(part.radius ? 4 : 2,cx-right,cx+right,rear,seat+.1,seat+.65,true);
+
+        const tip=catchZ-.9,outer=front-gap-1.55,inner=front-gap;
+        const p=[[front,seat+.65],[outer,seat+.65],[outer,tip],[inner,tip],
+          [front+.5,catchZ],[front+.5,catchZ+.5],[inner,catchZ+.5],[inner,seat+.1],[front,seat+.1]];
+        profileExtrusion(w,polygon(p),cx-latch,cx+latch,new Set([8]));
+        attach(0,cx-latch,cx+latch,front,seat+.1,seat+.65,false);
+      }
+      return holes;
+    }
+    function cellLoops(cells) {
+      const starts=new Map(), ends=new Set(), keys=new Set(cells.map(p=>p.join(',')));
+      const sides=[[0,-1,0,0,1,0],[1,0,1,0,1,1],[0,1,1,1,0,1],[-1,0,0,1,0,0]];
+      for (const [x,y] of cells) for (const [dx,dy,ax,ay,bx,by] of sides) {
+        if (keys.has([x+dx,y+dy].join(','))) continue;
+        const a=[x+ax,y+ay], b=[x+bx,y+by], k=a.join(','), end=b.join(',');
+        if (starts.has(k) || ends.has(end)) throw new Error('outline');
+        starts.set(k,[a,b]);ends.add(end);
+      }
+      const loops=[];
+      while (starts.size) {
+        const [start]=starts.keys(), vertices=[];
+        let key=start;
+        do {
+          const [a,b]=starts.get(key);
+          vertices.push(a);starts.delete(key);key=b.join(',');
+        } while(key!==start);
+        const area=vertices.reduce((sum,[x,y],i)=>{
+          const [u,v]=vertices[(i+1)%vertices.length];return sum+x*v-u*y;
+        },0);
+        const corners=vertices.filter((v,i)=>{
+          const a=vertices[(i+vertices.length-1)%vertices.length],b=vertices[(i+1)%vertices.length];
+          return a[0]!==b[0] && a[1]!==b[1];
+        }).map(p=>p.map(v=>v*settings.pitch));
+        loops.push({corners,hole:area<0});
+      }
+      return loops;
+    }
+    function cellProfile(loop,z,offset,convex,concave) {
+      const {corners}=loop;
+      const profile=corners.map(([x,y],i)=>{
+        const a=corners[(i+corners.length-1)%corners.length], b=corners[(i+1)%corners.length];
+        const inX=Math.sign(x-a[0]),inY=Math.sign(y-a[1]),outX=Math.sign(b[0]-x),outY=Math.sign(b[1]-y);
+        const turn=inX*outY-inY*outX;
+        const r=turn>0 ? convex : concave;
+        const corner=[x+offset*(inY+outY),y-offset*(inX+outX),z];
+        return {a:[corner[0]-inX*r,corner[1]-inY*r,z],b:[corner[0]+outX*r,corner[1]+outY*r,z],
+          c:[corner[0]-inX*r+outX*r,corner[1]-inY*r+outY*r,z],turn,r};
+      });
+      return profile.flatMap(({a,b,c,turn,r},i)=>{
+        const next=profile[(i+1)%profile.length].a;
+        if (Math.hypot(...sub(next,b))<1e-7 || dot(sub(next,b),[...sub(corners[(i+1)%corners.length],corners[i]),0])<=0)
+          throw new Error('radius');
+        const edge=line(b,next);
+        return r>1e-8 ? [arc(a,b,c,turn>0?Z:neg(Z)),edge] : [edge];
+      });
+    }
+    function planarRegions(w,profiles,loops,z,up,regions) {
+      function contains(loop,[x,y]) {
+        let inside=false;
+        const {corners}=loop;
+        for (let i=0,j=corners.length-1;i<corners.length;j=i++) {
+          const [a,b]=corners[i],[c,d]=corners[j];
+          if ((b>y)!==(d>y) && x<(c-a)*(y-b)/(d-b)+a) inside=!inside;
+        }
+        return inside;
+      }
+      loops.forEach((loop,i)=>{
+        if (loop.hole) return;
+        const boundaries=[profiles[i]];
+        loops.forEach((inner,j)=>{
+          if (inner.hole && contains(loop,inner.corners[0]) &&
+            !loops.some(other=>other!==loop && !other.hole && contains(loop,other.corners[0]) && contains(other,inner.corners[0])))
+            boundaries.push(profiles[j]);
+        });
+        if (regions?.length) engraveFace(w,boundaries,z,regions);
+        else horizontal(w,up?boundaries:boundaries.map(reversed),z,up);
+      });
+    }
+    // Trace the same coverage mask used by the print preview and STL.
+    function traceMask(mask) {
+      const {alpha,width,height,rect:[x,y,w,h],mirror}=mask;
+      const points=new Map(),segments=new Map();
+      function sample(ix,iy) {
+        return ix<0 || ix>=width || iy<0 || iy>=height ? 0 : alpha[iy*width+ix];
+      }
+      function link(ax,ay,bx,by,av,bv) {
+        const id=(ay+1)*(width+2)+ax+1;
+        const key=2*id+(ax===bx ? 1 : 0);
+        if (!points.has(key)) {
+          const f=(127.5-av)/(bv-av);
+          const u=(ax+(bx-ax)*f+.5)/width,v=(ay+(by-ay)*f+.5)/height;
+          points.set(key,[x+u*w,y+(mirror?v:1-v)*h]);
+        }
+        return key;
+      }
+      function connect(a,b) {
+        for (const [p,q] of [[a,b],[b,a]]) {
+          if (!segments.has(p)) segments.set(p,[]);
+          segments.get(p).push(q);
+        }
+      }
+      for (let iy=-1;iy<height;iy++) for (let ix=-1;ix<width;ix++) {
+        const a=sample(ix,iy),b=sample(ix+1,iy),c=sample(ix+1,iy+1),d=sample(ix,iy+1);
+        const solid=[a,b,c,d].map(v=>v>127);
+        if (solid.every(v=>v===solid[0])) continue;
+        const crossings=[];
+        if (solid[0]!==solid[1]) crossings.push(link(ix,iy,ix+1,iy,a,b));
+        if (solid[1]!==solid[2]) crossings.push(link(ix+1,iy,ix+1,iy+1,b,c));
+        if (solid[2]!==solid[3]) crossings.push(link(ix,iy+1,ix+1,iy+1,d,c));
+        if (solid[3]!==solid[0]) crossings.push(link(ix,iy,ix,iy+1,a,d));
+        if (crossings.length===2) connect(...crossings);
+        else {
+          const center=a+b+c+d>510;
+          const offset=solid[0]===center ? 0 : 1;
+          connect(crossings[offset],crossings[offset+1]);
+          connect(crossings[(offset+2)%4],crossings[(offset+3)%4]);
+        }
+      }
+      const loops=[];
+      while (segments.size) {
+        const start=segments.keys().next().value,loop=[];
+        let current=start,prev=null;
+        do {
+          const next=segments.get(current).find(k=>k!==prev);
+          loop.push(points.get(current));
+          segments.delete(current);
+          prev=current;current=next;
+        } while(current!==start);
+        const corners=loop.filter((p,i)=>{
+          const a=loop[(i+loop.length-1)%loop.length],b=loop[(i+1)%loop.length];
+          return Math.abs((p[0]-a[0])*(b[1]-p[1])-(p[1]-a[1])*(b[0]-p[0]))>1e-10;
+        });
+        if (corners.length>=3) loops.push(corners);
+      }
+      return loops;
+    }
+    function containsPoint(loop,[x,y]) {
+      let inside=false;
+      for (let i=0,j=loop.length-1;i<loop.length;j=i++) {
+        const [a,b]=loop[i],[c,d]=loop[j];
+        if ((b>y)!==(d>y) && x<(c-a)*(y-b)/(d-b)+a) inside=!inside;
+      }
+      return inside;
+    }
+    function boundaryPoints(loop) {
+      return loop.flatMap(e=>{
+        if (!e.c) return [e.a];
+        const a=sub(e.a,e.c),b=sub(e.b,e.c);
+        const angle=Math.atan2(dot(e.n,cross(a,b)),dot(a,b));
+        const turn=angle>0 ? angle : angle+2*Math.PI;
+        const steps=Math.max(2,Math.ceil(turn*32));
+        return Array.from({length:steps},(_,i)=>{
+          const t=turn*i/steps,s=dot(e.n,Z);
+          return [e.c[0]+a[0]*Math.cos(t)-s*a[1]*Math.sin(t),e.c[1]+a[1]*Math.cos(t)+s*a[0]*Math.sin(t)];
+        });
+      });
+    }
+    function labelRegions(label) {
+      const mask=rasterizePrintLabel(label);
+      const loops=traceMask(mask).map(points=>{
+        const area=points.reduce((sum,[x,y],i)=>{
+          const [u,v]=points[(i+1)%points.length];return sum+x*v-u*y;
+        },0);
+        return {points,area};
+      }).sort((a,b)=>Math.abs(b.area)-Math.abs(a.area));
+      const regions=[];
+      loops.forEach((loop,i)=>{
+        const parents=loops.slice(0,i).filter(other=>containsPoint(other.points,loop.points[0]));
+        const hole=parents.length%2===1;
+        if ((loop.area<0)!==hole) loop.points.reverse();
+        if (hole) parents.at(-1).region.push(loop.points);
+        else {
+          loop.region=[loop.points];
+          regions.push(loop.region);
+        }
+      });
+      if (!regions.length && label.text.trim()) throw new Error('stepLettering');
+      return regions.map(loops=>({loops,raised:label.mode==='raised'}));
+    }
+    function engraveFace(w,bounds,z,regions) {
+      const outline=bounds.map(boundaryPoints),cutouts=[];
+      for (const region of regions) {
+        const {loops,raised}=region;
+        if (region.placed) continue;
+        // A mark must fit completely on the planar face, inside the bevel.
+        const fits=p=>containsPoint(outline[0],p) && !outline.slice(1).some(loop=>containsPoint(loop,p));
+        if (!loops[0].every(fits)) continue;
+        region.placed=true;
+        const reliefZ=z+(raised ? settings.depth : -settings.depth);
+        const at=(loop,height)=>polygon(loop.map(p=>[...p,height]));
+        const base=loops.map(loop=>at(loop,z)), relief=loops.map(loop=>at(loop,reliefZ));
+        cutouts.push(reversed(base[0]));
+        for (let i=0;i<base.length;i++) {
+          loft(w,raised?base[i]:relief[i],raised?relief[i]:base[i],!raised);
+          if (i) horizontal(w,[reversed(base[i])],z,true);
+        }
+        horizontal(w,relief,reliefZ,true);
+      }
+      horizontal(w,[...bounds,...cutouts],z,true);
+    }
+    const solids=[];
+    const bed=layout.mode==='bed';
+    const hiddenLid=layout.mode==='assembled' ? layout.parts.find(part=>part.kind==='lid') : null;
+    for (const [i,part] of layout.parts.entries()) {
+      if (part.kind==='lid' && layout.mode==='assembled') continue;
+      const labels=part.kind==='box' && hiddenLid
+        ? hiddenLid.labels.map(label=>({...label,face:'top'})) : part.labels;
+      const regions=(labels || []).flatMap(labelRegions);
+      const cover=(loops,z)=>engraveFace(w,loops,z,regions);
+      const [ox,oy]=bed ? part.offset : part.assembledOffset;
+      const z=bed ? 0 : part.kind==='tile' ? layout.floorThickness : 0;
+      const placement=part.kind==='lid' && bed
+        ? [-1,-1,ox+2*part.hardware.cx,oy,part.hardware.lidTop+(part.bedLift || 0)] : [1,1,ox,oy,z];
+      const w=writer(part.kind==='box'?'Tray':part.kind==='lid'?'Lid':'Tile '+i,placement);
+      const bounds=part.panel || part.bounds;
+      const {height}=part;
+      const bottomBevel=part.kind==='lid' ? part.topBevel : part.bottomBevel;
+      const topBevel=part.kind==='lid' ? part.bottomBevel : part.topBevel;
+      const outerRadius=part.radius;
+      if (part.kind==='box' || part.kind==='lid') {
+        const isTray=part.kind==='box';
+        const zBase=part.kind==='lid' ? part.hardware.seat : 0;
+        const levels=[];
+        function layer(z,inset) {
+          levels.push(rounded(bounds.map((x,j)=>x+(j<2?inset:-inset)),Math.max(0,outerRadius-inset),z+zBase));
+        }
+        // With a zero-radius corner, the parallel inset remains square.
+        if (outerRadius>0 && outerRadius<=Math.max(topBevel,bottomBevel)) throw new Error('radius');
+        if (isTray && height-topBevel<=part.floorThickness) throw new Error('radius');
+        layer(0,bottomBevel);
+        if (bottomBevel) layer(bottomBevel,0);
+        if (topBevel) layer(height-topBevel,0);
+        layer(height,topBevel);
+        const holes=part.hardware ? hardwareFaces(w,part) : new Map();
+        for (let j=1;j<levels.length;j++) {
+          const straight=j===(bottomBevel ? 2 : 1);
+          loft(w,levels[j-1],levels[j],false,straight ? holes : new Map());
+        }
+        horizontal(w,[reversed(levels[0])],zBase,false);
+        if (!isTray) cover([levels.at(-1)],zBase+height);
+        else {
+          const r=settings.boxInnerRadius;
+          const loops=part.playableCells ? cellLoops(part.playableCells) : null;
+          if (part.cuts?.length) throw new Error('outline');
+          if (loops?.length===0) {
+            cover([levels.at(-1)],height);
+          } else if (loops) {
+            const base=(z,extra)=>loops.map(loop=>cellProfile(loop,z,settings.boxGap+extra,
+              r ? r+extra : 0,r ? r-extra : 0));
+            if (r>0 && r<=topBevel) throw new Error('radius');
+            const floor=base(part.floorThickness,0),wall=base(height-topBevel,0),rim=base(height,topBevel);
+            for (let i=0;i<loops.length;i++) {
+              loft(w,floor[i],wall[i],true);
+              if (topBevel) loft(w,wall[i],rim[i],true);
+            }
+            planarRegions(w,floor,loops,part.floorThickness,true);
+            cover([levels.at(-1),...rim.filter((_,i)=>!loops[i].hole).map(reversed)],height);
+            rim.forEach((profile,i)=>{if (loops[i].hole) horizontal(w,[reversed(profile)],height,true);});
+          } else {
+            const floor=rounded(part.cavity,r,part.floorThickness);
+            const wall=rounded(part.cavity,r,height-topBevel);
+            const rim=rounded(part.cavity.map((x,j)=>x+(j<2?-topBevel:topBevel)),r ? r+topBevel : 0,height);
+            loft(w,floor,wall,true);
+            if (topBevel) loft(w,wall,rim,true);
+            horizontal(w,[floor],part.floorThickness,true);
+            cover([levels.at(-1),reversed(rim)],height);
+          }
+        }
+      } else {
+        const gap=settings.tileGap/2;
+        if (part.bridges?.length || part.cuts?.length) throw new Error('outline');
+        const loops=part.cells && part.cells.length<Math.round(bounds[2]*bounds[3]/settings.pitch**2) ? cellLoops(part.cells) : null;
+        if (loops) {
+          const at=(z,bevel)=>loops.map(loop=>cellProfile(loop,z,-gap-bevel,outerRadius ? outerRadius-gap-bevel : 0,0));
+          if (outerRadius>0 && outerRadius<=gap+Math.max(topBevel,bottomBevel)) throw new Error('radius');
+          const levels=[at(0,bottomBevel)];
+          if (bottomBevel) levels.push(at(bottomBevel,0));
+          if (topBevel) levels.push(at(height-topBevel,0));
+          levels.push(at(height,topBevel));
+          for (let j=1;j<levels.length;j++) for(let k=0;k<loops.length;k++) loft(w,levels[j-1][k],levels[j][k]);
+          planarRegions(w,levels[0],loops,0,false);
+          planarRegions(w,levels.at(-1),loops,height,true,regions);
+          if (regions.some(region=>!region.placed)) throw new Error('stepLettering');
+          solids.push(w.solid());
+          continue;
+        }
+        const outline=(z,inset)=>{
+          const d=gap+inset;
+          if (part.circle) {
+            const c=[part.bounds[2]/2,part.bounds[3]/2,z],r=c[0]-d;
+            const p=[[c[0]+r,c[1],z],[c[0],c[1]+r,z],[c[0]-r,c[1],z],[c[0],c[1]-r,z]];
+            return p.map((a,i)=>arc(a,p[(i+1)%4],c,Z));
+          }
+          return rounded(bounds.map((x,j)=>x+(j<2?d:-d)),Math.max(0,outerRadius-d),z);
+        };
+        if (!part.circle && outerRadius>0 && outerRadius<=gap+Math.max(topBevel,bottomBevel)) throw new Error('radius');
+        const levels=[outline(0,bottomBevel)];
+        if (bottomBevel) levels.push(outline(bottomBevel,0));
+        if (topBevel) levels.push(outline(height-topBevel,0));
+        levels.push(outline(height,topBevel));
+        for(let j=1;j<levels.length;j++) loft(w,levels[j-1],levels[j]);
+        horizontal(w,[reversed(levels[0])],0,false);
+        cover([levels.at(-1)],height);
+      }
+      if (regions.some(region=>!region.placed)) throw new Error('stepLettering');
+      solids.push(w.solid());
+    }
+    const app=add("APPLICATION_CONTEXT('core data for automotive mechanical design processes')");
+    add("APPLICATION_PROTOCOL_DEFINITION('international standard','automotive_design',2000,"+app+")");
+    const pc=add("PRODUCT_CONTEXT('',"+app+",'mechanical')");
+    const product=add('PRODUCT('+[name(title),name(title),"''",tuple([pc])].join(',')+')');
+    const form=add("PRODUCT_DEFINITION_FORMATION('','',"+product+")");
+    const pd=add("PRODUCT_DEFINITION('design','',"+form+','+add("PRODUCT_DEFINITION_CONTEXT('part definition',"+app+",'design')")+")");
+    const shape=add("PRODUCT_DEFINITION_SHAPE('','',"+pd+")");
+    const mm=add('(LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT(.MILLI.,.METRE.))');
+    const rad=add('(NAMED_UNIT(*) PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.))');
+    const sr=add('(NAMED_UNIT(*) SI_UNIT($,.STERADIAN.) SOLID_ANGLE_UNIT())');
+    const tol=add("UNCERTAINTY_MEASURE_WITH_UNIT(LENGTH_MEASURE(0.000001),"+mm+",'distance_accuracy_value','')");
+    const context=add("(GEOMETRIC_REPRESENTATION_CONTEXT(3) GLOBAL_UNCERTAINTY_ASSIGNED_CONTEXT(("+tol+")) GLOBAL_UNIT_ASSIGNED_CONTEXT("+tuple([mm,rad,sr])+") REPRESENTATION_CONTEXT('','3D'))");
+    const representation=add("ADVANCED_BREP_SHAPE_REPRESENTATION('',"+tuple([axis([0,0,0],Z,X),...solids])+','+context+')');
+    add('SHAPE_DEFINITION_REPRESENTATION('+shape+','+representation+')');
+    add("PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,("+product+"))");
+    return 'ISO-10303-21;\nHEADER;\nFILE_DESCRIPTION((\'Klotski analytic geometry\'),\'2;1\');\nFILE_NAME('+name(title)+','+name(new Date().toISOString())+
+      ",('Klotski'),(''),'Klotski','Klotski','');\nFILE_SCHEMA(('AUTOMOTIVE_DESIGN'));\nENDSEC;\nDATA;\n"+
+      rows.map((entity,i)=>'#'+(i+1)+'='+entity+';').join('\n')+'\nENDSEC;\nEND-ISO-10303-21;\n';
+  }
+
+  function printPartPlacement(part,layout,mode) {
+    if (mode==='bed') return [1,1,0,0,0];
+    if (part.kind==='lid') return mode==='closed'
+      ? [-1,-1,2*part.hardware.cx+part.offset[0],-part.offset[1],part.hardware.lidTop+part.bedLift]
+      : null;
+    const [x,y]=part.assembledOffset;
+    return [1,1,x-part.offset[0],y-part.offset[1],part.kind==='tile' ? layout.floorThickness : 0];
+  }
+
+  function printStlForLayout(buffer,ranges,layout,mode) {
+    if (mode==='bed') return buffer;
+    const included=[];
+    let count=0;
+    for (const [i,part] of layout.parts.entries()) {
+      const placement=printPartPlacement(part,layout,mode);
+      if (!placement) continue;
+      included.push([ranges[i],placement]);
+      count+=ranges[i][1];
+    }
+    const result=new ArrayBuffer(84+count*50), source=new DataView(buffer), target=new DataView(result);
+    new Uint8Array(result,0,80).set(new Uint8Array(buffer,0,80));
+    target.setUint32(80,count,true);
+    const [left,bottom]=layout.assembledBounds;
+    let offset=84;
+    for (const [[first,length],[sx,sz,dx,dy,dz]] of included) {
+      for (let i=first;i<first+length;i++) {
+        let from=84+i*50;
+        target.setFloat32(offset,sx*source.getFloat32(from,true),true);
+        target.setFloat32(offset+4,source.getFloat32(from+4,true),true);
+        target.setFloat32(offset+8,sz*source.getFloat32(from+8,true),true);
+        for (let vertex=12;vertex<48;vertex+=12) {
+          target.setFloat32(offset+vertex,sx*source.getFloat32(from+vertex,true)+dx-left,true);
+          target.setFloat32(offset+vertex+4,source.getFloat32(from+vertex+4,true)+dy-bottom,true);
+          target.setFloat32(offset+vertex+8,sz*source.getFloat32(from+vertex+8,true)+dz,true);
+        }
+        offset+=50;
+      }
+    }
+    return result;
   }
 
   function createPrintViewer(canvas) {
@@ -14412,6 +15410,7 @@ self.onmessage = async function (e) {
     const vertex = shader(gl.VERTEX_SHADER, `
       attribute vec3 position, normal;
       uniform vec3 offset, center, color;
+      uniform vec2 lidSign;
       uniform vec2 yaw, pitch, scale, pan;
       varying vec3 paint;
       vec3 rotate(vec3 p) {
@@ -14419,9 +15418,9 @@ self.onmessage = async function (e) {
         return vec3(q.x,pitch.x*q.y-pitch.y*q.z,pitch.y*q.y+pitch.x*q.z);
       }
       void main() {
-        vec3 p = rotate(position+offset-center);
+        vec3 p = rotate(position*vec3(lidSign.x,1.0,lidSign.y)+offset-center);
         gl_Position = vec4(p.xy*scale+pan,-p.z*max(scale.x,scale.y)*0.08,1.0);
-        float light = max(0.0,dot(rotate(normal),normalize(vec3(-0.4,-0.6,1.0))));
+        float light = max(0.0,dot(rotate(normal*vec3(lidSign.x,1.0,lidSign.y)),normalize(vec3(-0.4,-0.6,1.0))));
         paint = color*(0.44+0.56*light);
       }
     `);
@@ -14433,7 +15432,7 @@ self.onmessage = async function (e) {
     gl.attachShader(program,vertex);gl.attachShader(program,fragment);gl.linkProgram(program);
     gl.deleteShader(vertex);gl.deleteShader(fragment);
     if (!gl.getProgramParameter(program,gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program));
-    const uniforms = Object.fromEntries(['offset','center','color','yaw','pitch','scale','pan'].map(name=>[name,gl.getUniformLocation(program,name)]));
+    const uniforms = Object.fromEntries(['offset','center','color','yaw','pitch','scale','pan','lidSign'].map(name=>[name,gl.getUniformLocation(program,name)]));
     const position=gl.getAttribLocation(program,'position'),normal=gl.getAttribLocation(program,'normal');
     let model=null, buffer=null, yaw=-0.45, pitch=-0.62, zoom=1, drag=null, frame=0, panX=0, panY=0;
     function draw() {
@@ -14444,7 +15443,8 @@ self.onmessage = async function (e) {
       gl.viewport(0,0,width,height);
       gl.clearColor(0.105,0.135,0.18,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
       if (!model) return;
-      const {layout,ranges,assembled}=model;
+      const {layout,ranges,mode}=model;
+      const assembled=mode!=='bed';
       const bounds=assembled ? layout.assembledBounds : [0,0,layout.width,layout.height];
       const [left,bottom,right,top]=bounds;
       const size=1.76*zoom/Math.hypot(right-left,top-bottom,layout.maxHeight);
@@ -14458,9 +15458,12 @@ self.onmessage = async function (e) {
       gl.uniform2f(uniforms.pan,2*panX/Math.max(1,canvas.clientWidth),-2*panY/Math.max(1,canvas.clientHeight));
       gl.uniform3f(uniforms.center,(left+right)/2,(bottom+top)/2,layout.maxHeight/2);
       for (const [i,part] of layout.parts.entries()) {
-        const [x,y]=assembled ? part.assembledOffset : part.offset;
-        gl.uniform3f(uniforms.offset,x-part.offset[0],y-part.offset[1],assembled && part.kind==='tile' ? layout.floorThickness : 0);
-        gl.uniform3fv(uniforms.color,part.kind==='box' ? [0.62,0.72,0.84] : [0.45,0.82,0.94]);
+        const placement=printPartPlacement(part,layout,mode);
+        if (!placement) continue;
+        const [sx,sz,x,y,z]=placement;
+        gl.uniform2f(uniforms.lidSign,sx,sz);
+        gl.uniform3f(uniforms.offset,x,y,z);
+        gl.uniform3fv(uniforms.color,part.kind==='tile' ? [0.45,0.82,0.94] : [0.62,0.72,0.84]);
         gl.drawArrays(gl.TRIANGLES,ranges[i][0]*3,ranges[i][1]*3);
       }
     }
@@ -14507,7 +15510,7 @@ self.onmessage = async function (e) {
     }
     return {
       clear, reset,
-      show(stl,ranges,layout,assembled) {
+      show(stl,ranges,layout,mode) {
         clear();
         const data=new DataView(stl),count=data.getUint32(80,true);
         const packed=new ArrayBuffer(count*48),coordinates=new Float32Array(packed),normals=new Int8Array(packed);
@@ -14525,13 +15528,16 @@ self.onmessage = async function (e) {
         buffer=gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,packed,gl.STATIC_DRAW);
         if (gl.getError()!==gl.NO_ERROR) { clear();throw new Error('WebGL'); }
-        model={ranges,layout,assembled};reset();
+        model={ranges,layout,mode};reset();
       },
-      setAssembled(assembled) { if (model) { model.assembled=assembled;reset(); } }
+      setMode(mode) { if (model) { model.mode=mode;reset(); } }
     };
   }
 
-  function drawPrintPlan(layout, settings, assembled) {
+  function drawPrintPlan(layout, settings, mode) {
+    const assembled=mode===true || mode==='assembled' || mode==='closed';
+    const parts=layout.parts.filter(part=>mode==='closed' ? part.kind!=='tile' : !assembled || part.kind!=='lid');
+    if (mode==='closed') parts.sort((a,b)=>(a.kind==='lid')-(b.kind==='lid'));
     const [left,bottom,right,top]=assembled ? layout.assembledBounds : [0,0,layout.width,layout.height];
     const width=right-left,height=top-bottom;
     const scale=Math.min(760/width,480/height,12);
@@ -14539,7 +15545,7 @@ self.onmessage = async function (e) {
     printPreview.width=columns;printPreview.height=rows;
     const ctx=printPreview.getContext('2d'),pixels=ctx.createImageData(columns,rows),rgba=pixels.data;
     for (let k=0;k<rgba.length;k+=4) { rgba[k]=32;rgba[k+1]=38;rgba[k+2]=49;rgba[k+3]=255; }
-    for (const part of layout.parts) {
+    for (const part of parts) {
       const [x,y]=assembled ? part.assembledOffset : part.offset;
       const [a,b,c,d]=part.bounds;
       const {outer,opening}=printFootprint(part,settings);
@@ -14549,8 +15555,14 @@ self.onmessage = async function (e) {
       const toY=Math.min(rows,Math.ceil((top-y-b)*scale));
       const tile=part.kind==='tile';
       for (let row=fromY;row<toY;row++) for (let col=fromX;col<toX;col++) {
-        const px=left+(col+.5)/scale-x,py=top-(row+.5)/scale-y;
-        const distance=outer(px,py);
+        const localX=left+(col+.5)/scale-x,py=top-(row+.5)/scale-y;
+        const px=part.kind==='lid' && !assembled ? 2*part.hardware.cx-localX : localX;
+        let distance=outer(px,py);
+        if (part.hardware && (py<=part.hardware.front+0.85 || py>=part.hardware.rear-1.01)) {
+          const hw=part.hardware;
+          const z=part.kind==='box' ? hw.axisZ-1 : hw.lidTop-hw.axisZ;
+          distance=Math.min(distance,printHardwareField(part,px,py,z,Math.max(distance,1)));
+        }
         const alpha=Math.max(0,Math.min(1,.5-distance*scale));
         if (!alpha) continue;
         const cavity=opening ? opening(px,py) : Infinity;
@@ -14564,11 +15576,13 @@ self.onmessage = async function (e) {
       }
     }
     ctx.putImageData(pixels,0,0);
-    for (const part of layout.parts) {
+    for (const part of parts) {
+      if (part.kind==='lid' && !assembled) continue;
       const [x,y]=assembled ? part.assembledOffset : part.offset;
       for (const label of part.labels) {
         const [lx,ly,w,h]=label.rect;
-        ctx.save();ctx.translate((x+lx-left)*scale,(top-y-ly-h)*scale);
+        ctx.save();
+        ctx.translate((x+lx-left)*scale,(top-y-ly-h)*scale);
         paintPrintLabel(ctx,label,w*scale,h*scale,scale,label.mode==='raised' ? '#e3f2ff' : '#14202e');
         ctx.restore();
       }
@@ -14580,27 +15594,49 @@ self.onmessage = async function (e) {
   const printShow3D=document.getElementById('printShow3D');
   const printReset3D=document.getElementById('printReset3D');
   let printViewer=null, printModel=null, printPreviewFrame=0, printRebuildTimer=0;
-  let printWorkerAction=null;
+  let printWorkerAction=null, printDownloadReset=0;
+  function showPrintDownloadProgress(percent) {
+    clearTimeout(printDownloadReset);
+    if (percent==null) {
+      printDownload.dataset.ruseng='printDownload';
+      printDownload.textContent=t('printDownload');
+      return;
+    }
+    delete printDownload.dataset.ruseng;
+    printDownload.textContent=t('printDownload')+' · '+percent+'%';
+    if (percent===100) printDownloadReset=setTimeout(()=>showPrintDownloadProgress(null),900);
+  }
   let print3DEnabled=false;
   function setPrint3DEnabled(enabled) {
     print3DEnabled=enabled;
-    const label=enabled ? 'printHide3D' : 'printShow3D';
+    updatePrint3DButton();
+  }
+  function updatePrint3DButton() {
+    const label=printWorker ? 'printBuilding' : print3DEnabled ? 'printHide3D' : 'printShow3D';
     printShow3D.dataset.ruseng=label;
     printShow3D.textContent=t(label);
   }
-  const printAssembled=()=>printPreviewMode.value==='assembled';
+  const printLayoutMode=()=>printPreviewMode.value;
 
   function refreshPrintPreview() {
     if (printWorker) return;
+    updatePrint3DButton();
     try {
       const settings=readPrintSettings(),layout=buildPrintLayout(settings);
-      drawPrintPlan(layout,settings,printAssembled());
-      printStatus.textContent=printMessage('Деталей: ','Parts: ')+layout.parts.length+
-        printMessage(' · STL на столе ',' · STL on bed ')+layout.width.toFixed(1)+' × '+layout.height.toFixed(1)+printMessage(' мм',' mm');
-      printDownload.disabled=false;printShow3D.disabled=false;
+      const closedOption=printPreviewMode.querySelector('[value="closed"]');
+      closedOption.hidden=closedOption.disabled=settings.lid!=='hinged';
+      if (closedOption.disabled && printLayoutMode()==='closed') printPreviewMode.value='assembled';
+      drawPrintPlan(layout,settings,printLayoutMode());
+      printViewer?.setMode(printLayoutMode());
+      const mode=printLayoutMode();
+      const count=layout.parts.filter(part=>printPartPlacement(part,layout,mode)).length;
+      const [left,bottom,right,top]=mode==='bed' ? [0,0,layout.width,layout.height] : layout.assembledBounds;
+      printStatus.textContent=printMessage('Деталей: ','Parts: ')+count+
+        ' · STL '+(right-left).toFixed(1)+' × '+(top-bottom).toFixed(1)+printMessage(' мм',' mm');
+      printDownload.disabled=printStep.disabled=false;printShow3D.disabled=false;
     } catch (error) {
       printPreview.hidden=true;printStatus.textContent=error.message;
-      printDownload.disabled=true;printShow3D.disabled=!print3DEnabled;
+      printDownload.disabled=printStep.disabled=true;printShow3D.disabled=!print3DEnabled;
     }
   }
   function invalidatePrintModel() {
@@ -14609,6 +15645,7 @@ self.onmessage = async function (e) {
 
   function closePrintSpace() {
     clearTimeout(printRebuildTimer);
+    showPrintDownloadProgress(null);
     setPrint3DEnabled(false);
     printGeneration++;
     invalidatePrintModel();
@@ -14620,7 +15657,7 @@ self.onmessage = async function (e) {
   document.getElementById('printBtn').addEventListener('click', () => {
     if (appMode!=='editor' || tileEditActive) return;
     printForm.elements.author.value=levelAuthorInput.value;
-    printForm.elements.title.value=levelNameInput.value;
+    printForm.elements.title.value=levelNameInput.value.replace(/(?:\s*\((?:копия|copy)\))+\s*$/iu,'');
     setAppMode('print');
     refreshPrintPreview();
     window.scrollTo(0,0);
@@ -14637,7 +15674,6 @@ self.onmessage = async function (e) {
     },450);
   });
   printPreviewMode.addEventListener('change',()=>{
-    printViewer?.setAssembled(printAssembled());
     refreshPrintPreview();
   });
   printReset3D.addEventListener('click',()=>printViewer?.reset());
@@ -14648,7 +15684,7 @@ self.onmessage = async function (e) {
       if (!print3DEnabled) return;
       try {
         printViewer ||= createPrintViewer(document.getElementById('print3D'));
-        printViewer.show(buffer,ranges,layout,printAssembled());
+        printViewer.show(buffer,ranges,layout,printLayoutMode());
         printReset3D.disabled=false;
       } catch (error) {
         printReset3D.disabled=true;
@@ -14658,13 +15694,40 @@ self.onmessage = async function (e) {
       }
       return;
     }
-    const url=URL.createObjectURL(new Blob([buffer],{type:'model/stl'}));
+    const stl=printStlForLayout(buffer,ranges,layout,printLayoutMode());
+    downloadPrintFile(stl,'model/stl',title,'stl');
+    showPrintDownloadProgress(100);
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+    refreshPrintPreview();
+    printStatus.textContent+=' · '+(stl.byteLength/1048576).toFixed(2)+' MiB';
+  }
+
+  function downloadPrintFile(content,type,title,extension) {
+    const url=URL.createObjectURL(new Blob([content],{type}));
     const link=document.createElement('a');
-    link.href=url;link.download=(title.replace(/[\\/:*?"<>|]/g,'_') || 'Klotski')+'.stl';
+    link.href=url;link.download=(title.replace(/[\\/:*?"<>|]/g,'_') || 'Klotski')+'.'+extension;
     document.body.append(link);link.click();link.remove();
     setTimeout(()=>URL.revokeObjectURL(url),30000);
-    printStatus.textContent=printMessage('Бинарный STL готов · ','Binary STL ready · ')+(buffer.byteLength/1048576).toFixed(1)+' MiB';
   }
+
+  printStep.addEventListener('click',()=>{
+    if (printWorker) return;
+    try {
+      const settings=readPrintSettings();
+      const layout=buildPrintLayout(settings);
+      layout.mode=printLayoutMode();
+      const step=makeExactPrintStep(layout,settings,settings.title || 'Klotski');
+      downloadPrintFile(step,'model/step',settings.title,'step');
+      printStatus.textContent=printMessage('STEP готов.','STEP ready.');
+    } catch (error) {
+      const messages={
+        stepLettering:printMessage('Надпись или маркер выходит за плоскую часть детали. Уменьшите размер надписи или фаску.','Lettering extends beyond the flat face. Reduce the lettering size or chamfer.'),
+        outline:printMessage('Этот контур или диагональная перемычка пока поддерживается только в STL.','This outline or diagonal bridge currently requires STL.'),
+        radius:printMessage('Для STEP уменьшите фаску или выберите большее скругление.','For STEP, reduce the chamfer or increase the corner radius.')
+      };
+      printStatus.textContent=messages[error.message] || error.message;
+    }
+  });
 
   function buildOrUsePrintModel(action) {
     if (printWorker) return;
@@ -14675,10 +15738,13 @@ self.onmessage = async function (e) {
       const parts=layout.parts.map(part=>({...part,masks:part.labels.map(rasterizePrintLabel)}));
       const script=`
         const printFootprint=${printFootprint.toString()};
+        const printHardwareField=${printHardwareField.toString()};
+        const simplifyPrintSurface=${simplifyPrintSurface.toString()};
         const makePrintMesh=${makePrintMesh.toString()};
         onmessage=({data})=>{try {
           const ranges=[];
-          const buffer=makePrintMesh(data.parts,data.settings,ranges);
+          const report=data.trackDownload ? percent=>postMessage({percent}) : null;
+          const buffer=makePrintMesh(data.parts,data.settings,ranges,report);
           postMessage({buffer,ranges},[buffer]);
         } catch(error) {postMessage({error:error.message});}};
       `;
@@ -14691,10 +15757,17 @@ self.onmessage = async function (e) {
         printWorker.terminate();printWorker=null;
         document.getElementById('printFields').disabled=false;
         refreshPrintPreview();
-        if (message) printStatus.textContent=message;
+        if (message) {
+          showPrintDownloadProgress(null);
+          printStatus.textContent=message;
+        }
       }
       printWorker.onmessage=({data})=>{
         if (printGeneration!==generation) return;
+        if (Number.isInteger(data.percent)) {
+          showPrintDownloadProgress(data.percent);
+          return;
+        }
         if (data.error) {
           const messages={
             size:printMessage('Модель слишком велика для выбранной детализации. Увеличьте шаг сетки или уменьшите клетку.','The model is too large at this resolution. Use a coarser mesh or a smaller cell.'),
@@ -14713,11 +15786,14 @@ self.onmessage = async function (e) {
           finish(printMessage('Не удалось построить STL. Попробуйте увеличить шаг сетки.','Could not build STL. Try a coarser mesh.'));
       };
       document.getElementById('printFields').disabled=true;
-      printDownload.disabled=true;printShow3D.disabled=!print3DEnabled;
-      printStatus.textContent=printMessage('Построение STL…','Building STL…');
-      printWorker.postMessage({parts,settings});
+      printDownload.disabled=printStep.disabled=true;printShow3D.disabled=!print3DEnabled;
+      updatePrint3DButton();
+      const trackDownload=action==='download';
+      if (trackDownload) showPrintDownloadProgress(0);
+      printWorker.postMessage({parts,settings,trackDownload});
     } catch (error) {
       printWorker?.terminate();printWorker=null;
+      if (action==='download') showPrintDownloadProgress(null);
       document.getElementById('printFields').disabled=false;
       if (action==='view') setPrint3DEnabled(false);
       refreshPrintPreview();printStatus.textContent=error.message;
