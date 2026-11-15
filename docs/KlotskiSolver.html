@@ -28,7 +28,7 @@
   .settings-hint, .gallery-toc__link {
     user-select: text; -webkit-user-select: text;
   }
-  .app { position: relative; width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; transition: width .2s; }
+  .app { --game-board-width: 480px; position: relative; width: 100%; max-width: var(--game-board-width); display: flex; flex-direction: column; gap: 14px; transition: width .2s; }
   .app.editing { max-width: 780px; }
   .back-btn.editor-gallery-btn { left: auto; right: 12px; }
   .app.editing .app-header { padding-inline: 90px; grid-template-columns: minmax(0,1fr); }
@@ -198,7 +198,7 @@
   @keyframes boardAppear { 0%{transform:scale(0);opacity:0} 55%{transform:scale(1.04);opacity:1} 100%{transform:scale(1);opacity:1} }
   .board__inner { position: absolute; inset: 0; touch-action: none; }
   .board-contour-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 0; filter: drop-shadow(0 14px 28px rgba(0,0,0,.55)); }
-  .board__grid { position: absolute; inset: 0; pointer-events: none; z-index: 0; background-image: linear-gradient(to right, rgba(0,0,0,.20) 1.5px, transparent 1.5px), linear-gradient(to bottom, rgba(0,0,0,.20) 1.5px, transparent 1.5px); background-size: calc(100% / var(--board-cols)) calc(100% / var(--board-rows)); background-repeat: repeat; }
+  .board__grid { --grid-line-width: 1.5px; position: absolute; inset: 0; pointer-events: none; z-index: 0; background-image: linear-gradient(to right, rgba(0,0,0,.20) var(--grid-line-width), transparent var(--grid-line-width)), linear-gradient(to bottom, rgba(0,0,0,.20) var(--grid-line-width), transparent var(--grid-line-width)); background-size: calc(100% / var(--board-cols)) calc(100% / var(--board-rows)); background-repeat: repeat; }
   .solver-status { font-size: 11px; line-height: 16px; min-height: 16px; white-space: normal; overflow-wrap: anywhere; text-align: center; color: var(--sub); letter-spacing: .02em; font-variant-numeric: tabular-nums; }
   .solver-status b { color: var(--gold); font-weight: 700; }
   .solver-status.error { color: #ffb0b0; }
@@ -242,7 +242,17 @@
   .target-marker.target-marker--light {
     --marker-outline: #8a8a8a;
   }
-  .mini-piece { padding: 2px; cursor: default; z-index: 2; }
+  .mini-board { container-type: inline-size; }
+  .mini-piece {
+    --piece-inset: 2px;
+    padding: var(--piece-inset);
+    cursor: default;
+    z-index: 2;
+  }
+  @supports (width: 1cqw) {
+    .mini-piece { --piece-inset: calc(5cqw / var(--board-cols)); }
+  }
+  .mini-piece svg { filter: drop-shadow(0 calc(var(--piece-inset) / 2) calc(var(--piece-inset) * .75) rgba(0,0,0,.35)); }
   .e-piece { cursor: grab; }
   .e-piece.selected svg { filter: drop-shadow(0 0 4px var(--gold)) drop-shadow(0 0 12px rgba(255,209,102,.65)) brightness(1.05); }
   .e-piece.dragging { opacity: .3; }
@@ -346,7 +356,10 @@
   .game-view { position: relative; display: flex; flex-direction: column; gap: 12px; }
   .level-hint { padding: 8px 14px; font-size: 12.5px; line-height: 1.4; text-align: center; color: #000; background: rgba(90,200,110,.15); border: 1px solid rgba(120,220,140,.32); border-radius: 10px; letter-spacing: .01em; font-weight: 500; }
   .hint-block { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 16px 16px 18px; border-radius: 14px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); }
-  .hint-block .mini-board { width: 168px; }
+  .hint-board { position: relative; width: 168px; max-width: 100%; }
+  .scaled-board-frame > .board { position: absolute; top: 0; left: 0; max-height: none; transform-origin: top left; pointer-events: none; }
+  .scaled-board-frame .piece { will-change: auto; }
+  .scaled-board-frame .piece svg * { pointer-events: none; }
   .hint-block__text { font-size: 13px; line-height: 1.4; letter-spacing: .02em; text-align: center; color: var(--ink); }
   .settings-block { display: flex; flex-direction: column; gap: 10px; padding: 12px 16px 14px; border-radius: 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); }
   .settings-block__title-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
@@ -658,6 +671,9 @@
   .palette-arrow-gap { flex: 0 0 5px; height: 1px; }
   .color-palette__row--icons .color-palette-sep { margin: 0 2px; min-height: 22px; }
   .color-palette__row--chars { gap: 3px; flex-wrap: nowrap; }
+  .color-palette__row--marker-controls { flex-wrap: wrap; }
+  .marker-scale-controls { display: inline-flex; align-items: center; gap: 3px; }
+  .marker-scale-value { min-width: 4ch; margin: 0; text-align: center; font-variant-numeric: tabular-nums; }
   .color-swatch { width: 30px; height: 30px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: transform .1s, border-color .15s; box-shadow: inset 0 2px 0 rgba(255,255,255,.25), inset 0 -3px 6px rgba(0,0,0,.3); }
   .color-swatch:hover { transform: scale(1.1); }
   .color-swatch.active { border-color: var(--gold); transform: scale(1.12); }
@@ -712,7 +728,10 @@
   .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
   .gallery-card { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 8px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); cursor: pointer; transition: transform .12s, background .15s, border-color .15s; user-select: none; }
   .gallery-card > .gallery-previews { height: auto; flex-shrink: 0; }
-  .gallery-card .mini-board { flex-shrink: 0; }
+  .gallery-board-preview { position: relative; width: 100%; flex-shrink: 0; aspect-ratio: var(--board-cols) / var(--board-rows); overflow: clip; overflow-clip-margin: 4px; }
+  .gallery-board-preview > .board-contour-svg { filter: drop-shadow(0 2px 4px rgba(0,0,0,.55)); }
+  .gallery-board-preview > .board__grid { --grid-line-width: 1px; }
+  .gallery-board-preview > .board { --board-cols: inherit; --board-rows: inherit; width: var(--game-board-width); transform: scale(0); z-index: 1; }
   .gallery-card.pending-preview .gallery-previews { background: rgba(255,255,255,.025); border-radius: 6px; }
   .gallery-card:hover { transform: translateY(-2px); background: rgba(255,255,255,.1); border-color: rgba(255,209,102,.35); }
   /* Keep the original bottom edge hittable while the card lifts by 2px.
@@ -737,8 +756,8 @@
   .gallery-previews { display: flex; gap: 6px; width: 100%; justify-content: center; align-items: flex-start; }
   .gallery-preview-cell { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
   .gallery-previews.gallery-previews--vertical { flex-direction: column; align-items: stretch; gap: 8px; }
-  .gallery-previews--vertical > .gallery-preview-cell { flex: none; width: 100%; }
-  .gallery-preview-label { font-size: 9px; font-weight: 700; color: var(--sub); letter-spacing: .06em; text-transform: uppercase; }
+  .gallery-previews--vertical > .gallery-preview-cell { flex: none; align-self: center; width: min(100%, var(--gallery-stacked-width)); }
+  .gallery-preview-label { font-size: 9px; line-height: 12px; font-weight: 700; color: var(--sub); letter-spacing: .06em; text-transform: uppercase; }
   .gallery-stack { position: relative; min-width: 0; }
   .gallery-stack:not(.expanded) { display: flex; flex-direction: column; }
   .gallery-stack:not(.expanded) > .gallery-stack__collapsed { flex: 1; display: grid; }
@@ -896,7 +915,7 @@
 
   <div class="app-header">
     <span></span>
-    <h1 class="title" id="appTitle">Klotski / Упрямый Осёл / Huarong Dao (华容道)</h1>
+    <h1 class="title" id="appTitle">Klotski <span id="appMajorVersion"></span> / Упрямый Осёл / Huarong Dao (华容道)</h1>
     <span></span>
   </div>
 
@@ -962,7 +981,9 @@
     <p class="hint" data-ruseng="dragHint">Перетаскивайте плитки мышью или пальцем</p>
 
     <div class="hint-block">
-      <div class="mini-board" id="miniBoard"></div>
+      <div class="hint-board scaled-board-frame" id="miniBoard">
+        <div class="board"><div class="board__inner"></div></div>
+      </div>
       <div class="hint-block__text" data-ruseng="reachGoal">достигните заданной цели</div>
     </div>
 
@@ -1014,7 +1035,7 @@
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v3.73)</span></div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v3.86)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -1546,7 +1567,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '3.73';
+  const APP_VERSION = '3.86';
   const DISK_HELPER_VERSION = '1.01';
   let diskLogTarget=null, diskLogBusy=false, diskLogWarned=false;
   const diskLogQueue=[];
@@ -1951,6 +1972,9 @@
       labelRowTitle: 'Надпись:',
       labelClearTitle: 'Удалить значок и надпись с выбранной плитки',
       clearAllSymbolsTitle: 'Удалить все значки и надписи со всех плиток обеих досок',
+      markerScaleLabel: 'Размер',
+      markerScaleUp: 'Увеличить маркер на 10%',
+      markerScaleDown: 'Уменьшить маркер на 10%',
       labelNewlineTitle: 'Новая строка',
       labelSpaceTitle: 'Пробел',
       prevLevelTitle: 'Предыдущий уровень', nextLevelTitle: 'Следующий уровень',
@@ -2385,6 +2409,9 @@
       labelRowTitle: 'Label:',
       labelClearTitle: 'Remove the icon and label from the selected piece',
       clearAllSymbolsTitle: 'Remove all icons and labels from every piece on both boards',
+      markerScaleLabel: 'Size',
+      markerScaleUp: 'Increase marker size by 10%',
+      markerScaleDown: 'Decrease marker size by 10%',
       labelNewlineTitle: 'New line',
       labelSpaceTitle: 'Space',
       prevLevelTitle: 'Previous level', nextLevelTitle: 'Next level',
@@ -2509,6 +2536,7 @@
 
   function applyStaticTranslations() {
     document.getElementById('appVersion').textContent = 'Klotski (v' + APP_VERSION + ')';
+    document.getElementById('appMajorVersion').textContent = 'v' + APP_VERSION.split('.')[0];
     document.documentElement.lang = RUSENG[LANG] ? RUSENG[LANG].htmlLang : 'en';
     document.querySelectorAll('[data-ruseng]').forEach(el => {
       const key = el.getAttribute('data-ruseng');
@@ -2867,7 +2895,7 @@
       document.getElementById('startBoard'),
       document.getElementById('targetBoard'),
       document.getElementById('tileBoard'),
-      document.getElementById('miniBoard')
+      document.querySelector('#miniBoard > .board')
     ];
     for (const n of nodes) {
       if (!n) continue;
@@ -3095,7 +3123,7 @@
       if (!group) group = extractGroupFromText(text);
       if (!group) group = author;
       if (!author) author = t('defaultAuthor');
-      return { name, author, group, nameEng, text };
+      return { name, author, group, nameEng, text, ...(l.replacesPreset === true ? {replacesPreset: true} : {}) };
     });
   }
   function loadUserLevels() { try { const raw = safeGetItem(USER_LEVELS_KEY); if (!raw) return []; return normalizeLevelsArray(JSON.parse(raw)); } catch (e) { return []; } }
@@ -3255,17 +3283,24 @@
     function normalizeForCompare(text) { return makeLevelSignature(text); }
     function getStepFromText(text) { const m = String(text || '').match(/^[ \t]*step[ \t]*:[ \t]*(\d+)/im); return m ? parseInt(m[1], 10) : 0; }
     function getGroupMovesFromText(text) { const m = String(text || '').match(/^[ \t]*groupmoves[ \t]*:[ \t]*(yes|true|1|no|false|0)/im); return m ? /^(yes|true|1)$/i.test(m[1]) : null; }
+    const solutionLength = text => Number(text.match(/^Solution:[ \t]*(\d+)/im)?.[1]) || Infinity;
+    const duplicateKey = level => JSON.stringify([levelReplacementKey(level), normalizeForCompare(level.text),
+      /^RushHour:[ \t]*(?:yes|true|1)[ \t]*\r?$/im.test(level.text)]);
     const presetByKey = new Map();
-    for (const p of PRESET_LEVELS) { const key = normalizeForCompare(p.text); if (!presetByKey.has(key)) presetByKey.set(key, p); }
+    for (const p of PRESET_LEVELS) { const key = duplicateKey(p); if (!presetByKey.has(key)) presetByKey.set(key, p); }
     let removedCount = 0;
     const kept = [];
     for (const u of userLevels) {
-      const key = normalizeForCompare(u.text);
+      const key = duplicateKey(u);
       const matched = presetByKey.get(key);
       if (matched) {
         const userGM = getGroupMovesFromText(u.text), presetGM = getGroupMovesFromText(matched.text);
         if (userGM !== presetGM && (userGM === false || presetGM === false)) { kept.push(u); continue; }
         const userStep = getStepFromText(u.text), presetStep = getStepFromText(matched.text);
+        if (u.replacesPreset && (userStep !== presetStep || userGM !== presetGM ||
+            solutionLength(u.text) < solutionLength(matched.text))) {
+          kept.push(u); continue;
+        }
         if (userStep > 0 && presetStep === 0) {
           updateLevelStepText(matched, userStep);
           savePresetRecordForLevel(matched, userStep);
@@ -3294,6 +3329,12 @@
   }
 
   function allLevels() { return PRESET_LEVELS.concat(userLevels); }
+  function levelReplacementKey(level) {
+    const author = (level.author || extractAuthorFromText(level.text) || t('defaultAuthor')).trim();
+    const group = (level.group || extractGroupFromText(level.text) || author).trim();
+    const name = (level.name || extractNameFromText(level.text) || '').trim();
+    return JSON.stringify([name, author, group]);
+  }
 
   (function buildGradients() {
     const defs = document.getElementById('svgDefs');
@@ -3805,7 +3846,7 @@
     const dy = (row + 0.5 - lines.length / 2) * cell;
     return { x: base.x + dx, y: base.y + dy, w: base.w, h: base.h };
   }
-  function pieceIconLabelOverlay(shape, dir, dmove, label, colorId, hideDirArrows, region) {
+  function pieceIconLabelOverlay(shape, dir, dmove, label, colorId, hideDirArrows, region, markerScale, cellContour) {
     if (hideDirArrows && (dmove || DIR_IDS.includes(dir))) return '';
     const lines = iconLayoutLabel(label).split('\n');
     const width = Math.max(1, ...lines.map(line => line.length));
@@ -3815,22 +3856,28 @@
     const col = lines[row].indexOf(ICON_LABEL_MARKER);
     const slot = { x: rect.x + (rect.w - lines[row].length * cell) / 2 + col * cell,
       y: rect.y + (rect.h - lines.length * cell) / 2 + row * cell, w: cell, h: cell };
-    if (!dmove) return pieceDiagonalOverlay(dir, slot, shape);
-    const padding = shape.custom || shape.cells.length < shape.w * shape.h ? 0 : 4;
-    const pos = f => `calc(${padding}px + (100% - ${padding * 2}px) * ${f})`;
-    const size = f => `calc((100% - ${padding * 2}px) * ${f})`;
-    return `<svg viewBox="0 0 1 1" preserveAspectRatio="xMidYMid meet" aria-hidden="true" style="position:absolute;left:${pos(slot.x / shape.w)};top:${pos(slot.y / shape.h)};width:${size(cell / shape.w)};height:${size(cell / shape.h)};pointer-events:none">${pieceBiArrowMarkup(dmove, 0.5, 0.5, 1, 1, colorId)}</svg>`;
+    const scaled=scaleMarkerRect(slot,markerScale);
+    if (!dmove) return pieceDiagonalOverlay(dir, scaled, shape, cellContour);
+    const padding = cellContour ? '0px' : 'var(--piece-inset, 4px)';
+    const pos = f => `calc(${padding} + (100% - 2 * ${padding}) * ${f})`;
+    const size = f => `calc((100% - 2 * ${padding}) * ${f})`;
+    return `<svg viewBox="0 0 1 1" preserveAspectRatio="xMidYMid meet" aria-hidden="true" style="position:absolute;left:${pos(scaled.x / shape.w)};top:${pos(scaled.y / shape.h)};width:${size(scaled.w / shape.w)};height:${size(scaled.h / shape.h)};pointer-events:none">${pieceBiArrowMarkup(dmove, 0.5, 0.5, 1, 1, colorId)}</svg>`;
   }
 
-  function pieceDiagonalOverlay(decor, rect, shape) {
+  function scaleMarkerRect(rect,percent) {
+    const factor=percent/100;
+    return {x:rect.x+rect.w*(1-factor)/2,y:rect.y+rect.h*(1-factor)/2,w:rect.w*factor,h:rect.h*factor};
+  }
+
+  function pieceDiagonalOverlay(decor, rect, shape, cellContour) {
     // Keep an equal scale on both axes and share the body's cell coordinates.
-    const padding = shape.custom || shape.cells.length < shape.w * shape.h ? 0 : 4;
-    const pos = fraction => `calc(${padding}px + (100% - ${padding * 2}px) * ${fraction})`;
-    const size = fraction => `calc((100% - ${padding * 2}px) * ${fraction})`;
+    const padding = cellContour ? '0px' : 'var(--piece-inset, 4px)';
+    const pos = fraction => `calc(${padding} + (100% - 2 * ${padding}) * ${fraction})`;
+    const size = fraction => `calc((100% - 2 * ${padding}) * ${fraction})`;
     const side = Math.min(rect.w, rect.h);
     return `<svg class="piece-diagonal-symbol" viewBox="0 0 ${side} ${side}" preserveAspectRatio="xMidYMid meet" aria-hidden="true" style="position:absolute;left:${pos(rect.x / shape.w)};top:${pos(rect.y / shape.h)};width:${size(rect.w / shape.w)};height:${size(rect.h / shape.h)};pointer-events:none">${DIR_IDS.includes(decor) ? pieceArrowMarkup(decor, side / 2, side / 2, side, side) : pieceDecorMarkup(decor, side / 2, side / 2, side, side)}</svg>`;
   }
-  function shapeSVGInner(shapeKey, colorId, dir, dmove, label, round, hideDirArrows, region) {
+  function shapeSVGInner(shapeKey, colorId, dir, dmove, label, round, hideDirArrows, region, markerScale=100) {
     if (shapeKey === 'hole') return '';
     if (shapeKey === 'blk') colorId = 'blk';
     const shape = SHAPES[shapeKey];
@@ -3867,19 +3914,19 @@
       if (label && !dmove && (DIR_IDS.includes(dir) || ['lineV', 'lineH', 'lineD1', 'lineD2'].includes(dir)) && isIconLabel(label)) {
         const isArrow = DIR_IDS.includes(dir);
         const preferAxis = dir === 'up' || dir === 'down' ? 'v' : dir === 'left' || dir === 'right' ? 'h' : null;
-        const rect = positionedSymbolRect(shape, label, region, preferAxis);
+        const rect = scaleMarkerRect(positionedSymbolRect(shape, label, region, preferAxis),markerScale);
         const cx = rect.x + rect.w / 2, cy = rect.y + rect.h / 2;
         if (isArrow) {
           if (!hideDirArrows) {
-            if (DIR_ROT[dir] % 90) diagonalOverlay = pieceDiagonalOverlay(dir, rect, shape);
+            if (DIR_ROT[dir] % 90) diagonalOverlay = pieceDiagonalOverlay(dir, rect, shape, cellContour);
             else arrowContent = pieceArrowMarkup(dir, cx, cy, rect.w, rect.h);
           }
-        } else if (dir === 'lineD1' || dir === 'lineD2') diagonalOverlay = pieceDiagonalOverlay(dir, rect, shape);
+        } else if (dir === 'lineD1' || dir === 'lineD2') diagonalOverlay = pieceDiagonalOverlay(dir, rect, shape, cellContour);
         else arrowContent = pieceDecorMarkup(dir, cx, cy, rect.w, rect.h);
       } else if (label && (dir || dmove) && isIconLabel(label)) {
-        diagonalOverlay = pieceIconLabelOverlay(shape, dir, dmove, label, colorId, hideDirArrows, region);
+        diagonalOverlay = pieceIconLabelOverlay(shape, dir, dmove, label, colorId, hideDirArrows, region, markerScale, cellContour);
       } else if (label) {
-        const rect = bestRectForLabel(shape, label, region);
+        const rect = scaleMarkerRect(bestRectForLabel(shape, label, region),markerScale);
         arrowContent = pieceLabelMarkup(label, rect.x + rect.w / 2, rect.y + rect.h / 2, rect.w, rect.h);
       } else {
         const isArrowDir = DIR_IDS.includes(dir);
@@ -3889,15 +3936,15 @@
         else if (dmove === 'h') preferAxis = 'h';
         else if (dir === 'up' || dir === 'down') preferAxis = 'v';
         else if (dir === 'left' || dir === 'right') preferAxis = 'h';
-        const rect = largestInscribedRect(shape, preferAxis, region);
+        const rect = scaleMarkerRect(largestInscribedRect(shape, preferAxis, region),markerScale);
         const acx = rect.x + rect.w / 2, acy = rect.y + rect.h / 2;
         if (isDecorDir) {
-          if (dir === 'lineD1' || dir === 'lineD2') diagonalOverlay = pieceDiagonalOverlay(dir, rect, shape);
+          if (dir === 'lineD1' || dir === 'lineD2') diagonalOverlay = pieceDiagonalOverlay(dir, rect, shape, cellContour);
           else arrowContent = pieceDecorMarkup(dir, acx, acy, rect.w, rect.h);
         } else if (dmove && !hideDirArrows) {
           arrowContent = pieceBiArrowMarkup(dmove, acx, acy, rect.w, rect.h, colorId);
         } else if (dir && !hideDirArrows) {
-          if (DIR_ROT[dir] % 90) diagonalOverlay = pieceDiagonalOverlay(dir, rect, shape);
+          if (DIR_ROT[dir] % 90) diagonalOverlay = pieceDiagonalOverlay(dir, rect, shape, cellContour);
           else arrowContent = pieceArrowMarkup(dir, acx, acy, rect.w, rect.h);
         }
       }
@@ -3921,7 +3968,7 @@
     }
     return false;
   }
-  function typeColorKey(p) { return p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '') + '|' + (p.round ? '1' : '') + '|' + (p.region || 0); }
+  function typeColorKey(p) { return solverPieceKey(p); }
   function countByTypeColor(list, key) { let n = 0; for (const p of list) if (typeColorKey(p) === key) n++; return n; }
 
   function fmtTime(sec) {
@@ -4075,7 +4122,7 @@
   }
 
   function solverPieceKey(p) {
-    return p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '') + '|' + (p.round ? '1' : '') + '|' + (p.region || 0);
+    return p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '') + '|' + (p.round ? '1' : '') + '|' + (p.region || 0) + (p.markerScale && p.markerScale !== 100 ? '|'+p.markerScale : '');
   }
 
   function buildSolverState(startPieces, targetPieces) {
@@ -6255,8 +6302,8 @@
     if (solverPending) { const p = solverPending; solverPending = null; p.resolve(null); }
   }
   async function solveOnMainThread(onProgress) {
-    let startPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
-    let targetPieces = game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
+    let startPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round, x: p.x, y: p.y }));
+    let targetPieces = game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round, x: p.x, y: p.y }));
     const state = buildSolverState(startPieces, targetPieces);
     const sessionId = solveSessionId;
     const stopCheck = () => game.stopRequested || !game.solving || sessionId !== solveSessionId;
@@ -6309,8 +6356,8 @@
       if (originalProgress) originalProgress(nodes, depth, ms, stats);
     };
 
-    let startPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
-    let targetPieces = game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
+    let startPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round, x: p.x, y: p.y }));
+    let targetPieces = game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round, x: p.x, y: p.y }));
     if(pendingDiskResume) {
       const meta=pendingDiskResume.data.meta;
       COLS=meta.COLS; ROWS=meta.ROWS; CELLS=COLS*ROWS;
@@ -6385,6 +6432,11 @@
   const boardEl = document.getElementById('board');
   const boardInnerEl = document.getElementById('boardInner');
   const miniBoardEl = document.getElementById('miniBoard');
+  const hintBoard = miniBoardEl.querySelector('.board');
+  const hintBoardInner = hintBoard.querySelector('.board__inner');
+  const hintBoardResize = new ResizeObserver(syncHintBoardSize);
+  hintBoardResize.observe(boardEl);
+  hintBoardResize.observe(miniBoardEl);
   const movesEl = document.getElementById('moves');
   const timeEl = document.getElementById('time');
   const overlayEl = document.getElementById('overlay');
@@ -6493,7 +6545,7 @@
   let currentLevelIndex = 0;
   let appMode = 'game';
 
-  function cloneCfg(cfg) { return cfg.map(p => ({ sourceLetter:p.sourceLetter, shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round })); }
+  function cloneCfg(cfg) { return cfg.map(p => ({ sourceLetter:p.sourceLetter, shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round })); }
 
   function deriveRushHourDmove(shapeKey) {
     const sh = SHAPES[shapeKey];
@@ -6504,7 +6556,7 @@
   }
   function applyRushHourToCfg(cfg) {
     return cfg.map(p => {
-      const copy = { sourceLetter:p.sourceLetter, shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, label: p.label, region: p.region, round: p.round };
+      const copy = { sourceLetter:p.sourceLetter, shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round };
       copy.dmove = deriveRushHourDmove(p.shape);
       return copy;
     });
@@ -6611,12 +6663,14 @@
   function updateGameBoardMask() {
     if (!boardInnerEl || !game.startCfg) return;
     const holeSet = getHoleSetFromPieces(game.startCfg);
-    const svg = getOrCreateBoardSvg(boardInnerEl, 'g');
-    renderBoardContour(svg, COLS, ROWS, holeSet, 'g');
-    const grid = getOrCreateBoardGrid(boardInnerEl);
-    applyMiniBoardMask(grid, COLS, ROWS, holeSet, true);
+    renderGameBoardSurface(boardInnerEl, COLS, ROWS, holeSet, 'g');
   }
-  function startGame(startCfg, targetCfg, step, rushHour, solution = null, animate = true) {
+  function renderGameBoardSurface(inner, cols, rows, holes, id) {
+    const svg = getOrCreateBoardSvg(inner, id);
+    renderBoardContour(svg, cols, rows, holes, id);
+    applyMiniBoardMask(getOrCreateBoardGrid(inner), cols, rows, holes, true);
+  }
+  function startGame(startCfg, targetCfg, step, rushHour, solution = null, animate = true, level = null) {
     game.scrambleId++; game.scrambling = false; game.scrambled = false;
     solveSessionId++;
     cancelSolverWorker(true);
@@ -6638,9 +6692,10 @@
     game.startCfg = cloneCfg(cfgStart);
     game.targetCfg = cloneCfg(cfgTarget);
     game.nextId = 1;
-    game.pieces = cfgStart.map(p => ({ id: 'p' + (game.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
+    game.pieces = cfgStart.map(p => ({ id: 'p' + (game.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round }));
     game.solutionLevel = {startPieces:cfgStart,targetPieces:cfgTarget,cols:COLS,rows:ROWS,rushHour:game.rushHour,
-      groupMoves:game.groupShiftLocked ? game.groupMoves : null,solution};
+      groupMoves:game.groupShiftLocked ? game.groupMoves : null,solution,
+      name:level?.name, author:level?.author, group:level?.group};
     game.trace = []; game.traceTypes = new Map();
     for (const p of solutionBoard(game.solutionLevel).pieces) game.traceTypes.set(solverPieceKey(p),p.type);
     game.savedSolution = storedSolution(game.solutionLevel);
@@ -6668,51 +6723,81 @@
   }
   function buildGamePieces() {
     boardInnerEl.querySelectorAll('.piece, .hint-arrow, .hint-dot, .target-marker').forEach(el => el.remove());
-    for (const p of game.pieces) {
+    renderGameBoardPieces(boardInnerEl, game.pieces, COLS, ROWS, game.rushHour, true);
+  }
+  function renderGameBoardPieces(inner, pieces, cols, rows, hideDirArrows, interactive = false) {
+    for (const p of pieces) {
       const shape = SHAPES[p.shape];
       if (!shape || shape.hole) continue;
       const el = document.createElement('div');
-      const isFixed = !!shape.fixed;
-      el.className = 'piece' + (isFixed ? ' fixed' : '');
-      el.id = 'piece-' + p.id;
-      el.style.width = (shape.w / COLS * 100) + '%';
-      el.style.height = (shape.h / ROWS * 100) + '%';
-      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, game.rushHour, p.region);
-      if (!isFixed) attachGamePieceEvents(el, p);
-      boardInnerEl.appendChild(el);
+      el.className = 'piece' + (shape.fixed ? ' fixed' : '');
+      el.style.width = (shape.w / cols * 100) + '%';
+      el.style.height = (shape.h / rows * 100) + '%';
+      positionGamePiece(el, p, cols, rows);
+      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, hideDirArrows, p.region, p.markerScale);
+      if (interactive) {
+        el.id = 'piece-' + p.id;
+        if (!shape.fixed) attachGamePieceEvents(el, p);
+      }
+      inner.appendChild(el);
     }
   }
   function syncGamePieces() {
     for (const p of game.pieces) {
       const el = document.getElementById('piece-' + p.id); if (!el) continue;
-      el.style.left = (p.x / COLS * 100) + '%';
-      el.style.top = (p.y / ROWS * 100) + '%';
+      positionGamePiece(el, p);
       el.classList.toggle('selected', p.id === game.selectedId);
     }
   }
-  function positionGamePiece(el, p) { el.style.left = (p.x / COLS * 100) + '%'; el.style.top = (p.y / ROWS * 100) + '%'; }
+  function positionGamePiece(el, p, cols = COLS, rows = ROWS) { el.style.left = (p.x / cols * 100) + '%'; el.style.top = (p.y / rows * 100) + '%'; }
 
+  function renderMiniBoardPieces(board, cols, rows, pieces, hideDirArrows) {
+    board.style.setProperty('--board-cols', cols);
+    board.style.setProperty('--board-rows', rows);
+    for (const p of pieces) {
+      const shape = SHAPES[p.shape];
+      if (!shape || shape.hole) continue;
+      const el = document.createElement('div');
+      el.className = 'mini-piece';
+      el.style.left = (p.x / cols * 100) + '%';
+      el.style.top = (p.y / rows * 100) + '%';
+      el.style.width = (shape.w / cols * 100) + '%';
+      el.style.height = (shape.h / rows * 100) + '%';
+      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, hideDirArrows, p.region, p.markerScale);
+      board.appendChild(el);
+    }
+  }
+
+  function syncHintBoardSize() {
+    if (!boardEl.offsetWidth || !miniBoardEl.offsetWidth) return;
+    // Use layout dimensions before the main board's appearance animation.
+    const source = getComputedStyle(boardEl);
+    const width = parseFloat(source.width), height = parseFloat(source.height);
+    hintBoard.style.width = source.width;
+    hintBoard.style.height = source.height;
+    const availableWidth = parseFloat(getComputedStyle(miniBoardEl).width);
+    const scale = scalePreviewBoard(hintBoard, width, Math.min(width, availableWidth));
+    miniBoardEl.style.height = (height * scale) + 'px';
+  }
+
+  function scalePreviewBoard(board, sourceWidth, previewWidth) {
+    const scale = previewWidth / sourceWidth;
+    board.style.transform = 'scale(' + scale + ')';
+    return scale;
+  }
+  function renderStaticGameBoard(inner, cols, rows, start, pieces, hideDirArrows, id) {
+    renderGameBoardSurface(inner, cols, rows, getHoleSetFromPieces(start), id);
+    renderGameBoardPieces(inner, pieces, cols, rows, hideDirArrows);
+  }
+  function goalPreviewPieces(start, target) {
+    return target.filter(p => !SHAPES[p.shape]?.fixed).concat(start.filter(p => SHAPES[p.shape]?.fixed));
+  }
   function renderMiniBoard() {
-    miniBoardEl.innerHTML = '';
-    const holesSet = new Set();
-    if (game.startCfg) for (const p of game.startCfg) if (p.shape === 'hole') holesSet.add(p.y + ',' + p.x);
-    for (const p of game.targetCfg) {
-      const shape = SHAPES[p.shape]; if (!shape || shape.hole) continue;
-      const el = document.createElement('div'); el.className = 'mini-piece';
-      el.style.left = (p.x / COLS * 100) + '%'; el.style.top = (p.y / ROWS * 100) + '%';
-      el.style.width = (shape.w / COLS * 100) + '%'; el.style.height = (shape.h / ROWS * 100) + '%';
-      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, game.rushHour, p.region);
-      miniBoardEl.appendChild(el);
-    }
-    if (game.startCfg) for (const p of game.startCfg) {
-      const shape = SHAPES[p.shape]; if (!shape || !shape.fixed || shape.hole) continue;
-      const el = document.createElement('div'); el.className = 'mini-piece';
-      el.style.left = (p.x / COLS * 100) + '%'; el.style.top = (p.y / ROWS * 100) + '%';
-      el.style.width = (shape.w / COLS * 100) + '%'; el.style.height = (shape.h / ROWS * 100) + '%';
-      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, game.rushHour, p.region);
-      miniBoardEl.appendChild(el);
-    }
-    applyMiniBoardMask(miniBoardEl, COLS, ROWS, holesSet);
+    hintBoardInner.replaceChildren();
+    const start = game.startCfg || [];
+    const pieces = goalPreviewPieces(start, game.targetCfg);
+    renderStaticGameBoard(hintBoardInner, COLS, ROWS, start, pieces, game.rushHour, 'hint');
+    syncHintBoardSize();
   }
 
   function getTargetMarkerPieces(startPieces, targetPieces) {
@@ -6966,7 +7051,7 @@
   function isAtGoal() {
     return game.targetCfg.length > 0 && game.targetCfg.every(tgt => {
       const tKey = cellsKeyOf(tgt.shape, tgt.x, tgt.y);
-      return game.pieces.some(p => p.color === tgt.color && (p.dir || '') === (tgt.dir || '') && (p.dmove || '') === (tgt.dmove || '') && (p.label || '') === (tgt.label || '') && (!!p.round === !!tgt.round) && ((p.region || 0) === (tgt.region || 0)) && pieceCellsKey(p) === tKey);
+      return game.pieces.some(p => p.color === tgt.color && (p.dir || '') === (tgt.dir || '') && (p.dmove || '') === (tgt.dmove || '') && (p.label || '') === (tgt.label || '') && (!!p.round === !!tgt.round) && ((p.region || 0) === (tgt.region || 0)) && (p.markerScale ?? 100)===(tgt.markerScale ?? 100) && pieceCellsKey(p) === tKey);
     });
   }
   function checkWin() {
@@ -7552,13 +7637,13 @@
   function buildPlaybackStates(path) {
     playback.typeMap = new Map();
     let nextType = 1;
-    const allPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }))
-      .concat(game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round })));
+    const allPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round }))
+      .concat(game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round })));
     for (const p of allPieces) {
       const key = solverPieceKey(p);
       if (!playback.typeMap.has(key)) playback.typeMap.set(key, nextType++);
     }
-    const working = game.pieces.map(p => ({ id: p.id, shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
+    const working = game.pieces.map(p => ({ id: p.id, shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round, x: p.x, y: p.y }));
     const states = [working.map(p => ({ id: p.id, x: p.x, y: p.y }))];
     for (const move of path) {
       const piece = working.find(p => p.x === move.fromX && p.y === move.fromY && playback.typeMap.get(solverPieceKey(p)) === move.type);
@@ -7684,11 +7769,37 @@
     }
     return {pieces, goal, cols: level.cols, rows: level.rows, groupMoves: level.groupMoves};
   }
-  function solutionKey(level) {
+  function solutionKey(level, legacy = false) {
     const board = solutionBoard(level);
     const signature = pieces => pieces.map(p => JSON.stringify([solverPieceKey(p),p.x,p.y])).sort();
-    return 'klotski-solution-v1:' + JSON.stringify([board.cols, board.rows, level.groupMoves === false,
+    const prefix = legacy ? 'klotski-solution-v1:' : 'klotski-solution-v2:';
+    const groupMoves = legacy ? level.groupMoves === false : level.groupMoves ?? null;
+    return prefix + JSON.stringify([board.cols, board.rows, groupMoves,
       signature(board.pieces), signature(board.goal.filter(p => !SHAPES[p.shape].fixed))]);
+  }
+  let presetsBySolutionIdentity;
+  function legacyStoredSolution(level) {
+    const legacyKey = solutionKey(level, true);
+    const legacyText = safeGetItem(legacyKey);
+    if (!legacyText) return null;
+    if (level.name && level.groupMoves !== false) {
+      if (!presetsBySolutionIdentity) {
+        presetsBySolutionIdentity = new Map();
+        for (const preset of PRESET_LEVELS) {
+          const identity = levelReplacementKey(preset);
+          if (!presetsBySolutionIdentity.has(identity)) presetsBySolutionIdentity.set(identity, []);
+          presetsBySolutionIdentity.get(identity).push(preset);
+        }
+      }
+      // The legacy key shared one slot between checked and unspecified group moves.
+      const presets = presetsBySolutionIdentity.get(levelReplacementKey(level)) || [];
+      for (const entry of presets) {
+        const preset = getGalleryParsedLevel(entry);
+        if (preset && preset.groupMoves !== (level.groupMoves ?? null) &&
+            solutionKey(preset, true) === legacyKey) return null;
+      }
+    }
+    return legacyText;
   }
   function solutionText(rows, mode) {
     const lines = ['Solution: ' + rows.length, 'MoveMode: ' + mode];
@@ -7701,7 +7812,7 @@
     const {pieces, rows} = solutionBoard(level);
     const entries = path.map(move => {
       const moved = [move, ...(move.shifted || [])].map(part => {
-        const p = pieces.find(q => q.type === part.type && q.x === part.fromX && q.y === part.fromY);
+        const p = pieces.find(q => !SHAPES[q.shape].fixed && q.type === part.type && q.x === part.fromX && q.y === part.fromY);
         if (!p) throw new Error(t('invalidSolution'));
         return p;
       });
@@ -7798,16 +7909,20 @@
   async function loadBoardSolutions() {
     await prepareCatalogEntries(PRESET_LEVELS,loadBoardSolution);
   }
-  function storedSolution(level) {
+  function* storedSolutionCandidates(level) {
     const key = solutionKey(level);
-    const raw = safeGetItem(key);
-    let best = null;
-    for (const [text,original] of [[raw,false],[level.solution,true],[boardSolutions.get(key)?.text,false]]) {
+    const bundled = boardSolutions.get(key)?.text;
+    const raw = safeGetItem(key) || (!bundled && legacyStoredSolution(level));
+    for (const [text,original] of [[raw,false],[level.solution,true],[bundled,false]]) {
       if (!text) continue;
-      try {
-        const result = readSolution(level,text,original);
-        if (!best || result.path.length < best.path.length) best = result;
-      } catch (error) { console.warn('[Solution]', error.message); }
+      try { yield readSolution(level,text,original); }
+      catch (error) { console.warn('[Solution]', error.message); }
+    }
+  }
+  function storedSolution(level) {
+    let best = null;
+    for (const result of storedSolutionCandidates(level)) {
+      if (!best || result.path.length < best.path.length) best = result;
     }
     return best;
   }
@@ -7830,6 +7945,52 @@
     const best = storedSolution(level);
     const base = text.split(/^[ \t]*Solution\s*:/im)[0].trimEnd();
     return best ? base + '\n' + writeSolution(level,best.path,best.mode) : base;
+  }
+  function editorSolutionTypeMap(original, level) {
+    if (original.cols !== level.cols || original.rows !== level.rows ||
+        (original.groupMoves ?? null) !== (level.groupMoves ?? null)) return null;
+    const before = solutionBoard(original), after = solutionBoard(level);
+    if (before.pieces.length !== after.pieces.length) return null;
+    const position = p => JSON.stringify([p.shape, p.x, p.y]);
+    const current = new Map(after.pieces.map(p => [position(p), p]));
+    const types = new Map(), reverse = new Map();
+    for (const p of before.pieces) {
+      const q = current.get(position(p));
+      if (!q) return null;
+      if (SHAPES[p.shape].fixed) continue;
+      if ((types.has(p.type) && types.get(p.type) !== q.type) ||
+          (reverse.has(q.type) && reverse.get(q.type) !== p.type)) return null;
+      types.set(p.type, q.type);
+      reverse.set(q.type, p.type);
+    }
+    const goalPositions = (goal, type) => goal.filter(p => !SHAPES[p.shape].fixed)
+      .map(p => JSON.stringify([position(p), type(p.type)])).sort();
+    const oldGoal = goalPositions(before.goal, type => types.get(type));
+    const newGoal = goalPositions(after.goal, type => type);
+    return oldGoal.length === newGoal.length && oldGoal.every((value, i) => value === newGoal[i]) ? types : null;
+  }
+  function inheritEditorSolution(level, sources) {
+    let best = null;
+    for (const source of new Set(sources)) {
+      if (!source) continue;
+      let original;
+      try { original = parseLevel(source.text, false); } catch { continue; }
+      const types = editorSolutionTypeMap(original, level);
+      if (!types) continue;
+      const remap = part => ({...part, type:types.get(part.type)});
+      for (const result of storedSolutionCandidates(original)) {
+        if (best && best.path.length <= result.path.length) continue;
+        try {
+          const path = result.path.map(move => move.shifted
+            ? {...remap(move), shifted:move.shifted.map(remap)} : remap(move));
+          const text = writeSolution(level, path, result.mode);
+          best = readSolution(level, text);
+        } catch {
+          // A changed movement modifier can invalidate a route.
+        }
+      }
+    }
+    return best ? writeSolution(level, best.path, best.mode) : null;
   }
   function manualPath(mode) {
     const result = [];
@@ -7854,7 +8015,7 @@
     const animateReset = !finish && !isAtStart();
     if (batch.active) cancelBatch();
     else if (game.solving) stopSolving();
-    startGame(game.startCfg,game.targetCfg,game.step,game.rushHour,game.solutionLevel.solution,animateReset);
+    startGame(game.startCfg,game.targetCfg,game.step,game.rushHour,game.solutionLevel.solution,animateReset,game.solutionLevel);
     game.solving = true; updateSolveBtn(); updateUndoBtn();
     enterPlaybackMode(result.path, result.mode, finish);
   }
@@ -7963,8 +8124,8 @@
     if (playback.typeMap) return;
     playback.typeMap = new Map();
     let nextType = 1;
-    const allPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }))
-      .concat(game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round })));
+    const allPieces = game.pieces.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round }))
+      .concat(game.targetCfg.map(p => ({ shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round })));
     for (const p of allPieces) {
       const key = solverPieceKey(p);
       if (!playback.typeMap.has(key)) playback.typeMap.set(key, nextType++);
@@ -8262,7 +8423,7 @@
     if (overlapsAny(list, newShapeKey, piece.x, piece.y, piece.id)) return false;
     const oldColor = piece.color;
     if (boardName === 'target') {
-      const newKey = typeColorKey({ shape: newShapeKey, color: oldColor, dir: piece.dir, dmove: piece.dmove, label: piece.label, region: piece.region, round: piece.round });
+      const newKey = typeColorKey({ shape: newShapeKey, color: oldColor, dir: piece.dir, dmove: piece.dmove, label: piece.label, region: piece.region, markerScale: piece.markerScale, round: piece.round });
       const onStart = countByTypeColor(editor.startPieces, newKey);
       const onTarget = countByTypeColor(editor.targetPieces, newKey);
       if (onTarget > onStart) return false;
@@ -8279,7 +8440,7 @@
     const spot = findPlacementSpot(editor.startPieces, piece.shape, piece.x, piece.y);
     if (!spot) return false;
     const id = 'e' + (editor.nextId++);
-    editor.startPieces.push({ id, shape: piece.shape, x: spot.x, y: spot.y, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label, region: piece.region, round: piece.round });
+    editor.startPieces.push({ id, shape: piece.shape, x: spot.x, y: spot.y, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label, region: piece.region, markerScale: piece.markerScale, round: piece.round });
     editor.selectedId = id; editor.selectedBoard = 'start';
     editor.activeColor = piece.color; editor.activeDir = piece.dir || null; editor.activeDmove = piece.dmove || null; editor.activeLabel = piece.label || ''; editor.activeRound = !!piece.round;
     editor.dirty = true;
@@ -8296,7 +8457,7 @@
     const spot = findPlacementSpot(editor.targetPieces, piece.shape, piece.x, piece.y);
     if (!spot) return false;
     const id = 'e' + (editor.nextId++);
-    editor.targetPieces.push({ id, shape: piece.shape, x: spot.x, y: spot.y, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label, region: piece.region, round: piece.round });
+    editor.targetPieces.push({ id, shape: piece.shape, x: spot.x, y: spot.y, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label, region: piece.region, markerScale: piece.markerScale, round: piece.round });
     editor.selectedId = id; editor.selectedBoard = 'target';
     editor.activeColor = piece.color; editor.activeDir = piece.dir || null; editor.activeDmove = piece.dmove || null; editor.activeLabel = piece.label || ''; editor.activeRound = !!piece.round;
     editor.dirty = true;
@@ -8308,7 +8469,7 @@
     editor.targetPieces = nonBlockTargets;
     for (const p of editor.startPieces) {
       if (p.shape === 'blk' || p.shape === 'hole') continue;
-      editor.targetPieces.push({ id: 'e' + (editor.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round });
+      editor.targetPieces.push({ id: 'e' + (editor.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round });
     }
     editor.selectedId = null; editor.selectedBoard = null;
     editor.dirty = true;
@@ -8378,10 +8539,10 @@
       const list = editor.selectedBoard === 'start' ? editor.startPieces : editor.targetPieces;
       const p = list.find(q => q.id === editor.selectedId);
       if (p && p.shape !== 'blk' && p.shape !== 'hole') {
-        const previous = { dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round };
+        const previous = { dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, markerScale: p.markerScale };
         const next = { dir: editor.activeDir || undefined, dmove: editor.activeDmove || undefined,
           label: editor.activeLabel || undefined, round: editor.activeRound || undefined,
-          region: clearSymbolRegion ? undefined : p.region };
+          region: clearSymbolRegion ? undefined : p.region, markerScale: clearSymbolRegion ? undefined : p.markerScale };
         if (editor.selectedBoard === 'target') {
           Object.assign(p, next);
           const key = typeColorKey(p);
@@ -8498,7 +8659,8 @@
     for (const list of [editor.startPieces, editor.targetPieces]) {
       for (const p of list) {
         if (p.shape === 'blk' || p.shape === 'hole') continue;
-        if (p.dir || p.label || p.region) changed = true;
+        if (p.dir || p.label || p.region || p.markerScale) changed = true;
+        delete p.markerScale;
         delete p.dir;
         delete p.label;
         delete p.region;
@@ -8517,6 +8679,50 @@
     btn.dataset.action = 'clearAllSymbols';
     btn.addEventListener('click', e => { e.preventDefault(); clearAllEditorSymbols(); });
     return btn;
+  }
+  function makeMarkerScaleControls() {
+    const group = document.createElement('div');
+    group.className = 'marker-scale-controls';
+    const separator = document.createElement('div');
+    separator.className = 'color-palette-sep';
+    separator.setAttribute('aria-hidden', 'true');
+    const label = document.createElement('span');
+    label.className = 'palette-row-label';
+    label.textContent = t('markerScaleLabel');
+    group.append(separator, label);
+
+    const onStart = editor.selectedBoard === 'start';
+    const selected = (onStart ? editor.startPieces : editor.targetPieces).find(p => p.id === editor.selectedId);
+    const hasMarker = selected && !SHAPES[selected.shape]?.fixed &&
+      (selected.dir || selected.dmove || selected.label?.trim());
+    const size = selected?.markerScale ?? 100;
+    const value = document.createElement('span');
+    value.className = 'palette-row-label marker-scale-value';
+    value.textContent = hasMarker ? size+'%' : '—';
+    for (const delta of [-10,10]) {
+      const button = document.createElement('button');
+      const next = Math.min(200, Math.max(10,size+delta));
+      button.type = 'button';
+      button.className = 'palette-label-btn palette-label-clear palette-label-clear-all';
+      button.textContent = delta>0 ? '+' : '−';
+      button.title = t(delta>0 ? 'markerScaleUp' : 'markerScaleDown')+' ('+size+'%)';
+      button.disabled = !hasMarker || next===size;
+      button.addEventListener('click',()=>{
+        const key = typeColorKey(selected);
+        const starts = editor.startPieces.filter(p=>typeColorKey(p)===key);
+        const targets = editor.targetPieces.filter(p=>typeColorKey(p)===key);
+        const other = onStart
+          ? (starts.length===1 || targets.length===starts.length ? targets[0] : null)
+          : starts[0];
+        selected.markerScale = next===100 ? undefined : next;
+        if (other) other.markerScale=selected.markerScale;
+        editor.dirty=true;
+        renderEditor();
+      });
+      group.appendChild(button);
+      if (delta<0) group.appendChild(value);
+    }
+    return group;
   }
   function makeDirDecorButton(id) {
     const sw = document.createElement('div');
@@ -8860,7 +9066,7 @@
     colorPaletteEl.appendChild(row3);
 
     const row4 = document.createElement('div');
-    row4.className = 'color-palette__row color-palette__row--chars';
+    row4.className = 'color-palette__row color-palette__row--chars color-palette__row--marker-controls';
     for (const ch of '1234567890') row4.appendChild(makeLabelButton(ch));
     const sepA = document.createElement('div'); sepA.className = 'color-palette-sep'; row4.appendChild(sepA);
     for (const ch of '*+#@?') row4.appendChild(makeLabelButton(ch));
@@ -8871,6 +9077,7 @@
     row4.appendChild(makeLabelClearButton());
     const sepClearAll = document.createElement('div'); sepClearAll.className = 'color-palette-sep'; row4.appendChild(sepClearAll);
     row4.appendChild(makeClearAllSymbolsButton());
+    row4.appendChild(makeMarkerScaleControls());
     colorPaletteEl.appendChild(row4);
 
     const hint = document.createElement('p');
@@ -8891,7 +9098,7 @@
       el.style.top = (p.y / ROWS * 100) + '%';
       el.style.width = (shape.w / COLS * 100) + '%';
       el.style.height = (shape.h / ROWS * 100) + '%';
-      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, editor.rushHour, p.region);
+      el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, editor.rushHour, p.region, p.markerScale);
       if (isLockedOnTarget) { innerEl.appendChild(el); continue; }
       el.addEventListener('pointerdown', e => {
         if (e.button !== 0) return;
@@ -9031,9 +9238,9 @@
     ghost.className = 'drag-ghost';
     ghost.style.width = (shape.w * cellW) + 'px';
     ghost.style.height = (shape.h * cellH) + 'px';
-    ghost.innerHTML = shapeSVGInner(piece.shape, piece.color, piece.dir, piece.dmove, piece.label, piece.round, editor.rushHour, piece.region);
+    ghost.innerHTML = shapeSVGInner(piece.shape, piece.color, piece.dir, piece.dmove, piece.label, piece.round, editor.rushHour, piece.region, piece.markerScale);
     document.body.appendChild(ghost);
-    editor.drag = { kind: 'piece', shapeKey: piece.shape, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label, region: piece.region, round: piece.round, pieceId: piece.id, sourceBoard: boardName, offsetX: pointerCellX - piece.x, offsetY: pointerCellY - piece.y, ghost, startX: ev.clientX, startY: ev.clientY, moved: false, cellW, cellH };
+    editor.drag = { kind: 'piece', shapeKey: piece.shape, color: piece.color, dir: piece.dir, dmove: piece.dmove, label: piece.label, region: piece.region, markerScale: piece.markerScale, round: piece.round, pieceId: piece.id, sourceBoard: boardName, offsetX: pointerCellX - piece.x, offsetY: pointerCellY - piece.y, ghost, startX: ev.clientX, startY: ev.clientY, moved: false, cellW, cellH };
     const origEl = innerEl.querySelector(`.e-piece[data-id="${piece.id}"]`);
     if (origEl) origEl.classList.add('dragging');
     moveGhost(ev.clientX, ev.clientY);
@@ -9160,7 +9367,7 @@
       if (d.kind === 'palette') {
         if (prepareEditorPlacement(dstList, d.shapeKey, newX, newY, null)) {
           const id = 'e' + (editor.nextId++);
-          dstList.push({ id, shape: d.shapeKey, x: newX, y: newY, color: d.color, dir: d.dir || undefined, dmove: d.dmove || undefined, label: d.label || undefined, region: d.region || undefined, round: d.round || undefined });
+          dstList.push({ id, shape: d.shapeKey, x: newX, y: newY, color: d.color, dir: d.dir || undefined, dmove: d.dmove || undefined, label: d.label || undefined, region: d.region || undefined, markerScale: d.markerScale, round: d.round || undefined });
           editor.selectedId = id; editor.selectedBoard = boardName;
           editor.dirty = true;
         }
@@ -9170,12 +9377,12 @@
           if (piece && prepareEditorPlacement(dstList, d.shapeKey, newX, newY, piece.id)) { piece.x = newX; piece.y = newY; editor.dirty = true; }
         } else {
           if (d.sourceBoard === 'start' && boardName === 'target') {
-            const key = typeColorKey({ shape: d.shapeKey, color: d.color, dir: d.dir, dmove: d.dmove, label: d.label, region: d.region, round: d.round });
+            const key = typeColorKey({ shape: d.shapeKey, color: d.color, dir: d.dir, dmove: d.dmove, label: d.label, region: d.region, markerScale: d.markerScale, round: d.round });
             const onStart = countByTypeColor(editor.startPieces, key);
             const onTarget = countByTypeColor(editor.targetPieces, key);
             if (onTarget < onStart && !overlapsAny(dstList, d.shapeKey, newX, newY, null)) {
               const id = 'e' + (editor.nextId++);
-              dstList.push({ id, shape: d.shapeKey, x: newX, y: newY, color: d.color, dir: d.dir || undefined, dmove: d.dmove || undefined, label: d.label || undefined, region: d.region || undefined, round: d.round || undefined });
+              dstList.push({ id, shape: d.shapeKey, x: newX, y: newY, color: d.color, dir: d.dir || undefined, dmove: d.dmove || undefined, label: d.label || undefined, region: d.region || undefined, markerScale: d.markerScale, round: d.round || undefined });
               editor.selectedId = id; editor.selectedBoard = boardName;
               editor.dirty = true;
             }
@@ -9290,7 +9497,7 @@
         const el = document.createElement('div'); el.className = 'tile-background-piece';
         el.style.left = (p.x / COLS * 100) + '%'; el.style.top = (p.y / ROWS * 100) + '%';
         el.style.width = (shape.w / COLS * 100) + '%'; el.style.height = (shape.h / ROWS * 100) + '%';
-        el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, editor.rushHour, p.region);
+        el.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, editor.rushHour, p.region, p.markerScale);
         tileBoardInnerEl.appendChild(el);
       }
     }
@@ -9537,8 +9744,8 @@
     cancelBatch();
     if (game.session.pieceId) commitSession();
     editor.savedCols = COLS; editor.savedRows = ROWS;
-    editor.startPieces = game.startCfg.map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
-    editor.targetPieces = game.targetCfg.filter(p => p.shape !== 'blk' && p.shape !== 'hole').map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
+    editor.startPieces = game.startCfg.map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round }));
+    editor.targetPieces = game.targetCfg.filter(p => p.shape !== 'blk' && p.shape !== 'hole').map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round }));
     editor.selectedId = null; editor.selectedBoard = null;
     editor.activeColor = 'blue'; editor.activeDir = null; editor.activeDmove = null; editor.activeLabel = ''; editor.activeRound = false;
     editor.lastClick = { id: null, time: 0 };
@@ -9572,7 +9779,7 @@
       editor.sourceLevelRef = { type: 'new' };
     }
     editor.levelNameEng = extractNameEng(srcText);
-    editor.levelGroup = extractGroupFromText(srcText);
+    editor.levelGroup = all[currentLevelIndex]?.group || extractGroupFromText(srcText);
     if (!editor.levelGroup) editor.levelGroup = editor.levelAuthor || t('defaultAuthor');
     let step = 0, groupMoves = null, rushHour = false;
     if (refType === 'user' && currentLevelIndex >= 0 && currentLevelIndex < all.length) {
@@ -9717,27 +9924,51 @@
     editor.levelAuthor = finalAuthor;
     editor.levelGroup = finalGroup;
     editor.levelNameEng = editor.levelNameEng || '';
-    let text;
-    try { text = serializeLevel(); } catch (err) { showToast(t('solverError', err.message), true); return; }
-    let saveIdx;
-    if (ref.type === 'user' && ref.index >= PRESET_LEVELS.length) {
-      const userIdx = ref.index - PRESET_LEVELS.length;
-      if (userIdx >= 0 && userIdx < userLevels.length) { userLevels[userIdx] = { name: finalName, author: finalAuthor, group: finalGroup, nameEng: editor.levelNameEng, text }; saveIdx = ref.index; }
-      else { userLevels.push({ name: finalName, author: finalAuthor, group: finalGroup, nameEng: editor.levelNameEng, text }); saveIdx = PRESET_LEVELS.length + userLevels.length - 1; }
-    } else { userLevels.push({ name: finalName, author: finalAuthor, group: finalGroup, nameEng: editor.levelNameEng, text }); saveIdx = PRESET_LEVELS.length + userLevels.length - 1; }
-    saveUserLevels();
+    const updated = { name: finalName, author: finalAuthor, group: finalGroup, nameEng: editor.levelNameEng };
+    const key = levelReplacementKey(updated);
+    const originalPreset = ref.type === 'preset' ? PRESET_LEVELS[ref.index] : null;
+    const preset = originalPreset && levelReplacementKey(originalPreset) === key
+      ? originalPreset : PRESET_LEVELS.find(level => levelReplacementKey(level) === key);
+    let userIdx = ref.type === 'user' ? ref.index - PRESET_LEVELS.length : -1;
+    if (!userLevels[userIdx] && preset) {
+      const matches = level => levelReplacementKey(level) === key;
+      userIdx = userLevels.findIndex(level => level.replacesPreset && matches(level));
+      if (userIdx < 0) userIdx = userLevels.findIndex(matches);
+    }
+    if (userIdx < 0) userIdx = userLevels.length;
+    let parsed, next;
+    try {
+      updated.text = serializeLevel();
+      if (preset) {
+        updated.replacesPreset = true;
+        parsed = parseLevel(updated.text, false);
+        parsed.solution = inheritEditorSolution(parsed, [userLevels[userIdx], preset]);
+        if (parsed.solution) updated.text += '\n' + parsed.solution;
+      }
+      next = userLevels.map((level, index) => {
+        if (!preset || index === userIdx || !level.replacesPreset || levelReplacementKey(level) !== key) return level;
+        const previous = {...level};
+        delete previous.replacesPreset;
+        return previous;
+      });
+      next[userIdx] = updated;
+      writeStorageChecked(USER_LEVELS_KEY, JSON.stringify(next));
+    } catch (err) { showToast(t('solverError', err.message), true); return; }
+    userLevels = next;
+    const saveIdx = PRESET_LEVELS.length + userIdx;
     buildLevelSelect();
     currentLevelIndex = saveIdx;
     levelSelectEl.value = String(saveIdx);
     safeSetItem(LEVEL_KEY, String(saveIdx));
-    const startCfg = editor.startPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
-    const targetCfg = editor.targetPieces.filter(p => p.shape !== 'hole').map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
+    const startCfg = editor.startPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round }));
+    const targetCfg = editor.targetPieces.filter(p => p.shape !== 'hole').map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round }));
     applyGroupMovesFromLevel(editor);
     appEl.style.transition = 'none';
     setAppMode('game');
     void appEl.offsetWidth;
     appEl.style.transition = '';
-    startGame(startCfg, targetCfg, editor.levelStep, editor.rushHour);
+    if (parsed) loadLevelToGame(parsed);
+    else startGame(startCfg, targetCfg, editor.levelStep, editor.rushHour);
     saveLastLevelIdentity();
   }
   function deleteUserLevelAt(userIdx) {
@@ -9928,7 +10159,7 @@
     const startLettersByKey = new Map();
     for (const p of allPieces) {
       if (p.shape === 'blk' || p.shape === 'hole') continue;
-      const key = p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '') + '|' + (p.round ? '1' : '') + '|' + (p.region || 0);
+      const key = typeColorKey(p);
       if (!startLettersByKey.has(key)) startLettersByKey.set(key, []);
       startLettersByKey.get(key).push({ letter: pieceLetter.get(p.id), used: false });
     }
@@ -9937,7 +10168,7 @@
       let L = null;
       if (tgt.shape === 'blk') L = BLOCK_LETTER;
       else {
-        const list = startLettersByKey.get(tgt.shape + '|' + tgt.color + '|' + (tgt.dir || '') + '|' + (tgt.dmove || '') + '|' + (tgt.label || '') + '|' + (tgt.round ? '1' : '') + '|' + (tgt.region || 0));
+        const list = startLettersByKey.get(typeColorKey(tgt));
         if (list) for (const entry of list) if (!entry.used) { entry.used = true; L = entry.letter; break; }
       }
       if (!L) continue;
@@ -9964,16 +10195,16 @@
         const derived = deriveRushHourDmove(p.shape);
         effDmove = derived || '';
       }
-      const key = p.color + '|' + (p.dir || '') + '|' + effDmove + '|' + (p.label || '') + '|' + (p.round ? '1' : '') + '|' + (p.region || 0);
+      const key = JSON.stringify([p.color,p.dir || '',effDmove,p.label || '',!!p.round,p.region || 0,p.markerScale ?? 100]);
       if (!colorDirToLetters.has(key)) colorDirToLetters.set(key, []);
       colorDirToLetters.get(key).push(L);
     }
     const sortedEntries = [...colorDirToLetters.entries()].sort((a, b) => {
-      const [ca, da, ma, la, ra] = a[0].split('|');
-      const [cb, db, mb, lb, rb] = b[0].split('|');
+      const [ca, da, ma, la, ra] = JSON.parse(a[0]);
+      const [cb, db, mb, lb, rb] = JSON.parse(b[0]);
       const ia = PALETTE_COLOR_ORDER.indexOf(ca), ib = PALETTE_COLOR_ORDER.indexOf(cb);
       if (ia !== ib) return ia - ib;
-      if (ra !== rb) return ra === '1' ? -1 : 1;
+      if (ra !== rb) return ra ? -1 : 1;
       const daIdx = DECOR_ORDER.indexOf(da), dbIdx = DECOR_ORDER.indexOf(db);
       if (daIdx !== dbIdx) return daIdx - dbIdx;
       const maIdx = DMOVE_ORDER.indexOf(ma), mbIdx = DMOVE_ORDER.indexOf(mb);
@@ -9981,8 +10212,7 @@
       return String(la).localeCompare(String(lb));
     });
     for (const [key, letters] of sortedEntries) {
-      const parts = key.split('|');
-      const colorId = parts[0], dir = parts[1], dmove = parts[2], label = parts[3], round = parts[4] === '1', region = Number(parts[5]) || 0;
+      const [colorId,dir,dmove,label,round,region,markerScale] = JSON.parse(key);
       if (!letters.length) continue;
       letters.sort();
       const name = COLOR_ID_TO_EN[colorId] || colorId;
@@ -9996,6 +10226,7 @@
       else if (dmove === 'h') line += ',Horizontal';
       if (round) line += ',Circle';
       if (region) line += ',Region:' + region;
+      if (markerScale !== 100) line += ',MarkerScale:' + markerScale;
       if (label) line += ',' + escapeLabelForText(label);
       lines.push(line);
     }
@@ -10183,9 +10414,14 @@
         if (raw) { try { count = readSolution(parsed,raw,false).path.length; } catch {} }
         galleryKnownSolutions.set(key,count);
       }
-      info = {text:level.text,key,embedded}; gallerySolutionInfo.set(level,info);
+      let legacy = 0;
+      if (parsed && !galleryKnownSolutions.get(key)) {
+        const raw = legacyStoredSolution(parsed);
+        if (raw) { try { legacy = readSolution(parsed,raw,false).path.length; } catch {} }
+      }
+      info = {text:level.text,key,embedded,legacy}; gallerySolutionInfo.set(level,info);
     }
-    const stored = galleryKnownSolutions.get(info.key) || 0;
+    const stored = galleryKnownSolutions.get(info.key) || info.legacy || 0;
     return stored && info.embedded ? Math.min(stored,info.embedded) : stored || info.embedded;
   }
   function matchesGalleryFilter(level) {
@@ -10333,10 +10569,27 @@
   async function copyAllVisibleLevels() {
     const ordered = getGalleryOrderedItems();
     if (ordered.length === 0) { showToast(t('nothingToCopy'), true); return; }
-    const list = ordered.map(it => it.level);
+    const list = levelsForExport(ordered);
     const text = userLevelsToJsSource(list);
     levelTextEl.textContent = text;
     await copyTextToClipboard(text, t('allLevelsCopied', list.length), t('copyFailed'));
+  }
+  function levelsForExport(ordered) {
+    const presetKeys = new Set(ordered.filter(item => !item.isUser).map(item => levelReplacementKey(item.level)));
+    const replacements = new Map();
+    for (const level of userLevels) {
+      const key = levelReplacementKey(level);
+      if (presetKeys.has(key) && (level.replacesPreset || !replacements.get(key)?.replacesPreset)) {
+        replacements.set(key, level);
+      }
+    }
+    const list = [];
+    for (const {isUser, level} of ordered) {
+      const key = levelReplacementKey(level);
+      if (!replacements.has(key)) list.push(level);
+      else if (!isUser && presetKeys.delete(key)) list.push(replacements.get(key));
+    }
+    return list;
   }
 
   function getGroupDescription(groupName) {
@@ -10418,7 +10671,7 @@
       if (goalLines[y][x] === '.' && boardLines[y][x] !== '.') throw new Error(t('parserGoalHoleMismatch', x + 1, y + 1));
       if (boardLines[y][x] === '.' && goalLines[y][x] !== '.') throw new Error(t('parserGoalHoleTile', x + 1, y + 1));
     }
-    const letterToColor = {}, letterToDir = {}, letterToDmove = {}, letterToLabel = {}, letterToRound = {}, letterToRegion = {};
+    const letterToColor = {}, letterToDir = {}, letterToDmove = {}, letterToLabel = {}, letterToRound = {}, letterToRegion = {}, letterToScale = {};
     for (const line of tileLines) {
       const dashIdx = line.lastIndexOf('-');
       if (dashIdx < 1) continue;
@@ -10429,11 +10682,15 @@
       if (!colorParts.length) continue;
       const colorId = COLOR_EN_TO_ID[colorParts[0].toLowerCase()];
       if (!colorId) continue;
-      let dir = null, dmove = null, label = null, round = false, region = 0;
+      let dir = null, dmove = null, label = null, round = false, region = 0, markerScale;
       for (let ci = 1; ci < colorParts.length; ci++) {
         const raw = colorParts[ci];
         const p1 = raw.toLowerCase();
         if (/^region:\d+$/.test(p1)) region = Math.min(Number(p1.slice(7)), 1000000);
+        else if (/^markerscale:\d+$/.test(p1)) {
+          const size=Math.max(10,Math.min(200,Number(p1.slice(12))));
+          markerScale=size===100 ? undefined : size;
+        }
         else if (p1 === 'circle') round = true;
         else if (p1 === 'vertical') dmove = 'v';
         else if (p1 === 'horizontal') dmove = 'h';
@@ -10441,7 +10698,7 @@
         else if (DECOR_EN_TO_ID[p1]) dir = DECOR_EN_TO_ID[p1];
         else label = unescapeLabelFromText(raw);
       }
-      for (const L of letters) { letterToColor[L] = colorId; letterToDir[L] = dir; letterToDmove[L] = dmove; letterToLabel[L] = label; letterToRound[L] = round; letterToRegion[L] = region; }
+      for (const L of letters) { letterToColor[L] = colorId; letterToDir[L] = dir; letterToDmove[L] = dmove; letterToLabel[L] = label; letterToRound[L] = round; letterToRegion[L] = region; letterToScale[L] = markerScale; }
     }
     const startPieces = [];
     for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) if (boardLines[y][x] === '.') startPieces.push({ shape: 'hole', color: 'blk', x, y });
@@ -10465,7 +10722,8 @@
       const label = letterToLabel[L] || undefined;
       const round = letterToRound[L] || undefined;
       const region = letterToRegion[L] || undefined;
-      startPieces.push({ sourceLetter:L, shape: matched.shapeKey, color, dir, dmove, label, round, region, x: matched.x, y: matched.y });
+      const markerScale = letterToScale[L];
+      startPieces.push({ sourceLetter:L, shape: matched.shapeKey, color, dir, dmove, label, round, region, markerScale, x: matched.x, y: matched.y });
       letterShape[L] = matched.shapeKey;
     }
     const goalCellsByLetter = {};
@@ -10476,7 +10734,7 @@
       goalCellsByLetter[ch].push([x, y]);
     }
     const startPieceCounts = {};
-    for (const p of startPieces) { const k = p.shape + '|' + p.color + '|' + (p.dir || '') + '|' + (p.dmove || '') + '|' + (p.label || '') + '|' + (p.round ? '1' : '') + '|' + (p.region || 0); startPieceCounts[k] = (startPieceCounts[k] || 0) + 1; }
+    for (const p of startPieces) { const k = typeColorKey(p); startPieceCounts[k] = (startPieceCounts[k] || 0) + 1; }
     const targetPieces = [];
     for (const L of Object.keys(goalCellsByLetter)) {
       const cells = goalCellsByLetter[L];
@@ -10487,11 +10745,12 @@
       const label = letterToLabel[L] || undefined;
       const round = letterToRound[L] || undefined;
       const region = letterToRegion[L] || undefined;
+      const markerScale = letterToScale[L];
       const startShape = letterShape[L];
       if (startShape && startShape !== 'blk') {
         if (rushHour) dmove = deriveRushHourDmove(startShape);
         const shapeDef = SHAPES[startShape];
-        const startKey = startShape + '|' + color + '|' + (dir || '') + '|' + (dmove || '') + '|' + (label || '') + '|' + (round ? '1' : '') + '|' + (region || 0);
+        const startKey = typeColorKey({shape:startShape,color,dir,dmove,label,round,region,markerScale});
         const maxCount = startPieceCounts[startKey] || 0;
         if (maxCount > 0) {
           const goalSet = new Set(cells.map(([x, y]) => x + ',' + y));
@@ -10508,7 +10767,7 @@
               if (!goalSet.has(k) || used.has(k)) { ok = false; break; }
               placement.push(k);
             }
-            if (ok) { for (const k of placement) used.add(k); targetPieces.push({ shape: startShape, color, dir, dmove, label, round, region, x: cx, y: cy }); placed++; }
+            if (ok) { for (const k of placement) used.add(k); targetPieces.push({ shape: startShape, color, dir, dmove, label, round, region, markerScale, x: cx, y: cy }); placed++; }
           }
           if (placed > 0) continue;
         }
@@ -10516,15 +10775,15 @@
       const matched = ensureShapeFromCells(cells, persistShapes);
       if (matched.isNew) lastParseHadNewShapes = true;
       if (rushHour) dmove = deriveRushHourDmove(matched.shapeKey);
-      targetPieces.push({ shape: matched.shapeKey, color, dir, dmove, label, round, region, x: matched.x, y: matched.y });
+      targetPieces.push({ shape: matched.shapeKey, color, dir, dmove, label, round, region, markerScale, x: matched.x, y: matched.y });
     }
     if (!group) group = author;
     return { cols, rows, startPieces, targetPieces, name, nameEng, author, group, step, groupMoves, rushHour, solution };
   }
   function applyParsedLevel(level) {
     COLS = level.cols; ROWS = level.rows; CELLS = COLS * ROWS;
-    editor.startPieces = level.startPieces.map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
-    editor.targetPieces = level.targetPieces.map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round, x: p.x, y: p.y }));
+    editor.startPieces = level.startPieces.map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round, x: p.x, y: p.y }));
+    editor.targetPieces = level.targetPieces.map(p => ({ id: 'e' + (editor.nextId++), shape: p.shape, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round, x: p.x, y: p.y }));
     editor.selectedId = null; editor.selectedBoard = null;
     editor.levelName = level.name || t('defaultLevelName');
     editor.levelNameEng = level.nameEng || '';
@@ -10860,9 +11119,9 @@
     // "Лимит ОЗУ" is the primary setting: recompute the state limit for
     // the new board size. This is also done in startGame (which runs next).
     applyGroupMovesFromLevel(level);
-    const startCfg = level.startPieces.map(p => ({ sourceLetter:p.sourceLetter, shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
-    const targetCfg = level.targetPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, round: p.round }));
-    startGame(startCfg, targetCfg, level.step || 0, !!level.rushHour, level.solution);
+    const startCfg = level.startPieces.map(p => ({ sourceLetter:p.sourceLetter, shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round }));
+    const targetCfg = level.targetPieces.map(p => ({ shape: p.shape, x: p.x, y: p.y, color: p.color, dir: p.dir, dmove: p.dmove, label: p.label, region: p.region, markerScale: p.markerScale, round: p.round }));
+    startGame(startCfg, targetCfg, level.step || 0, !!level.rushHour, level.solution, true, level);
   }
   function selectLevel(idx, save) {
     const all = allLevels();
@@ -10895,7 +11154,7 @@
     const lvl = all[currentLevelIndex];
     const name = lvl.name || extractNameFromText(lvl.text) || '';
     const group = lvl.group || extractGroupFromText(lvl.text) || lvl.author || '';
-    return { name, group };
+    return { name, group, replacement: lvl.replacesPreset === true ? levelReplacementKey(lvl) : undefined };
   }
   function findLevelIdxByNameAndGroup(name, group) {
     if (!name) return -1;
@@ -10975,7 +11234,11 @@
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed && parsed.name) {
-          idx = findLevelIdxByNameAndGroup(parsed.name, parsed.group);
+          if (parsed.replacement) {
+            const saved = userLevels.findIndex(level => level.replacesPreset && levelReplacementKey(level) === parsed.replacement);
+            if (saved >= 0) idx = PRESET_LEVELS.length + saved;
+          }
+          if (idx < 0) idx = findLevelIdxByNameAndGroup(parsed.name, parsed.group);
         }
       }
     } catch (e) { idx = -1; }
@@ -11029,19 +11292,7 @@
   function buildMiniPreviewFromParsed(cols, rows, pieces, holesSet, hideDirArrows, markerTargets) {
     const el = document.createElement('div');
     el.className = 'mini-board';
-    el.style.setProperty('--board-cols', cols);
-    el.style.setProperty('--board-rows', rows);
-    for (const p of pieces) {
-      const shape = SHAPES[p.shape]; if (!shape || shape.hole) continue;
-      const piece = document.createElement('div');
-      piece.className = 'mini-piece';
-      piece.style.left = (p.x / cols * 100) + '%';
-      piece.style.top = (p.y / rows * 100) + '%';
-      piece.style.width = (shape.w / cols * 100) + '%';
-      piece.style.height = (shape.h / rows * 100) + '%';
-      piece.innerHTML = shapeSVGInner(p.shape, p.color, p.dir, p.dmove, p.label, p.round, !!hideDirArrows, p.region);
-      el.appendChild(piece);
-    }
+    renderMiniBoardPieces(el, cols, rows, pieces, !!hideDirArrows);
     if (markerTargets && markerTargets.length) appendTargetMarkers(el, cols, rows, markerTargets, pieces);
     applyMiniBoardMask(el, cols, rows, holesSet);
     return el;
@@ -11234,6 +11485,9 @@
   }
 
   let galleryPreviewObserver = null;
+  let galleryBoardResize = null;
+  let galleryGridResize = null;
+  let galleryBoardRenderId = 0;
   let galleryPreviewFrame = 0;
   let galleryBackgroundTimer = 0;
   let galleryBackgroundCursor = 0;
@@ -11242,6 +11496,22 @@
   const galleryPreviewCards = [];
   function resetGalleryPreviews() {
     if (galleryPreviewObserver) galleryPreviewObserver.disconnect();
+    if (galleryBoardResize) galleryBoardResize.disconnect();
+    if (galleryGridResize) galleryGridResize.disconnect();
+    const gridWidths = new WeakMap();
+    galleryGridResize = new ResizeObserver(entries => {
+      for (const {target, contentRect} of entries) {
+        const width = contentRect.width;
+        if (width && width !== gridWidths.get(target)) layoutGalleryRows(target);
+        gridWidths.set(target, width);
+      }
+    });
+    const sourceWidth = parseFloat(getComputedStyle(appEl).getPropertyValue('--game-board-width'));
+    galleryBoardResize = new ResizeObserver(entries => {
+      for (const {target, contentRect} of entries) {
+        scalePreviewBoard(target.lastElementChild, sourceWidth, contentRect.width);
+      }
+    });
     if (galleryPreviewFrame) cancelAnimationFrame(galleryPreviewFrame);
     clearTimeout(galleryBackgroundTimer);
     galleryPreviewFrame = galleryBackgroundTimer = 0;
@@ -11328,6 +11598,83 @@
     galleryParsedLevels.set(level, { text: level.text, parsed });
     return parsed;
   }
+  function renderGalleryBoard(frame, parsed, pieces, markerTargets) {
+    const board = document.createElement('div');
+    board.className = 'board';
+    const inner = document.createElement('div');
+    inner.className = 'board__inner';
+    board.appendChild(inner);
+    const {cols, rows, startPieces, rushHour} = parsed;
+    // Paint the grid at the frame's final size so it stays visible in narrow cards.
+    renderGameBoardSurface(frame, cols, rows, getHoleSetFromPieces(startPieces), 'gallery-' + ++galleryBoardRenderId);
+    renderGameBoardPieces(inner, pieces, cols, rows, !!rushHour);
+    if (markerTargets) appendTargetMarkers(inner, cols, rows, markerTargets, startPieces);
+    frame.appendChild(board);
+    galleryBoardResize.observe(frame);
+  }
+  function chooseGalleryStackWidths(cards) {
+    const labelHeight = 12 + 2;
+    const stackedSpacing = 2 * labelHeight + 8;
+    const previews = cards.map(({width, ratio, pair}) => {
+      const sideWidth = pair ? (width - 6) / 2 : width;
+      return {
+        sideHeight:sideWidth * ratio + (pair ? labelHeight : 0),
+        minStackHeight:pair ? 2 * (sideWidth * 1.08) * ratio + stackedSpacing : Infinity
+      };
+    });
+    const baseHeight = Math.max(...previews.map(preview => preview.sideHeight));
+    const heightLimit = baseHeight + Math.min(46, baseHeight * 0.35);
+    // A stack must use noticeable empty space and make each board larger.
+    const initialStack = previews.map(({sideHeight, minStackHeight}) =>
+      baseHeight - sideHeight >= 24 && minStackHeight <= heightLimit);
+    const initialHeight = Math.max(baseHeight, ...previews.map(({minStackHeight}, i) => initialStack[i] ? minStackHeight : 0));
+    const matchingHeightLimit = Math.min(baseHeight + 52, initialHeight + 24);
+    // Keep similarly proportioned boards together when the row already has a stack.
+    const stack = previews.map(({sideHeight, minStackHeight}, i) => {
+      if (initialStack[i]) return true;
+      if (baseHeight - sideHeight < 24 || minStackHeight > matchingHeightLimit) return false;
+      const ratio = cards[i].ratio;
+      return cards.some((card, j) => initialStack[j] &&
+        Math.max(ratio, card.ratio) <= 1.2 * Math.min(ratio, card.ratio));
+    });
+    const rowHeight = Math.max(baseHeight, ...previews.map(({minStackHeight}, i) => stack[i] ? minStackHeight : 0));
+    return cards.map(({width, ratio}, i) =>
+      stack[i] ? Math.min(width, (rowHeight - stackedSpacing) / (2 * ratio)) : 0);
+  }
+  function layoutGalleryRows(grid) {
+    const columns = getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/);
+    if (!columns.every(track => track.endsWith('px') && parseFloat(track) > 0)) return;
+    // Subtract the card's two 8px paddings and 1px borders.
+    const widths = columns.map(track => parseFloat(track) - 18);
+    const row = [];
+    function layoutRow() {
+      if (!row.length) return;
+      const stackWidths = chooseGalleryStackWidths(row.map(({ratio, pair}, i) => ({width:widths[i], ratio, pair})));
+      row.forEach(({element}, i) => {
+        const width = stackWidths[i];
+        element.classList.toggle('gallery-previews--vertical', width > 0);
+        if (width) element.style.setProperty('--gallery-stacked-width', width + 'px');
+        else element.style.removeProperty('--gallery-stacked-width');
+      });
+      row.length = 0;
+    }
+    for (const item of grid.children) {
+      if (item.classList.contains('expanded')) {
+        layoutRow();
+        const inner = item.querySelector('.gallery-grid');
+        if (inner) layoutGalleryRows(inner);
+        continue;
+      }
+      const card = item.classList.contains('gallery-stack')
+        ? item.querySelector(':scope > .gallery-stack__collapsed > .gallery-card') : item;
+      row.push(card.previewLayout);
+      if (row.length === widths.length) layoutRow();
+    }
+    layoutRow();
+  }
+  function layoutVisibleGalleryRows() {
+    for (const grid of galleryViewEl.querySelectorAll(':scope > .gallery-group > .gallery-grid')) layoutGalleryRows(grid);
+  }
   function createGalleryCard(item, displayNameOverride, noClickHandler, batchIds = [item.globalIdx]) {
     const card = document.createElement('div');
     card.className = 'gallery-card';
@@ -11358,9 +11705,10 @@
     const parsed = getGalleryParsedLevel(item.level);
     nameEl.classList.toggle('gallery-card__name--group', !!(parsed && parsed.groupMoves));
     const previewJobs = [];
+    card.previewLayout = {element:previewsWrap, ratio:parsed ? parsed.rows / parsed.cols : 5 / 4, pair:false};
     if (parsed) {
       const markersOnlyGoal = getTargetMarkerPieces(parsed.startPieces, parsed.targetPieces).length > 0;
-      previewsWrap.classList.toggle('gallery-previews--vertical', !markersOnlyGoal && parsed.cols >= parsed.rows * 1.5);
+      card.previewLayout.pair = !markersOnlyGoal;
       // Reserve the final board geometry immediately. Only SVG contents are lazy.
       // Background rendering must never change the height of gallery rows.
       const addBoard = (pieces, label, markerTargets) => {
@@ -11372,19 +11720,15 @@
           cell.appendChild(labelEl);
         }
         const placeholder = document.createElement('div');
-        placeholder.className = 'mini-board';
+        placeholder.className = 'gallery-board-preview scaled-board-frame';
         placeholder.style.setProperty('--board-cols', parsed.cols);
         placeholder.style.setProperty('--board-rows', parsed.rows);
         cell.appendChild(placeholder);
         previewsWrap.appendChild(cell);
-        previewJobs.push(() => {
-          const full = buildMiniPreviewFromParsed(parsed.cols, parsed.rows, pieces,
-            getHoleSetFromPieces(parsed.startPieces), !!parsed.rushHour, markerTargets);
-          placeholder.replaceWith(full);
-        });
+        previewJobs.push(() => renderGalleryBoard(placeholder, parsed, pieces, markerTargets));
       };
       addBoard(parsed.startPieces, markersOnlyGoal ? null : t('previewStart'), markersOnlyGoal ? parsed.targetPieces : null);
-      if (!markersOnlyGoal) addBoard(parsed.targetPieces, t('previewTarget'), null);
+      if (!markersOnlyGoal) addBoard(goalPreviewPieces(parsed.startPieces, parsed.targetPieces), t('previewTarget'), null);
     } else {
       const brokenWrap = document.createElement('div');
       brokenWrap.className = 'mini-board gallery-card__broken';
@@ -11444,6 +11788,7 @@
     collapsed.style.opacity = '1';
     collapsed.style.transform = 'scale(1)';
     stack.classList.add('expanded');
+    layoutGalleryRows(stack.parentElement);
     void stack.offsetWidth;
     const newStackRect = stack.getBoundingClientRect();
     collapsed.style.left = (colRect.left - newStackRect.left) + 'px';
@@ -11459,6 +11804,7 @@
     const collapsed = stack.querySelector('.gallery-stack__collapsed');
     stack.classList.remove('expanded');
     stack.classList.add('collapsing');
+    layoutGalleryRows(stack.parentElement);
     if (collapsed) {
       collapsed.style.position = '';
       collapsed.style.left = '';
@@ -11519,7 +11865,7 @@
       let dmove = p.dmove || '';
       if (b !== 0 && (dmove === 'h' || dmove === 'v')) dmove = dmove === 'h' ? 'v' : 'h';
       return JSON.stringify([cells, !!shape.fixed, !!shape.hole, p.color,
-        galleryDuplicateOrientation(p.dir, transform), dmove, p.label || '', !!p.round, p.region || 0]);
+        galleryDuplicateOrientation(p.dir, transform), dmove, p.label || '', !!p.round, p.region || 0, p.markerScale ?? 100]);
     };
     const start = level.startPieces.map(pieceKey).sort();
     // Fixed cells are already defined by the start board, not by the goal.
@@ -11805,6 +12151,7 @@
 
       groupEl.appendChild(gridEl);
       galleryViewEl.appendChild(groupEl);
+      galleryGridResize.observe(gridEl);
     }
     const hotkeys=document.createElement('div');
     hotkeys.className='gallery-hotkeys';
@@ -11813,6 +12160,7 @@
       kbd.textContent=key;item.append(kbd,' '+t(label));hotkeys.appendChild(item);
     }
     galleryViewEl.appendChild(hotkeys);
+    if (appMode === 'gallery') layoutVisibleGalleryRows();
   }
   function openGallery() {
     galleryFromEditor = appMode === 'editor' ? [COLS,ROWS] : null;
@@ -11831,6 +12179,7 @@
     if (game.session.pieceId) commitSession();
     buildGallery();
     appEl.style.transition = 'none'; setAppMode('gallery'); void appEl.offsetWidth; appEl.style.transition = '';
+    layoutVisibleGalleryRows();
     requestAnimationFrame(() => {
       const card = galleryViewEl.querySelector('.gallery-card[data-level-index="' + currentLevelIndex + '"]');
       if (card) {
@@ -11852,9 +12201,9 @@
         !game.won && !game.startTime && !game.solving && !game.scrambling && !batch.active && !game.session.pieceId) return;
     cancelBatch();
     if (game.session.pieceId) commitSession();
-    startGame(game.startCfg,game.targetCfg,game.step,game.rushHour,game.solutionLevel.solution,!atStart);
+    startGame(game.startCfg,game.targetCfg,game.step,game.rushHour,game.solutionLevel.solution,!atStart,game.solutionLevel);
   });
-  document.getElementById('againBtn').addEventListener('click', () => { cancelBatch(); resetSession(); startGame(game.startCfg, game.targetCfg, game.step, game.rushHour, game.solutionLevel.solution); });
+  document.getElementById('againBtn').addEventListener('click', () => { cancelBatch(); resetSession(); startGame(game.startCfg, game.targetCfg, game.step, game.rushHour, game.solutionLevel.solution, true, game.solutionLevel); });
   document.getElementById('editBtn').addEventListener('click', openEditor);
   document.getElementById('cancelEditBtn').addEventListener('click', cancelEditor);
   document.getElementById('applyEditBtn').addEventListener('click', applyEditor);
@@ -12073,7 +12422,7 @@
       Object.assign(SHAPES,meta.SHAPES);COLS=meta.COLS;ROWS=meta.ROWS;CELLS=COLS*ROWS;
       MOVE_MODE=meta.MOVE_MODE;GROUP_SHIFT=meta.GROUP_SHIFT;
       solverMethod='bfs';solverMethodEl.value='bfs';
-      startGame(meta.originalStart||meta.startPieces,meta.targetPieces,meta.step,meta.rushHour,null,false);
+      startGame(meta.originalStart||meta.startPieces,meta.targetPieces,meta.step,meta.rushHour,null,false,index>=0 ? game.solutionLevel : null);
       game.pieces=meta.startPieces.map((p,i)=>({...p,id:'p'+(i+1)}));
       game.trace=meta.trace||[];
       buildGamePieces();syncGamePieces();
@@ -13537,7 +13886,7 @@ self.onmessage = async function (e) {
       const movement = transform && transform.swapAxes
         ? (template.dmove === 'h' ? 'v' : template.dmove === 'v' ? 'h' : template.dmove || '') : template.dmove || '';
       pieces.push(JSON.stringify([template.color || '', template.label || '', template.dir || '', template.region || 0,
-        !!template.round, !!shape.fixed, !!shape.hole, movement, cells]));
+        template.markerScale ?? 100, !!template.round, !!shape.fixed, !!shape.hole, movement, cells]));
     }
     return JSON.stringify(pieces.sort());
   }
@@ -14618,7 +14967,7 @@ self.onmessage = async function (e) {
         const rectWidth=rect.w*pitch-2*margin,rectHeight=rect.h*pitch-2*margin;
         if (rectWidth<1 || rectHeight<1) throw new Error(printMessage('Для меток увеличьте клетку или уменьшите фаску.','Increase the cell size or reduce the chamfer to fit the markings.'));
         const inset = tile.circle ? 0.15 : 0;
-        const markerScale=(settings.markerSize ?? 100)/100;
+        const markerScale=(settings.markerSize ?? 100)*(piece.markerScale ?? 100)/10000;
         tile.labels.push({text:label,face:'top',mode:settings.tileText,
           tileMarker:true,
           fontSize:tileLabelFontSize(label.split('\n'),rect.w*pitch,rect.h*pitch)*markerScale,
