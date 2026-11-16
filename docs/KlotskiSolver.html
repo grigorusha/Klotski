@@ -96,7 +96,11 @@
   .analyzer-sliders { grid-area: 1 / 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
   .analyzer-underboards.filter-open .analyzer-sliders { visibility: hidden; pointer-events: none; }
   .analyzer-underboards .analyzer-filter { grid-area: 1 / 1; z-index: 2; align-self: stretch; margin: 0; background: #454545; }
-  .analyzer-filter-toggle { max-width: 170px; }
+  .analyzer-underboards .analyzer-tiles { grid-area: 2 / 1; margin-top: 12px; }
+  .analyzer-underboards.tiles-open :is(.analyzer-near-group, .analyzer-far-group, .analyzer-states-gallery) { display: none; }
+  .analyzer-tiles select { width: min(100%, 360px); }
+  .analyzer-tile-picking, .analyzer-tile-picking .mini-piece { cursor: crosshair; }
+  .mini-piece.analyzer-tile-selected svg { filter: drop-shadow(0 0 4px var(--gold)) drop-shadow(0 0 8px var(--gold)); }
   @media (max-width: 520px) { .analyzer-sliders { gap: 12px; } }
   .analyzer-sliders { row-gap: 18px; }
   .analyzer-source-path { grid-area: 1 / 1; }
@@ -109,7 +113,8 @@
   .analyzer-center-gallery button { height: 34px; min-height: 34px; max-height: 34px; padding: 0 3px; font-size: 10px; gap: 3px; }
   .analyzer-status-row { display: flex; align-items: center; gap: 12px; }
   .analyzer-status-row > .analyzer-status { flex: 1; min-width: 0; }
-  .analyzer-status-row .analyzer-filter-toggle { flex: 0 0 108px; width: 108px; margin: 0; }
+  .analyzer-status-row .analyzer-filter-toggle { flex: 0 0 auto; width: auto; margin: 0; }
+  .analyzer-filter-toggle button { min-width: 0; padding-inline: 10px; }
   @media (max-width: 840px) { .analyzer-center-gallery { width: 24px; max-width: 24px; } .analyzer-center-gallery .btn-lbl { display: none; } .analyzer-center-gallery .btn-ico { width: 16px; } }
   .analyzer-mini-gallery.mini-split { overflow: hidden; }
   .mini-split .analyzer-mini-inner { height: 100%; display: flex; flex-direction: column; }
@@ -177,7 +182,8 @@
   .back-btn { position: fixed; top: 16px; left: 12px; z-index: 200; display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 12px; font: inherit; font-size: 12.5px; font-weight: 600; color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; cursor: pointer; line-height: 1; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.45); }
   .back-btn:hover { background: linear-gradient(180deg, #5c5c5c, #383838); }
   .back-btn[hidden] { display: none !important; }
-  .scroll-top-btn { left: auto; right: 12px; }
+  .scroll-top-btn, .scroll-bottom-btn { left: auto; right: 12px; }
+  .scroll-bottom-btn { top: auto; bottom: 16px; }
   .level-row { display: grid; grid-template-columns: auto auto 1fr auto auto; align-items: center; gap: 6px; }
   .level-row__label { font-size: 12px; font-weight: 600; color: var(--sub); white-space: nowrap; padding-right: 2px; }
   .level-nav { height: 36px; padding: 0; width: 34px; font: inherit; font-size: 18px; font-weight: 700; line-height: 1; color: #f0f4fa; background: linear-gradient(180deg, #4d4d4d, #2e2e2e); border: 1px solid rgba(255,255,255,.15); border-radius: 10px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; user-select: none; white-space: nowrap; gap: 5px; }
@@ -882,10 +888,15 @@
   input[type="range"].pb-scrubber::-moz-range-track, input[type="range"].pb-speed::-moz-range-track { height: 6px; background: linear-gradient(180deg, #2e2e2e, #4d4d4d); border-radius: 3px; border: 1px solid rgba(255,255,255,.15); }
   input[type="range"].pb-scrubber::-webkit-slider-thumb, input[type="range"].pb-speed::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: linear-gradient(180deg, #ffd166, #d49a20); border: 1px solid rgba(255,255,255,.4); margin-top: -6px; box-shadow: 0 2px 6px rgba(0,0,0,.5); cursor: grab; }
   input[type="range"].pb-scrubber::-moz-range-thumb, input[type="range"].pb-speed::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: linear-gradient(180deg, #ffd166, #d49a20); border: 1px solid rgba(255,255,255,.4); box-shadow: 0 2px 6px rgba(0,0,0,.5); cursor: grab; }
-  .gallery-sort-block { display: flex; flex-direction: row; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 10px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
+  .gallery-tools { display: flex; flex-direction: column; gap: 9px; padding: 8px 12px; border-radius: 10px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
+  .gallery-sort-block { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: center; }
   .gallery-sort-item { display: flex; align-items: center; gap: 8px; }
   .gallery-sort-item .settings-select { min-width: 150px; height: 32px; }
   .gallery-sort-row__label { font-size: 12px; font-weight: 600; color: var(--sub); white-space: nowrap; }
+  .gallery-search { align-items: center; height: auto; min-height: 0; }
+  .gallery-search .settings-input { background: #fff; color: #202733; text-align: left; }
+  .gallery-search .settings-input::placeholder { color: #626975; opacity: 1; }
+  .gallery-search button { flex: 0 0 auto; height: 34px; min-height: 34px; }
   .about-block { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px 16px; border-radius: 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); font-size: 11.5px; line-height: 1.6; color: var(--sub); }
   .about-block__title { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: none; color: var(--gold); margin-bottom: 2px; }
   .about-block a { color: #9ecbff; text-decoration: none; }
@@ -912,6 +923,7 @@
   <button id="backBtn" class="back-btn" hidden><span class="btn-ico">←</span><span class="btn-lbl" data-ruseng="back">Назад</span></button>
   <button id="editorGalleryBtn" class="back-btn level-gallery editor-gallery-btn" type="button" hidden><span class="btn-ico">▦</span><span class="btn-lbl" data-ruseng="gallery">Галерея</span></button>
   <button id="scrollTopBtn" class="back-btn scroll-top-btn" type="button" hidden><span class="btn-ico">↑</span><span class="btn-lbl" data-ruseng="scrollTop">Наверх</span></button>
+  <button id="scrollBottomBtn" class="back-btn scroll-bottom-btn" type="button" hidden><span class="btn-ico">↓</span><span class="btn-lbl" data-ruseng="scrollBottom">Вниз</span></button>
 
   <div class="app-header">
     <span></span>
@@ -1035,7 +1047,7 @@
     </div>
 
     <div class="about-block" id="aboutBlock">
-      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v3.86)</span></div>
+      <div class="about-block__title"><span data-ruseng="aboutTitle">О ПРОГРАММЕ :</span> <span id="appVersion" class="app-version">Klotski (v3.90)</span></div>
       <div data-ruseng="developersLabel">Разработчики: Deepseek + Grigorusha - <a href="https://github.com/grigorusha" target="_blank" rel="noopener">https://github.com/grigorusha</a></div>
       <div class="about-block__authors">
         <div class="about-block__authors-label" data-ruseng="authorsLabel">Авторские головоломки:</div>
@@ -1480,11 +1492,17 @@
       <div id="anaFilterDistance" class="analyzer-rules"></div>
       <div class="analyzer-rules analyzer-help" data-ruseng="anaFilterHint">Доски пары связаны выбранным отражением или поворотом. Обоюдная: совпадение при обоих осевых отражениях. Расстояние — кратчайший путь между досками.</div>
     </div>
+    <div class="analyzer-filter analyzer-tiles" id="anaTilesPanel" hidden>
+      <div id="anaTilesInfo" class="analyzer-rules" role="status" aria-live="polite"></div>
+      <div id="anaTilesEquivalent" class="analyzer-rules" hidden data-ruseng="anaTilesEquivalent"></div>
+      <select id="anaTilePositions" size="5" data-ruseng-title="anaTilePositions" hidden></select>
+    </div>
     </div>
     <div id="anaInfo" class="analyzer-rules"></div>
     <div class="analyzer-status-row">
       <div class="analyzer-status" id="anaStatus" role="status" aria-live="polite"></div>
     <div class="controls analyzer-toolbar analyzer-filter-toggle">
+      <button id="anaTiles" type="button" class="hint-btn" aria-controls="anaTilesPanel" aria-expanded="false" hidden disabled><span class="btn-ico">▦</span><span class="btn-lbl" data-ruseng="anaTiles">Плитки</span></button>
       <button id="anaFilter" type="button" class="hint-btn" disabled><span class="btn-ico">⚑</span><span class="btn-lbl" data-ruseng="anaFilter">Фильтр</span></button>
     </div>
     </div>
@@ -1547,7 +1565,16 @@
       </div>
     </section>
   </div>
-  <div class="gallery-view" id="galleryView" hidden></div>
+  <div class="gallery-view" id="galleryView" hidden>
+    <div id="galleryTools" class="gallery-tools">
+      <div id="gallerySortBlock" class="gallery-sort-block"></div>
+      <form id="gallerySearchForm" class="controls gallery-search" role="search">
+        <label for="gallerySearchInput" class="gallery-sort-row__label" data-ruseng="gallerySearchLabel">Поиск</label>
+        <input id="gallerySearchInput" class="settings-input" type="search" autocomplete="off" data-ruseng-placeholder="gallerySearchPlaceholder" placeholder="Название, автор или группа">
+        <button type="submit" class="hint-btn" data-ruseng="gallerySearchButton">Найти</button>
+      </form>
+    </div>
+  </div>
 </div>
 
 <div id="anaMiniGallery" class="analyzer-mini-gallery" role="dialog" aria-modal="true" aria-labelledby="anaMiniTitle" hidden>
@@ -1567,7 +1594,7 @@
 (function () {
   'use strict';
 
-  const APP_VERSION = '3.86';
+  const APP_VERSION = '3.90';
   const DISK_HELPER_VERSION = '1.01';
   let diskLogTarget=null, diskLogBusy=false, diskLogWarned=false;
   const diskLogQueue=[];
@@ -1706,6 +1733,16 @@
       spaceExplanation: "Все размещения без наложений и выхода за границы поля, без поворотов и отражений плиток. Блоки и вырезанные клетки неподвижны. Одинаковые плитки взаимозаменяемы; достижимость ходами не проверяется.",
       anaFarStates: "Дальние состояния:",
       anaFilter: "Фильтр",
+      anaTiles: "Плитки",
+      anaTilesTip: "Найти кратчайшие пути к позициям выбранной плитки.",
+      anaTilesRequiresTree: "Сначала завершите поиск всех дальних состояний.",
+      anaTilesPick: "Выберите плитку на стартовой доске.",
+      anaTilesScan: "Проверено состояний: %1 из %2.",
+      anaTilesEquivalent: "Для одинаковых плиток учитывается любая плитка этого типа.",
+      anaTilesNone: "У плитки нет других достижимых позиций.",
+      anaTilesFound: "Достижимых позиций: %1. Первыми показаны самые длинные из кратчайших путей.",
+      anaTilePositions: "Достижимые позиции плитки",
+      anaTilePosition: "(%1, %2) · %3 ход(ов)",
       anaMiniPairs: "Галерея пар фильтра",
       anaMiniStates: "Галерея ближних и дальних состояний",
       anaMiniPath: "Галерея состояний найденного пути",
@@ -1840,6 +1877,12 @@
       anaError: "Поиск прерван из-за ошибки: %1. Уменьшите лимит состояний, если не хватает памяти.",
       anaExplanation: "Дальние состояния — до 20% самых удалённых позиций, не более 1000. Под досками можно листать кратчайший путь: слева от старта вперёд, справа от цели назад. Поиск, Поменять, Запустить и Редактировать используют показанные позиции. Авто приближает диаметр графа.",
       scrollTop: 'Наверх',
+      scrollBottom: 'Вниз',
+      gallerySearchLabel: 'Поиск',
+      gallerySearchPlaceholder: 'Название, автор или группа',
+      gallerySearchButton: 'Найти',
+      gallerySearchSummary: 'Найдено уровней: %1 · не решено: %2',
+      gallerySearchEmpty: 'Уровни не найдены',
       back: 'Назад', puzzle: 'Головоломка:', gallery: 'Галерея',
       moves: 'Ходы', time: 'Время',
       undo: 'Назад', redo: 'Вперёд', reset: 'Заново',
@@ -2144,6 +2187,16 @@
       spaceExplanation: "All placements without overlap or leaving the board, without rotating or reflecting tiles. Blocks and cutouts stay fixed. Identical tiles are interchangeable; move reachability is not checked.",
       anaFarStates: "Distant states:",
       anaFilter: "Filter",
+      anaTiles: "Tiles",
+      anaTilesTip: "Find the shortest paths to positions of the selected tile.",
+      anaTilesRequiresTree: "Complete the search for all far states first.",
+      anaTilesPick: "Select a tile on the starting board.",
+      anaTilesScan: "States checked: %1 of %2.",
+      anaTilesEquivalent: "For identical tiles, any tile of the selected type counts.",
+      anaTilesNone: "The tile has no other reachable positions.",
+      anaTilesFound: "Reachable positions: %1. The longest shortest paths are listed first.",
+      anaTilePositions: "Reachable tile positions",
+      anaTilePosition: "(%1, %2) · %3 moves",
       anaMiniPairs: "Filtered pair gallery",
       anaMiniStates: "Nearby and distant state gallery",
       anaMiniPath: "Solution path gallery",
@@ -2278,6 +2331,12 @@
       anaError: "Search interrupted by an error: %1. Reduce the state limit if memory is insufficient.",
       anaExplanation: "Distant states are up to the furthest 20% of discovered positions, at most 1000. Step along a shortest path below each board: forward from the start, backward from the target. Search, Swap, Run and Edit use the displayed positions. Auto approximates the graph diameter.",
       scrollTop: 'Top',
+      scrollBottom: 'Bottom',
+      gallerySearchLabel: 'Search',
+      gallerySearchPlaceholder: 'Level name, author, or group',
+      gallerySearchButton: 'Find',
+      gallerySearchSummary: 'Levels found: %1 · unsolved: %2',
+      gallerySearchEmpty: 'No levels found',
       back: 'Back', puzzle: 'Puzzle:', gallery: 'Gallery',
       moves: 'Moves', time: 'Time',
       undo: 'Undo', redo: 'Redo', reset: 'Reset',
@@ -2571,6 +2630,8 @@
   let gallerySortMode = 'default';
   // Session-only: 0 = all, 1 = unsolved, 2 = move count without a solution.
   let galleryFilter = 0;
+  let gallerySearchWords = [];
+  let gallerySearchTimer = 0;
   try { const bs = safeGetItem(GALLERY_SORT_KEY); if (bs === 'default' || bs === 'name' || bs === 'steps') boardSortMode = bs; } catch (e) {}
   try { const gs = safeGetItem(GALLERY_GROUP_SORT_KEY); if (gs === 'default' || gs === 'name' || gs === 'size') gallerySortMode = gs; } catch (e) {}
 
@@ -6458,6 +6519,11 @@
   const galleryBtn = document.getElementById('galleryBtn');
   const backBtn = document.getElementById('backBtn');
   const scrollTopBtn = document.getElementById('scrollTopBtn');
+  const scrollBottomBtn = document.getElementById('scrollBottomBtn');
+  const galleryTools = document.getElementById('galleryTools');
+  const gallerySortBlock = document.getElementById('gallerySortBlock');
+  const gallerySearchForm = document.getElementById('gallerySearchForm');
+  const gallerySearchInput = document.getElementById('gallerySearchInput');
   const statsEl = document.getElementById('stats');
   const levelNameInput = document.getElementById('levelNameInput');
   const levelAuthorInput = document.getElementById('levelAuthorInput');
@@ -6495,18 +6561,30 @@
     const r = appEl.getBoundingClientRect();
     if (backBtn && !backBtn.hidden) backBtn.style.left = Math.max(4, r.left) + 'px';
     if (!editorGalleryBtn.hidden) editorGalleryBtn.style.right = Math.max(4, document.documentElement.clientWidth - r.right) + 'px';
-    if (scrollTopBtn) scrollTopBtn.style.right = Math.max(4, window.innerWidth - r.right) + 'px';
-    updateScrollTopButton();
+    const scrollRight = Math.max(4, window.innerWidth - r.right) + 'px';
+    scrollTopBtn.style.right = scrollBottomBtn.style.right = scrollRight;
+    updateGalleryScrollButtons();
   }
-  function updateScrollTopButton() {
-    if (!scrollTopBtn) return;
-    scrollTopBtn.hidden = appMode !== 'gallery' || window.scrollY <= 1;
+  function galleryScrollBottom() {
+    const page = document.scrollingElement || document.documentElement;
+    return Math.max(0, page.scrollHeight - page.clientHeight);
+  }
+  function updateGalleryScrollButtons() {
+    const isGallery = appMode === 'gallery';
+    scrollTopBtn.hidden = !isGallery || window.scrollY <= 1;
+    scrollBottomBtn.hidden = !isGallery || galleryScrollBottom() - window.scrollY <= 1;
   }
   scrollTopBtn.addEventListener('click', () => {
     try { window.scrollTo({ top: 0, behavior: 'smooth' }); }
     catch (e) { window.scrollTo(0, 0); }
   });
-  window.addEventListener('scroll', updateScrollTopButton, { passive: true });
+  scrollBottomBtn.addEventListener('click', () => {
+    const top = galleryScrollBottom();
+    try { window.scrollTo({ top, behavior: 'smooth' }); }
+    catch (e) { window.scrollTo(0, top); }
+  });
+  new ResizeObserver(updateGalleryScrollButtons).observe(galleryViewEl);
+  window.addEventListener('scroll', updateGalleryScrollButtons, { passive: true });
   window.addEventListener('resize', updateBackBtnPosition);
   window.addEventListener('orientationchange', updateBackBtnPosition);
 
@@ -6633,7 +6711,7 @@
     statsEl.hidden = !isGame;
     backBtn.hidden = isGame;
     editorGalleryBtn.hidden = !isEditor;
-    updateScrollTopButton();
+    updateGalleryScrollButtons();
     appEl.classList.toggle('editing', isEditor);
     appEl.classList.toggle('gallery', isGallery);
     appEl.classList.toggle('analyzing', mode === 'analyzer');
@@ -10544,6 +10622,30 @@
     for (const g of getGalleryGroups()) for (const it of g.items) result.push(it);
     return result;
   }
+  function gallerySearchTerms(query) {
+    return query.normalize('NFC').toLowerCase().match(/\S+/g) || [];
+  }
+  function matchesGallerySearch({level, author, group}, words) {
+    const fields = [levelDisplayName(level), level.name, level.nameEng || extractNameEng(level.text), author, group]
+      .filter(Boolean).map(value => value.normalize('NFC').toLowerCase());
+    return words.every(word => fields.some(field => field.includes(word)));
+  }
+  function getDisplayedGalleryGroups() {
+    const groups = getGalleryGroups();
+    if (!gallerySearchWords.length) return groups;
+    return groups.map(group => ({
+      ...group, items:group.items.filter(item => matchesGallerySearch(item, gallerySearchWords) && matchesGalleryFilter(item.level))
+    })).filter(group => group.items.length);
+  }
+  function gallerySummaryText(groups, unsolved) {
+    if (gallerySearchWords.length) {
+      const count = groups.reduce((total, group) => total + group.items.length, 0);
+      return t('gallerySearchSummary', fmtNum(count), fmtNum(unsolved));
+    }
+    const totalPreset = PRESET_LEVELS.length, totalUser = userLevels.length;
+    return totalUser ? t('gallerySummary', totalPreset, totalUser, unsolved) + ' · ' + t('galleryTotal', totalPreset + totalUser)
+      : t('gallerySummaryNoUser', totalPreset, unsolved);
+  }
   function ensureGroupTagInText(text, groupValue) {
     const src = String(text == null ? '' : text);
     if (/^[ \t]*group[ \t]*:/im.test(src)) return src;
@@ -11400,7 +11502,7 @@
       const label = card.querySelector('.gallery-card__step');
       if (label) renderGallerySteps(label,level);
     }
-    const groups = getGalleryGroups();
+    const groups = getDisplayedGalleryGroups();
     let unsolved = 0;
     groups.forEach((g, i) => {
       const labels = galleryGroupLabels(g); unsolved += labels.unsolved;
@@ -11410,9 +11512,7 @@
       if (link) link.textContent = labels.toc;
     });
     const summary = galleryViewEl.querySelector('.gallery-summary');
-    if (summary) summary.textContent = userLevels.length
-      ? t('gallerySummary', PRESET_LEVELS.length, userLevels.length, unsolved) + ' · ' + t('galleryTotal', PRESET_LEVELS.length + userLevels.length)
-      : t('gallerySummaryNoUser', PRESET_LEVELS.length, unsolved);
+    if (summary) summary.textContent = gallerySummaryText(groups, unsolved);
   }
   let contextMenuEl = null;
   function hideLevelContextMenu() { if (contextMenuEl && contextMenuEl.parentNode) contextMenuEl.parentNode.removeChild(contextMenuEl); contextMenuEl = null; }
@@ -11934,13 +12034,32 @@
     } finally { galleryDuplicateSearchRunning = false; }
   }
 
+  function applyGallerySearch() {
+    clearTimeout(gallerySearchTimer);
+    gallerySearchTimer = 0;
+    const words = gallerySearchTerms(gallerySearchInput.value);
+    if (words.join(' ') === gallerySearchWords.join(' ')) return;
+    gallerySearchWords = words;
+    if (appMode === 'gallery') buildGallery();
+  }
+  function scheduleGallerySearch() {
+    clearTimeout(gallerySearchTimer);
+    gallerySearchTimer = setTimeout(applyGallerySearch, 500);
+  }
+  gallerySearchInput.addEventListener('input', event => { if (!event.isComposing) scheduleGallerySearch(); });
+  gallerySearchInput.addEventListener('compositionstart', () => clearTimeout(gallerySearchTimer));
+  gallerySearchInput.addEventListener('compositionend', scheduleGallerySearch);
+  gallerySearchForm.addEventListener('submit', event => { event.preventDefault(); applyGallerySearch(); });
+
   function buildGallery() {
     resetGalleryPreviews();
-    galleryViewEl.innerHTML = '';
+    for (const child of Array.from(galleryViewEl.children)) {
+      if (child !== galleryTools) child.remove();
+    }
     hideLevelContextMenu();
 
-    const sortBlock = document.createElement('div');
-    sortBlock.className = 'gallery-sort-block';
+    const sortBlock = gallerySortBlock;
+    sortBlock.replaceChildren();
 
     const groupSortItem = document.createElement('div');
     groupSortItem.className = 'gallery-sort-item';
@@ -12006,22 +12125,17 @@
     });
     sortBlock.appendChild(filterLabel);
 
-    galleryViewEl.appendChild(sortBlock);
-
-    const groups = getGalleryGroups();
+    const groups = getDisplayedGalleryGroups();
     const summaryEl = document.createElement('div');
     summaryEl.className = 'gallery-summary';
-    const totalPreset = PRESET_LEVELS.length;
-    const totalUser = userLevels.length;
     const labels = groups.map(galleryGroupLabels);
     const totalUnsolved = labels.reduce((sum, label) => sum + label.unsolved, 0);
-    if (totalUser > 0) summaryEl.textContent = t('gallerySummary', totalPreset, totalUser, totalUnsolved) + ' · ' + t('galleryTotal', totalPreset + totalUser);
-    else summaryEl.textContent = t('gallerySummaryNoUser', totalPreset, totalUnsolved);
+    summaryEl.textContent = gallerySummaryText(groups, totalUnsolved);
     galleryViewEl.appendChild(summaryEl);
     if (groups.length === 0) {
       const empty = document.createElement('div');
       empty.className = 'gallery-empty';
-      empty.textContent = t('galleryNoLevels');
+      empty.textContent = t(gallerySearchWords.length ? 'gallerySearchEmpty' : 'galleryNoLevels');
       galleryViewEl.appendChild(empty);
       return;
     }
@@ -12034,6 +12148,7 @@
     tocEl.appendChild(tocTitle);
     let userSectionAdded = false;
     for (let i = 0; i < groups.length; i++) {
+      if (galleryFilter && !labels[i].unsolved) continue;
       const g = groups[i];
       if (g.isUser && !userSectionAdded && userLevels.length > 0) {
         userSectionAdded = true;
@@ -12053,7 +12168,7 @@
       });
       tocEl.appendChild(link);
     }
-    galleryViewEl.appendChild(tocEl);
+    if (tocEl.children.length > 1) galleryViewEl.appendChild(tocEl);
 
     for (let gi = 0; gi < groups.length; gi++) {
       const g = groups[gi];
@@ -12064,7 +12179,7 @@
       titleEl.className = 'gallery-group__title' + (g.isUser ? ' gallery-group__title--my' : '');
       titleEl.textContent = labels[gi].title;
       groupEl.appendChild(titleEl);
-      const items = galleryFilter ? g.items.filter(item => matchesGalleryFilter(item.level)) : g.items;
+      const items = galleryFilter && !gallerySearchWords.length ? g.items.filter(item => matchesGalleryFilter(item.level)) : g.items;
       if (!items.length) { galleryViewEl.appendChild(groupEl); continue; }
       const desc = getGroupDescription(g.group);
       if (desc) {
@@ -12790,6 +12905,7 @@
     memoryBytes: 0, fullStartedAt: null, fullFinishedAt: null, spacePreview: null,
     spaceSort: 'steps', spaceSortDescending: true,
     nearIndex: 0, pairView: null, filterBase: null, filterMatches: null, filterPairs: null, filterIndex: 0, filterOpen: false, filterMode: 'any', filterWindow: 0,
+    singleTileGoal: false, tileView: null,
     pairGeneration: 0, pairWorker: null, pairUrl: null, pairResolve: null, pairCacheBase: null, pairCache: new Map()
   };
   function analyzerRetainedBytes() {
@@ -12871,12 +12987,17 @@
   function analyzerDisplayedPair() {
     syncAnalyzerRoute();
     const view = currentAnalyzerPairView(), last = analyzer.route.length - 1;
+    const tiles = analyzer.tileView?.base === analyzer.result ? analyzer.tileView : null;
+    const position = tiles?.results?.[tiles.index];
+    const tileTarget = position ? [{...tiles.root[tiles.selected], x:position.x, y:position.y},
+      ...tiles.root.filter(p => SHAPES[p.shape].fixed)] : null;
     return {
       source: last >= 0 ? analyzerConfigAt(analyzer.routeResult, analyzer.route[analyzer.sourceStep])
         : view ? analyzerNodeAt(view.source) : analyzer.source,
-      target: last >= 0 ? analyzerConfigAt(analyzer.routeResult, analyzer.route[last - analyzer.targetStep])
+      target: tiles && (!position || analyzer.targetStep === 0) ? tileTarget
+        : last >= 0 ? analyzerConfigAt(analyzer.routeResult, analyzer.route[last - analyzer.targetStep])
         : view ? analyzerNodeAt(view.target) : null,
-      distance: last >= 0 ? last - analyzer.targetStep - analyzer.sourceStep : null
+      distance: last >= 0 && (!tiles || position) ? last - analyzer.targetStep - analyzer.sourceStep : null
     };
   }
   function updateAnalyzerPathControls(side, step, last) {
@@ -12907,6 +13028,11 @@
     }
     const preview = buildMiniPreviewFromParsed(analyzer.cols, analyzer.rows, pieces,
       getHoleSetFromPieces(analyzer.source), analyzer.rushHour);
+    const tiles = analyzer.tileView;
+    if (container === anaSourceEl && tiles && analyzer.sourceStep === 0 && tiles.selected >= 0) {
+      const visibleIndex = tiles.root.slice(0, tiles.selected).filter(p => !SHAPES[p.shape].hole).length;
+      preview.querySelectorAll(':scope > .mini-piece')[visibleIndex]?.classList.add('analyzer-tile-selected');
+    }
     container.appendChild(preview);
   }
   function updateAnalyzerButtons() {
@@ -12915,7 +13041,7 @@
     if (analyzer.fullActive) {
       // Full analysis uses temporary trees. Keep the displayed upper board
       // controls and their counters tied to the user's original analysis.
-      const ids = ['anaSearch', 'anaAuto', 'anaSwap', 'anaApply', 'anaRun', 'anaFilter', 'anaSymmetry',
+      const ids = ['anaSearch', 'anaAuto', 'anaSwap', 'anaApply', 'anaRun', 'anaFilter', 'anaSymmetry', 'anaTiles', 'anaTilePositions',
         'anaSourceGallery', 'anaTargetGallery', 'anaPairsGallery', 'anaPrev', 'anaNext', 'anaFarFirst', 'anaFarLast', 'anaFarSlider'];
       for (const prefix of ['Source', 'Target', 'Near', 'Pair'])
         for (const suffix of ['First', 'Prev', 'Slider', 'Next', 'Last']) ids.push('ana' + prefix + suffix);
@@ -12939,8 +13065,8 @@
     const farSlider = document.getElementById('anaFarSlider');
     farSlider.max = String(hasResult ? result.count - 1 : 0); farSlider.value = String(analyzer.index);
     farSlider.disabled = !analyzerCanBrowsePath() || !hasResult || result.count <= 1;
-    anaSwapBtn.disabled = busy || !hasResult;
-    anaApplyBtn.disabled = busy || !hasResult;
+    anaSwapBtn.disabled = busy || !hasResult || !!analyzer.tileView;
+    anaApplyBtn.disabled = busy || !hasResult || (!!analyzer.tileView && !analyzerDisplayedPair().target);
     anaRunBtn.disabled = busy || !hasResult || (analyzerDisplayedPair().distance === null || analyzerDisplayedPair().distance === 0);
     const last = analyzer.route.length - 1;
     updateAnalyzerPathControls('Source', analyzer.sourceStep, last);
@@ -12952,6 +13078,7 @@
     const viewport = captureAnalyzerViewport();
     try {
       if (analyzer.fullActive) { updateAnalyzerButtons(); renderAnalyzerSpace(); return; }
+      if (analyzer.tileView && analyzer.tileView.base !== analyzer.result) resetAnalyzerTiles();
       const pair = analyzerDisplayedPair();
       renderAnalyzerBoard(anaSourceEl, pair.source);
       renderAnalyzerBoard(anaTargetEl, pair.target);
@@ -12960,7 +13087,7 @@
       const last = analyzer.route.length - 1;
       document.getElementById('anaSourceStepInfo').textContent = last >= 0 ? t('anaSourceStep', analyzer.sourceStep, last) : t('anaPathHint');
       document.getElementById('anaTargetStepInfo').textContent = last >= 0 ? t('anaTargetStep', analyzer.targetStep, last) : '';
-      anaInfoEl.textContent = !result ? '' : pair.distance === null ? t((currentAnalyzerPairView() && analyzer.pairView.pending) ? 'anaPairMeasuring' : 'anaPairUnknown') : pair.distance < 0 && analyzer.groupShift
+      anaInfoEl.textContent = !result || (analyzer.tileView && !pair.target) ? '' : pair.distance === null ? t((currentAnalyzerPairView() && analyzer.pairView.pending) ? 'anaPairMeasuring' : 'anaPairUnknown') : pair.distance < 0 && analyzer.groupShift
         ? t('anaReverseDistance') : t('anaDistance', fmtNum(Math.abs(pair.distance)));
       const modeKey = { 1: 'moveModeCellsShort', 2: 'moveModeLinesShort', 3: 'moveModePathShort' }[analyzer.moveMode];
       document.getElementById('anaRules').textContent = t('anaRules', t(modeKey),
@@ -12980,6 +13107,7 @@
     analyzer.moveMode = MOVE_MODE;
     analyzer.groupShift = editor.groupMoves === false ? false : !!(editor.groupMoves || GROUP_SHIFT);
     analyzer.rushHour = !!editor.rushHour;
+    analyzer.singleTileGoal = editor.targetPieces.filter(p => SHAPES[p.shape] && !SHAPES[p.shape].fixed).length === 1;
     analyzer.source = analyzer.rushHour ? applyRushHourToCfg(editor.startPieces) : cloneCfg(editor.startPieces);
     let state;
     try { state = buildSolverState(analyzer.source, []); }
@@ -13037,6 +13165,7 @@
     if (apply && (!analyzer.result || analyzer.running || analyzer.fullActive)) return;
     if (apply) {
       const pair = analyzerDisplayedPair(), target = pair.target;
+      if (!target) return;
       editor.startPieces = pair.source.map(p => ({ ...p, id: 'e' + editor.nextId++ }));
       editor.targetPieces = target.map(p => ({ ...p, id: 'e' + editor.nextId++ }));
       editor.groupMoves = editor.groupMoves === false ? false : analyzer.groupShift ? true : null;
@@ -13207,7 +13336,7 @@ self.onmessage = async function (e) {
   document.getElementById('anaFarLast').addEventListener('click', () => stepAnalyzerFar(0));
   document.getElementById('anaFarSlider').addEventListener('input', e => stepAnalyzerFar(Number(e.target.value)));
   anaSwapBtn.addEventListener('click', () => {
-    if (analyzer.running || analyzer.fullActive) return;
+    if (analyzer.running || analyzer.fullActive || analyzer.tileView) return;
     const cfg = analyzerDisplayedPair().target; if (!cfg) return;
     analyzer.source = cfg; analyzer.result = null; analyzer.index = 0;
     analyzerStatus('anaSwapped'); renderAnalyzer();
@@ -13804,10 +13933,132 @@ self.onmessage = async function (e) {
       window.scrollTo({ left: viewport.x, top: viewport.y, behavior: 'auto' });
   }
   function resetAnalyzerSelections() {
+    resetAnalyzerTiles();
     cancelAnalyzerPairSearch(); analyzer.pairCache.clear(); analyzer.pairCacheBase = null;
     analyzer.nearIndex = 0; analyzer.pairView = null;
     analyzer.filterBase = null; analyzer.filterMatches = null; analyzer.filterPairs = null; analyzer.filterIndex = 0; analyzer.filterOpen = false;
   }
+  function analyzerCanExploreTiles() {
+    const result = analyzer.result;
+    return analyzer.singleTileGoal && !!result?.nodes && !result.capped && result.goalNode < 0;
+  }
+  function resetAnalyzerTiles() {
+    if (!analyzer.tileView) return;
+    analyzer.tileView = null; analyzer.pairView = null;
+    analyzer.routeResult = null; analyzer.routeIndex = -1;
+  }
+  function setAnalyzerTileRoute(node) {
+    const base = analyzer.result;
+    analyzer.pairView = {base, source:0, target:node, tree:base, goalNode:node, pending:false};
+    analyzer.routeResult = null;
+  }
+  function toggleAnalyzerTiles() {
+    if (analyzer.running || analyzer.fullActive) return;
+    if (analyzer.tileView) resetAnalyzerTiles();
+    else {
+      if (!analyzerCanExploreTiles()) return;
+      cancelAnalyzerPairSearch();
+      analyzer.filterOpen = false; analyzer.filterIndex = -1; analyzer.nearIndex = 0;
+      const base = analyzer.result;
+      analyzer.tileView = {base, root:analyzerConfigAt(base,0), selected:-1, index:0, results:null, scan:null};
+      setAnalyzerTileRoute(0);
+    }
+    renderAnalyzer();
+  }
+  async function findAnalyzerTilePositions(result, offsets, cols, rows, anchor, cancelled, onProgress) {
+    const {positions, parents, stride, nodes} = result;
+    const seen = new Uint8Array(cols * rows);
+    seen[anchor] = 1;
+    const found = [];
+    let depth = 0, layerStart = 0, slice = performance.now(), lastProgress = slice;
+    for (let node = 0, base = 0; node < nodes; node++, base += stride) {
+      // BFS appends every layer contiguously. The first parent from the
+      // current layer starts the next one, so no per-node depths are needed.
+      if (parents[node] >= layerStart) { depth++; layerStart = node; }
+      for (const offset of offsets) {
+        const x = positions[base + offset + 1], y = positions[base + offset + 2];
+        const cell = y * cols + x;
+        if (seen[cell]) continue;
+        seen[cell] = 1;
+        found.push({x, y, node, depth});
+      }
+      if ((node & 8191) === 8191 && performance.now() - slice >= 30) {
+        if (performance.now() - lastProgress >= 1000) { onProgress(node + 1); lastProgress = performance.now(); }
+        await new Promise(resolve => setTimeout(resolve, 0));
+        if (cancelled()) return null;
+        slice = performance.now();
+      }
+    }
+    return found.sort((a,b) => b.depth - a.depth || a.y - b.y || a.x - b.x);
+  }
+  async function pickAnalyzerTile(event) {
+    const view = analyzer.tileView;
+    if (!view || analyzer.running || analyzer.fullActive || analyzer.sourceStep !== 0) return;
+    const rect = anaSourceEl.firstElementChild.getBoundingClientRect();
+    const {cols, rows} = analyzer;
+    const x = Math.floor((event.clientX - rect.left) * cols / rect.width);
+    const y = Math.floor((event.clientY - rect.top) * rows / rect.height);
+    const index = view.root.findIndex(p => !SHAPES[p.shape].fixed &&
+      SHAPES[p.shape].cells.some(([dx,dy]) => p.x + dx === x && p.y + dy === y));
+    if (index < 0 || (view.selected === index && (view.scan || view.results))) return;
+    const scan = {}, {base} = view;
+    const type = base.positions[index * 3];
+    const offsets = [];
+    for (let offset = 0; offset < base.stride; offset += 3) {
+      if (base.positions[offset] === type) offsets.push(offset);
+    }
+    const p = view.root[index];
+    Object.assign(view, {selected:index, index:0, results:null, scan, checked:0, equivalent:offsets.length > 1});
+    setAnalyzerTileRoute(0); renderAnalyzer();
+    const cancelled = () => analyzer.tileView !== view || view.scan !== scan || analyzer.result !== base;
+    await new Promise(resolve => setTimeout(resolve, 0));
+    if (cancelled()) return;
+    const results = await findAnalyzerTilePositions(base, offsets, cols, rows, p.y * cols + p.x, cancelled, checked => {
+      view.checked = checked;
+      document.getElementById('anaTilesInfo').textContent = t('anaTilesScan', fmtNum(checked), fmtNum(base.nodes));
+    });
+    if (cancelled() || !results) return;
+    view.results = results; view.scan = null;
+    if (results.length) setAnalyzerTileRoute(results[0].node);
+    renderAnalyzer();
+  }
+  function updateAnalyzerTileControls(busy) {
+    const view = analyzer.tileView, button = document.getElementById('anaTiles');
+    const available = analyzerCanExploreTiles();
+    button.hidden = !analyzer.singleTileGoal;
+    updateAnalyzerCommand(button, view ? 'anaCloseFilter' : 'anaTiles', view ? '✕' : '▦', 'hint-btn', busy);
+    button.disabled = busy || !available;
+    button.title = t(view ? 'anaCloseFilter' : available ? 'anaTilesTip' : 'anaTilesRequiresTree');
+    button.setAttribute('aria-expanded', String(!!view));
+    const panel = document.getElementById('anaTilesPanel');
+    panel.hidden = !view;
+    panel.parentElement.classList.toggle('tiles-open', !!view);
+    anaSourceEl.classList.toggle('analyzer-tile-picking', !!view && !busy && analyzer.sourceStep === 0);
+    document.getElementById('anaTilesEquivalent').hidden = !view?.equivalent;
+    const list = document.getElementById('anaTilePositions'), results = view?.results;
+    list.hidden = !results?.length; list.disabled = busy || !results?.length;
+    if (list.tileResults !== results || list.tileLanguage !== LANG) {
+      list.tileResults = results; list.tileLanguage = LANG;
+      list.replaceChildren(...(results || []).map(({x, y, depth}) => {
+        const option = document.createElement('option');
+        option.textContent = t('anaTilePosition', x + 1, y + 1, fmtNum(depth));
+        return option;
+      }));
+    }
+    if (!view) return;
+    if (results?.length) list.selectedIndex = view.index;
+    list.setAttribute('aria-label', t('anaTilePositions'));
+    document.getElementById('anaTilesInfo').textContent = view.scan
+      ? t('anaTilesScan', fmtNum(view.checked), fmtNum(view.base.nodes))
+      : results?.length ? t('anaTilesFound', fmtNum(results.length)) : results ? t('anaTilesNone') : t('anaTilesPick');
+  }
+  document.getElementById('anaTiles').addEventListener('click', toggleAnalyzerTiles);
+  anaSourceEl.addEventListener('click', pickAnalyzerTile);
+  document.getElementById('anaTilePositions').addEventListener('change', event => {
+    const view = analyzer.tileView, index = event.target.selectedIndex;
+    if (!view?.results?.[index] || analyzer.running || analyzer.fullActive) return;
+    view.index = index; setAnalyzerTileRoute(view.results[index].node); renderAnalyzer();
+  });
   function updateAnalyzerSelectionControls(busy) {
     const result = analyzer.result;
     if (analyzer.filterBase && analyzer.filterBase !== result) {
@@ -13819,6 +14070,7 @@ self.onmessage = async function (e) {
     const sliders = document.getElementById('anaSliders');
     sliders.inert = analyzer.filterOpen;
     sliders.parentElement.classList.toggle('filter-open', analyzer.filterOpen);
+    updateAnalyzerTileControls(busy);
     document.getElementById('anaFilter').setAttribute('aria-expanded', String(analyzer.filterOpen));
     document.getElementById('anaFilter').setAttribute('aria-controls', 'anaFilterPanel');
     for (const [id, key] of [['anaSearch', 'anaSearchTip'], ['anaAuto', 'anaAutoTip'], ['anaSwap', 'anaSwapTip'],
@@ -13837,8 +14089,8 @@ self.onmessage = async function (e) {
         fmtNum(currentAnalyzerPairView() ? analyzer.pairView.source + 1 : analyzer.nearIndex + 1)) : '0 / 0';
     const matches = analyzer.filterMatches, pairs = analyzer.filterPairs, count = pairs ? pairs.length / 2 : 0;
     document.getElementById('anaPairsGallery').disabled = busy || !count;
-    document.getElementById('anaSourceGallery').disabled = busy || analyzer.route.length < 2;
-    document.getElementById('anaTargetGallery').disabled = busy || !result;
+    document.getElementById('anaSourceGallery').disabled = busy || !!analyzer.tileView || analyzer.route.length < 2;
+    document.getElementById('anaTargetGallery').disabled = busy || !!analyzer.tileView || !result;
     updateAnalyzerPicker('Pair', Math.max(0, analyzer.filterIndex), count, busy);
     document.getElementById('anaFilterInfo').textContent = matches
       ? t('anaFilterFound', fmtNum(matches.length), fmtNum(result.nodes), fmtNum(count), (result.capped ? t('anaFilterPartial') : '') + t('anaFilterWindow', fmtNum(analyzer.filterWindow))) : '';
@@ -14072,6 +14324,7 @@ self.onmessage = async function (e) {
       renderAnalyzer(); return;
     }
     if (analyzer.running || analyzer.fullActive || !analyzer.result) return;
+    resetAnalyzerTiles();
     analyzer.filterOpen = true;
     if (analyzer.filterBase === analyzer.result && analyzer.filterPairs) {
       renderAnalyzer();
@@ -14093,6 +14346,9 @@ self.onmessage = async function (e) {
       return;
     }
     if (id !== 'anaFilter') cancelAnalyzerPairSearch();
+    if (analyzer.tileView && ['anaStates', 'anaDissect', 'anaFull'].includes(id)) {
+      resetAnalyzerTiles(); renderAnalyzer();
+    }
     start();
   }
   function updateAnalyzerCommand(button, labelKey, icon, idleClass, busy) {
