@@ -21378,7 +21378,19 @@ window.BOARD_LEVELS = [
           '  C-Green,4',
           '  H-Green,5',
           '  K-Green,7',
-          '  G-Green,8'
+          '  G-Green,8',
+          'Solution: 92',
+          'MoveMode: 3',
+          '1. A a11-a9, 2. B d11-b11, 3. K h5-h3, 4. D h11-h9, 5. C f11-h11, 6. J d5-d6 + G d7-d8 + H f7-f8 + F d9-d10, 7. J d6-d7 + G d8-d9 + H f8-f9 + F d10-d11, 8. J d7-b7, 9. H f9-f5-d5, 10. G d9-f9-f7',
+          '11. F d11-d9, 12. C h11-f11, 13. D h9-h11, 14. K h3-h5-f5, 15. D h11-h7, 16. C f11-h11-h9, 17. B b11-h11, 18. H d5-d6 + J b7-b8 + A a9-a10 + F d9-d10, 19. H d6-d7 + J b8-b9 + A a10-a11 + F d10-d11, 20. G f7-f9',
+          '21. I j7-i7 + D h7-g7 + K f5-e5 + L d3-c3, 22. I i7-h7 + D g7-f7 + K e5-d5 + L c3-b3, 23. E j11-j7, 24. B h11-j11-j9, 25. C h9-h11-j11, 26. I h7-h11, 27. H d7-e7 + D f7-g7 + L b3-c3, 28. H e7-f7 + D g7-h7 + L c3-d3, 29. A a11-a10 + J b9-b8, 30. A a10-a9 + J b8-b7',
+          '31. I h11-g11 + F d11-c11 + G f9-e9, 32. I g11-f11 + F c11-b11 + G e9-d9, 33. D h7-h11, 34. H f7-f5-h5-h3, 35. K d5-h5, 36. J b7-d7-d5, 37. G d9-d7-b7, 38. I f11-f9-d9, 39. D h11-f11, 40. K h5-h11',
+          '41. E j7-h7-h9, 42. H h3-h5-j5, 43. E h9-h5, 44. K h11-h7-j7, 45. D f11-h11, 46. I d9-f9-f11, 47. G b7-d7-d9, 48. J d5-d7-b7, 49. I f11-f7, 50. F b11-d11',
+          '51. G d9-f9, 52. A a9-a10 + J b7-b8, 53. A a10-a11 + J b8-b9, 54. H j5-i5 + E h5-g5 + I f7-e7 + L d3-c3, 55. H i5-h5 + E g5-f5 + I e7-d7 + L c3-b3, 56. E f5-f7, 57. L b3-d3, 58. H h5-h3, 59. H h3-g3 + L d3-c3, 60. H g3-f3 + L c3-b3',
+          '61. K j7-j3, 62. B j9-j5-h5, 63. C j11-j5, 64. D h11-j11, 65. B h5-h11, 66. E f7-h7-h9, 67. H f3-f5-h5, 68. I d7-f7-f5, 69. G f9-f7-d7-d5, 70. E h9-f9',
+          '71. H h5-h9, 72. C j5-h5-h7, 73. K j3-j5, 74. I f5-g5 + L b3-c3, 75. I g5-h5 + L c3-d3, 76. F d11-d10 + E f9-f8 + J b9-b8 + A a11-a10, 77. F d10-d9 + E f8-f7 + J b8-b7 + A a10-a9, 78. B h11-b11, 79. F d9-d11, 80. H h9-d9',
+          '81. C h7-h11, 82. E f7-f9-h9, 83. G d5-f5-f9, 84. J b7-d7-d5, 85. H d9-d7-f7, 86. G f9-d9-d7, 87. F d11-d9, 88. C h11-f11, 89. E h9-h11, 90. I h5-h7',
+          '91. B b11-d11, 92. A a9-a11'
           ].join('\n')
         },
     {
