@@ -1,4 +1,7 @@
-# Ferryman Pro
-Ferryman Pro -Puzzle Simulator and Solver
+# Klotski
+Klotski - Sliding Puzzle Simulator and Solver
 
-### **<a href="https://grigorusha.github.io/FerrymanPro/FerrymanPro.html">Play online: FerrymanPro - Puzzle Simulator and Solver</a>** 
+# Klotski - Sliding Puzzle Simulator and Solver
+This is a simulator of the famous "Klotski" puzzles. 
+
+### **<a href="https://grigorusha.github.io/Klotski/KlotskiSolver.html">Play online: Klotski - Sliding Puzzle Simulator and Solver</a>** 
